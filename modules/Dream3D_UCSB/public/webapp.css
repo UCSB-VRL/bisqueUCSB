@@ -1,0 +1,27 @@
+#appwindow-embedded-center .x-splitter {
+    background-color: transparent;
+}
+
+.x-panel-body {
+    background-color: transparent;
+}  
+
+.webapp .box {
+    background-color: rgba(238, 238, 238, 0.65);
+}
+
+.help {
+    background-color: transparent;
+}
+
+.help .help-container {
+    background-color: rgba(225, 255, 233, 0.65);
+}
+
+.webapp img#thumbnail {
+    visibility:hidden;
+}
+
+.webapp h1 {
+    text-shadow: #ffffff 0px 0px 4px;
+}

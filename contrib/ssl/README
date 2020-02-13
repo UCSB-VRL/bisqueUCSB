@@ -1,0 +1,20 @@
+
+
+In order to proxy behind SSL see the corresponding file in the apache/nginx 
+for configuring a signed certifate.
+
+
+use the following utility to generate a java keystore
+https://github.com/escline/InstallCert
+
+
+Create a certification for java based clients (matlab and java)
+
+$ javac InstallCert
+$ java InstallCert myhost.com
+
+This will interrogate the server at myhost and add the certificate to 
+a file called "jssecerts"  you can now pass this file to any java program 
+to use as a keystore.
+
+java -Djavax.net.ssl.trustStore=jssecacerts  -Djavax.net.ssl.trustStorePassword=changeit ...

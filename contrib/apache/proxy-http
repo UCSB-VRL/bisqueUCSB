@@ -1,0 +1,39 @@
+#
+#
+#  Add the follwing fragment inside your apache  site config
+#  Usually inside <VirtualHost *:80> ... </VirtualHost>
+#
+#  Configure you bisque site.cgf with bisquik.root=http://localhost:8080
+#  Modify accordindly below 'myhost.org' to be you outside machine
+#  name 
+
+
+      ###############################
+      # BISQUE PROXY
+      <Proxy *>
+         Order allow,deny
+         Allow from all
+      </Proxy>
+
+      ProxyRequests Off
+      ProxyPreserveHost on
+      ProxyPass  / http://127.0.0.1:8080/
+      ProxyTimeout 7200
+      ProxyPass /static !
+      Alias /static /home/bisquik/bisque-stable/TG/bisquik/static
+      <Directory "/home/bisquik/bisque-stable/TG/bisquik/static">
+        Options Indexes FollowSymlinks
+        order allow,deny
+        Allow from all
+      </Directory>
+
+      <Location />
+       ProxyPassReverse  /  
+       RequestHeader set CP-Location  /
+       RequestHeader set "X-Forwarded-Proto" "http"
+       AddOutputFilterByType SUBSTITUTE;DEFLATE application/xml
+       AddOutputFilterByType SUBSTITUTE;DEFLATE text/xml
+       AddOutputFilterByType SUBSTITUTE;DEFLATE text/html
+       Substitute       "s,http://localhost:8080/,http://myhost.org/,nq"
+      </Location>
+      #############################

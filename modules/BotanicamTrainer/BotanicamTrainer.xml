@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module name="BotanicamTrainer" type="runtime" >
+
+    <tag name="inputs">
+        <tag name="mex_url"      type="system-input" />
+        <tag name="bisque_token" type="system-input" />
+        <tag name="resource_url"  type="resource">
+            <template>
+                <tag name="label" value="Select a group of images to train a model" />
+                <tag name="accepted_type" value="dataset" />
+				<tag name="accepted_type" value="query" />
+				<tag name="prohibit_upload" value="true" />
+            </template>  
+        </tag>
+        
+        <tag name="tag_names" type="tag_selector">     
+            <template>
+                <tag name="label" value="Enter tags to be classified" />
+                <tag name="reference" value="resource_url"/>
+            </template>  
+        </tag>
+        <!--
+        <tag name="classifier_method" value="Bush Descriptor" type="combo">
+            <template>
+                <tag name="label" value="Select the classifier method" />
+                <tag name="editable" value="false" type="boolean" />
+                <tag name="select" value="Bush Descriptor" />
+                <tag name="select" value="Leaf Descriptor" />
+            </template>
+        </tag>
+		-->
+    </tag>
+    
+    <tag name="outputs">
+		<tag name="classification_file" type="model_viewer"/>
+			<template>
+				<tag name="label" value="Resulting Model File" />
+			</template>
+    </tag>
+    
+    
+    <tag name="execute_options">
+        <tag name="argument_style" value="position" />
+    </tag>
+
+    <tag name="module_options" >
+        <tag name="version" value="3" />
+    </tag>   
+
+    <tag name="display_options" >
+        <tag name="group" value="Plant Analysis" />
+        <tag name="group" value="Classification" />
+    </tag>
+    
+    <tag name="interface">        
+        <tag name="javascript" type="file" value="webapp.js" />
+        <tag name="css" type="file" value="webapp.css" />
+    </tag> 
+    
+    <tag name="title" value="Botanicam: The Trainer" /> 
+    <tag name="authors" value="Chris Wheat, Mike Korcha, &lt;a href=&quot;mailto:fedorov@ece.ucsb.edu&quot;&gt;Dmitry Fedorov&lt;/a&gt;" />    
+    <tag name="help"      type="file" value="public/help.html" />
+    <tag name="thumbnail" type="file" value="public/thumbnail.png" />   
+    <tag name="description" type="string" value="This app trains datasets for the Botanicam recognition app. The classification method is a Bush Descriptor and it is trained using SVM to develop a model in order to classify bushes in images." />          
+
+</module>

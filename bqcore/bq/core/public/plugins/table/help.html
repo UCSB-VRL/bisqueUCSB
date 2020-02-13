@@ -1,0 +1,17 @@
+<h3>Return specific columns ("Filter" operator is optional):</h3>
+<li>[:, "colname1"], [: "colname2"]</li>
+<li>filter:[:, "colname1"], [: "colname2"]</li>
+
+<p>Can also slice by column number: <b>[:, 1], [:,3]</b>. For single slice, brackets can be left out: <b>:,1</b></p>
+
+<h3>Return column "colname3" for rows where value of column "colname1" is between "minval1" and "maxval1" and value of column "colname2" is between "minval2" and "maxval2":</h3>
+<li>:,"colname3" { [:,"colname1"] > minval1 and [:,"colname1"] < maxval1 and [:,"colname2"] > minval2 and [:,"colname2"] < maxval2 }</li>
+<li>:,: { [:,"colname1"] > minval1 and [:,"colname1"] < maxval1 and [:,"colname2"] > minval2 and [:,"colname2"] < maxval2 }/:,"colname3"</li>
+<li>:,: { ([:,"colname1"] > minval1 and [:,"colname1"] < maxval1) or ([:,"colname2"] > minval2 and [:,"colname2"] < maxval2) }/:,"colname3"</li>
+<p>(the initial ":,:" is needed to ensure all columns are passed through to the next filter step)</p>
+
+<h3>Return mean of column "colname3" for the same subset as above (the "as" is optional):</h3>
+<li>:,: { [:,"colname1"] > minval1 and [:,"colname1"] < maxval1 and [:,"colname2"] > minval2 and [:,"colname2"] < maxval2 }/agg:mean(:,"colname3") as "my mean"</li>
+
+<h3>Return min and max for column "colname3" for same subset:</h3>
+<li>:,: { [:,"colname1"] > minval1 and [:,"colname1"] < maxval1 and [:,"colname2"] > minval2 and [:,"colname2"] < maxval2 }/agg:min(:,"colname3") as "my min", max(:,"colname3") as "my max"</li>

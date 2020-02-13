@@ -1,0 +1,36 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html  xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"
+        xmlns:py="http://genshi.edgewall.org/"
+        xmlns:xi="http://www.w3.org/2001/XInclude"
+       >
+
+<xi:include href="master.html" />
+<head>
+    <title>Dataset service</title>
+
+    <!-- Dataset Service -->
+    <script type="text/javascript" src="${tg.url('/dataset_service/dataset_operations.js')}"></script>
+    <link rel="stylesheet" type="text/css" href="${tg.url('/dataset_service/dataset_panel.css')}" />
+    <script type="text/javascript" src="${tg.url('/dataset_service/dataset_panel.js')}"></script>
+    <link rel="stylesheet" type="text/css" href="${tg.url('/dataset_service/dataset_service.css')}" />
+    <script type="text/javascript" src="${tg.url('/dataset_service/dataset_service.js')}"></script>
+
+<script type="text/javascript" >
+Ext.onReady(function() {
+    var dataset_srv = Ext.create('BQ.dataset.Service', {
+        //title: 'Image upload',
+        closable: false,
+        autoShow: true,
+        border: 0,
+    });
+
+    BQApp.setCenterComponent(dataset_srv);
+});
+</script>
+
+</head>
+
+<body>
+</body>
+
+</html>

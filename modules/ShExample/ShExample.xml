@@ -1,0 +1,25 @@
+<module type="runtime" name="ShExample"  >
+   <tag name="inputs" >
+    <tag name="input-formal" value="image_url" type="image" />
+    <tag name="input-system" value="mex_url" />
+    <tag name="input-system" value="bisque_token" >
+       <tag name="default" value="50" />
+    </tag>
+  </tag>
+  <tag name="outputs">
+    <tag name="output-formal" value="resource" />
+  </tag>
+
+    <tag name="display_options" >
+        <tag name="group" value="Examples" />
+    </tag>
+
+    <tag name="help" type="string" value="This is an example of shell based module" />
+    <tag name="thumbnail" type="file" value="public/module_thumbnail.png" />
+
+    <tag name="title" type="string" value="Shell Example" />
+    <tag name="authors" type="string" value="The Bisque team" />
+    <tag name="description" type="string" value="This is an example of shell based module" />
+
+</module>
+

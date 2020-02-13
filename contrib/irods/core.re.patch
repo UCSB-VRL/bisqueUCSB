@@ -1,0 +1,26 @@
+
+
+
+### Kris 2012-01-10
+#acPostProcForCollCreate {writeLine("serverLog","TEST:acPostProcForCollCreate:"++$collName);
+acPostProcForCollCreate {
+  ON ($collName like "/iplant/home/$userNameClient/bisque_data") {
+        writeLine("serverLog","BISQUE: permitting bisque user RW on"++$collName);
+        msiSetACL ('default', 'write', 'bisque', $collName);
+        msiSetACL ('recursive', 'inherit', 'null', $collName);
+    }
+}
+### EKris 2012-01-10
+
+### Kris : 2012-01-10
+acPostProcForPut {
+    ON ($userNameClient != "bisque" && $objPath like "/iplant/home/\*/bisque_data/\*") {
+       writeLine("serverLog","BISQUE: inserting object"++$objPath);
+#       delay("<PLUSET>1s</PLUSET><EF>1s REPEAT UNTIL SUCCESS</EF>") {
+       delay("<PLUSET>1s</PLUSET>") {
+         msiExecCmd("insert2bisque.py", '$objPath $userNameClient', "winwood.iplantcollaborative.org", "null", "null", *cmdOut);
+         writeLine("serverLog","BISQUE: inserted object"++$objPath);
+
+       }
+    }
+}

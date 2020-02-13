@@ -1,0 +1,6 @@
+
+Modify mex.xml to substiture IMAGE_URL to an ectual image in your system.
+
+run replacing HOST with your system and USER:PASS with your username and password:
+
+curl -uUSER:PASS -X POST -H 'Content-type: text/xml' -d @- http://HOST/module_service/MetaData/execute < mex.xml

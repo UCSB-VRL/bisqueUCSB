@@ -1,0 +1,67 @@
+
+Bisque logging configuration:
+
+Bisque loggers are setup in the config/site.cfg 
+please refer to http://www.red-dove.com/python_logging.html
+for information.
+
+Each module in bisque has a configurable logger
+associate with it.  bq.data_service, bq.image_service
+
+Levels:
+Error: Any error condition needing administrator attention:
+       configuration errors, disk errors, etc.
+
+Warn: Something unexpected or confusing:
+      Abnormal configuration, 
+
+Info: URL request level:
+      Every top level handler should issue an info
+
+Debug: anything of interest to developers
+
+
+
+PyLog
+======
+
+A local server that can receive log message from multiple processes.
+Check the source code contrib/logging/loggingwebmonitor.py
+
+Launch the loging server:
+python contrib/logging/loggingwebmonitor.py bisque.log
+
+As is it will open a WebServer at 0.0.0.0:9021 for log viewing
+
+
+
+
+
+
+Syslog
+======
+
+Bisque can be configured to use syslog which is usefull 
+for multiprocess logging.
+
+Ever system seems to have a different syslog config.
+In particular, you need to determine with syslog facility is
+available i.e. local1 
+
+You can then configure you syslog with 
+
+local1.*               /var/log/bisque/bisque.log
+
+An important point is that some "catch-all" facilities will now
+get bisque message. You NEED to turn them off.
+
+Exmaple:
+The following catch-all send message to syslog
+
+*.*;auth,authpriv.none	-/var/log/syslog
+
+You will need to modify the line as such
+
+*.*;user,local0,local1.none;auth,authpriv.none	-/var/log/syslog
+
+

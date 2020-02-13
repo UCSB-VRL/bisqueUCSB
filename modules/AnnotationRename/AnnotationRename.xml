@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module name="AnnotationRename" type="runtime">
+
+    <tag name="inputs">
+        <tag name="mex_url"  type="system-input" />
+        <tag name="bisque_token"  type="system-input" />
+
+        <tag name="dataset_url" type="dataset">
+            <template>
+                <tag name="accepted_type" value="dataset" />
+                <tag name="label" value="Dataset to rename (Leave empty to process all available datasets)" />
+                <tag name="prohibit_upload" value="true" type="boolean" />
+                <tag name="allow_blank" value="true" type="boolean" />
+            </template>
+        </tag>
+
+        <tag name="annotation_type" value="gobject" type="combo" >
+            <template>
+                <tag name="label" value="Type of annotation" />
+                <tag name="select">
+                    <value>gobject</value>
+                    <value>tag</value>
+                </tag>
+                <tag name="editable" value="false" type="boolean" />
+            </template>
+        </tag>
+
+        <tag name="annotation_attribute" value="type" type="combo" >
+            <template>
+                <tag name="label" value="Attribute to rename" />
+                <tag name="select">
+                    <value>type</value>
+                    <value>name</value>
+                    <value>value</value>
+                </tag>
+                <tag name="editable" value="false" type="boolean" />
+            </template>
+        </tag>
+
+        <tag name="value_old" value="" type="annotation_attr" >
+            <template>
+                <tag name="label" value="Text to rename" />
+                <tag name="allowBlank" value="false" type="boolean" />
+                <tag name="editable" value="true" type="boolean" />
+
+                <tag name="reference_dataset" value="dataset_url" />
+                <tag name="reference_type" value="annotation_type" />
+                <tag name="reference_attribute" value="annotation_attribute" />
+
+                <tag name="element" value="gobject" />
+                <tag name="attribute" value="type" />
+                <tag name="dataset" value="/data_service/" />
+            </template>
+        </tag>
+
+        <tag name="value_new" value="" type="string" >
+            <template>
+                <tag name="label" value="New text" />
+                <tag name="allowBlank" value="false" type="boolean" />
+            </template>
+        </tag>
+
+    </tag>
+
+    <tag name="outputs">
+         <tag name="renamed">
+            <template>
+                <tag name="label" value="Renamed annotations" />
+            </template>
+         </tag>
+    </tag>
+
+    <tag name="module_options" >
+        <tag name="version" value="1" />
+    </tag>
+
+    <tag name="display_options" >
+       <tag name="group" value="Marine" />
+       <tag name="group" value="Annotations" />
+    </tag>
+
+    <tag name="help" type="file" value="public/help.html" />
+    <tag name="thumbnail" type="file" value="public/thumbnail.png" />
+
+    <tag name="title" type="string" value="Rename annotations" />
+    <tag name="authors" type="string" value="The Bisque team" />
+    <tag name="description" type="string" value="This module renames types, names or values of annotations." />
+</module>

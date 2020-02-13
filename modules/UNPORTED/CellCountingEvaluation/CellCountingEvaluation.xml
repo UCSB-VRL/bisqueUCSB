@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module name="CellCountingEvaluation" path="./CellCountingEvaluation" type="matlab">
+ <tag name="inputs">
+   <tag name="input-system" value="client_server" /> 
+   <tag name="input-system" value="image_url" />
+ </tag> 
+ <tag name="outputs" >
+  <tag name="output-formal" value="resources" />
+ </tag>
+ <tag name="display_options" >
+   <tag name="group" value="RetinaEvaluation" />
+ </tag>
+ <tag name="help" value="CellCountingEvaluation" />
+</module>

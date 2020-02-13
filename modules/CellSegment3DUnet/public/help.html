@@ -1,0 +1,45 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<h2>
+    <title>CellECT 2.0 </title>
+</h2>
+
+<body>
+
+    <h3>About:</h3>
+    <a href="public/workflow.png" target="_blank"> <img src="public/workflow.png" /></a>
+    <p>
+        This module is for segmenting 3D membrane tagged cell images. The workflow is as follows: 3D UNet to output the probability map of cell boundary, 3D watershed to get the initial cell label, and 3D CRF to refine the segmentation label.
+    </p>
+    <h4>Hyperparameters</h4>
+        <ul>
+            <li><b>Minimum distance:</b> In the seeds detection for watershed, the minimum possible distance 
+                between two seeds. The lower the value is, the more likely to have 
+                oversegmentation.</li>
+            <li><b>Label Threshold:</b> The minimum possible volumn of cells to avoid segmenting 
+                intercellular space as an individual cell.</li>
+            <li><b>Threshold:</b> The bilateral standard deviation (threshold) for CRF define how much 
+                intensity-homogeneity is required within a region. Higher values allow greater 
+                variations under the same label.</li>
+          </ul>
+    <p>
+        <a href="https://ieeexplore.ieee.org/document/8803095" target="_blank">Paper: Accurate 3D Cell Segmentation Using Deep Features and CRF Refinement</a>.
+    </p>
+
+    <h3>Input</h3>
+    <p> The input should be 3D volumentric cell membrane tagged image stack in TIFF format (z,x,y).</p>
+    <h3>Outputs</h3>
+    <ul>
+        <li><b>Cell Number:</b> The number of cells in each image stack.</li>
+        <li><b>Cell Volume:</b> The size of each cell in terms of number of voxels.</li>
+        <li><b>Cell Center:</b> The centroid of each cell.</li>
+        <li><b>Cell Coordinates:</b> The surface coordinate of each cell.</li>
+        <li><b>Adjacent Table:</b>  The graph represents the neighber of each cell.</li>
+        <li><b>3-way Conjunction Points:</b> The touch points of 3 neighboring cells.</li>
+      </ul>
+
+
+</body>
+
+</html>

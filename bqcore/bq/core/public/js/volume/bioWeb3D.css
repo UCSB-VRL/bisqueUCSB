@@ -1,0 +1,1120 @@
+/*******************************************************************************
+
+@author John Delaney
+
+
+*******************************************************************************/
+
+/*
+LICENSE
+
+Center for Bio-Image Informatics, University of California at Santa Barbara
+
+Copyright (c) 2007-2014 by the Regents of the University of California
+All rights reserved
+
+Redistribution and use in source and binary forms, in whole or in parts, with or without
+modification, are permitted provided that the following conditions are met:
+
+    Redistributions of source code must retain the above copyright
+    notice, this list of conditions, and the following disclaimer.
+
+    Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions, and the following disclaimer in
+    the documentation and/or other materials provided with the
+    distribution.
+
+    Use or redistribution must display the attribution with the logo
+    or project name and the project URL link in a location commonly
+    visible by the end users, unless specifically permitted by the
+    license holders.
+
+THIS SOFTWARE IS PROVIDED BY THE REGENTS OF THE UNIVERSITY OF CALIFORNIA ''AS IS'' AND ANY
+EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE REGENTS OF THE UNIVERSITY OF CALIFORNIA OR
+CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
+/*******************************************************************************
+ menu
+*******************************************************************************/
+
+.bq-volume-menu {
+    background-color: rgba(0, 0, 0, 0.7);
+    opacity: 0.7;
+    border-color: rgba(255,255,255,0.2);
+    border-radius: 5px;
+    padding: 0px 10px 5px 10px;
+    z-index: 100 !important;
+
+}
+
+.bq-volume-menu .x-tool img {
+    margin: 4px 4px 0px 0px;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-image: url('/core/images/viewer/icons_viewer.svg');
+    background-size: 72px;
+    background-position: -47px -12px;
+    width: 13px;
+}
+
+.bq-volume-toolbar .x-tool-collapse-right {
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-image: url('/core/images/viewer/icons_viewer.svg');
+    background-size: 85px;
+    background-position: -14px -13px;
+    width: 13px;
+}
+
+.bq-volume-toolbar .x-tool-expand-left {
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-image: url('/core/images/viewer/icons_viewer.svg');
+    background-size: 85px;
+    background-position: -14px 1px;
+    width: 13px;
+}
+
+.bq-volume-transfer .x-tool-collapse-bottom {
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-image: url('/core/images/viewer/icons_viewer.svg');
+    background-size: 85px;
+    background-position: -14px -13px;
+    width: 13px;
+}
+
+.bq-volume-transfer .x-tool-expand-top {
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-image: url('/core/images/viewer/icons_viewer.svg');
+    background-size: 85px;
+    background-position: -14px 1px;
+    width: 13px;
+}
+
+
+.threejsComponent {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+}
+
+.threejsBack {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(67,67,67, 1.0);
+}
+
+
+.x-boundlist-floating {
+    z-index: 2147483647 !important;
+}
+
+.bq-volume-menu .x-tip-anchor {
+    border-bottom-color: rgba(255,255,255,0.2);
+}
+
+.bq-volume-menu .x-field {
+    margin-left: 15px;
+}
+
+.bq-volume-menu label {
+    color: #ffffff;
+}
+
+.bq-volume-menu .heading {
+    /*width: 100%;*/
+    margin: 5px 0px 10px 0px;
+}
+
+.bq-volume-menu .heading td{
+    width: 100% !important;
+}
+
+.bq-volume-menu .heading label {
+    width: 100% !important;
+    font-size: 16px !important;
+}
+
+
+
+/*******************************************************************************
+ control buttons
+*******************************************************************************/
+
+.bq-three-container .control  {
+    position: absolute;
+    z-index: 30;
+    width: 32px !important;
+    height: 32px !important;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-image: url('/core/images/viewer/icons_viewer.svg');
+    background-size: 200px;
+}
+
+.bq-three-container .viewoptions {
+    left: 80px !important;
+    top: 10px !important;
+    background-position: -34px -97px;
+}
+
+.bq-three-container .tooloptions {
+    left: 122px !important;
+    top: 10px !important;
+    background-position: -135px 1px;
+}
+
+.bq-three-container .fullscreen {
+    right: 10px !important;
+    left: auto !important;
+    top: 10px !important;
+    background-position: -34px 0px;
+    background-position-y: -162px;
+
+}
+
+.bq-three-container .logo {
+    width: 90px !important;
+    height: 24px !important;
+    right: 10px !important;
+    bottom: 6px !important;
+    top: auto !important;
+    left: auto !important;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-image: url('/core/images/bisque_logo_gray.svg');
+    background-size: 90px;
+    background-position: 0px 0px;
+}
+
+/*******************************************************************************
+ toolbar selecter
+*******************************************************************************/
+
+.bq-volume-toolbar-menu {
+    position: absolute;
+    left: 72px;
+    top: 10px;
+    width: 120px;
+    height: 20px;
+    z-index: 100 !important;
+    opacity: 0.8;
+}
+
+.bq-volume-toolbar-menu .x-btn{
+    height: 20px;
+}
+
+/*******************************************************************************
+toolbar
+*******************************************************************************/
+
+.bq-volume-toolbar {
+    position: absolute;
+    z-index: 0 !important;
+    border: 0px;
+    border-width: 0px;
+    top: 80px;
+    right: 10px;
+    width: 220px;
+    padding: 0px 0px 0px 0px;
+    -webkit-border-top-left-radius: 5px;
+    -webkit-border-top-right-radius: 5px;
+    -moz-border-radius-topleft: 5px;
+    -moz-border-radius-topright: 5px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+.bq-volume-toolbar .x-header-text {
+    color: white;
+}
+
+.bq-volume-toolbar .x-btn-inner {
+    color: white;
+}
+
+.bq-volume-toolbar .x-toolbar {
+    color: white;
+    background-color: rgba(20, 20, 20, 0.5);
+    background-image: none;
+    border-color: #333333;
+    box-shadow: none;
+}
+
+.bq-volume-toolbar .x-header {
+    color: white;
+    background-color: rgba(0, 0, 0, 1.0);
+    background-image: none;
+    border-color: #333333;
+    box-shadow: none;
+}
+
+.bq-volume-toolbar .x-panel-body {
+    background-color: transparent; /*background-color: rgba(0, 0, 0, 0.1);*/
+    padding: 0px;
+    border: 0px; /*border: 2px solid #333333;*/
+    height: 80% !important;
+    border-radius: 0px 0px 5px 5px;
+    vertical-align: middle;;
+}
+
+
+.bq-volume-toolbar label {
+    color: #ffffff;
+}
+
+/*******************************************************************************
+  control panels
+*******************************************************************************/
+
+.bq-volume-adjustment-control {
+    background-color: rgba(20, 20, 20, 0.5);
+    /*-webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;*/
+    padding: 10px 10px 10px 10px;
+}
+
+.bq-volume-adjustment-control .bq-heading {
+    font-size: 16px;
+    font-family: 'Abel', tahoma, arial, verdana, sans-serif;
+    font-weight: normal;
+    margin: 0px 0px 8px 0px;
+}
+
+.bq-volume-adjustment-control .bq-heading:first-letter {
+    text-transform: capitalize;
+}
+
+.bq-volume-adjustment-control .bq-histogram {
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    margin-bottom: 5px;
+}
+
+/*******************************************************************************
+transfer
+*******************************************************************************/
+
+.bq-volume-transfer {
+    position: absolute;
+    z-index: 999 !important;
+    border: 0px;
+    border-width: 0px;
+    padding: 0px 0px 0px 0px;
+}
+
+.bq-volume-transfer .x-header-text {
+    color: white;
+}
+
+.bq-volume-transfer .x-btn-inner {
+    color: white;
+}
+
+.bq-volume-transfer .x-toolbar {
+    color: white;
+    background-color: rgba(50, 50, 50, 1.0);
+    background-image: none;
+    border-color: #333333;
+    box-shadow: none;
+    padding-left: 240px;
+}
+
+.bq-volume-transfer .x-toolbar .x-btn {
+    margin-right: 5px;
+}
+
+.bq-volume-transfer .x-toolbar .x-field {
+    margin: 0px 10px 0px 10px;
+}
+
+.bq-volume-transfer .x-header {
+    color: white;
+    background-color: rgba(0, 0, 0, 1.0);
+    background-image: none;
+    border-color: #333333;
+    box-shadow: none;
+}
+
+.bq-volume-transfer .x-panel-body {
+    background-color: rgba(0, 0, 0, 1.0);
+    padding: 5px;
+    border: 2px solid;
+    border-radius: 0px 0px 5px 5px;
+    border-color: #333333;
+    vertical-align: middle;
+}
+
+.bq-volume-transfer .x-field {
+    margin-left: 15px;
+}
+
+.bq-volume-transfer label {
+    color: #ffffff;
+}
+
+.bq-volume-transfer .x-toolbar-spacer.record-spacer {
+    width: 50px;
+}
+
+.bq-volume-transfer .x-btn-focus {
+    background: transparent;
+    border: 1px solid transparent;
+    background-image: none;
+}
+
+.bq-volume-transfer .x-btn-over {
+    color: #CC6600 !important;
+    background: #000000;
+    border: 1px solid #000000;
+    background-image: none;
+}
+
+.bq-volume-transfer .x-btn-pressed {
+    color: #CC6600 !important;
+    background: #000000;
+    border: 1px solid #CC6600;
+    background-image: none;
+}
+
+
+/*******************************************************************************
+ playback
+*******************************************************************************/
+
+.bq-volume-playback {
+    margin-left:auto;
+    margin-right:auto;
+
+    bottom: 100px;
+    width: 60%;
+    opacity: 0.2;
+    z-index: 100 !important;
+}
+
+.bq-volume-playback .x-panel-header-text {
+    color: white;
+}
+
+
+.bq-volume-playback .x-panel-header {
+    color: white;
+    background-color: rgba(0, 0, 0, 0.7);
+    background-image: none;
+    border: 2px solid;
+    border-radius: 5px 5px 0px 0px;
+    border-color: #333333;
+}
+
+.bq-volume-playback .x-panel-body {
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 5px;
+    border: 2px solid;
+    border-radius: 5px 5px 5px 5px;
+    border-color: #333333;
+    vertical-align: middle;
+}
+
+.bq-volume-playback .x-slider-horz .x-slider-thumb{
+    background-image: url(/core/js/volume/icons/movieSlider-thumb.svg) !important;
+    background: no-repeat;
+    height: 14px;
+    width: 18px;
+    margin-left: -9px;
+    top: -1px;
+}
+
+.bq-volume-playback .x-slider-horz .x-slider-thumb-over{
+    background-image: url(/core/js/volume/icons/movieSlider-thumb.svg) !important;
+    background: no-repeat 0px -14px;
+    height: 14px;
+    width: 18px;
+    margin-left: -9px;
+    top: -1px;
+}
+
+.bq-volume-playback .x-slider-horz{
+    background-image: url(/core/js/volume/icons/movieSlider-bg.svg) !important;
+    background: no-repeat left -12px;
+    height: 12px;
+}
+
+.bq-volume-playback .x-slider-horz .x-slider-inner{
+    background-image: url(/core/js/volume/icons/movieSlider-bg.svg) !important;
+    background: 0px -0px;
+    height: 12px;
+}
+
+.bq-volume-playback .x-slider-horz .x-slider-end{
+    background-image: url(/core/js/volume/icons/movieSlider-bg.svg) !important;
+    background: no-repeat right -24px;
+    height: 12px;
+}
+
+
+.bq-volume-playback .x-field {
+    margin-left: 15px;
+}
+
+.bq-volume-playback label {
+    color: #ffffff;
+}
+
+.bq-volume-playback .heading {
+    /*width: 100%;*/
+    margin: 5px 0px 10px 0px;
+}
+
+.bq-volume-playback .heading td {
+    width: 100% !important;
+}
+
+.bq-volume-playback .heading label {
+    width: 100% !important;
+    font-size: 16px !important;
+}
+
+.bq-volume-playback .x-box-inner {
+    border-style: none;
+    background-image: none;
+    background-color: rgba(0, 0, 0, 0.0);
+}
+
+.bq-volume-playback .x-toolbar {
+    border-style: none;
+    background-image: none;
+    background-color: rgba(0, 0, 0, 0.0);
+    vertical-align: middle;
+}
+
+/*
+.bq-volume-playback .x-btn {
+    background-image: none;
+    border-style: none;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.0);
+    vertical-align: middle;
+}
+*/
+
+
+.bq-volume-playback .tool-2 .x-btn {
+    background-image: none;
+    border-style: none;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.0);
+    vertical-align: middle;
+}
+
+
+.bq-volume-playback .x-btn-inner {
+    color: white;
+}
+
+.bq-volume-playback .x-toolbar-text-default {
+    color: white;
+    width: 40px;
+
+    margin: 4px;
+    left:auto;
+    right:auto;
+    background-color: transparent;
+}
+
+.bq-volume-playback .x-tool img {
+    background-image: url('/core/js/volume/icons/viewer/16px_close.png');
+    background-repeat: no-repeat;
+    background-size: 10px;
+    margin: 4px 4px 0px 0px;
+    background-color: transparent;
+    background-position: 0px 0px;
+}
+
+
+.bq-volume-playback .x-toolbar-spacer.record-spacer {
+    width: 50px;
+}
+
+.bq-volume-playback .x-btn-focus {
+    background: transparent;
+    border: 1px solid transparent;
+    background-image: none;
+}
+
+.bq-volume-playback .x-btn-over {
+    color: #CC6600 !important;
+    background: #000000;
+    border: 1px solid #000000;
+    background-image: none;
+}
+
+.bq-volume-playback .x-btn-pressed {
+    color: #CC6600 !important;
+    background: #000000;
+    border: 1px solid #CC6600;
+    background-image: none;
+}
+
+.x-btn-icon .addbutton {
+    background-image: url(/core/js/volume/icons/iadd16.png) !important;
+    width:16px!important;
+    height:16px!important;
+}
+/*
+.x-btn-icon .loopbutton {
+    background-image: url(/core/js/volume/icons/iLoop.png) !important;
+    width:16px!important;
+    height:16px!important;
+}
+*/
+.x-btn-icon .deletebutton {
+background-image: url(/core/js/volume/icons/idelete16.png) !important;
+width:16px!important;
+height:16px!important;
+}
+
+.bq-btn-play {
+background-image: url(/core/js/volume/icons/playbutton.svg) !important;
+background-color: none;
+background-size: cover;
+width:32px!important;
+height:32px!important;
+}
+
+.bq-btn-play.x-over {
+background-image: url(/core/js/volume/icons/playbutton.svg) !important;
+background: no-repeat -32px 0px;
+background-size: cover;
+width:32px!important;
+height:32px!important;
+}
+
+.bq-btn-play.x-pressed {
+background-image: url(/core/js/volume/icons/playbutton.svg) !important;
+background: no-repeat -64px 0px;
+background-size: cover;
+width:32px!important;
+height:32px!important;
+}
+
+
+.x-btn-pressed .playbutton {
+background-image: url(/core/js/volume/icons/ipause16.png) !important;
+background-color: none;
+width:16px!important;
+height:16px!important;
+}
+
+.x-btn-disabled .playbutton {
+background-image: url(/core/js/volume/icons/ipause16.png) !important;
+background-color: none;
+width:16px!important;
+height:16px!important;
+}
+
+
+
+.x-btn-icon .pausebutton {
+background-image: url(/core/js/volume/icons/ipause16.png) !important;
+width:16px!important;
+height:16px!important;
+}
+
+.bq-volume-playback .recordbutton {
+    background-image: url("/core/js/volume/icons/tool-icons.svg") !important;
+    background-repeat: no-repeat;
+    background-size: 260px;
+    background-position: -183px -40px;
+    width: 16px !important;
+    height: 16px !important;
+}
+
+.x-btn-icon .redbutton {
+background-image: url(/core/js/volume/icons/ired16.png) !important;
+width:16px!important;
+height:16px!important;
+}
+
+.x-btn-icon .greenbutton {
+background-image: url(/core/js/volume/icons/igreen16.png) !important;
+width:16px!important;
+height:16px!important;
+}
+
+.x-btn-icon .bluebutton {
+background-image: url(/core/js/volume/icons/iblue16.png) !important;
+width:16px!important;
+height:16px!important;
+}
+
+/*.key-slider {
+    padding-top:6px;
+    background-image:url(/core/js/volume/icons/ticks.gif);
+}*/
+
+.time-slider .x-slider-thumb {
+    background-image:url(/core/js/volume/icons/slider-thumb.png);
+}
+
+.time-slider .x-slider-horz .x-slider-inner  {
+    background-image:url(/core/js/volume/icons/slider-bg.png);
+}
+
+.time-slider .x-slider-end {
+    background-image:url(/core/js/volume/icons/slider-bg.png);
+}
+
+.time-slider .x-slider-horz {
+    background-image:url(/core/js/volume/icons/slider-bg.png);
+}
+
+.key-slider {
+    z-index: 1000;
+}
+
+.key-slider .x-slider-horz  {
+    background-image:none !important;
+}
+
+.key-slider .x-slider-horz .x-slider-inner  {
+    background-image:none !important;
+}
+
+.key-slider .x-slider-horz .x-slider-end  {
+    background-image:none !important;
+}
+
+.key-slider .x-slider-head {
+    z-index: 1000;
+    position: absolute;
+
+    margin-left: -8px;
+    top: -14px;
+    opacity: 1.0;
+
+    background-image:url("/core/js/volume/icons/keySlider.svg") !important;
+    background-size: cover !important;
+    background: no-repeat;
+    width:  16px !important;
+    height: 40px !important;
+
+}
+
+.key-slider .x-slider-horz .x-slider-head.x-slider-thumb-over{
+    z-index: 1000;
+    position: absolute;
+
+    margin-left: -8px;
+    top: -14px;
+    opacity: 1.0;
+
+    background-image:url("/core/js/volume/icons/keySlider.svg") !important;
+    background-size: cover !important;
+    background: no-repeat -16px 0px;
+    width:  32px !important;
+    height: 40px !important;
+
+}
+
+.key-slider .x-slider-horz .x-slider-thumb {
+    z-index: 1000;
+    background-image:url(/core/js/volume/icons/keyFrame.svg)  !important;
+    height: 24px;
+    width: 16px;
+    margin-left: -8px;
+    top: -6px;
+}
+
+.key-slider .x-slider-horz .x-slider-thumb-over {
+    z-index: 1000;
+    background-image:url(/core/js/volume/icons/keyFrame.svg)  !important;
+    background: no-repeat -16px 0px;
+    margin-left: -8px;
+    top: -6px;
+}
+
+
+
+.key-slider .tick-slider{
+z-index: 900;
+position: absolute;
+width:  100%;
+height: 100%;
+top: 0px;
+left: 0px;
+}
+
+.key-slider .time-slider{
+z-index: 1100;
+position: absolute;
+width:  1%;
+height: 100%;
+top: 0px;
+left: 0px;
+}
+
+h3 {
+    padding:15px 0 5px;
+}
+
+.grad-slider{
+z-index: 900;
+position: absolute;
+background-image: none !important;
+width:  100%;
+height: 100%;
+top: 0px;
+left: 0px;
+}
+
+.val-slider-back{
+z-index: 900;
+background-image: none !important;
+position: absolute;
+width:  100%;
+height: 100%;
+top: 0px;
+left: 0px;
+}
+
+.val-slider .x-slider-vert .x-slider-thumb{
+/*
+  background-image:url(/core/js/volume/icons/keyFrame.svg)  !important;
+*/
+z-index: 1000
+}
+
+/*******************************************************************************
+scale bar
+*******************************************************************************/
+
+.vol-scalebar {
+    opacity: 0.6;
+    position: absolute;
+    left: 6px;
+    bottom: 10px;
+    width: 100px;
+    height: 38px !important;
+
+    background-color: #222222;
+    background : #222222;
+    color: #FFFFFF;
+
+    font-size: 12px;
+    /* border: 1px solid #666666; */
+    padding: 8px 8px 8px 8px;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    z-index: 30;
+}
+
+.vol-scalebar .x-panel-body {
+    border-width: 0px;
+}
+
+
+/*******************************************************************************
+3D axis componentax
+*******************************************************************************/
+
+
+.vol-axis  {
+    position: absolute;
+    z-index: 30;
+    width: 100px !important;
+    height: 100px !important;
+    background-color: transparent;
+    left: 6px !important;
+    bottom: 52px;
+}
+
+/*******************************************************************************
+3D spinner component
+*******************************************************************************/
+
+.vol-spinner {
+    opacity: 0.6;
+    position: absolute;
+    right: 6px;
+    bottom: 10px;
+    width: 24px;
+    height: 24px;
+
+    background-color: #222222;
+    background : #222222;
+    color: #FFFFFF;
+
+    font-size: 12px;
+    /* border: 1px solid #666666; */
+    padding: 8px 8px 8px 8px;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    z-index: 30;
+}
+
+.vol-spinner .x-panel-body {
+    width: 100% !important;
+    height: 100% !important;
+    border-width: 0px;
+}
+
+
+
+/*******************************************************************************
+zoom slider
+*******************************************************************************/
+
+.bq-zoom-slider .x-slider-vert .x-slider-thumb{
+    background-image: url(/core/js/volume/icons/zoomSlider-thumb.svg) !important;
+    background-size: cover;
+    background: no-repeat;
+    margin-left: -3px;
+    height: 10px;
+    width: 20px;
+}
+
+.bq-zoom-slider .x-slider-vert .x-slider-thumb-over{
+    background-image: url(/core/js/volume/icons/zoomSlider-thumb.svg) !important;
+    background-size: cover;
+    background: no-repeat 0px -10px;
+    margin-left: -3px;
+    height: 10px;
+    width: 20px;
+}
+
+.bq-zoom-slider .x-slider-vert{
+    background-image: url(/core/js/volume/icons/zoomSlider-bg.svg) !important;
+    background: no-repeat -28px 0px;
+    width: 14px;
+}
+
+.bq-zoom-slider .x-slider-vert .x-slider-inner{
+    background-image: url(/core/js/volume/icons/zoomSlider-bg.svg) !important;
+    background: 0px -0px;
+    width: 14px;
+}
+.bq-zoom-slider .x-slider-vert .x-slider-end{
+    background-image: url(/core/js/volume/icons/zoomSlider-bg.svg) !important;
+    background: no-repeat -14px bottom;
+    width: 14px;
+}
+
+/*******************************************************************************
+ clip slider
+*******************************************************************************/
+
+.bq-clip-slider  {
+    position: relative !important;
+    margin-left:auto !important;
+    margin-right:auto !important;
+
+    bottom: 86px !important;
+    width: 60%;
+    z-index: 2147483647 !important;
+}
+
+.color-field{
+	width: 100%;
+	height: 100%;
+	position:absolute;
+	background-color: transparent;
+}
+
+.brush .extent {
+  stroke: #fff;
+  fill-opacity: .125;
+  shape-rendering: crispEdges;
+}
+
+.axis path, .axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+
+.bq-vol-toolbar .x-btn-pressed .x-btn-icon-el {
+    background-position-y: -96px !important;
+}
+
+
+
+.clipButton {
+    background-image: url(/core/js/volume/icons/tool-icons.svg) !important;
+    background-position: -48px 0px;
+}
+
+.transferButton {
+    background-image: url(/core/js/volume/icons/tool-icons.svg) !important;
+    background-position: -96px 0px;
+}
+
+.histoButton {
+    background-image: url(/core/js/volume/icons/tool-icons.svg) !important;
+    background-position: -144px 0px;
+}
+
+.materialButton {
+    background-image: url(/core/js/volume/icons/tool-icons.svg) !important;
+    background-position: -192px 0px;
+}
+
+.resizeButton {
+    background-image: url(/core/js/volume/icons/tool-icons.svg) !important;
+    background-position:  -288px 0px;
+}
+
+.gButton {
+    background-image: url(/core/js/volume/icons/tool-icons.svg) !important;
+    background-position: -336px 0px;
+}
+
+.deepButton {
+    background-image: url(/core/js/volume/icons/tool-icons.svg) !important;
+    background-position: -384px 0px;
+}
+
+.phongButton {
+    background-image: url(/core/js/volume/icons/tool-icons.svg) !important;
+    background-position: -432px 0px;
+}
+
+.lightButton {
+    background-image: url(/core/js/volume/icons/tool-icons.svg) !important;
+    background-position: -480px 0px;
+}
+
+.ditherButton {
+    background-image: url(/core/js/volume/icons/tool-icons.svg) !important;
+    background-position: -528px -0px;
+}
+
+.animateButton {
+    background-image: url(/core/js/volume/icons/tool-icons.svg) !important;
+    background-position: -0px -0px;
+}
+
+.downloadButton {
+    background-image: url(/core/js/volume/icons/tool-icons.svg) !important;
+    background-position: -576px -0px;
+}
+
+
+
+
+.clipButton-pressed {
+    background-image: url(/core/js/volume/icons/tool-icons.svg) !important;
+    background-position: -48px -48px;
+}
+
+.transferButton-pressed {
+    background-image: url(/core/js/volume/icons/tool-icons.svg) !important;
+    background-position: -96px -48px;
+}
+
+.histoButton-pressed {
+    background-image: url(/core/js/volume/icons/tool-icons.svg) !important;
+    background-position: -144px -48px;
+}
+
+.materialButton-pressed {
+    background-image: url(/core/js/volume/icons/tool-icons.svg) !important;
+    background-position: -192px -48px;
+}
+
+.resizeButton-pressed {
+    background-image: url(/core/js/volume/icons/tool-icons.svg) !important;
+    background-position:  -288px -48px;
+}
+
+.gButton-pressed {
+    background-image: url(/core/js/volume/icons/tool-icons.svg) !important;
+    background-position: -336px -48px;
+}
+
+.deepButton-pressed {
+    background-image: url(/core/js/volume/icons/tool-icons.svg) !important;
+    background-position: -384px -48px;
+}
+
+.phongButton-pressed {
+    background-image: url(/core/js/volume/icons/tool-icons.svg) !important;
+    background-position: -432px -48px;
+}
+
+.lightButton-pressed {
+    background-image: url(/core/js/volume/icons/tool-icons.svg) !important;
+    background-position: -480px -48px;
+}
+
+.ditherButton-pressed {
+    background-image: url(/core/js/volume/icons/tool-icons.svg) !important;
+    background-position: -528px -48px;
+}
+
+.animateButton-pressed {
+    background-image: url(/core/js/volume/icons/tool-icons.svg) !important;
+    background-position: -0px -48px;
+}
+
+.downloadButton-pressed {
+    background-image: url(/core/js/volume/icons/tool-icons.svg) !important;
+    background-position: -576px -48px;
+}
+
+
+/*
+.bq-volume-toolbar .x-btn {
+    background-image: -webkit-linear-gradient(top,#AFAFAF,#838383 48%,#575757 52%,#2E2E2E) !important;
+    border-color: #383838;
+}
+*/
+
+.bq-volume-toolbar .x-btn-icon-el {
+    width:  32px !important;
+    height: 32px !important;
+    background-size: 608px;
+    background-repeat: no-repeat;
+
+}
+
+
+.bq-volume-toolbar .x-btn {
+
+    background: none !important;
+    border-color: rgba(0, 0, 0, 0.0);
+}
+
+
+/*
+.bq-volume-toolbar .x-btn-pressed {
+
+    background: none !important;
+    border-color: #E6B85C;
+}
+*/
+
+.bq-volume-toolbar .x-btn-inner {
+    /*color: rgba(0, 0, 0, 0.0);*/
+    color: none !important;
+/*color: #FDFDFD;*/
+}

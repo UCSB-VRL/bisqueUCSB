@@ -1,0 +1,27 @@
+1. Download certificate from your SSL website.
+  In chrome, click on lock icon in the left side in the browse bar
+  Then select "Certificate information"
+  Then "Details" and "Copy to file"
+
+2. Most matlabs come with a java version that does not include Let's Encrypt as a trusted signer, one must include it to use let's encrypt signed sites. You need to update the cacerts file of the jre, which can be found in matlab with:
+cert_path = fullfile(matlabroot,'sys','java','jre',computer('arch'),'jre','lib','security','cacerts');
+
+
+2.1 use keytool, in win64 its located in: $Matlab\R2016b\sys\java\jre\win64\jre\bin\keytool.exe
+
+keytool -list -storepass "changeit" -keystore cacerts
+
+keytool -import -noprompt -trustcacerts -storepass "changeit" -keystore cacerts -alias <AliasName> -file <certificate>
+
+something like:
+keytool -import -noprompt -trustcacerts -storepass "changeit" -keystore cacerts -alias isrgrootx1 -file isrgrootx1.der
+keytool -import -noprompt -trustcacerts -storepass "changeit" -keystore cacerts -alias letsencryptauthorityx3 -file letsencryptauthorityx3.der
+keytool -import -noprompt -trustcacerts -storepass "changeit" -keystore cacerts -alias lets-encrypt-x3-cross-signed -file lets-encrypt-x3-cross-signed.der
+keytool -import -noprompt -trustcacerts -storepass "changeit" -keystore cacerts -alias lets-encrypt-x4-cross-signed -file lets-encrypt-x4-cross-signed.der
+
+or
+
+2.2 Use "protecle" to open cert store and to add the certificate using the default password: "changeit"
+
+3. There's a certificate store accepting let's encrypt at: cacerts_letsencrypt
+and a suggested java.opts file to include it

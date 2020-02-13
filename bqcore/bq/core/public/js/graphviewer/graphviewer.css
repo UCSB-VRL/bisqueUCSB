@@ -1,0 +1,226 @@
+/*******************************************************************************
+
+@author John Delaney
+
+
+*******************************************************************************/
+
+/*
+LICENSE
+
+Center for Bio-Image Informatics, University of California at Santa Barbara
+
+Copyright (c) 2007-2014 by the Regents of the University of California
+All rights reserved
+
+Redistribution and use in source and binary forms, in whole or in parts, with or without
+modification, are permitted provided that the following conditions are met:
+
+    Redistributions of source code must retain the above copyright
+    notice, this list of conditions, and the following disclaimer.
+
+    Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions, and the following disclaimer in
+    the documentation and/or other materials provided with the
+    distribution.
+
+    Use or redistribution must display the attribution with the logo
+    or project name and the project URL link in a location commonly
+    visible by the end users, unless specifically permitted by the
+    license holders.
+
+THIS SOFTWARE IS PROVIDED BY THE REGENTS OF THE UNIVERSITY OF CALIFORNIA ''AS IS'' AND ANY
+EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE REGENTS OF THE UNIVERSITY OF CALIFORNIA OR
+CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
+
+/*dagre*/
+
+/* This sets the color for "TK" nodes to a light blue green. */
+g.type-TK > rect {
+  fill: #00ffd0;
+}
+
+text {
+  font-weight: 300;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serf;
+  font-size: 14px;
+}
+
+.node {
+  opacity: 0.25 !important;
+}
+
+.watershed  {
+  opacity: 0.75 !important;
+}
+
+.selected  {
+  opacity: 1.0 !important;
+}
+
+
+.node rect {
+  fill: #E6E6E6;
+
+}
+
+.watershed rect {
+    stroke-width: 1.5px;
+}
+
+.selected rect  {
+    stroke: #333333;
+    stroke-width: 0.5px;
+    box-shadow: 0 0 7px #53BE12;
+}
+
+.mex rect {
+    fill: #99C299;
+}
+
+.pipeline_step rect {
+    fill: #A9D2C9;
+}
+
+.pipeline_step_bisque rect {
+    fill: #A9D2FF;
+}
+
+.pipeline_step_ignored rect {
+    fill: #A9D2C9;
+    opacity: 0.25 !important;
+}
+
+.pipeline_step_incompatible rect {
+    fill: #F9D2C9;
+}
+
+.image rect {
+    fill: #ADC2FF;
+}
+
+.dataset rect {
+    fill: #FFE0C2;
+}
+.edgePath path {
+  stroke: #B2B2B2;
+  fill: #
+  stroke-width: 2.0px;
+}
+
+.edgePathHighlighted path {
+  stroke: #997A5C;
+  fill: #997A5C;
+  stroke-width: 2.0px;
+}
+
+.edgePathSelectedOut path {
+  stroke: #FF0000;
+  fill: #FF0000;
+  stroke-width: 2.0px;
+}
+
+.edgePathSelectedIn path {
+  stroke: #0066FF;
+  fill: #0066FF;
+  stroke-width: 2.0px;
+}
+
+.bq-graph-panel .control  {
+    position: absolute;
+    z-index: 30;
+    width: 32px !important;
+    height: 32px !important;
+    background-repeat: no-repeat;
+    background-image: url('/core/images/viewer/icons_viewer.svg');
+    background-size: 200px;
+
+}
+
+.bq-graph-panel .zoomextents {
+    right: 10px !important;
+    left: auto !important;
+    top: 10px !important;
+    background-position: -34px -196px;
+}
+
+
+.bq-graph-panel .zoomtocurrent {
+    right: 10px !important;
+    left: auto !important;
+    top: 44px !important;
+    background-position: -34px -228px;
+}
+
+
+g div span
+{
+    display: block;
+
+    padding-left: 3px;
+    padding-right: 3px;
+}
+
+ g div {
+    /*width: 200px;
+    height: 40px;*/
+     /*margin-left: 2px;
+     margin-right: 2px;
+     margin-top: 2px;
+     margin-bottom: 2px;*/
+     color: #fff;
+}
+
+.bq-graph-panel .resource {
+    background: rgba(0,0,0,0.3);
+    /*height: 100%;*/
+    /*width: 15px;*/
+    display: block;
+    /*float: left;*/
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    margin-bottom: 2px;
+
+    padding: 2px;
+}
+
+.bq-graph-panel .name {
+    color: #555;
+    border-width: 2px
+    text-shadow: 1px 1px 1px #CCC;
+    font-size: 11px;
+    font-weight: bold;
+    font-family: tahoma, arial, verdana, sans-serif;
+    padding-left: 1px;
+    padding-right: 1px;
+}
+
+
+.bq-graph-panel .value {
+    color: #07AD0C !important;
+    text-shadow: 0px 1px 1px #DDD;
+    font-size: 9px;
+    font-family: tahoma, arial, verdana, sans-serif !important;
+
+    padding-left: 1px;
+    padding-right: 1px;
+}
+
+.bq-graph-panel .date {
+    color: #444;
+    font-size: 9px;
+    font-family: tahoma, arial, verdana, sans-serif !important;
+
+    padding-left: 1px;
+    padding-right: 1px;
+}

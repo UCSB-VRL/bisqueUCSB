@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module name="MaskRCNN" type="runtime">
+
+    <!-- Comments are OK -->
+    <tag name="inputs">
+        <tag name="resource_url" type="resource">
+            <template>
+                <tag name="accepted_type" value="image" />
+                <tag name="label" value="Dataset for Segmentation" />
+                <tag name="prohibit_upload" value="true" type="boolean" />
+            </template>
+        </tag>
+
+	<tag name="seed_count" value="15" type="number">
+            <template>
+                <tag name="label" value="Seeds" />
+                <tag name="reference" value="resource_url" />
+                <tag name="allowNone" value="true" type="boolean" />
+                <tag name="description" value="Seeds count description" />
+            </template>
+        </tag>
+	<tag name="threshold" value="0.05" type="number">
+            <template>
+                <tag name="label" value="Threshold" />
+                <tag name="reference" value="resource_url" />
+                <tag name="allowNone" value="true" type="boolean" />
+                <tag name="description" value="Threshold for black voxels" />
+            </template>
+        </tag>
+
+	<tag name="mex_url" type="system-input" />
+	<tag name="bisque_token" type="system-input" />
+    </tag>
+
+    <tag name="outputs">
+	<tag name="Segmentation" type="image">
+            <template>
+                <tag name="label" value="Segmentation image" />
+            </template>
+        </tag>  
+	<tag name="Metadata">
+            <template>
+                <tag name="label" value="Metadata" />
+            </template>
+        </tag>
+    </tag>
+
+    <tag name="execute_options">
+        <tag name="iterable" value="table_url" type="dataset" />
+    </tag>
+
+    <tag name="module_options">
+        <tag name="version" value="1" />
+    </tag>
+
+    <tag name="display_options">
+        <tag name="group" value="Segmentation" />
+    </tag>
+    <tag name="interface">
+        <tag name="javascript" type="file" value="webapp.js" />
+        <tag name="css" type="file" value="webapp.css" />
+    </tag>
+    <tag name="help" type="file" value="public/help.html" />
+    <tag name="thumbnail" type="file" value="public/thumbnail.jpg" />
+
+    <tag name="title" type="string" value="Mask RCNN based Image Segmentation" />
+    <tag name="authors" type="string" value="Rahul" />
+    <tag name="description" type="string" value="This is an implementation of Mask R-CNN on Python 3, Keras, and TensorFlow. The model generates bounding boxes and segmentation masks for each instance of an object in the image. " />
+
+</module>
+
+

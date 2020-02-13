@@ -1,0 +1,8 @@
+#bqfeatures requirments
+numpy>=1.9
+Cython>=0.20
+numexpr>=2.6
+mahotas>=1.2.1
+libtiff>=0.4.0
+scikit-image>=0.10.0
+tables>=3.2.0

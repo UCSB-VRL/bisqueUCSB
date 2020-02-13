@@ -1,0 +1,216 @@
+/**************************************************************************/
+/*  */
+/**************************************************************************/
+
+.toolbar-main {
+    background-color: transparent;
+    border: 0px;
+    background: -moz-linear-gradient(top,  rgba(233,243,255,1) 0%, rgba(136,185,234,0.92) 50%, rgba(119,168,226,0) 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(233,243,255,1)), color-stop(50%,rgba(136,185,234,0.92)), color-stop(100%,rgba(119,168,226,0)));
+    background: -webkit-linear-gradient(top,  rgba(233,243,255,1) 0%,rgba(136,185,234,0.92) 50%,rgba(119,168,226,0) 100%);
+    background: -o-linear-gradient(top,  rgba(233,243,255,1) 0%,rgba(136,185,234,0.92) 50%,rgba(119,168,226,0) 100%);
+    background: -ms-linear-gradient(top,  rgba(233,243,255,1) 0%,rgba(136,185,234,0.92) 50%,rgba(119,168,226,0) 100%);
+    background: linear-gradient(to bottom,  #fafafa 0%,#fafafa 50%,#fafafa 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e9f3ff', endColorstr='#0077a8e2',GradientType=0 );
+}
+
+.toolbar-main h3 {
+  font-size: 20px;
+  font-weight: normal;
+  /*font-stretch: condensed;
+  font-family: 'Varela Round', sans-serif;*/
+  /*font-family: tahoma,arial,verdana,sans-serif;*/
+  font-family: 'Red Hat Display', tahoma, arial, verdana, sans-serif;
+}
+
+.toolbar-main a {
+  color: #666666;
+}
+
+.toolbar-main a:hover {
+	color: #C60;
+}
+
+.x-menu-body .menu-heading {
+    padding: 5px 5px 3px 5px;
+    font-size: 16px;
+    font-family: 'Red Hat Display', tahoma, arial, verdana, sans-serif;
+}
+
+.toolbar-main .x-box-menu-right {
+    /*height: 32px;  */
+}
+
+.toolbar-main .x-btn-default-toolbar-large .x-btn-inner {
+    font-size: 16px;
+    font-family: 'Red Hat Display', tahoma, arial, verdana, sans-serif;
+}
+
+/*******************************************************************/
+
+.loginmenu {
+    padding: 5px 10px 5px 10px;
+}
+
+.loginmenu .x-panel-body-default {
+    background: transparent;
+}
+
+/******************************************************************
+ Menus
+******************************************************************/
+
+.toolbar-menu .x-menu-body {
+    background-color: rgba(201, 213, 224, 0.92) !important;
+}
+
+.toolbar-menu .x-menu-body .x-menu-item-separator {
+    background-color: #B3CBE0;
+    border-top-width: 0px;
+}
+
+/******************************************************************
+ Buttons
+******************************************************************/
+
+.toolbar-menu .x-btn-default-medium .x-btn-inner {
+    font-size: 16px;
+}
+
+.toolbar-menu .icon-user {
+    background-image: url('/core/images/toolbar/user.png');
+}
+
+/******************************************************************
+ Images
+******************************************************************/
+
+.toolbar-menu .image-about-bisque {
+    width: 200px;
+    height: 56px;
+    margin: 10px 10px 10px 10px;
+    background-image: url('/core/images/bisque_logo_gray.svg');
+    background-repeat: no-repeat;
+    background-size: 200px;
+    background-position: 0px 0px;
+}
+
+.toolbar-main .main-logo {
+    width: 90px;
+    height: 25px;
+    margin: 0px 10px 0px 5px;
+    background-image: url('/core/images/bisque_logo_gray.svg');
+    background-repeat: no-repeat;
+    background-size: 90px;
+    background-position: 0px 0px;
+    display: block;
+}
+
+
+/******************************************************************
+ Icons
+******************************************************************/
+
+.toolbar-main .icon-help {
+    width: 32px;
+    background-image: url('/core/images/icons_toolbar.svg') !important;
+    background-repeat: no-repeat;
+    background-size: 160px;
+    background-position: 0px -195px;
+}
+
+.toolbar-main .icon-user {
+    width: 32px;
+    background-image: url('/core/images/icons_toolbar.svg#icon_user') !important;
+    background-repeat: no-repeat;
+    background-size: 160px;
+    background-position: 0px -162px;
+}
+
+.toolbar-main .icon-browse {
+    width: 32px;
+    background-image: url('/core/images/icons_toolbar.svg') !important;
+    background-repeat: no-repeat;
+    background-size: 160px;
+    background-position: 0px -130px;
+}
+
+.toolbar-main .icon-export {
+    width: 32px;
+    background-image: url('/core/images/icons_toolbar.svg') !important;
+    background-repeat: no-repeat;
+    background-size: 160px;
+    background-position: 0px -65px;
+}
+
+.toolbar-main .icon-import {
+    width: 32px;
+    background-image: url('/core/images/icons_toolbar.svg') !important;
+    background-repeat: no-repeat;
+    background-size: 160px;
+    background-position: 0px -33px;
+}
+
+.toolbar-main .icon-analysis {
+    width: 32px;
+    background-image: url('/core/images/icons_toolbar.svg') !important;
+    background-repeat: no-repeat;
+    background-size: 160px;
+    background-position: 0px -98px;
+}
+
+.toolbar-main .icon-create {
+    width: 32px;
+    background-image: url('/core/images/icons_toolbar.svg');
+    background-repeat: no-repeat;
+    background-size: 160px;
+    background-position: 0px -1px;
+}
+
+.toolbar-menu img {
+    background-size: 16px;
+}
+
+.toolbar-menu .icon-import {
+    background-image: url('/core/images/toolbar/upload.png') !important;
+}
+
+.toolbar-menu .icon-export {
+    background-image: url('/core/images/toolbar/download.png') !important;
+}
+
+.toolbar-menu .bq-help-video {
+	width: 290px;
+	height: 240px;
+	margin: 10px 0px 10px 0px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+
+.toolbar-menu .bq-help-video iframe {
+    width: 100%;
+    height: 100%;
+}
+
+/* search bar */
+
+.toolbar-main .search_field input {
+    padding: 4px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    height: 26px;
+    background: rgb(211, 225, 241);
+}
+
+.toolbar-main .search_field input:hover {
+    -webkit-transition: border-color 0.3s ease-out, -webkit-box-shadow 0.3s ease-out;
+    -moz-transition: border-color 0.3s ease-out, -moz-box-shadow 0.3s ease-out;
+    -o-transition: border-color 0.3s ease-out, -o-box-shadow 0.3s ease-out;
+    transition: border-color 0.3s ease-out, box-shadow 0.3s ease-out;
+    border-color: #0099FF;
+    -webkit-box-shadow: 0px 0px 8px 0px rgba(0, 153, 255, 1);
+    -moz-box-shadow: 0px 0px 8px 0px rgba(0, 153, 255, 1);
+    box-shadow: 0px 0px 8px 0px rgba(0, 153, 255, 1);
+}

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module name="MTAnalysisTool" path="./MTAnalysisTool" type="matlab">
+ <tag name="formal-input" value="$image_url" index="1" />
+ <tag name="formal-input" value="tag_name:tag='lifehistory'" index="2" />
+ <tag name="formal-input" value="Simple_Growth_Rate:number='4.0'" index="3" />
+ <tag name="formal-input" value="Simple_Growth_Length:number='0.3'" index="4" />
+ <tag name="formal-input" value="Simple_Shortening_Rate:number='-4.0'" index="5" />
+ <tag name="formal-input" value="Simple_Shortening_Length:number='-0.5'" index="6" />
+ <tag name="formal-input" value="Simple_Attenuation_Time:number='5.0'" index="7" />
+ <tag name="formal-input" value="Simple_Attenuation_Length:number='0.5'" index="8" />
+ <tag name="formal-input" value="Complex_Growth_Rate:number='4.0'" index="9" />
+ <tag name="formal-input" value="Complex_Growth_Length:number='0.4'" index="10" />
+ <tag name="formal-input" value="Complex_Shortening_Rate:number='-4.0'" index="11" />
+ <tag name="formal-input" value="Complex_Shortening_Length:number='-0.6'" index="12" />
+ <tag name="formal-input" value="Complex_Attenuation_Time:number='4.0'" index="13" />
+ <tag name="formal-input" value="Complex_Attenuation_Length:number='0.5'" index="14" />
+ <tag name="formal-output" value="resources" />
+ <tag name="group" value="Microtubule" />
+ <tag name="help" value="MTAnalysisTool" />
+</module>

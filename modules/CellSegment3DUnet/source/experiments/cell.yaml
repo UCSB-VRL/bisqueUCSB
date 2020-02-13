@@ -1,0 +1,19 @@
+batch_size: 1
+cfg: cell
+criterion: dice_loss
+dataset: CellSegmentation
+epochs: 200
+gpu: '1','2','3'
+opt: Adam
+opt_params:
+  lr: 0.001
+  weight_decay: 0.0001
+root: .
+schedule: !!set
+  30: null
+  60: null
+seed: 100
+size: 512
+start_epoch: 0
+train_dir: ./ckpts
+workers: 1

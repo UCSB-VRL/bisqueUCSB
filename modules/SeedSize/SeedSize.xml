@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module name="SeedSize" type="runtime" >
+
+    <!-- INPUTS
+    Inputs define exactly what the module takes, UI options can be provided in the interface section
+
+    Notes:
+    1. "system-input" type is a reserved type for inputs that should be defined by the
+    system during the execution
+    2. if an input resource can have multiple types, those can be defined in the interface section
+
+    Examples:
+        <tag name="resource_url" type="image" />    - takes "image" as an input in "resource_url"
+        <tag name="resource_url" type="dataset" />  - takes "dataset" as an input in "resource_url"
+        <tag name="resource_url" type="resource" /> - takes any resource, can be configured in the interface to allow specific types
+    -->
+    <tag name="inputs">
+        <tag name="mex_url"      type="system-input" />
+        <tag name="bisque_token" type="system-input" />
+        <tag name="image_url"    type="resource">
+            <template>
+                <tag name="accepted_type" value="image" />
+                <tag name="accepted_type" value="dataset" />
+                <tag name="label" value="Select input images" />
+                <tag name="require_geometry">
+                    <tag name="z" value="single" />
+                    <tag name="t" value="single" />
+                    <tag name="fail_message" value="Only supports 2D images!" />
+                </tag>
+            </template>
+        </tag>
+
+    </tag>
+
+    <!-- OUTPUTS
+    Outputs are needed for automated generation of the results interface, the type of the output
+    will be used to define what UI component will be used to display its value, the UI options
+    can be specified in the interface section same way as for elements in inputs
+
+    Notes:
+    1. inputs and outputs are written directly into the MEX, without "inputs" or "outputs" parent tags
+       thus you should use distinguishable names
+    2. resource with a name indicates data stored directly into the MEX
+    3. tag with a specific type indicates a tag containing a link to the actual resource
+
+    Examples:
+        <gobject name="results" />           - contains resultant gobjects inplace
+        <tag name="summary" />               - contains tags inplace
+        <tag name="image" type="resource" /> - contains a link (URL) to the resultant resource
+    -->
+    <tag name="outputs">
+
+        <tag name="Summary">
+            <template>
+                <tag name="label" value="Summary of all analyzed images" />
+            </template>
+        </tag>
+
+        <tag name="mex_url" type="mex">
+            <template>
+                <tag name="label" value="Results for all images in the dataset" />
+                <tag name="plot" value="true"  type="boolean">
+                    <tag name="label" value="Distribution of seed areas" />
+                    <tag name="title" value="Distribution of seed areas" />
+                    <tag name="xmap" value="tag-value-number" />
+                    <tag name="xreduce" value="histogram" />
+                    <tag name="xpath">
+                        <value>//gobject[@type='seed']/tag[@name="area"]</value>
+                    </tag>
+                    <tag name="args">
+                        <tag name="numbins" value="18" type="number" />
+                    </tag>
+                </tag>
+
+                <tag name="plot1" value="true"  type="boolean">
+                    <tag name="label" value="Distribution of major axis" />
+                    <tag name="title" value="Distribution of major axis" />
+                    <tag name="xmap" value="tag-value-number" />
+                    <tag name="xreduce" value="histogram" />
+                    <tag name="xpath">
+                        <value>//gobject[@type='seed']/tag[@name="major"]</value>
+                    </tag>
+                    <tag name="args">
+                        <tag name="numbins" value="18" type="number" />
+                    </tag>
+                </tag>
+
+                <tag name="plot2" value="true"  type="boolean">
+                    <tag name="label" value="Distribution of minor axis" />
+                    <tag name="title" value="Distribution of minor axis" />
+                    <tag name="xmap" value="tag-value-number" />
+                    <tag name="xreduce" value="histogram" />
+                    <tag name="xpath">
+                        <value>//gobject[@type='seed']/tag[@name="minor"]</value>
+                    </tag>
+                    <tag name="args">
+                        <tag name="numbins" value="18" type="number" />
+                    </tag>
+                </tag>
+
+                <tag name="export_csv" value="true" type="boolean">
+                    <tag name="label" value="Area, Major and Minor axis as CSV" />
+                    <tag name="xmap" value="tag-value-number" />
+                    <tag name="xreduce" value="vector" />
+                    <tag name="xpath">
+                        <value>//gobject[@type='seed']/tag[@name='area']</value>
+                        <value>//gobject[@type='seed']/tag[@name='major']</value>
+                        <value>//gobject[@type='seed']/tag[@name='minor']</value>
+                    </tag>
+                    <tag name="title">
+                        <value>area</value>
+                        <value>major</value>
+                        <value>minor</value>
+                    </tag>
+                    <tag name="filename" value="full_dataset.csv" />
+                </tag>
+
+                <tag name="export_package" value="true" type="boolean">
+                    <tag name="label" value="Area, Major and Minor axis as CSV files per image in a GZip package" />
+                </tag>
+
+                <tag name="export_xml"    value="true"  type="boolean" />
+                <tag name="export_excel"  value="false" type="boolean" />
+                <tag name="export_gdocs"  value="true"  type="boolean" />
+            </template>
+        </tag>
+
+        <tag name="image_url" type="dataset">
+            <template>
+                <tag name="label" value="Pick an image to see individual results" />
+            </template>
+        </tag>
+
+        <tag name="seed-resource" type="resource">
+            <template>
+                <tag name="label" value="Image with detected seeds" />
+            </template>
+            <gobject name="seeds">
+                <template>
+
+                    <tag name="plot" value="true"  type="boolean">
+                        <tag name="label" value="Distribution of seed areas" />
+                        <tag name="title" value="Distribution of seed areas" />
+                        <tag name="xmap" value="tag-value-number" />
+                        <tag name="xreduce" value="histogram" />
+                        <tag name="xpath">
+                            <value>//tag[@name="area"]</value>
+                        </tag>
+                        <tag name="args">
+                            <tag name="numbins" value="18" type="number" />
+                        </tag>
+                    </tag>
+
+                    <tag name="plot1" value="true"  type="boolean">
+                        <tag name="label" value="Distribution of major axis" />
+                        <tag name="title" value="Distribution of major axis" />
+                        <tag name="xmap" value="tag-value-number" />
+                        <tag name="xreduce" value="histogram" />
+                        <tag name="xpath">
+                            <value>//tag[@name="major"]</value>
+                        </tag>
+                        <tag name="args">
+                            <tag name="numbins" value="18" type="number" />
+                        </tag>
+                    </tag>
+
+                    <tag name="plot2" value="true"  type="boolean">
+                        <tag name="label" value="Distribution of minor axis" />
+                        <tag name="title" value="Distribution of minor axis" />
+                        <tag name="xmap" value="tag-value-number" />
+                        <tag name="xreduce" value="histogram" />
+                        <tag name="xpath">
+                            <value>//tag[@name="minor"]</value>
+                        </tag>
+                        <tag name="args">
+                            <tag name="numbins" value="18" type="number" />
+                        </tag>
+                    </tag>
+
+                    <tag name="export_csv" value="true" type="boolean">
+                        <tag name="label" value="Area, Major and Minor axis as CSV" />
+                        <tag name="xmap" value="tag-value-number" />
+                        <tag name="xreduce" value="vector" />
+                        <tag name="xpath">
+                            <value>//tag[@name='area']</value>
+                            <value>//tag[@name='major']</value>
+                            <value>//tag[@name='minor']</value>
+                        </tag>
+                        <tag name="title">
+                            <value>area</value>
+                            <value>major</value>
+                            <value>minor</value>
+                        </tag>
+                    </tag>
+
+                    <tag name="export_xml"    value="true"  type="boolean" />
+                    <tag name="export_excel"  value="false" type="boolean" />
+                    <tag name="export_gdocs"  value="false" type="boolean" />
+                    <tag name="preview_movie" value="false" type="boolean" />
+                </template>
+            </gobject>
+        </tag>
+    </tag>
+
+    <tag name="execute_options">
+        <tag name="argument_style" value="named" />
+    </tag>
+
+    <tag name="module_options" >
+        <tag name="version" value="3" />
+    </tag>
+
+    <tag name="display_options" >
+        <tag name="group" value="Plant Analysis" />
+        <tag name="group" value="Seed Analysis" />
+        <tag name="group" value="Detection" />
+    </tag>
+
+    <!-- INTERFACE
+    Interface subtags can configure the interface elements that should be created for
+    elements in inputs, these configs are used by the automated UI generator
+    the input elemnet is matched based on a name, so the element "image_url" can
+    have a tag with the same name and subtags defining the configuration
+
+    If the interface tag does not point to a file or a string inplace then the web UI
+    will be generated for the module automatically using inputs, outputs and interface configs.
+    Though interface can still contain configs even if it does provide html interface itself,
+    since HTML interface can use default JS components from default module interface and those
+    can configure themselves using the interface configuration
+
+    Types and configs:
+        resource_type - defines valid type for a resource, if you specify multiple then multiple
+                        interface elements will be created although only one input can be used,
+                        currently is the last selected, if you need multiple inputs you should
+                        specify those as multiple inputs
+
+    Notes:
+    1. xxxx
+
+    Examples:
+        <dsdsda>
+    -->
+    <!--<tag name="interface" type="file" value="public/html/seedsize.html" />-->
+
+
+    <!-- ENTRY POINTS and/or DESCRIPTIONS
+
+    Required entry points currently are:
+        help, thumbnail, description, title, authors
+
+    Types:
+        string - used to specify the returned value inplace
+        file   - points to a local file containing the returned value
+
+    Examples:
+        <tag name="thumbnail" type="file"   value="public/images/thumbnail.png" />
+        <tag name="help"      type="string" value="My help inplace" />
+    -->
+    <tag name="interface">
+        <tag name="javascript" type="file" value="my_renderes.js" />
+        <tag name="css" type="file" value="webapp.css" />
+    </tag>
+
+    <tag name="help"      type="file" value="public/help.html" />
+    <tag name="thumbnail" type="file" value="public/images/thumbnail.png" />
+
+    <tag name="description" type="string" value="This algorithm analyses images produced by a flat-bed scanner with seeds layed over the glass surface. Analysis outlines detected seeds and computes their geometrical properties." />
+    <tag name="title" type="string" value="Seed size analyzer" />
+    <tag name="authors" type="string" value="Nathan Miller, Logan Johnson, Kris Kvilekval and Dmitry Fedorov" />
+
+</module>
+

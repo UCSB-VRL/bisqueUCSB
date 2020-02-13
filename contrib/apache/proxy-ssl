@@ -1,0 +1,27 @@
+#
+#
+#  Add the follwing fragment inside your apache ssl site config
+#
+
+
+
+      ###############################
+      # BISQUE PROXY
+      <Proxy *>
+         Order allow,deny
+         Allow from all
+      </Proxy>
+
+      ProxyRequests Off
+      ProxyPreserveHost on
+      ProxyPass  / http://127.0.0.1:8080/
+      <Location />
+       ProxyPassReverse  /  
+       RequestHeader set CP-Location  /
+       RequestHeader set "X-Forwarded-Proto" "https"
+       AddOutputFilterByType SUBSTITUTE;DEFLATE application/xml
+       AddOutputFilterByType SUBSTITUTE;DEFLATE text/xml
+       AddOutputFilterByType SUBSTITUTE;DEFLATE text/html
+       Substitute       "s,http://localhost:8080/,https://loup.ece.ucsb.edu/,nq"
+      </Location>
+      #############################

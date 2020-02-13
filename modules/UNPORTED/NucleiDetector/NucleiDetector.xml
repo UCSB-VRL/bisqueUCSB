@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module name="NucleiDetector" path="launch.py" type="runtime">
+ <tag name="formal-input" value="$client_server" index="0" />
+ <tag name="formal-input" value="$mex_url" index="1" />
+ <tag name="formal-input" value="$image_url:string" index="2" />
+ <tag name="formal-input" value="cellSize:number='3.4'" index="3" />
+ <tag name="formal-input" value="thValue:number='0.22'" index="4" />    
+ <tag name="formal-input" value="channel_Nuclei:channel='1'" index="5" />
+ <tag name="formal-input" value="channel_Membrane:channel='None'" index="6" />
+ <tag name="formal-output" value="gobject_url:string" />
+ <tag name="formal-output" value="nuclei_count_url:number" />
+ <tag name="arguments" value="position" />
+ <tag name="group" value="Generic" />
+ <tag name="help" value="NucleiDetector" />
+</module>

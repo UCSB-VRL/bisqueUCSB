@@ -1,0 +1,312 @@
+<system name="system"  >
+    <tag name="version" value="0.5.9" />
+    <preference>
+        <tag name="titles">
+            <tag name="organization" value="" />
+            <tag name="title" value="" />
+        </tag>
+        <tag name="Welcome">
+            <tag name="message" value="" />
+        </tag>
+        <tag name="Toolbar">
+            <tag name="registration" value="/auth_service/login" /> <!-- /registration -->
+            <tag name="password_recovery" value="/auth_service/login" /> <!-- /registration/lost_password -->
+            <tag name="user_profile" value="/registration/edit_user" />
+
+            <tag name="about" value="/client_service/about" />
+            <tag name="privacy_policy" value="/client_service/about/privacypolicy.html" />
+            <tag name="terms_of_use" value="/client_service/about/termsofuse.html" />
+            <tag name="license" value="/client_service/about/license.html" />
+            <tag name="usage_statistics" value="/usage/" />
+            <tag name="help" value="/client_service/help" />
+            <tag name="project_website" value="http://bioimage.ucsb.edu/bisque" />
+            <tag name="developers_website" value="http://biodev.ece.ucsb.edu/projects/bisquik" />
+            <tag name="submit_bug" value="http://biodev.ece.ucsb.edu/projects/bisquik/newticket" />
+            <tag name="email" value="mailto:bisque-bioimage@googlegroups.com" />
+        </tag>
+        <tag name="ResourceBrowser">
+            <tag name="Browser">
+                <tag name="Tag Query"/>
+                <tag name="Layout" value="Compact">
+                    <template>
+                        <tag type="string" name="Type" value="ComboBox"/>
+                        <tag type="string" name="defaultValue" value="Compact"/>
+                        <tag type="boolean" name="allowBlank" value="false"/>
+                        <tag type="boolean" name="Editable" value="true"/>
+                        <tag type="string" name="select" value="Compact,Grid,Card,Full"/>
+                        <tag name="passedValues" value="1,2,8,4"/>
+                    </template>
+                </tag>
+                <tag name="Default visibility" value="owner">
+                    <template>
+                        <tag type="string" name="Type" value="ComboBox"/>
+                        <tag type="string" name="defaultValue" value="owner"/>
+                        <tag type="boolean" name="allowBlank" value="false"/>
+                        <tag type="boolean" name="Editable" value="true"/>
+                        <tag type="string" name="select" value="owner,shared,public"/>
+                        <tag name="passedValues" value="owner,shared,public"/>
+                    </template>
+                </tag>
+                <tag name="Sorting" value="&quot;@ts&quot;:desc">
+                    <template>
+                        <tag type="string" name="Type" value="ComboBox"/>
+                        <tag type="string" name="defaultValue" value="&quot;@ts&quot;:desc"/>
+                        <tag type="boolean" name="allowBlank" value="false"/>
+                        <tag type="boolean" name="Editable" value="true"/>
+                        <tag type="string" name="select" value="Name,Time created,Time modified,Permission,Owner,Type"/>
+                        <tag name="passedValues" value="&quot;@name&quot;:asc,&quot;@created&quot;:desc,&quot;@ts&quot;:desc,&quot;@permission&quot;:asc,&quot;@owner&quot;:asc,&quot;@type&quot;:asc"/>
+                    </template>
+                </tag>
+            </tag>
+            <tag name="Images">
+                <tag name="ImageParameters"/>
+                <tag name="enable_annotation_status" value="true" type="boolean">
+                    <template>
+                        <tag name="Type" value="Boolean"/>
+                        <tag name="defaultValue" value="true"/>
+                        <tag name="allowBlank" value="false" type="boolean" />
+                        <tag name="Editable" value="true" type="boolean" />
+                    </template>
+                </tag>
+            </tag>
+            <tag name="Summary Tags">
+                <tag name="filename"/>
+                <tag name="attached-file"/>
+                <tag name="image_type"/>
+                <tag name="imagedate"/>
+                <tag name="dataset_label"/>
+                <tag name="species"/>
+            </tag>
+        </tag>
+
+        <tag name="Uploader">
+            <tag name="initial_path" value="{date_iso}" type="string">
+                <template>
+                    <tag type="boolean" name="allowBlank" value="true"/>
+                    <tag type="boolean" name="Editable" value="true"/>
+                </template>
+            </tag>
+        </tag>
+
+        <tag name="ResourceViewer">
+            <tag name="Show Provenance" value="false" type="boolean">
+                <template>
+                    <tag name="Type" value="Boolean"/>
+                    <tag name="defaultValue" value="false"/>
+                    <tag name="allowBlank" value="false" type="boolean" />
+                    <tag name="Editable" value="true" type="boolean" />
+                </template>
+            </tag>
+        </tag>
+
+        <tag name="Viewer">
+            <tag type="boolean" name="autoUpdate" value="true">
+                <template>
+                    <tag type="string" name="Type" value="Boolean"/>
+                    <tag type="string" name="defaultValue" value="true"/>
+                    <tag type="boolean" name="allowBlank" value="false"/>
+                    <tag type="boolean" name="Editable" value="true"/>
+                </template>
+            </tag>
+
+            <tag name="negative" value="">
+                <template>
+                    <tag type="string" name="Type" value="ComboBox"/>
+                    <tag type="string" name="defaultValue" value=""/>
+                    <tag type="boolean" name="allowBlank" value="false"/>
+                    <tag type="boolean" name="Editable" value="true"/>
+                    <tag type="string" name="select" value="Yes,No"/>
+                    <tag type="string" name="passedValues" value="negative,"/>
+                </template>
+            </tag>
+
+            <tag name="enhancement" value="d">
+                <template>
+                    <tag type="string" name="Type" value="ComboBox"/>
+                    <tag type="string" name="defaultValue" value="d"/>
+                    <tag type="boolean" name="allowBlank" value="false"/>
+                    <tag type="boolean" name="Editable" value="true"/>
+                    <tag type="string" name="select" value="Data range,Full range,Data range + tolerance,Equalized"/>
+                    <tag type="string" name="passedValues" value="d,f,t,e"/>
+                </template>
+            </tag>
+
+            <tag name="projection" value="">
+                <template>
+                    <tag type="string" name="Type" value="ComboBox"/>
+                    <tag type="string" name="defaultValue" value=""/>
+                    <tag type="boolean" name="allowBlank" value="false"/>
+                    <tag type="boolean" name="Editable" value="true"/>
+                    <tag type="string" name="select" value="None,projectmax,projectmin,projectmaxt,projectmint,projectmaxz,projectminz"/>
+                    <tag type="string" name="passedValues" value=" ,projectmax,projectmin,projectmaxt,projectmint,projectmaxz,projectminz"/>
+                </template>
+            </tag>
+
+            <tag name="enhancement-8bit" value="f">
+                <template>
+                    <tag type="string" name="Type" value="ComboBox"/>
+                    <tag type="string" name="defaultValue" value="f"/>
+                    <tag type="boolean" name="allowBlank" value="false"/>
+                    <tag type="boolean" name="Editable" value="true"/>
+                    <tag type="string" name="select" value="Data range,Full range,Data range + tolerance,Equalized"/>
+                    <tag type="string" name="passedValues" value="d,f,t,e"/>
+                </template>
+            </tag>
+
+            <tag name="fusion" value="m">
+                <template>
+                    <tag type="string" name="Type" value="ComboBox"/>
+                    <tag type="string" name="defaultValue" value="m"/>
+                    <tag type="boolean" name="allowBlank" value="false"/>
+                    <tag type="boolean" name="Editable" value="true"/>
+                    <tag type="string" name="select" value="Average,Maximum"/>
+                    <tag type="string" name="passedValues" value="a,m"/>
+                </template>
+            </tag>
+
+            <tag name="Overlay">
+                <tag name="enable" type="boolean" value="false">
+                    <template>
+                        <tag type="string" name="Type" value="Boolean"/>
+                        <tag type="string" name="defaultValue" value="false"/>
+                        <tag type="boolean" name="allowBlank" value="false"/>
+                        <tag type="boolean" name="Editable" value="true"/>
+                    </template>
+                </tag>
+                <tag name="position" value="">
+                    <template>
+                        <tag type="string" name="Type" value="ComboBox"/>
+                        <tag type="string" name="defaultValue" value=""/>
+                        <tag type="boolean" name="allowBlank" value="true"/>
+                        <tag type="boolean" name="Editable" value="true"/>
+                    </template>
+                </tag>
+                <tag name="shape" value="dots">
+                    <template>
+                        <tag type="string" name="Type" value="ComboBox"/>
+                        <tag type="string" name="defaultValue" value="false"/>
+                        <tag type="boolean" name="allowBlank" value="false"/>
+                        <tag type="boolean" name="Editable" value="true"/>
+                        <tag type="string" name="select" value="Dots,Dots (Medium),Dots (Narrow),Dots (Custom Rotation),Dots (Dense),Dots (12),Grid"/>
+                        <tag type="string" name="passedValues" value="dots,dots_medium,dots_narrow,dots_custom,dots_dense,dots_12,grid"/>
+                    </template>
+                </tag>
+            </tag>
+            <tag name="gobjects_editor_auto_hide" value="true" type="boolean">
+                <template>
+                    <tag name="Type" value="Boolean"/>
+                    <tag name="defaultValue" value="true"/>
+                    <tag name="allowBlank" value="false" type="boolean"/>
+                    <tag name="Editable" value="true" type="boolean"/>
+                </template>
+            </tag>
+            <tag name="hide_gobjects_creation" value=""/>
+            <tag name="disable_geographical_extensions" value="false" type="boolean">
+                <template>
+                    <tag type="string" name="Type" value="Boolean"/>
+                    <tag type="string" name="defaultValue" value="false"/>
+                    <tag name="Editable" value="true" type="boolean"/>
+                </template>
+            </tag>
+            <tag name="preferred_color_per_channel_name" value="">
+                <template>
+                    <tag name="description" value="Semicolon separated pairs of name=R,G,B; example: DAPI=0,0,255;Alexa Fluor 488=255,0,0;"/>
+                    <tag name="Editable" value="true" type="boolean"/>
+                </template>
+            </tag>
+
+            <tag name="preferred_text_per_channel_name" value="">
+                <template>
+                    <tag name="description" value="Semicolon separated pairs of name=TEXT; example: DAPI=Nuclear;Alexa Fluor 488=Membrane;"/>
+                    <tag name="Editable" value="true" type="boolean"/>
+                </template>
+            </tag>
+        </tag>
+
+        <tag name="GraphicalAnnotations" >
+
+            <tag name="require_semantic_types" value="false" type="boolean">
+                <template>
+                    <tag name="Type" value="Boolean"/>
+                    <tag name="defaultValue" value="false"/>
+                    <tag name="allowBlank" value="false" type="boolean"/>
+                    <tag name="Editable" value="true" type="boolean"/>
+                </template>
+            </tag>
+
+            <tag name="Projections">
+                <tag name="visible_plane_tolerance_z" value="2.5" type="number">
+                    <template>
+                        <tag name="Type" value="number"/>
+                        <tag name="defaultValue" value="2.5"/>
+                        <tag name="allowBlank" value="false" type="boolean"/>
+                        <tag name="Editable" value="true" type="boolean"/>
+                        <tag name="minValue" value="1" type="number" />
+                        <tag name="maxValue" value="50" type="number" />
+                        <tag name="allowDecimals" value="true" type="boolean" />
+                        <tag name="decimalPrecision" value="1" type="number" />
+                        <tag name="step" value="0.5" type="number" />
+                    </template>
+                </tag>
+                <tag name="visible_plane_tolerance_t" value="1.0" type="number">
+                    <template>
+                        <tag name="Type" value="number"/>
+                        <tag name="defaultValue" value="1.0"/>
+                        <tag name="allowBlank" value="false" type="boolean"/>
+                        <tag name="Editable" value="true" type="boolean"/>
+                        <tag name="minValue" value="1" type="number" />
+                        <tag name="maxValue" value="50" type="number" />
+                        <tag name="allowDecimals" value="true" type="boolean" />
+                        <tag name="decimalPrecision" value="1" type="number" />
+                        <tag name="step" value="1" type="number" />
+                    </template>
+                </tag>
+            </tag>
+
+            <tag name="Colors">
+                <tag name="type_hierarchy_level" value="0" type="number">
+                    <template>
+                        <tag type="string" name="Type" value="ComboBox"/>
+                        <tag type="string" name="defaultValue" value="0"/>
+                        <tag type="boolean" name="allowBlank" value="false"/>
+                        <tag type="boolean" name="Editable" value="true"/>
+                        <tag type="string" name="select" value="Whole,1,2,3,4,5,6,7,8,9,10"/>
+                        <tag type="string" name="passedValues" value="0,1,2,3,4,5,6,7,8,9,10"/>
+                    </template>
+                </tag>
+
+                <tag name="type_hierarchy_separator" value="">
+                    <template>
+                        <tag name="description" value="Character used to separate type hierarchy, for example '.' for Arthropoda.Barnicle" />
+                        <tag name="Editable" value="true" type="boolean"/>
+                    </template>
+                </tag>
+            </tag>
+
+        </tag>
+
+        <tag name="Viewer3D" >
+          <tag name="render_quality" value="medium"  type="string">
+            <template>
+              <tag type="string" name="Type" value="ComboBox"/>
+              <tag type="string" name="defaultValue" value="high"/>
+              <tag type="boolean" name="allowBlank" value="false"/>
+              <tag type="boolean" name="Editable" value="true"/>
+              <tag type="string" name="select" value="low,medium,high"/>
+            </template>
+          </tag>
+          <tag name="dithering" value="true" type="boolean"/>
+          <tag name="gobjects">
+            <tag name="show" value="true" type="boolean" />
+          </tag>
+          <tag name="transfer_editor">
+            <tag name="functions">
+              <tag name="default" value="[{&quot;id&quot;:0,&quot;offset&quot;:0,&quot;alpha&quot;:0,&quot;color&quot;:[0,0,0,0],&quot;selected&quot;:false},{&quot;id&quot;:1,&quot;offset&quot;:100,&quot;alpha&quot;:1,&quot;color&quot;:[255,255,255,1],&quot;selected&quot;:false}] "/>
+
+              <tag name="bone+muscle" value="[{&quot;id&quot;:0,&quot;offset&quot;:0,&quot;alpha&quot;:0,&quot;color&quot;:[20.400000000000002,1.44,4.96,0],&quot;selected&quot;:false},{&quot;id&quot;:1,&quot;offset&quot;:20,&quot;alpha&quot;:0,&quot;color&quot;:[0,0,0,0],&quot;selected&quot;:false},{&quot;id&quot;:2,&quot;offset&quot;:33,&quot;alpha&quot;:0.1,&quot;color&quot;:[232.05,16.38,56.42,0.1],&quot;selected&quot;:false},{&quot;id&quot;:3,&quot;offset&quot;:41,&quot;alpha&quot;:0.25,&quot;color&quot;:[242.25,193.8,28.5,0.25],&quot;selected&quot;:false},{&quot;id&quot;:4,&quot;offset&quot;:47,&quot;alpha&quot;:1,&quot;color&quot;:[221.85,214.89,173.13,1],&quot;selected&quot;:true},{&quot;id&quot;:5,&quot;offset&quot;:100,&quot;alpha&quot;:1,&quot;color&quot;:[221.85,214.89,173.13,1],&quot;selected&quot;:false}]"/>
+            </tag>
+            <tag name="show" value="false" type="boolean"/>
+          </tag>
+        </tag>
+      </preference>
+    </system>

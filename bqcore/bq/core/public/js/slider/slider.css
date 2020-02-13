@@ -1,0 +1,91 @@
+/*
+  Slider styles for BQ.slider.Slider
+
+  Author: Dima Fedorov <dimin@dimin.net> <http://www.dimin.net/>
+  Copyright (C) Center for BioImage Informatics <www.bioimage.ucsb.edu>
+  GNU General Public License Usage
+
+  History:
+    2011-08-17 15:40:08 - first creation
+
+  Ver: 1
+*/
+
+.slider {
+    position:absolute;
+    z-index: 30;
+}
+
+.tslider {
+    right: 150px;
+    bottom: 25px;
+}
+
+.zslider {
+    right: 15px;
+    bottom: 150px;
+}
+
+.slider .button {
+    background-image: none;
+    background-color: transparent;
+    border: 0 none;
+    padding: 0px;
+}
+
+.slider .button .x-btn-icon-el {
+    background-image: url('/core/js/slider/images/icons_slider.svg');
+    background-size: 100px;
+    background-repeat: no-repeat;
+    background-color: transparent;
+    border: 0 none;
+    background-position: -35px 0px;
+}
+
+.slider .play .x-btn-icon-el {
+    background-position: -35px 0px;
+}
+
+.slider .play-vertical .x-btn-icon-el {
+    background-position: -35px -100px;
+}
+
+.slider .x-play-selected .x-btn-icon-el, .slider .x-btn-play-selected .x-btn-icon-el {
+    background-position: -70px 0px;
+}
+
+.slider .x-play-vertical-selected .x-btn-icon-el, .slider .x-btn-play-vertical-selected .x-btn-icon-el {
+    background-position: -70px -100px;
+}
+
+.slider .next .x-btn-icon-el {
+    background-position: -35px -67px;
+}
+
+.slider .next-vertical .x-btn-icon-el {
+    background-position: -35px -168px;
+}
+
+.slider .x-next-selected .x-btn-icon-el, .slider .x-btn-next-selected .x-btn-icon-el {
+    background-position: -70px -67px;
+}
+
+.slider .x-next-vertical-selected .x-btn-icon-el, .slider .x-btn-next-vertical-selected .x-btn-icon-el {
+    background-position: -70px -168px;
+}
+
+.slider .prev .x-btn-icon-el {
+    background-position: -35px -33.5px;
+}
+
+.slider .prev-vertical .x-btn-icon-el {
+    background-position: -35px -135px;
+}
+
+.slider .x-prev-selected .x-btn-icon-el, .slider .x-btn-prev-selected .x-btn-icon-el {
+    background-position: -70px -33.5px;
+}
+
+.slider .x-prev-vertical-selected .x-btn-icon-el, .slider .x-btn-prev-vertical-selected .x-btn-icon-el {
+    background-position: -70px -135px;
+}

@@ -1,0 +1,194 @@
+/*-------------------------------------------------------
+  scrollbars
+-------------------------------------------------------*/
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+::-webkit-scrollbar-track:hover {
+    border-radius: 6px;
+    background-color: rgba(0,0,0,0.2);
+}
+
+::-webkit-scrollbar-thumb {
+    /*background-color: transparent;*/
+    /*-webkit-box-shadow: none;*/
+    border-radius: 6px;
+    background-color: rgba(0,0,0,0.2);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    border-radius: 6px;
+    /*-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);*/
+    background-color: rgba(0,0,0,0.4);
+}
+
+/*-------------------------------------------------------
+  organizer
+-------------------------------------------------------*/
+
+.organizer .btn-pressable {
+    border-width: 0px;
+    border-style: hidden;
+    background-image: none;
+    background-color: transparent;
+}
+
+.organizer .counts, .organizer .counts div {
+    text-align: right !important;
+    color: #666;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+    font-size: 11px;
+    line-height: 13px;
+    position: relative;
+    padding-right: 5px;
+}
+
+.organizer .counts img {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+}
+
+.organizer .negated {
+    text-decoration: line-through;
+    color: #990000;
+}
+
+/*.organizer .counts::before {
+    content: "(";
+}
+.organizer .counts::after {
+    content: ")";
+}*/
+
+.organizer .btn-pressable.x-btn-pressed {
+    /*border-width: 1px;
+    border-style: solid;*/
+    background-image: none;
+    background-color: #bccfe5;
+}
+
+.organizer .icon-tag-name .x-tree-icon-parent {
+    background-image: url('/core/js/tree/images/organizer_icons.svg');
+    background-repeat: no-repeat;
+    background-size: 70px;
+    background-position: 0px 2px;
+}
+
+.organizer .icon-tag-value .x-tree-icon {
+    background-image: url('/core/js/tree/images/organizer_icons.svg');
+    background-repeat: no-repeat;
+    background-size: 70px;
+    background-position: -18px 2px;
+}
+
+.organizer .icon-gob-type .x-tree-icon {
+    background-image: url('/core/js/tree/images/organizer_icons.svg');
+    background-repeat: no-repeat;
+    background-size: 70px;
+    background-position: 0px -16px;
+}
+
+.organizer .icon-gob-name .x-tree-icon {
+    background-image: url('/core/js/tree/images/organizer_icons.svg');
+    background-repeat: no-repeat;
+    background-size: 70px;
+    background-position: -18px -16px;
+}
+
+/* need to restore overriden loading icon by our specialized row icons */
+.x-grid-tree-loading .x-tree-icon {
+    background-image: url('/core/extjs/resources/ext-theme-classic/images/tree/loading.gif') !important;
+    background-size: 16px 16px !important;
+    background-position: 0 center !important;
+}
+
+.organizer .icon-tags {
+    background-image: url('/core/js/tree/images/organizer_icons.svg');
+    background-repeat: no-repeat;
+    background-size: 100px;
+    background-position: -0px -52px !important;
+}
+
+.organizer .icon-gobs {
+    background-image: url('/core/js/tree/images/organizer_icons.svg');
+    background-repeat: no-repeat;
+    background-size: 100px;
+    background-position: -26px -52px !important;
+}
+
+.organizer .icon-types {
+    background-image: url('/core/js/tree/images/organizer_icons.svg');
+    background-repeat: no-repeat;
+    background-size: 100px;
+    background-position: 0px -79px !important;
+}
+
+.organizer .icon-names {
+    background-image: url('/core/js/tree/images/organizer_icons.svg');
+    background-repeat: no-repeat;
+    background-size: 100px;
+    background-position: -26px -79px !important;
+}
+
+.organizer .icon-values {
+    background-image: url('/core/js/tree/images/organizer_icons.svg');
+    background-repeat: no-repeat;
+    background-size: 100px;
+    background-position: -52px -79px !important;
+}
+
+
+.organizer .icon-sorting {
+    background-image: url('/core/js/tree/images/organizer_icons.svg');
+    background-repeat: no-repeat;
+    background-size: 100px;
+    background-position: 0px -106px !important;
+    width: 24px;
+    height: 24px;
+    margin-top: 4px;
+}
+
+.organizer .menu-heading {
+    margin: 4px 0px 4px 0px;
+    display: block;
+}
+
+.organizer .icon-sort {
+    background-image: url('/core/js/tree/images/organizer_icons.svg');
+    background-repeat: no-repeat;
+    background-size: 75px;
+    background-position: -20px -80px !important;
+}
+
+.organizer .DESC .icon-sort {
+    background-position: -40px -80px !important;
+}
+
+.organizer .x-menu-item-unchecked .icon-sort {
+    opacity: 0.3;
+    filter: alpha(opacity=30);
+}
+
+.organizer .sort_bar {
+    background-color: #cccccc;
+}
+
+.organizer .sort_button {
+    border-width: 0px;
+    border-style: hidden;
+    background-image: none;
+    background-color: transparent;
+}
+

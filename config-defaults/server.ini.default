@@ -1,0 +1,30 @@
+#
+#  Bisque Paster config
+#
+# The %(here)s variable will be replaced with the parent directory of this file
+#
+#  DO NOT EDIT
+#
+#  re-generate with bq-admin setup configuration from changes in site.cfg
+#  Or modify config-defaults/server.ini.default
+
+[DEFAULT]
+
+[server:main]
+use = egg:Paste#http
+host = %(http_host)s
+port = %(http_port)s
+#use_threadpool = True
+#threadpool_workers = 60
+#request_queue_size = 100
+protocol_version = HTTP/1.1
+
+[sa_auth]
+cookie_secret = 670cbb6c-641d-4089-95a4-7128e2e23d75
+
+
+[app:main]
+use = config:site.cfg
+bisque.server=%(server)s
+bisque.services_enabled=%(services_enabled)s
+bisque.services_disabled=%(services_disabled)s

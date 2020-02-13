@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--  
+Module definition for an example module MyData
+
+For details on notation and configuration:
+    http://biodev.ece.ucsb.edu/projects/bisquik/wiki/BisqueModuleSpecification
+-->
+<module name="MyData" type="runtime">
+
+    <!-- INPUTS
+    Inputs section formally defines all inputs the module 
+          will require and templates automated UI renderers
+    
+    Notes:
+    1. "system-input" type is a reserved type for inputs that should be defined by the
+       system during the execution
+    2. tags with a type of another resource are references and will produce a url to a resource
+    2. resources without a user-defined type will have all their data in-place
+
+    Template subtags can configure the interface elements that should be created for 
+    elements in inputs, these configs are used by the automated UI generator.
+    
+    See detailed specs:
+        http://biodev.ece.ucsb.edu/projects/bisquik/wiki/BisqueModuleSpecification
+    -->           
+             
+    <tag name="inputs">
+        <tag name="mex_url"      type="system-input" />
+        <tag name="bisque_token" type="system-input" />
+
+        <tag name="main_resource" type="image" >
+            <template>
+                <!-- Iterable will allow this module to run as a batch -->
+                <tag name="accepted_type" value="image" />
+                <tag name="accepted_type" value="dataset" />                
+                
+                <tag name="label" value="Select an image or a set of images" />
+                <tag name="require_geometry">
+                    <tag name="z" value="stack" />
+                    <tag name="t" value="single" />
+                    <tag name="fail_message" value="Only supports 3D images!" />
+                </tag>                
+            </template> 
+        </tag> 
+
+        <tag name="image_url"    type="image" >
+            <template>
+                <tag name="label" value="Select input image" />
+                <tag name="prohibit_upload" value="true" type="boolean" />
+                <tag name="require_geometry">
+                    <tag name="z" value="stack" />
+                    <tag name="t" value="single" />
+                    <tag name="fail_message" value="Only supports 3D images!" />
+                </tag>                
+            </template> 
+            
+            <gobject name="MyGobjects">
+                <template>
+                    <tag name="gobject" value="point" />
+                    <tag name="gobject" value="polygon" />
+                    <tag name="amount" value="single" />
+                    <tag name="fail_message" value="Requires at least one point" />
+                </template> 
+            </gobject>
+        </tag> 
+        
+        <tag name="resource_url" type="resource">
+            <template>
+                <tag name="accepted_type" value="patient" />
+                <tag name="label" value="Select my custom resource" />
+                <tag name="prohibit_upload" value="true" type="boolean" />
+            </template>            
+        </tag>   
+        
+        
+        <tag name="my_image" type="image" >
+            <template>
+                <tag name="label" value="Select input image" />
+                <tag name="require_geometry">
+                    <tag name="t" value="stack" />
+                    <tag name="z" value="single" />
+                    <tag name="fail_message" value="Only supports time series images!" />
+                </tag>                
+            </template> 
+            
+            <gobject name="MyOtherGobjects">
+                <template>
+                    <tag name="gobject" value="point" />
+                    <tag name="gobject" value="polygon" />
+                    <tag name="amount" value="many" />
+                    <tag name="fail_message" value="Requires at least one point" />
+                </template> 
+            </gobject>
+        </tag>     
+        
+        <tag name="radius" value="5.6" type="number" >
+            <template>
+                <tag name="label" value="Radius" />
+                <tag name="minValue" value="-10" type="number" />
+                <tag name="maxValue" value="33" type="number" />
+                <tag name="allowDecimals" value="true" type="boolean" />
+                <tag name="decimalPrecision" value="4" type="number" />
+                <tag name="step" value="1" type="number" />
+                <tag name="units" value="microns" />
+            </template>             
+        </tag>
+
+        <tag name="mynumber" type="number" >
+            <template>
+                <tag name="label" value="My number with no default" />
+                <tag name="minValue" value="-10" type="number" />
+                <tag name="maxValue" value="33" type="number" />
+                <tag name="allowDecimals" value="true" type="boolean" />
+                <tag name="decimalPrecision" value="4" type="number" />
+                <tag name="step" value="1" type="number" />
+                <tag name="units" value="microns" />
+                <tag name="showSlider" value="false" type="boolean" />
+            </template>             
+        </tag>
+        
+        <tag name="myfloat2" type="number" >
+            <value>0.5</value>
+            <template>
+                <tag name="label" value="My floating point number" />
+                <tag name="minValue" value="0" type="number" />
+                <tag name="maxValue" value="1" type="number" />
+                <tag name="allowDecimals" value="true" type="boolean" />
+                <tag name="decimalPrecision" value="2" type="number" />
+                <tag name="step" value="0.1" type="number" />
+                <tag name="units" value="microns" />
+                <tag name="showSlider" value="true" type="boolean" />
+                <tag name="hideNumberPicker" value="true" type="boolean" />
+            </template>             
+        </tag>           
+        
+        <tag name="myrange_int" type="number" >
+            <value>5</value>
+            <value>12</value>
+            <value>14</value>                        
+            <template>
+                <tag name="label" value="My integer multi slider" />
+                <tag name="minValue" value="-10" type="number" />
+                <tag name="maxValue" value="33" type="number" />
+                <tag name="allowDecimals" value="false" type="boolean" />
+                <tag name="decimalPrecision" value="0" type="number" />
+                <tag name="step" value="1" type="number" />
+                <tag name="units" value="microns" />
+            </template>             
+        </tag>        
+        
+        <tag name="myrange_float" type="number" >
+            <value>5.6</value>
+            <value>12</value>
+            <value>14</value>                        
+            <template>
+                <tag name="label" value="My float multi slider" />
+                <tag name="minValue" value="-10" type="number" />
+                <tag name="maxValue" value="33" type="number" />
+                <tag name="allowDecimals" value="true" type="boolean" />
+                <tag name="decimalPrecision" value="2" type="number" />
+                <tag name="step" value="0.1" type="number" />
+                <tag name="units" value="microns" />
+            </template>             
+        </tag>  
+
+        <tag name="mystring" value="nothing" type="string" >
+            <template>
+                <tag name="label" value="Some text here" />
+                <tag name="minLength" value="0" type="number" />
+                <tag name="maxLength" value="100" type="number" />
+                <tag name="allowBlank" value="true" type="boolean" />
+                <tag name="regex" value="" />
+            </template>             
+        </tag>           
+        
+        <tag name="mycombo" value="choice1" type="combo" >
+            <template>
+                <tag name="label" value="My combo" />
+                <tag name="select" value="choice1" />
+                <tag name="select" value="choice2" />
+                <tag name="select" value="choice3" />
+                <tag name="editable" value="false" type="boolean" />             
+            </template>             
+        </tag>                
+
+        <tag name="newcombo" value="choice1" type="combo" >
+            <template>
+                <tag name="label" value="New combo" />
+                <tag name="select">
+                    <value>choice1</value>
+                    <value>choice2</value>
+                    <value>choice3</value>
+                </tag>
+                                
+                <tag name="editable" value="false" type="boolean" />             
+            </template>             
+        </tag>  
+
+        <tag name="mycheck" value="true" type="boolean" >
+            <template>
+                <tag name="label" value="My check" />
+            </template>             
+        </tag>        
+
+        <tag name="mydate" type="date" >
+            <template>
+                <tag name="label" value="My date" />
+            </template>             
+        </tag>  
+        
+        <tag name="mytime" type="time" >
+            <template>
+                <tag name="label" value="My time" />
+            </template>             
+        </tag>  
+        
+        <tag name="mex_url" type="mex">
+            <template>
+                <tag name="label" value="Select input MEX" />
+                <tag name="query" value="&amp;name=NuclearDetector3D" /> 
+            </template>
+        </tag>          
+
+        <tag name="sub_element" type="subtree">
+            <template>
+                <tag name="label" value="Select a sub resource" />
+                <tag name="path" value="/data_service/mex" />
+                <tag name="query" value="&amp;name=NuclearDetector3D" /> 
+                <tag name="filter" value="tag" /> 
+            </template>
+        </tag>  
+        
+    </tag>
+    
+    <!-- OUTPUTS
+    Outputs section formally defines all outputs the module will produce and templates 
+    automated UI renderers, the UI options can be specified using templates 
+    same way as for elements in inputs 
+
+    Notes:
+    1. inputs and outputs are written directly into the MEX and should use distinguishable names
+    2. resource with a name indicates data stored directly into the MEX 
+    3. tag with a specific type indicates a tag containing a link to the actual resource 
+    
+    Examples:         
+        <gobject name="results" />           - contains resultant gobjects inplace
+        <tag name="summary" />               - contains tags inplace
+        <tag name="image" type="resource" /> - contains a link (URL) to the resultant resource
+    -->  
+          
+    <tag name="outputs">
+        <tag name="MyData" />
+        <tag name="MyTable">
+            <template>
+                <tag name="label" value="Another set of tags with a custom label" />
+            </template>
+        </tag>              
+        <tag name="MyImage" type="image">
+            <template>
+                <tag name="label" value="Custom image label" />
+            </template>            
+            <gobject name="MyAnnotation">
+                <template>
+                    
+                    <tag name="plot" value="true"  type="boolean">
+                        <tag name="label" value="Distributions of seed areas, major and minor axis" />
+                        <tag name="title">
+                            <value>Distribution of seed areas</value>
+                            <value>Distribution of major axis</value>
+                            <value>Distribution of minor axis</value>                                                        
+                        </tag>                           
+                        <tag name="xmap" value="tag-value-number" />
+                        <tag name="xreduce" value="histogram" />
+                        <tag name="xpath">
+                            <value>//tag[@name="color"]</value>
+                            <value>//tag[@name="shape"]</value>    
+                            <value>//tag[@name="line_width"]</value>
+                        </tag>                        
+                        <tag name="args">
+                            <tag name="numbins" value="18" type="number" />
+                        </tag>                        
+                    </tag>
+
+                    <tag name="plot1" value="true"  type="boolean">
+                        <tag name="label" value="Distribution of seed areas" />
+                        <tag name="title" value="Distribution of seed areas" />
+                        <tag name="xmap" value="tag-value-number" />
+                        <tag name="xreduce" value="histogram" />
+                        <tag name="xpath">
+                            <value>//tag[@name="color"]</value>
+                        </tag>                        
+                        <tag name="args">
+                            <tag name="numbins" value="18" type="number" />
+                        </tag>                        
+                    </tag>
+                    
+                    <tag name="export_csv" value="true" type="boolean">
+                        <tag name="label" value="Area, Major and Minor axis as CSV" />
+                        <tag name="xmap" value="tag-value-number" />
+                        <tag name="xreduce" value="vector" />
+                        <tag name="xpath">
+                            <value>//tag[@name='color']</value>
+                            <value>//tag[@name='shape']</value>
+                            <value>//tag[@name='line_width']</value>
+                        </tag>                        
+                    </tag>                      
+
+                    <tag name="export_csv1" value="true" type="boolean">
+                        <tag name="label" value="Color, Shape, Line width as CSV" />
+                        <tag name="xmap" value="tag-value-number" />
+                        <tag name="xreduce" value="vector" />
+                        <tag name="xpath">
+                            <value>//tag[@name='color']</value>
+                            <value>//tag[@name='shape']</value>
+                            <value>//tag[@name='line_width']</value>
+                        </tag>                        
+                    </tag>   
+
+                    <tag name="export_xml"    value="true"  type="boolean" />
+                    <tag name="export_excel"  value="false" type="boolean" />
+                    <tag name="export_gdocs"  value="true"  type="boolean" />
+                    <tag name="preview_movie" value="false" type="boolean" />
+                </template>                  
+            </gobject>
+        </tag>
+    </tag>
+
+
+    <!--  Module parameters and general configuration -->    
+
+    <tag name="execute_options">
+        <tag name="iterable" value="main_resource" type="dataset" />
+    </tag>  
+
+    <tag name="module_options" >
+        <tag name="version" value="2" />
+    </tag>
+    
+    <tag name="display_options" >
+       <tag name="group" value="Examples" />
+    </tag>
+
+    <!--  Interface     
+    If the interface tag does exist or does not point to a file or a string inplace then the web UI
+    will be generated for the module automatically using inputs, outputs and templated interface configs.
+    Though interface can still contain configs even if it does provide html interface itself,
+    since HTML interface can use default JS components from default module interface and those
+    can configure themselves using the interface configuration. -->    
+
+    <!--<tag name="interface" type="file" value="public/index.html" />-->
+    
+
+    
+    <!-- ENTRY POINTS and/or DESCRIPTIONS
+    
+    Required entry points currently are:
+        help, thumbnail, description, title, authors
+    
+    Types:
+        string - used to specify the returned value inplace
+        file   - points to a local file containing the returned value
+    -->   
+   
+    <tag name="help" type="file" value="public/help.html" /> 
+    <tag name="thumbnail" type="file" value="public/thumbnail.png" />   
+
+    <tag name="title" value="MyData" /> 
+    <tag name="authors" value="The Bisque team" /> 
+    <tag name="description" value="This module annotates an image with its embedded metadata." /> 
+</module>

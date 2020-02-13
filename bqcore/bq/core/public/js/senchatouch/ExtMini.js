@@ -1,0 +1,1 @@
+ExtTouch.onReady = function () {}

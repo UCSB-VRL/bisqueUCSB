@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module name="itkFastMarchingSegmentationPY" path="./itkFastMarchingSegmentationPY" type="python">
+  <tag name="inputs">
+    <tag name="input-system" value="client_server" index="0" />
+    <tag name="input-system" value="image_url:string" index="1" />
+    <tag name="input-formal" value="seedX:number='81'" index="2" />
+    <tag name="input-formal" value="seedY:number='114'" index="3" />
+    <tag name="input-formal" value="Sigma:number='1.0'" index="4" />
+    <tag name="input-formal" value="TSigmoidAlpha:number='-0.5'" index="5" />
+    <tag name="input-formal" value="TSigmoidBeta:number='3.0'" index="6" />
+  </tag>
+
+  <tag name="outputs">
+    <tag name="output-formal" value="resources:string" />
+  </tag>
+  <tag name="help" value="itkFastMarchingSegmentationPY" />   
+</module>

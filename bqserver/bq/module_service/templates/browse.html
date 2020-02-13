@@ -1,0 +1,76 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xml:lang="en" lang="en"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+<xi:include href="master.html" />
+
+<head>
+  <!-- ResourceBrowser code -->
+  <!--
+  <script type="text/javascript" src="/core/js/ResourceBrowser/Include.js"></script>
+  -->
+  <script type="text/javascript" src="${tg.url('/core/js/ResourceBrowser/Browser.js')}"></script>
+  <script type="text/javascript" src="${tg.url('/core/js/ResourceBrowser/LayoutFactory.js')}"></script>
+  <script type="text/javascript" src="${tg.url('/core/js/ResourceBrowser/Organizer.js')}"></script>
+  <script type="text/javascript" src="${tg.url('/core/js/ResourceBrowser/ResourceQueue.js')}"></script>
+  <script type="text/javascript" src="${tg.url('/core/js/ResourceBrowser/DatasetManager.js')}"></script>
+  <script type="text/javascript" src="${tg.url('/core/js/ResourceBrowser/CommandBar.js')}"></script>
+  <script type="text/javascript" src="${tg.url('/core/js/ResourceBrowser/viewStateManager.js')}"></script>
+
+  <script type="text/javascript" src="${tg.url('/core/js/ResourceBrowser/ResourceFactory/ResourceFactory.js')}"></script>
+  <script type="text/javascript" src="${tg.url('/core/js/ResourceBrowser/ResourceFactory/ResourceImage.js')}"></script>
+  <script type="text/javascript" src="${tg.url('/core/js/ResourceBrowser/ResourceFactory/ResourceMex.js')}"></script>
+  <script type="text/javascript" src="${tg.url('/core/js/ResourceBrowser/ResourceFactory/ResourceModule.js')}"></script>
+
+  <script type="text/javascript" src="${tg.url('/core/js/ResourceBrowser/Misc/MessageBus.js')}"></script>
+  <script type="text/javascript" src="${tg.url('/core/js/ResourceBrowser/Misc/GestureManager.js')}"></script>
+  <script type="text/javascript" src="${tg.url('/core/js/ResourceBrowser/Misc/ComponentDataView.js')}"></script>
+  <script type="text/javascript" src="${tg.url('/core/js/ResourceBrowser/Misc/Slider.js')}"></script>
+  <script type="text/javascript" src="${tg.url('/core/js/ResourceBrowser/Misc/DataTip.js')}"></script>
+
+  <link rel="stylesheet" href="${tg.url('/core/js/ResourceBrowser/ResourceBrowser.css')}" type="text/css"/>
+
+  <!-- ResourceTagger files -->
+  <script type="text/javascript" src="${tg.url('/core/js/ResourceTagger/Tagger.js')}"></script>
+  <script type="text/javascript" src="${tg.url('/core/js/ResourceTagger/ResourceRenderers/BaseRenderer.js')}"></script>
+  <link rel="stylesheet" href="${tg.url('/core/js/ResourceTagger/Tagger.css')}" type="text/css"/>
+
+  <style type="text/css">
+      .content { margin: 20px; display: none; }
+  </style>
+
+  <script type="text/javascript" >
+    BQ.Server.services = { 'browse': false };
+  </script>
+
+</head>
+<body>
+  <script type="text/javascript">
+    Ext.onReady(function() {
+
+      var resourceBrowser = new Bisque.ResourceBrowser.Browser({
+        //'layout'    : '${layout}',
+        layout: Bisque.ResourceBrowser.LayoutFactory.LAYOUT_KEYS.ICON_LIST,
+        //wpublic: true,
+        selType: 'SINGLE',
+        viewMode: 'ModuleBrowser',
+        //'height'  : "100%",
+        'dataset'   : BQ.Server.url('${dataset}'),
+        'tagQuery'  : '${query}',
+        'tagOrder'  : '${tagOrder}',
+        'offset'    : '${offset}',
+        'wpublic'   : '${wpublic}'
+      });
+
+      resourceBrowser.on( 'Select', function(rb, module) {
+        window.open(BQ.Server.url('/module_service/' + module.name)); }
+      );
+      // Add ResourceBrowser to BQApp's centerPanel
+      BQApp.main.getComponent('centerEl').add(resourceBrowser);
+
+   });
+</script>
+</body>
+</html>

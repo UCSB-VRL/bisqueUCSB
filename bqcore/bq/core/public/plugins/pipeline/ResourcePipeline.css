@@ -1,0 +1,54 @@
+.pipelineio .editor {
+    font-family: monospace;
+    white-space: pre;
+    border: 0px;
+    padding: 15px;
+}
+
+/* ctyles for browser */
+
+.LightShadow.pipeline {
+    background-image: url('/core/plugins/pipeline/text.svg');
+    background-position: center center;
+    background-size: 150px;
+    background-repeat: no-repeat;
+}
+
+.LightShadow.pipeline .x-panel {
+    opacity: 0.8;
+}
+
+.resicon.pipeline {
+    background-image: url('/core/plugins/pipeline/text.svg');
+    background-position: center top;
+    background-size: 100px;
+}
+
+.resicon.pipeline.ImageCard, .resicon.pipeline.ImageFull {
+    /*background-size: 270px;*/
+}
+
+.resicon.gridIcon.pipeline {
+    background-image: url('/core/plugins/pipeline/text.svg');
+    background-size: 29px;
+    background-position: 6px 0px;
+}
+
+.resicon.pipeline .lblHeading1 {
+    margin-top: 125px;
+    background: transparent;
+    font-weight: 400;
+    font-size: 14px;
+    text-shadow: none;
+    max-height: 50px;
+    overflow: hidden;
+    text-align: center;
+}
+
+.resicon.pipeline .lblHeading2, .resicon.pipeline .lblContent {
+    display: none;
+}
+
+.resicon.pipeline.ImageCard .lblHeading1, .resicon.pipeline.ImageFull .lblHeading1  {
+    margin-top: 60px;
+}

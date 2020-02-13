@@ -1,0 +1,57 @@
+/*******************************************************************************
+
+  Styles for BQ.renderers.dataset
+
+  Author: Dima Fedorov
+
+  Version: 1
+
+  History:
+    2011-09-29 13:57:30 - first creation
+
+*******************************************************************************/
+.bq-dataset .x-splitter {
+    border-left: 1px solid #98C8FF;
+    border-right: 1px solid #98C8FF;
+}
+
+
+.heading {
+    font-size: 14px !important;
+}
+
+.heading .x-btn-inner {
+    font-size: 14px !important;
+}
+
+.final {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(33, 33, 33, 0.8) !important;
+    background-image: none;
+    cursor: default;
+}
+
+.final div {
+    color: white;
+    font-size: 20px;
+    cursor: default;
+}
+
+.icon_plus {
+    background-image: url('/core/images/button_plus.png');
+    background-size: 20px 20px;
+    background-position: center center;
+}
+
+.icon_minus {
+    background-image: url('/core/images/button_minus.png');
+    background-size: 20px 20px;
+    background-position: center center;
+}
+
+.icon_x {
+    background-image: url('/core/images/button_x.png');
+    background-size: 20px 20px;
+    background-position: center center;
+}

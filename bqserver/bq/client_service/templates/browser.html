@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" 
+      xml:lang="en" lang="en" 
+      xmlns:py="http://genshi.edgewall.org/" 
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+<xi:include href="master.html" />
+
+<head>
+  <title>Image browser</title>   
+  
+  
+  <!-- Fix for templates that do not create html in the body -->
+  <style type="text/css">
+    #content { margin: 0px; }
+    body { background-color: #DFE9F5 !important; }
+  </style>  
+  
+  <script type="text/javascript" id="config"> 
+      BQ.Server.toolbar_opts = { 'browse': false };
+  </script>    
+
+<script type="text/javascript">
+
+Ext.onReady(function() {
+    var resourceBrowser = new Bisque.ResourceBrowser.Browser( { 
+      'layout'  : '${layout}',
+      'dataset' : BQ.Server.url('${dataset or resource}'), 
+      'tagQuery': '${query}', 
+      'tagOrder': '${tagOrder}', 
+      'offset'  : '${offset}', 
+      'wpublic' : '${wpublic}',
+      showOrganizer : true,
+      listeners : { 'Select': function(me, resource) { 
+                      window.open(BQ.Server.url('/client_service/view?resource='+resource.uri)); 
+                    }, 
+                   scope: this },
+    });
+    
+    // Add ResourceBrowser to BQApp's centerPanel
+    BQApp.main.getComponent('centerEl').add(resourceBrowser);
+    BQApp.setActiveHelpVideo('//www.youtube.com/embed/cgk5f_TokKI?list=PLAaP7tKanFcyR5cjJsPTCa0CDmWp9unds');
+});
+
+</script>
+  
+</head>
+<body>
+</body>
+</html>

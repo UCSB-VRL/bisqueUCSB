@@ -1,0 +1,51 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html  xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+  <title>Detector of nulcei in 3D/4D</title>
+</head>
+
+<body>
+
+<h2>Help</h2>
+
+<p><em>This is a public <b>Release Candidate 1</b>, so please, bear with us if something breaks and don't hesitate to leave <a href="https://groups.google.com/group/bisque-bioimage">your comments, bug
+reports and suggestions</a> to us!</em></p>
+
+<p>This application allows you to select an image in the Bisque database (or upload a local file) and automatically identify nuclear centroid locations in 3D/4D fluorescent microscopic imagery. These locations can be exported as text, excel file, XML or visualized overlayed on the input image. Simple statistics can be obtained from detected nuclei. Furthermore these
+locations can be used for additional analysis such as classification (PHFDetector module for example).</p>
+
+<p>On a technical side, the application should be able to process images of any size by operating on tiles as well as use GPUs for image processing if available.</p>
+
+<h3>License</h3>
+
+<p class="license">By using this free and open source software you agree to reference this work and its authors in any products produced using it, including but not limited to scientific papers, posters, technical reports, presentations, leaflets, etc.</p>
+
+<h3>Why not allow 2D?</h3>
+
+<p>It is too often that people look at 2D projections of already existing volumentric data and derive conclusions based on those projections that might not be correct, we strive to create tools that give you the most correct answers.</p>
+
+<h2>Workflow</h2>
+
+<iframe width="290" height="240" src="//www.youtube.com/embed/jp9uvl2_FCA" frameborder="0" allowfullscreen></iframe>
+
+<h2>Parameters</h2>
+
+<p><strong>Nuclear diameter:</strong> approximate average nuclear diameter observed in the image. Usually algorithm will do just fine, tweak this value if you see too few or too many points. Increase the size if you see one nucleus marked with two centroids. Reduce the size if you don't see smaller nuclei being detected. The smaller the number the more points will potentially be detected.</p>
+
+<p><strong>Membrane channel:</strong> you can choose a second channel that does not co-locolize with nuclei, this channel will be used for cleaning nuclear channel and defining the separation between nuclei a bit better.</p>
+
+<p>Other parameters describe your image and usually are loaded automatically.</p>
+
+<h2>Results</h2>
+
+<h3>Visualize</h3>
+
+<p>To visualize obtained results in 3D/4D use our <a href="http://www.bioimage.ucsb.edu/downloads/BioView3D">bioView3D</a> client-side application, export centroids as XML document and load it as annotations in bioView3D.</p>
+
+<h3>Problems?</h3>
+
+<p>If the results you obtained are not what you have expected please <a href="https://groups.google.com/group/bisque-bioimage">contact us</a>! Share your image and if possible the module execution (MEX) document through Bisque with us.</p>
+
+</body>
+</html>

@@ -1,0 +1,344 @@
+/*************************************************************************
+  BQ.upload.Panel
+*************************************************************************/
+
+.upload {
+    /*background-image: url('images/drop_background.png');*/
+    /*background-image: url(flower.png), url(ball.png), url(grass.png);*/
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-color: white;
+    z-index: 1;
+}
+
+.header {
+    background-color: white;
+    padding: 0px 15px 15px 30px;
+}
+
+.background {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    z-index: 0;
+    color: #EEEEEE;
+    overflow: hidden;
+    padding: 10px;
+    line-height: 3em;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.background .good {
+    font-size: 16px;
+    padding-right: 2.5em;
+    color: #eeeeee;
+}
+
+.background .uncertain {
+    padding-right: 2.5em;
+    font-size: 12px;
+}
+
+.dropzone {
+    padding-top: 20%;
+    font-size: 60px;
+    text-align: center;
+    color: #aaaaaa;
+    text-shadow: 0px 0px 10px rgba(255, 255, 255, 1);
+    font-family:"Times New Roman", Times, serif;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+
+.bq-upload-panel .icon {
+    width: 34px;
+    background-image: url('/import/icons.svg');
+    background-repeat: no-repeat;
+    background-size: 200px;
+    background-position: 0px 0px;
+    background-color: transparent;
+}
+
+.tools {
+    /*background-color: white;*/
+    padding: 10px 10px 10px 15px;
+}
+
+.tools .x-btn-default-large {
+    border-color: #CCCCCC;
+    padding: 6px;
+}
+
+.tools .x-btn-inner {
+    font-size: 14px;
+}
+
+.tools .browse {
+    background-position: 0px -97px;
+}
+
+.tools .browse-folders {
+    background-position: 0px -130px;
+}
+
+.tools .annotate {
+    background-position: 0px 0px;
+}
+
+.tools .formats {
+    background-position: 0px -163px;
+}
+
+.tools .help {
+    background-position: 0px -66px;
+}
+
+.tools .x-toolbar-text h1 {
+   font-size: 30px;
+   margin: 0px;
+}
+
+
+.footer {
+    padding: 10px 10px 10px 15px;
+}
+
+/*.footer .x-btn-default-large {
+    border-color: #CCCCCC;
+    padding: 6px;
+}*/
+
+.footer .x-btn-inner {
+    font-size: 14px;
+}
+
+.footer .upload {
+    background-position: 0px 0px;
+}
+
+.footer .cancel {
+    background-position: 0px -33px;
+}
+
+.dragging {
+   border-radius: 5px;
+   border: dashed 3px red;
+   /*-moz-box-shadow: inset 0 0 15px #FF6600, 0 0 15px #FF6600;
+   -webkit-box-shadow: inset 0 0 15px #FF6600, 0 0 15px #FF6600;
+   box-shadow: inset 0 0 15px #FF6600, 0 0 15px #FF6600;*/
+   background-color: #FFFFCC;
+   z-index: 1000;
+   overflow:hidden;
+}
+
+.waiting {
+    cursor: wait;
+}
+
+.bq-tooltip {
+    background-color: #dfe9f6;
+}
+
+.bq-tooltip .x-tip-body {
+    padding: 0px;
+}
+
+.bq-tooltip>.x-tip-body>.x-panel {
+    border: 0px;
+    padding: 2px;
+}
+
+.bq-upload-panel .x-toolbar .x-btn {
+    border: 1px solid transparent;
+    /*background: -webkit-gradient(linear,50% 0,50% 100%,color-stop(0%,#fff),color-stop(48%,#f9f9f9),color-stop(52%,#e2e2e2),color-stop(100%,#e7e7e7));
+    background: -webkit-linear-gradient(top,#fff,#f9f9f9 48%,#e2e2e2 52%,#e7e7e7);
+    background: -moz-linear-gradient(top,#fff,#f9f9f9 48%,#e2e2e2 52%,#e7e7e7);
+    background: -o-linear-gradient(top,#fff,#f9f9f9 48%,#e2e2e2 52%,#e7e7e7);
+    background: linear-gradient(top,#fff,#f9f9f9 48%,#e2e2e2 52%,#e7e7e7);*/
+}
+
+.bq-upload-panel .x-toolbar .x-btn-over {
+    border: 1px solid #bbd5f1;
+}
+
+/*************************************************************************
+  upload button
+*************************************************************************/
+
+.bq-upload-file {
+   overflow: hidden;
+}
+
+
+/*************************************************************************
+  BQ.upload.Item
+*************************************************************************/
+
+.uploaditem {
+    margin: 10px;
+    padding: 10px;
+    background: #eeeeee;
+    position: relative;
+    border: solid 0px #dddddd !important;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    z-index: 10;
+}
+
+.uploaditem .title {
+    /*margin: 0px;
+    margin-right: 0px;
+    margin-bottom: 10px;
+    padding: 6px;
+    padding-left: 15px;*/
+    font-size: 14px;
+    font-weight: normal;
+    display: block;
+    width: 100%;
+    border-top: solid 1px #dddddd;
+    border-bottom: solid 1px #dddddd;
+    /*background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #eeeeee), color-stop(50%, #e5e5e5), color-stop(51%, #e0e0e0), color-stop(100%, #eeeeee));
+    background-image: -moz-linear-gradient(top, #eeeeee,#e5e5e5 50%,#e0e0e0 51%,#eeeeee);
+    background-image: linear-gradient(top, #eeeeee,#e5e5e5 50%,#e0e0e0 51%,#eeeeee);*/
+}
+
+.uploaditem .filename {
+    max-width: 50%;
+    display: inline-block;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    padding: 0px;
+    margin: 0px;
+}
+
+.uploaditem .info {
+    margin: 15px 10px 0px 5px;
+    font-size: 14px;
+    font-weight: normal;
+    width: 40%;
+    float: left;
+}
+
+.uploaditem .info .good {
+    color: #006600;
+}
+
+.uploaditem .info .uncertain {
+    color: #FF6600;
+}
+
+.uploaditem .x-progress {
+    margin: 15px 0px 0px 0px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    border: 0px solid #6594CF !important;
+}
+
+.uploaditem .close {
+    background-image: url('images/cancel.png');
+    background-color: transparent;
+    background-size: 16px 16px;
+}
+
+.uploaditem .flatbutton {
+    background-color: transparent;
+    background-image: none;
+    border-top-width: 0px;
+    border-bottom-width: 0px;
+    border-left-width: 0px;
+    border-right-width: 0px;
+}
+
+.uploaditem .button-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    border-width: 0px !important;
+}
+
+.uploaditem .button-permission {
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    color: white;
+    background-color: #666666;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    width: 75px;
+}
+
+.uploaditem .published {
+    background-color: #006600;
+}
+
+.uploaditem .button-permission .x-btn-inner {
+    color: white;
+    font-size: 13px;
+}
+
+
+.uploaditem .over {
+    background-color: orange;
+}
+
+.error, .error>.x-progress-text-back {
+    color: red !important;
+    border-color: red !important;
+}
+
+.error>.x-progress-bar {
+    background-color: red !important;
+    background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #ffc7c7), color-stop(50%, #e58888), color-stop(51%, #e07373), color-stop(100%, #ff3535));
+    background-image: -moz-linear-gradient(top, #ffc7c7,#e58888 50%,#e07373 51%,#ff3535);
+    background-image: linear-gradient(top, #ffc7c7,#e58888 50%,#e07373 51%,#ff3535);
+}
+
+.done, .done>.x-progress-text-back {
+    color: green !important;
+    border-color: green !important;
+}
+
+.done>.x-progress-bar {
+    background-color: green !important;
+    background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #a3d39c), color-stop(50%, #66b85d), color-stop(51%, #4fb248), color-stop(100%, #00d100));
+    background-image: -moz-linear-gradient(top, #a3d39c,#66b85d 50%,#4fb248 51%,#00d100);
+    background-image: linear-gradient(top, #a3d39c,#66b85d 50%,#4fb248 51%,#00d100);
+}
+
+.question {
+    margin-bottom: 15px;
+    margin-top: 10px;
+    font-size: 14px;
+    display: block;
+}
+
+.annotator {
+    margin: 0px;
+    background-color: #FFCC66;
+    border: 0px;
+}
+
+.annotator .x-panel-body {
+    background-color: transparent;
+}
+
+/*
+.tabs .x-panel-header-text {
+    font-size: 16px;
+}
+*/

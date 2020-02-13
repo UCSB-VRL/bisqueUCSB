@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module name="WorkflowRunner" type="runtime">
+    <tag name="inputs">
+        <tag name="mex_url"  type="system-input" />
+        <tag name="bisque_token"  type="system-input" />
+
+        <tag name="pipeline_url" type="resource">
+            <template>
+                <tag name="accepted_type" value="bisque_pipeline" />
+                <tag name="label" value="Bisque workflow to run" />
+                <tag name="prohibit_upload" value="true" />
+            </template>
+        </tag>
+        <tag name="workflow_parameters" type="pipelineparams">
+            <template>
+            	<tag name="label" value="Workflow parameters" />
+            	<tag name="reference" value="pipeline_url" />
+            </template>
+        </tag>
+    </tag>
+
+    <tag name="outputs">
+         <tag name="summary">
+            <template>
+                <tag name="label" value="Workflow summary" />
+            </template>
+        </tag>
+    </tag>
+
+    <tag name="module_options" >
+        <tag name="version" value="1" />
+    </tag>
+
+    <tag name="display_options" >
+       <tag name="group" value="Workflow" />
+    </tag>
+
+    <tag name="help" type="file" value="public/help.html" />
+    <tag name="thumbnail" type="file" value="public/thumbnail.png" />
+
+    <tag name="title" type="string" value="WorkflowRunner" />
+    <tag name="authors" type="string" value="The Bisque team" />
+    <tag name="description" type="string" value="This module runs a workflow." />
+</module>

@@ -1,0 +1,232 @@
+.bq_users_manager .search_field input {
+    padding: 4px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    height: 26px;
+    background: rgb(211, 225, 241);
+    margin-right: 10px;
+}
+
+.bq_users_manager .search_field input:hover {
+    -webkit-transition: border-color 0.3s ease-out, -webkit-box-shadow 0.3s ease-out;
+    -moz-transition: border-color 0.3s ease-out, -moz-box-shadow 0.3s ease-out;
+    -o-transition: border-color 0.3s ease-out, -o-box-shadow 0.3s ease-out;
+    transition: border-color 0.3s ease-out, box-shadow 0.3s ease-out;
+    border-color: #0099FF;
+    -webkit-box-shadow: 0px 0px 8px 0px rgba(0, 153, 255, 1);
+    -moz-box-shadow: 0px 0px 8px 0px rgba(0, 153, 255, 1);
+    box-shadow: 0px 0px 8px 0px rgba(0, 153, 255, 1);
+}
+
+.bq_users_manager .icon {
+    width: 32px;
+    height: 32px;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-image: url('/core/images/viewer/icons_viewer.svg');
+    background-size: 200px;
+    background-position: 0px 0px;
+}
+
+.bq_users_manager .icon.user {
+    background-image: url('/core/images/icons_toolbar.svg#icon_user') !important;
+    background-size: 160px;
+    background-position: 0px -162px;
+}
+
+.bq_users_manager .icon.add {
+    background-image: url('/core/images/icons_toolbar.svg') !important;
+    background-size: 160px;
+    background-position: 0px -1px;
+}
+
+.bq_users_manager .icon.remove {
+    background-image: url('/core/images/viewer/icons_viewer.svg');
+    background-size: 200px;
+    background-position: -100px -32px;
+}
+
+.bq_users_manager .icon.clear {
+    background-image: url('/core/images/viewer/icons_viewer.svg');
+    background-size: 200px;
+    background-position: -100px -65px;
+}
+
+.bq_users_manager .icon.login {
+    background-image: url('/core/images/icons_toolbar.svg#icon_user') !important;
+    background-size: 160px;
+    background-position: 0px -162px;
+}
+
+.bq_users_manager .icon.refresh {
+    background-image: url('/core/images/viewer/icons_viewer.svg');
+    background-size: 200px;
+    background-position: -0px -262px;
+}
+
+.bq_notifications {
+    margin: 10px !important;
+}
+
+.bq_notifications .button {
+    margin: 5px !important;
+}
+
+.bq_notifications .block {
+    margin-bottom: 10px !important;
+}
+
+
+/* Loggers */
+
+.bq_loggers .bq_row {
+    padding-top: 6px;
+    height: 32px;
+    font-size: 16px;
+    font-weight: 300;
+    font-family: 'Roboto', sans-serif;
+}
+
+.bq_loggers .notset {
+    color: #666666;
+}
+
+.bq_loggers .debug {
+    color: #0000aa;
+}
+
+.bq_loggers .info {
+    color: #00aa00;
+}
+
+.bq_loggers .warning {
+    color: #aaaa00;
+}
+
+.bq_loggers .error {
+    color: #ff0000;
+    border-color: #ededed #d0d0d0 #ededed #d0d0d0 !important;
+}
+
+.bq_loggers .icon.refresh {
+    background-image: url('/core/images/viewer/icons_viewer.svg');
+    background-size: 200px;
+    background-position: -0px -262px;
+}
+
+.bq_loggers .search_field input {
+    padding: 4px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    height: 26px;
+    background: rgb(211, 225, 241);
+    margin-right: 10px;
+}
+
+.bq_loggers .search_field input:hover {
+    -webkit-transition: border-color 0.3s ease-out, -webkit-box-shadow 0.3s ease-out;
+    -moz-transition: border-color 0.3s ease-out, -moz-box-shadow 0.3s ease-out;
+    -o-transition: border-color 0.3s ease-out, -o-box-shadow 0.3s ease-out;
+    transition: border-color 0.3s ease-out, box-shadow 0.3s ease-out;
+    border-color: #0099FF;
+    -webkit-box-shadow: 0px 0px 8px 0px rgba(0, 153, 255, 1);
+    -moz-box-shadow: 0px 0px 8px 0px rgba(0, 153, 255, 1);
+    box-shadow: 0px 0px 8px 0px rgba(0, 153, 255, 1);
+}
+
+/* Logs */
+
+.bq_logs .editor {
+    font-family: monospace;
+    white-space: pre;
+    border: 0px;
+    padding: 15px;
+}
+
+.bq_logs .icon.refresh {
+    background-image: url('/core/images/viewer/icons_viewer.svg');
+    background-size: 200px;
+    background-position: -0px -262px;
+}
+
+/* Groups */
+
+.bq_groups .bq_row {
+    padding-top: 6px;
+    height: 32px;
+    font-size: 16px;
+    font-weight: 300;
+    font-family: 'Red Hat Display', sans-serif;
+}
+
+.bq_groups .notset {
+    color: #666666;
+}
+
+.bq_groups .debug {
+    color: #0000aa;
+}
+
+.bq_groups .info {
+    color: #00aa00;
+}
+
+.bq_groups .warning {
+    color: #aaaa00;
+}
+
+.bq_groups .error {
+    color: #ff0000;
+    border-color: #ededed #d0d0d0 #ededed #d0d0d0 !important;
+}
+
+.bq_groups .icon.refresh {
+    background-image: url('/core/images/viewer/icons_viewer.svg');
+    background-size: 200px;
+    background-position: -0px -262px;
+}
+
+.bq_groups .search_field input {
+    padding: 4px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    height: 26px;
+    background: rgb(211, 225, 241);
+    margin-right: 10px;
+}
+
+.bq_groups .search_field input:hover {
+    -webkit-transition: border-color 0.3s ease-out, -webkit-box-shadow 0.3s ease-out;
+    -moz-transition: border-color 0.3s ease-out, -moz-box-shadow 0.3s ease-out;
+    -o-transition: border-color 0.3s ease-out, -o-box-shadow 0.3s ease-out;
+    transition: border-color 0.3s ease-out, box-shadow 0.3s ease-out;
+    border-color: #0099FF;
+    -webkit-box-shadow: 0px 0px 8px 0px rgba(0, 153, 255, 1);
+    -moz-box-shadow: 0px 0px 8px 0px rgba(0, 153, 255, 1);
+    box-shadow: 0px 0px 8px 0px rgba(0, 153, 255, 1);
+}
+
+.bq_groups .icon {
+    width: 32px;
+    height: 32px;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-image: url('/core/images/viewer/icons_viewer.svg');
+    background-size: 200px;
+    background-position: 0px 0px;
+}
+
+.bq_groups .icon.add {
+    background-image: url('/core/images/icons_toolbar.svg') !important;
+    background-size: 160px;
+    background-position: 0px -1px;
+}
+
+.bq_groups .icon.remove {
+    background-image: url('/core/images/viewer/icons_viewer.svg');
+    background-size: 200px;
+    background-position: -100px -32px;
+}

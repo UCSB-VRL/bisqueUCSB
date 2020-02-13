@@ -1,0 +1,57 @@
+.bq-viewer-movie {
+    background: #000000;
+}
+
+.bq-viewer-movie video {
+    width: 100%;
+    height: 100%;
+    z-index: 20;
+}
+
+.bq-viewer-movie .viewoptions {
+    position: absolute;
+    z-index: 25 !important;
+    width: 32px !important;
+    height: 32px !important;
+    left: 80px !important;
+    top: 10px !important;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-image: url('/core/images/viewer/icons_viewer.svg');
+    background-size: 200px;
+
+    background-position: -34px -97px;
+}
+
+.bq-viewer-movie .fullscreen {
+    position: absolute;
+    z-index: 25 !important;
+    width: 32px !important;
+    height: 32px !important;
+    right: 10px !important;
+    top: 10px !important;
+    bottom: auto !important;
+    left: auto !important;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-image: url('/core/images/viewer/icons_viewer.svg');
+    background-size: 200px;
+
+    background-position: -34px -162px;
+}
+
+.bq-viewer-movie .logo {
+    position: absolute;
+    z-index: 25 !important;
+    width: 90px !important;
+    height: 24px !important;
+    right: 10px !important;
+    bottom: 6px !important;
+    top: auto !important;
+    left: auto !important;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-image: url('/core/images/bisque_logo_gray.svg');
+    background-size: 90px;
+    background-position: 0px 0px;
+}

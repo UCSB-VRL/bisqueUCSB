@@ -1,0 +1,266 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html  xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"
+        xmlns:py="http://genshi.edgewall.org/" 
+        xmlns:xi="http://www.w3.org/2001/XInclude">
+
+<head>
+
+    <!-- ExtJS -->
+    <!--<link rel="stylesheet" type="text/css" href="/extjs/resources/css/ext-all.css" />-->
+    <link rel="stylesheet" type="text/css" href="/extjs/resources/css/ext-all-gray.css" /> 
+    <script type="text/javascript" src="/extjs/bootstrap.js"></script>
+    <!--<script type="text/javascript" src="/extjs/ext-all-debug.js"></script>-->
+    
+    <!-- Bisque styles -->
+    <link rel="stylesheet" type="text/css" href="/css/bisquik_extjs_fix.css" />
+    <link rel="stylesheet" type="text/css" href="/css/bq.css" />
+    <link rel="stylesheet" type="text/css" href="/css/bq_ui_toolbar.css" />  
+    
+    <!-- Bisque JsApi - this needs cleaning and updating -->  
+    <script type="text/javascript" src="/js/globals.js"> </script>
+    <script type="text/javascript" src="/js/utils.js"> </script>
+    <script type="text/javascript" src="/js/XMLHttpRequest.js" ></script>
+    <script type="text/javascript" src="/js/bq_api.js"></script>
+    <script type="text/javascript" src="/js/bq_ui_application.js"></script>
+    <script type="text/javascript" src="/js/bq_ui_toolbar.js"></script>
+    
+    <!-- ResourceBrowser -->
+    <link rel="stylesheet" href="/js/ResourceBrowser/ResourceBrowser.css" type="text/css"/>
+    
+    <script type="text/javascript" src="/js/ResourceBrowser/Browser.js"></script>
+    <script type="text/javascript" src="/js/ResourceBrowser/LayoutFactory.js"></script>
+    <script type="text/javascript" src="/js/ResourceBrowser/Organizer.js"></script>
+    <script type="text/javascript" src="/js/ResourceBrowser/ResourceQueue.js"></script>
+    <script type="text/javascript" src="/js/ResourceBrowser/DatasetManager.js"></script>
+    <script type="text/javascript" src="/js/ResourceBrowser/CommandBar.js"></script>
+    <script type="text/javascript" src="/js/ResourceBrowser/viewStateManager.js"></script>
+    
+    <script type="text/javascript" src="/js/ResourceBrowser/ResourceFactory/ResourceFactory.js"></script>
+    <script type="text/javascript" src="/js/ResourceBrowser/ResourceFactory/ResourceImage.js"></script>
+    <script type="text/javascript" src="/js/ResourceBrowser/ResourceFactory/ResourceMex.js"></script>
+    <script type="text/javascript" src="/js/ResourceBrowser/ResourceFactory/ResourceModule.js"></script>
+    <script type="text/javascript" src="/js/ResourceBrowser/ResourceFactory/ResourceDataset.js"></script>
+    
+    <script type="text/javascript" src="/js/ResourceBrowser/Misc/MessageBus.js"></script>
+    <script type="text/javascript" src="/js/ResourceBrowser/Misc/GestureManager.js"></script>
+    <script type="text/javascript" src="/js/ResourceBrowser/Misc/Slider.js"></script>
+    <script type="text/javascript" src="/js/ResourceBrowser/Misc/DataTip.js"></script>
+
+    <!-- Preferences -->
+    <script type="text/javascript" src="/js/Preferences/BQ.Preferences.js" />
+    <script type="text/javascript" src="/js/Preferences/PreferenceViewer.js" />
+    <script type="text/javascript" src="/js/Preferences/PreferenceTagger.js" />
+    
+    <!-- DatasetBrowser -->
+    <link rel="stylesheet" href="/js/DatasetBrowser/DatasetBrowser.css" type="text/css"/>
+    <script type="text/javascript" src="/js/DatasetBrowser/DatasetBrowser.js"></script>
+
+    <!-- Image Viewer -->
+    <!-- PanoJS3 -->
+    <meta http-equiv="imagetoolbar" content="no" />
+    <link rel="stylesheet" type="text/css" href="/client_service/public/panojs3/styles/panojs.css" />
+    
+    <script type="text/javascript" src="/client_service/public/panojs3/panojs/utils.js"></script>    
+    <script type="text/javascript" src="/client_service/public/panojs3/panojs/PanoJS.js"></script>
+    <script type="text/javascript" src="/client_service/public/panojs3/panojs/controls.js"></script>
+    <script type="text/javascript" src="/client_service/public/panojs3/panojs/pyramid_Bisque.js"></script>
+    <script type="text/javascript" src="/client_service/public/panojs3/panojs/control_thumbnail.js"></script>
+    <script type="text/javascript" src="/client_service/public/panojs3/panojs/control_info.js"></script>
+    <script type="text/javascript" src="/client_service/public/panojs3/panojs/control_svg.js"></script>
+    
+    <link rel="stylesheet" type="text/css" href="/client_service/public/js/slider/slider.css" />
+    <script type="text/javascript" src="/client_service/public/js/slider/inversible.js"></script>
+    <script type="text/javascript" src="/client_service/public/js/slider/slider.js"></script>
+    <script type="text/javascript" src="/client_service/public/js/slider/tslider.js"></script>
+    <script type="text/javascript" src="/client_service/public/js/slider/zslider.js"></script>
+    
+    <link rel="stylesheet" type="text/css" href="/client_service/public/css/imgview.css" />
+    <script type="text/javascript" src="/client_service/public/js/viewer/scalebar.js"></script>
+    <script type="text/javascript" src="/client_service/public/js/viewer/2D.js"></script> 
+    <script type="text/javascript" src="/client_service/public/js/viewer/imageconverter.js"></script> 
+    <script type="text/javascript" src="/client_service/public/js/viewer/imgview.js"></script>
+    <script type="text/javascript" src="/client_service/public/js/viewer/imgops.js"></script> 
+    <script type="text/javascript" src="/client_service/public/js/viewer/imgslicer.js"></script>
+    <script type="text/javascript" src="/client_service/public/js/viewer/imgperm.js"></script>
+    <script type="text/javascript" src="/client_service/public/js/viewer/imgstats.js"></script>
+    <script type="text/javascript" src="/client_service/public/js/viewer/listner_zoom.js"></script>
+    <script type="text/javascript" src="/client_service/public/js/viewer/tilerender.js"></script>
+    <script type="text/javascript" src="/client_service/public/js/viewer/svgrender.js"></script>
+    <script type="text/javascript" src="/client_service/public/js/viewer/imgedit.js"></script>
+    <script type="text/javascript" src="/client_service/public/js/viewer/imgdownload.js"></script>
+    <script type="text/javascript" src="/client_service/public/js/viewer/imgmovie.js"></script>
+    <script type="text/javascript" src="/client_service/public/js/viewer/imgexternal.js"></script>
+    <script type="text/javascript" src="/client_service/public/js/viewer/imgshare.js"></script>
+    <script type="text/javascript" src="/client_service/public/js/viewer/imgscalebar.js"></script>
+    <script type="text/javascript" src="/client_service/public/js/viewer/imginfobar.js"></script>
+    <script type="text/javascript" src="/client_service/public/js/viewer/progressbar.js"></script>
+    
+    
+    <!-- Plotting stuff, use Raphael now -->
+    <script src="/raphael/raphael.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/raphael/g.raphael-min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/raphael/g.line.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/raphael/g.bar.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/raphael/g.dot-min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/raphael/g.pie-min.js" type="text/javascript" charset="utf-8"></script>
+    
+    <!-- BQAPI -->
+    <script type="text/javascript" src="/js/bq_ui_progress.js" charset="utf-8"></script>
+    
+    <!-- Statistics -->
+    <script src="/stats/public/js/stats.js" type="text/javascript" charset="utf-8"></script>
+
+    <!-- Generic WebApp stuff -->
+    <script type="text/javascript" src="/js/date.js"></script>   
+    
+    <link rel="stylesheet" type="text/css" href="/js/bq_ui_misc.css" />
+    <script type="text/javascript" src="/js/bq_ui_misc.js"></script>
+    
+    <link rel="stylesheet" type="text/css" href="/js/modules/bq_module_webapp.css" />     
+    <script type="text/javascript" src="/js/modules/bq_module_service.js"></script>   
+    <script type="text/javascript" src="/js/modules/bq_module_webapp.js"></script>  
+    
+
+    <!-- Local WebApp stuff, insert your stuff here!!!!!! -->
+    
+    <link rel="stylesheet" type="text/css" href="webapp.css" />
+    <script type="text/javascript" src="webapp.js"></script>
+    
+    <title>Multi-root analyzer</title>
+
+    <style type="text/css">
+        .x-grid3-row-over .x-grid3-cell-inner { font-weight: bold; }
+    </style>
+
+
+    <!-- Application instantiation -->    
+    <script type="text/javascript" >
+        bq = Ext.create('BQ', {title: 'Bisque WebApp'});
+        Ext.onReady( function() { 
+            BQApp = Ext.create('BQ.Application', bq);
+            
+            webapp = new nd3d();
+            Ext.util.Observable.observe(BQ.Application);        
+            BQ.Application.on( 'nouser', webapp.onnouser );   
+        });
+    </script>
+
+</head>
+
+<body>
+<div id="content" class="content webapp"> <!-- This div and its ID are required for proper menubar operation -->
+
+<!-- HELP PANEL -------------------------------------------------------------- -->
+<div class="help" id="help">
+    <iframe src="help" width="100%" height="100%" style="border: none;"></iframe>
+</div>
+
+
+<!-- MAIN PANEL -------------------------------------------------------------- -->
+
+<div id="webapp_main" class="main">
+
+<h1>Automatic detector of nuclei in 3D/4D</h1>
+
+<p>Version: 0.2.0, Authors: <a href="http://www.dimin.net/">Dmitry Fedorov</a> and <a href="http://boguslawobara.net/">Boguslaw Obara</a></p>
+<p><em>This is a public Beta 2, so please, bear with us if something breaks and don't hesitate to leave <a href="mailto:bisque-help@biodev.ece.ucsb.edu">your comments, bug reports and suggestions</a> to us! This version does not support Microsoft Internet Explorer, we apologize and recommend trying Firefox or Safari with which this application was tested thoroughly.</em></p>
+
+<p>This application allows you to select local file or an image in the Bisque database and automatically identify nuclear centroid locations in 3D/4D fluorescent microscopic imagery. These locations can be exported as text, excel file, XML or visualized overlayed on image. Simple statistics can be obtained from detected nuclei. Furthermore these locations can be used for additional analysis such as segmentation.</p>
+
+<div id="webapp_input">
+    <h2>1. Select data for processing:</h2>
+
+    <div class="box input">
+        <button onclick="webapp.selectImage('/data_service/images')" >Select an Image</button> or
+        <button onclick="webapp.selectDataset('/data_service/images')" >Select a Dataset</button> or         
+        <button onclick="webapp.selectExample('*"SeedSize example"*')" disabled='' >Select an example</button> or         
+        <button onclick="webapp.selectFile()" disabled='' >Upload local images</button> or even
+        <button onclick="webapp.selectZip()" disabled='' >Upload local image (separate Zs in a ZIP)</button>        
+    </div>
+  
+</div>
+
+<div id="webapp_parameters">
+    <h2>2. Select parameters necessary for detection algorithm:</h2>
+    
+    <div class="box parameters" >
+        <div id="webapp_input_description">
+          <h3>Input is not yet selected, first select an image or a dataset from the database or upload one from your local machine...</h3>  
+        </div>
+        <div id="webapp_input_thumbnail" class="thumbnail" style="display:none;"></div>
+        <div id="webapp_input_viewer" class="imageviewer" style="display:none;" ></div>
+        
+<form style="clear: left;">
+<p><label>Nuclear size (microns): </label><input type="text" id="nuclei3d_kernel" value="0.0" /></p>
+
+<p><label>Pixel size XY (microns):  </label><input type="text" id="nuclei3d_pixel_size_xy" value="0.0" /> 
+  <em>this parameter is automatically retrieved from the image and if changed updates the image tag</em></p>
+
+<p><label>Pixel size Z (microns):  </label><input type="text" id="nuclei3d_pixel_size_z" value="0.0" />
+  <em>this parameter is automatically retrieved from the image and if changed updates the image tag</em></p>
+
+<p><label>Nuclear channel:  </label><select id="nuclei3d_nuclear_ch"><option value="None">None</option></select>
+  <em>Required channel number containing nuclear stain</em></p>
+
+</form>        
+        
+    </div>
+    
+</div>		
+		
+		
+		
+
+<div id="webapp_run" >    
+    <h2>3. Run algorithm:</h2>
+    <div class="box run">
+        <p><button id="webapp_run_button" onclick="webapp.run()" >Detect nuclei</button>  
+          This may take some time, progress will be shown on the button.</p>
+    </div>
+</div>
+
+
+<div id="webapp_results">
+    <h2>4. Results:</h2>  
+  
+    <div class="box results" >  
+  
+        <p>Resulting nuclear locations are encapsulated inside a tag. You can always verify your tracks later by accessing the image 
+and checking the tag corresponding to current date and time.</p>
+    
+        <span id="webapp_results_summary"><h3>No nuclei found yet, please run the analysis first.</h3></span>        
+        <div id="webapp_results_dataset"></div>
+    
+        <div id="webapp_results_content" >
+            
+            <span id="webapp_result_description"></span>        
+            
+            <p>View:  
+            <button id="webapp_result_view" onclick="webapp.view()" disabled="true">View tracks</button>
+            <button id="webapp_result_plot" onclick="webapp.plot()" disabled="true">Plot angles</button>  
+            <button id="webapp_result_view3D" onclick="webapp.view3D()" >View nuclei in bioView3D</button>      
+            </p>
+    
+            <p>View as a Movie: 
+            <button id="webapp_result_movie" onclick="webapp.exportToMovie()" disabled="true">Overlay tips on an image</button>
+            </p>
+    
+            <p>Export Area, Major and Minor axis: 
+            <button id="webapp_result_csv" onclick="webapp.exportToCSV()" disabled="true">Export as CSV</button>
+            </p>
+            
+            <p>Export full document: 
+            <button id="webapp_result_xml" onclick="webapp.exportToXML()" disabled="true">Export as XML</button>
+            <button id="webapp_result_excel" onclick="webapp.exportToExcel()" disabled="true">Export as Excel (CSV)</button>
+            <button id="webapp_result_gdocs" onclick="webapp.exportToGDocs()" disabled="true">Export to Google Docs</button>
+            </p>
+            
+        </div>
+    </div>  
+    
+    <div id="webapp_results_viewer" class="imageviewer" style="display:none;"></div>
+    <div id="webapp_results_plotter" class="plotter" style="display:none;"></div>      
+</div>
+		
+</body>
+</html>

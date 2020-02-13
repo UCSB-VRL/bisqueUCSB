@@ -1,0 +1,36 @@
+1 server - 2X 4core Xeon E5520 2.27GHz - 16GB RAM
+
+Ran 37 tests in 16.957s
+Ran 37 tests in 18.809s
+
+After plug-in converters update
+Ran 37 tests in 17.464s
+Ran 38 tests in 21.028s
+
+v 5.8
+
+Ran 38 tests in 38.450s
+
+dough: 3 servers
+
+Ran 37 tests in 25.776s
+Ran 37 tests in 26.653s
+Ran 37 tests in 24.436s
+Ran 38 tests in 24.717s
+
+v 5.5
+Ran 38 tests in 25.901s
+Ran 38 tests in 30.769s
+
+v 5.6
+Ran 38 tests in 30.392s
+
+bovary: 1 servers
+
+Ran 37 tests in 52.199s
+Ran 37 tests in 43.292s
+Ran 37 tests in 28.721s
+Ran 37 tests in 32.531s
+
+v5.5
+Ran 38 tests in 31.458s

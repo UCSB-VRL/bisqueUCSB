@@ -1,0 +1,1340 @@
+
+.image_viewer {
+  margin: 0px 20px 0px 10px;
+
+  /* relative position is a key for using absolute in the children elements */
+  position: relative;
+  top: 0px;
+  left: 0px;
+
+}
+
+.viewer .well, .viewer .surface {
+    color: transparent;
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.viewer .well::selection, .viewer .surface::selection, .viewer .well::moz-selection, .viewer .surface::moz-selection {
+    color: transparent;
+    background: transparent;
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.viewer .well .tile {
+    color: transparent;
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.viewer .well .tile::selection, .viewer .well .tile::moz-selection {
+    color: transparent;
+    background: transparent;
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.image_viewer_display {
+  /*max-width: 80%; */
+
+  /*height: 450px;*/
+
+  height: 100%;
+  padding-bottom: 0px;
+
+  /* relative position is a key for using absolute in the children elements */
+  position: relative;
+  top: 0px;
+  left: 0px;
+}
+
+.image_viewer_option {
+  width:auto;
+  /*overflow:auto;*/
+  float:right;
+  max-width: 40%;
+  min-width: 20%;
+  clear:none;
+  display:inline;
+
+  position: relative;
+  top: 0px;
+  left: 0px;
+}
+
+.image_viewer_option .tag_viewer_display {
+  width: auto;
+  min-width: auto;
+}
+
+.bq-gob-tagger .x-panel-body {
+    background: transparent;
+}
+
+.bq-gob-header {
+    background-color: #d3e1f1;
+    margin: 0px !important;
+    padding: 0px !important;
+    /*border-top: 1px solid #99bce8 !important;*/
+}
+
+.bq-gob-header h3 {
+    margin: 0px !important;
+    padding: 8px 10px 8px 10px !important;
+}
+
+.bq-gob-tagger h3 {
+    padding-left: 5px;
+}
+
+
+
+/***********************************************************/
+
+.imgview_button {
+  border-color: #333333;
+  border-width:0px;
+  font-size: 14px;
+  color: #CCCCCC;
+  background-color: #666666;
+  font-weight: bold;
+  padding: 2px 2px 2px 2px;
+  margin: 10px 0px 0px 5px;
+/*  height:20px;
+  width:60px;
+*/
+
+/*
+   font-family: Verdana;
+   font-size: 12px;
+  color: black;
+  height:20px;
+  width:100px;
+*/
+}
+
+.image_viewer_slicer {
+  clear:none;
+  width:auto;
+
+  height: 100%;
+
+  /* relative position is a key for using absolute in the children elements */
+  position: relative;
+  top: 0px;
+  left: 0px;
+}
+
+.imgview_scroller {
+  overflow: auto;
+  background-color: #999999;
+  /*vertical-align: middle;
+  text-align: center;
+  background-color: #EEEEEE;*/
+  /*width: 100%;*/
+  /*width:auto;*/
+  /*max-width: 90%; */
+  max-height: 600px;
+  clear:none;
+
+  /* relative position is a key for using absolute in the children elements */
+  position: relative;
+  top: 0px;
+  left: 0px;
+}
+
+
+/***********************************************************/
+
+.imgview_statsdiv {
+  font-size:80%;
+  padding: 4px;
+  position: absolute;
+  z-index: 2;
+  visibility: visible;
+  background-color: rgb(170, 170, 170);
+  opacity: 0.8;
+  left: 10px; top: 209px;
+}
+
+.imgview_statsel {
+  clear:both;
+}
+
+/***********************************************************/
+
+.imgview_opdiv {
+  font-size:12px;
+  padding: 4px;
+  z-index: 2;
+  visibility: visible;
+  background-color: #222222;
+  opacity:0.9;
+  filter:alpha(opacity=90);
+
+  min-width: 300px;
+  color: #FFFFFF;
+  font-weight: bold;
+  border-color: #444444;
+  border-style: solid;
+  border-width: 1px;
+
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+
+  position:absolute;
+  left: 5px;
+  top: 5px;
+  z-index: 30;
+}
+
+.imgview_opdiv div {
+  margin: 5px 10px 5px 10px;
+  padding: 0px 0px 2px 0px;
+  border-bottom-style: dashed;
+  border-bottom-width: 1px;
+  border-bottom-color: #666666;
+}
+
+.imgview_opdiv div#group {
+  margin: 15px 0px 10px 0px;
+  padding: 0px 0px 0px 0px;
+  border-bottom-style: none;
+  border-bottom-width: 0px;
+}
+
+.imgview_opdiv div#group h3 {
+  margin: 5px 0px 5px 2px;
+  padding: 0px 0px 0px 0px;
+  font-size: 120%;
+  /*font-weight: bold;*/
+  font-family: 'Red Hat Display', Arial, Helvetica, sans-serif;
+}
+
+.imgview_opdiv label {
+  min-width: 150px;
+  display:block;
+  float:left;
+}
+
+.imgview_opdiv select, .imgview_opdiv input {
+  border: 1px solid #666666;
+  clear:none;
+  background-color:#333333;
+  color:#FFFFFF;
+  font-weight: bold;
+  font-size:12px;
+}
+
+.imgview_opdiv button {
+  clear:none;
+  background-color:#333333;
+  color:#FFFFFF;
+  font-weight: bold;
+  font-size:12px;
+  margin: 2px 2px 0px 0px;
+  padding: 2px 5px 2px 5px;
+
+  border-color: #666666;
+  border-width: 1px;
+  border-style: solid;
+}
+
+
+/***********************************************************/
+
+.buttonbar {
+    font-size: 1em;
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 0px;
+    font-family: 'Red Hat Display', Arial, Helvetica, sans-serif;
+    background-repeat: repeat-x;
+    /*background-color:*/
+}
+
+.buttonbar form { display:inline; }
+
+.buttonbar input {
+    color:#FFFFFF;
+    border-color: #333333;
+    color: #CCCCCC;
+    background-color:#666666;
+    padding: 2px 2px 2px 2px;
+    margin: 5px 0px 0px 0px;
+}
+
+.buttonbar input[type="checkbox"] {
+    border-color: #FFFFFF;
+    border-width:0px;
+    background-color: inherit;
+}
+
+.buttonbar input[type="text"], .commandbar input[type="submit"] { background-color: #666666; }
+
+.buttonbar input[type="text"] { padding: 3px 5px 3px 5px; }
+
+.buttonbar input[type="submit"] {
+    padding: 2px 5px 2px 5px;
+    font-weight: bold;
+}
+
+.buttonbar button {
+    color: #CCCCCC;
+    background-color:#666666;
+    margin: 2px 2px 0px 0px;
+    padding: 2px 5px 2px 5px;
+    font-weight: bold;
+
+    border-color: #333333;
+    border-width: 1px;
+    border-style: solid;
+}
+.buttonbar button#selected {
+    background-color:#FF6600;
+    color: #333333;
+}
+
+.buttonbar .group {
+  margin-left: 8px;
+}
+
+/***********************************************************/
+
+.optionsbar {
+  overflow: auto;
+  float: left;
+  /*max-width: 50%;*/
+  max-height: 600px;
+  /*width: 500px;
+  height: 300px;
+  /*background-color: #FF0000;*/
+  /*padding: 10px 10px 10px 10px;*/
+  /*margin: 20px 10px 10px 10px;*/
+  margin: 19px 0px 0px 40px;
+  padding: 0px 0px 0px 0px; /*border: #999999 solid 1px;*/
+}
+
+/***********************************************************/
+
+.optionswidget, .optionswidget div, div .optionswidget {
+  padding: 0px 0px 0px 0px;
+  margin: 25px 0px 0px 0px;
+  border: 0px solid #ccc;
+  background: none;
+  overflow: auto;
+  max-height: 550px;
+  border-bottom: 0px solid;
+}
+
+/***********************************************************/
+
+.imgcnv_s, .imgcnv_s div, div .imgcnv_s {
+  background: #333333;
+  margin: 5px 5px 5px 5px;
+  padding: 5px 5px 5px 5px;
+  border-bottom: 0px solid;}
+
+.imgcnv_clear, .imgcnv_clear div {
+  background: none;
+  background-color: none;
+  border-bottom: 0px solid;
+}
+
+.imgcnv_s input[disabled=''] {
+  color: #666666;
+}
+
+.imgcnv_s select[disabled=''] {
+  color: #666666;
+}
+
+/***********************************************************/
+
+.viewer .thumbnail {
+  bottom: 10px;
+}
+
+/***********************************************************/
+
+.scalebar {
+  position : absolute;
+  left: 6px;
+  bottom: 10px;
+  width: 100px;
+  height: 38px;
+  background-color: #222222;
+  color: #FFFFFF;
+  font-size: 12px;
+  padding: 8px 8px 8px 8px;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  z-index: 30;
+
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -o-user-select: none;
+}
+
+.scalebar div#scalebar_bar {
+  width: 100%;
+  height: 30%;
+  position:relative;
+  background-color: #FFFFFF;
+  color: #FFFFFF;
+  background: #FFFFFF;
+  opacity: 1;
+  z-index: 29;
+}
+
+.scalebar div#scalebar_caption {
+  white-space: nowrap;
+  height: 100%;
+  position:relative;
+  overflow: hidden;
+  margin-top: 2px;
+  z-index: 28;
+}
+
+.scalebar div#scalebar_selectionPanel {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    z-index: 31;
+}
+
+.scalebar div#scalebar_editButton {
+    /*background-color: transparent;*/
+    position: absolute;
+    top: 2px;
+    height: 2px;
+    width: 31px;
+    height: 31px;
+    z-index: 32;
+    background-repeat: no-repeat;
+    background-position: -34px -131px;
+    background-image: url('/core/images/viewer/icons_viewer.svg');
+    background-size: 200px;
+}
+
+.scalebar div#scalebar_rescaleButton {
+    /*background-color: transparent;*/
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    width: 20px;
+    height: 20px;
+    z-index: 32;
+    cursor: 'se-resize';
+    background-repeat: no-repeat;
+    background-image: url('/core/images/viewer/resize-handle.png');
+}
+
+/********************************************************************
+ *
+ * image meta editor
+ *
+ ********************************************************************/
+
+.imgmetaeditor p{
+    /*text-indent: 15px;*/
+    font: Consolas, Arial, san-serif;
+    font-size: 12px;
+    /*padding-right: 5px;*/
+    /*padding-left: 5px;*/
+    /*padding-top: 5px;*/
+    /*padding: 15px;*/
+}
+
+.imgmetaeditor h2{
+    /*margin-left: 15px;*/
+}
+/*
+.imgmetaeditor_channel_grid_colorpicker div#imgmetaeidtor_colorpicker {
+    height: 25px;
+    width: 100%;
+}
+
+
+.imgmetaeditor_channel_grid .x-grid-cell-inner {
+    height: 33px;
+    overflow: hidden;
+    padding: 3px 6px;
+    white-space: nowrap;
+}
+
+.imgmetaeditor_channel_grid .x-grid-row-editor .x-panel-body{
+    height: 38px !important;
+}
+
+.imgmetaeditor_channel_grid .x-grid-editor .x-form-text,
+.imgmetaeditor_channel_grid .x-panel-body .x-box-inner{
+    height: 30px !important;
+}
+
+.imgmetaeditor_channel_grid .x-grid-row-editor-buttons-default-bottom{
+    top: 39px !important;
+}
+
+.imgmetaeditor_channel_grid .x-grid-row-editor-buttons-default-top{
+    bottom: 39px !important;
+}
+
+*/
+
+/******************************************************************************/
+
+.imgview_button_selected {
+  border-color: #333333;
+  border-width:0px;
+  font-size: 14px;
+  color: #CCCCCC;
+  background-color: #FF0000;
+  font-weight: bold;
+  padding: 2px 2px 2px 2px;
+  margin: 10px 0px 0px 5px;
+}
+
+/*******************************************************************************
+ viewer surface
+*******************************************************************************/
+
+.viewer .ol-viewport {
+    z-index: 20;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    touch-action: auto;
+}
+
+/*******************************************************************************
+ gobjects_surface
+*******************************************************************************/
+
+.gobjects_surface {
+  z-index: 15;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+}
+
+.gobjects_overlay {
+  z-index: 16;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+}
+
+.viewer .canvas_renderer_wrapper {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    /*z-index: 19;*/
+}
+
+/*******************************************************************************
+ info
+*******************************************************************************/
+
+.viewer .info {
+  position: absolute;
+  z-index: 25;
+  width: 100%;
+  height: 20px;
+  text-align: center;
+  left: 0px;
+  top: 0px;
+  padding: 5px;
+  bottom: none;
+  color: #FFFFFF;
+  text-shadow: 1px 1px 1px #000000;
+  font-size: 12px;
+  text-overflow: ellipsis;
+    pointer-events: none;
+}
+
+.viewer .info.tablet {
+    text-shadow: 2px 2px 2px #000000;
+    font-size: 18px;
+}
+
+.viewer .info.phone {
+    text-shadow: 6px 6px 6px #000000; font-size: 40px;
+    font-size: 18px;
+}
+
+.viewer .name {
+    left: auto;
+    width: auto;
+    height: auto;
+    right: 160px;
+    bottom: 10px;
+    top: initial;
+    text-decoration: underline;
+    z-index: 30;
+    padding: 0px;
+}
+
+.viewer .name.logo {
+    width: 90px;
+    height: 24px !important;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-image: url('/core/images/bisque_logo_gray.svg');
+    background-size: 90px;
+    background-position: 0px 0px;
+}
+
+.viewer .position {
+    height: 20px;
+    left: 130px;
+    bottom: 10px;
+    top: initial;
+    text-decoration: none;
+    text-align: left;
+    pointer-events: none;
+}
+
+.bq-image-viewer .viewoptions {
+    position: absolute;
+    z-index: 30;
+    width: 32px;
+    height: 32px;
+    left: 80px;
+    top: 10px;
+    bottom: none;
+    right: none;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-position: -34px -97px;
+    background-image: url('/core/images/viewer/icons_viewer.svg');
+    background-size: 200px;
+    color: transparent;
+    cursor: default;
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+}
+
+.viewer .control {
+    cursor: default;
+    color: transparent;
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+}
+
+/*
+.viewer .viewoptions-phone {
+    width: 96px;
+    height: 96px;
+    left: 100px;
+    top: 30px;
+    background-size: 96px;
+}
+
+.viewer .viewoptions-touch {
+    width: 36px;
+    height: 36px;
+    left: 85px;
+    top: 15px;
+    background-size: 36px;
+}
+*/
+.viewer .editmenu, .viewer .bq-editor-selector {
+    position: absolute;
+    z-index: 30;
+    width: 31px !important;
+    height: 31px !important;
+    right: 60px;
+    top: 10px;
+    bottom: none;
+    right: none;
+
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-image: url('/core/images/viewer/icons_viewer.svg');
+    background-size: 200px;
+    background-position: -134px -163px;
+    color: transparent;
+    cursor: default;
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+}
+
+.viewer .editmenu.phone {
+    width: 96px;
+    height: 96px;
+    right: 100px;
+    top: 30px;
+    background-size: 96px;
+}
+
+.viewer .editmenu.touch {
+    width: 36px;
+    height: 36px;
+    right: 85px;
+    top: 15px;
+    background-size: 36px;
+}
+
+.contrast .x-form-item-body {
+    background-image: url('/core/images/viewer/slider_contrast.svg');
+    background-repeat: no-repeat;
+    background-size: 96.5%;
+    padding-top: 5px;
+    background-position: 4px 0px;
+}
+
+/*******************************************************************************
+  edit control buttons
+*******************************************************************************/
+
+.viewer .editcontrol {
+    position: absolute;
+    z-index: 30;
+    width: 31px;
+    height: 31px;
+    right: 80px;
+    top: 10px;
+    bottom: none;
+    right: none;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-image: url('/core/images/viewer/icons_viewer.svg');
+    background-size: 200px;
+    background-position: -134px 0px;
+    color: transparent;
+    cursor: default;
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+}
+
+.viewer .btn-navigate {
+    right: 190px;
+    background-position: -134px -131px;
+}
+
+.viewer .btn-navigate.selected {
+    background-position: -168px -131px;
+}
+
+.viewer .btn-select {
+    right: 150px;
+    background-position: -134px -98px;
+}
+
+.viewer .btn-select.selected {
+    background-position: -168px -98px;
+}
+
+.viewer .btn-delete {
+    right: 110px;
+    background-position: -134px -65px;
+}
+
+.viewer .btn-delete.selected {
+    background-position: -168px -65px;
+}
+
+/*******************************************************************************
+ progress
+*******************************************************************************/
+
+.viewer .progress {
+  position: absolute;
+  z-index: 15;
+  width: 120px;
+  height: 120px;
+  right: 60px;
+  top: 10px;
+  display: none;
+}
+
+/*******************************************************************************
+ channels
+*******************************************************************************/
+
+table.x-form-color {
+    min-width: 340px;
+    margin: 5px 10px 5px 10px;
+}
+
+.bq-viewer-tip {
+    background-color: rgba(0, 0, 0, 0.5);
+    opacity: 0.8;
+    border-color: rgba(255,255,255,0.3);
+    z-index: 2147483647 !important;
+}
+
+.bq-viewer-tip .x-tip-anchor {
+    border-right-color: rgba(255,255,255,0.3);
+}
+
+/*******************************************************************************
+ menu
+*******************************************************************************/
+
+.bq-viewer-menu {
+    background-color: rgba(0, 0, 0, 0.7);
+    opacity: 0.8;
+    border-color: rgba(255,255,255,0.2);
+    border-radius: 5px;
+    padding: 0px 0px 5px 10px;
+    z-index: 2147483647 !important;
+}
+
+.x-boundlist-floating {
+    z-index: 2147483647 !important;
+}
+
+.bq-viewer-menu .x-tip-anchor {
+    border-bottom-color: rgba(255,255,255,0.2);
+}
+
+
+.bq-viewer-menu .x-field {
+    margin-left: 15px;
+}
+
+.bq-viewer-menu label {
+    color: #ffffff;
+}
+
+.bq-viewer-menu .heading {
+    /*width: 100%;*/
+    margin: 5px 0px 10px 0px;
+}
+
+.bq-viewer-menu .heading td {
+    width: 100% !important;
+}
+
+.bq-viewer-menu .heading label {
+    width: 100% !important;
+    font-size: 16px !important;
+}
+
+.bq-viewer-menu .x-tool img {
+    margin: 4px 4px 0px 0px;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-image: url('/core/images/viewer/icons_viewer.svg');
+    background-size: 72px;
+    background-position: -47px -12px;
+    width: 13px;
+}
+
+/*******************************************************************************
+ viewer_tooltip
+*******************************************************************************/
+
+.viewer_tooltip {
+    z-index: 2147483647 !important;
+    background-color: rgba(0, 0, 0, 0.85);
+    border-color: rgba(100,100,100,0.8);
+    border-radius: 5px;
+    padding: 5px;
+    pointer-events: none;
+}
+
+.viewer_tooltip .x-toolbar-text {
+    color: white;
+}
+
+.viewer_tooltip .x-tip-anchor {
+    border-color: rgba(100,100,100,0.8);
+    border-top-color: transparent;
+    border-bottom-color: transparent;
+    border-left-color: transparent;
+}
+
+.viewer_tooltip p {
+    color: #999999;
+    margin: 0px;
+    padding: 0px;
+}
+
+.viewer_tooltip p.emph {
+    color: #ffffff;
+}
+
+.viewer_tooltip p.tags {
+    color: #666666;
+}
+
+.viewer_tooltip p.tags.warning {
+    color: #FFFF00;
+}
+
+.viewer_tooltip p.tags.error {
+    color: #FF0000;
+    font-size: 120%;
+}
+
+.viewer_tooltip a {
+    color: #49c7f4;
+    pointer-events: all;
+    text-decoration: underline;
+}
+
+/*******************************************************************************
+ edit menu
+*******************************************************************************/
+
+.x-tip {
+    z-index: 2147483647 !important;
+}
+
+.bq-editor-menu {
+    z-index: 2147483647 !important;
+}
+
+.bq-editor-menu .x-tool img {
+    margin: 4px 4px 0px 0px;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-image: url('/core/images/viewer/icons_viewer.svg');
+    background-size: 75px;
+    background-position: -36px -12px;
+    width: 14px;
+}
+
+.bq-editor-menu .bq-gob-header {
+    font-size: 14px;
+    padding: 0px 0px 5px 5px !important;
+    background-color: transparent;
+}
+
+.bq-editor-menu .x-toolbar {
+    background-color: transparent;
+    background-image: none;
+}
+
+.bq-editor-menu .primitives {
+  height: 40px !important;
+}
+
+.bq-editor-menu .x-btn .add {
+    height: 31px;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-image: url('/core/images/viewer/icons_viewer.svg');
+    background-size: 200px;
+    background-position: 0px 0px;
+    border-color: transparent !important;
+}
+
+.bq-editor-menu .primitives .x-btn {
+    width: 31px;
+    height: 31px;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-image: url('/core/images/viewer/icons_viewer.svg');
+    background-size: 200px;
+    background-position: -101px -163px;
+    border-color: transparent !important;
+}
+
+.bq-editor-menu .x-btn.point {
+    background-position: -101px -198px;
+}
+
+.bq-editor-menu .x-btn.line {
+    background-position: -101px -230px;
+}
+
+.bq-editor-menu .x-btn.polygon {
+    background-position: -101px -296px;
+}
+
+.bq-editor-menu .x-btn.polyline {
+    background-position: -101px -263px;
+}
+
+.bq-editor-menu .x-btn.freehand_line {
+    background-position: -101px -329px;
+}
+
+.bq-editor-menu .x-btn.freehand_shape {
+    background-position: -101px -362px;
+}
+
+.bq-editor-menu .x-btn.circle {
+    background-position: -101px -395px;
+}
+
+.bq-editor-menu .x-btn.ellipse {
+    background-position: -101px -427px;
+}
+
+.bq-editor-menu .x-btn.rectangle {
+    background-position: -101px -460px;
+}
+
+.bq-editor-menu .x-btn.square {
+    background-position: -101px -492px;
+}
+
+.bq-editor-menu .x-btn.label {
+    background-position: -101px -525px;
+}
+
+/* pressed */
+
+.bq-editor-menu .x-btn.point.x-pressed {
+    background-position: -168px -198px;
+}
+
+.bq-editor-menu .x-btn.line.x-pressed {
+    background-position: -168px -230px;
+}
+
+.bq-editor-menu .x-btn.polygon.x-pressed {
+    background-position: -168px -296px;
+}
+
+.bq-editor-menu .x-btn.polyline.x-pressed {
+    background-position: -168px -263px;
+}
+
+.bq-editor-menu .x-btn.freehand_line.x-pressed {
+    background-position: -168px -329px;
+}
+
+.bq-editor-menu .x-btn.freehand_shape.x-pressed {
+    background-position: -168px -362px;
+}
+
+.bq-editor-menu .x-btn.circle.x-pressed {
+    background-position: -168px -395px;
+}
+
+.bq-editor-menu .x-btn.ellipse.x-pressed {
+    background-position: -168px -427px;
+}
+
+.bq-editor-menu .x-btn.rectangle.x-pressed {
+    background-position: -168px -460px;
+}
+
+.bq-editor-menu .x-btn.square.x-pressed {
+    background-position: -168px -492px;
+}
+
+.bq-editor-menu .x-btn.label.x-pressed {
+    background-position: -168px -525px;
+}
+
+/* main button */
+
+.viewer .bq-editor-selector.point {
+    background-position: -134px -197px;
+}
+
+.viewer .bq-editor-selector.line {
+    background-position: -134px -229px;
+}
+
+.viewer .bq-editor-selector.polygon {
+    background-position: -134px -295px;
+}
+
+.viewer .bq-editor-selector.polyline {
+    background-position: -134px -262px;
+}
+
+.viewer .bq-editor-selector.freehand_line {
+    background-position: -134px -328px;
+}
+
+.viewer .bq-editor-selector.freehand_shape {
+    background-position: -134px -361px;
+}
+
+.viewer .bq-editor-selector.circle {
+    background-position: -134px -394px;
+}
+
+.viewer .bq-editor-selector.ellipse {
+    background-position: -134px -426px;
+}
+
+.viewer .bq-editor-selector.rectangle {
+    background-position: -134px -459px;
+}
+
+.viewer .bq-editor-selector.square {
+    background-position: -134px -491px;
+}
+
+.viewer .bq-editor-selector.label {
+    background-position: -134px -524px;
+}
+
+/* main button selected */
+
+.viewer .bq-editor-selector.point.selected {
+    background-position: -168px -197px;
+}
+
+.viewer .bq-editor-selector.line.selected {
+    background-position: -168px -229px;
+}
+
+.viewer .bq-editor-selector.polygon.selected {
+    background-position: -168px -295px;
+}
+
+.viewer .bq-editor-selector.polyline.selected {
+    background-position: -168px -262px;
+}
+
+.viewer .bq-editor-selector.freehand_line.selected {
+    background-position: -168px -328px;
+}
+
+.viewer .bq-editor-selector.freehand_shape.selected {
+    background-position: -168px -361px;
+}
+
+.viewer .bq-editor-selector.circle.selected {
+    background-position: -168px -394px;
+}
+
+.viewer .bq-editor-selector.ellipse.selected {
+    background-position: -168px -426px;
+}
+
+.viewer .bq-editor-selector.rectangle.selected {
+    background-position: -168px -459px;
+}
+
+.viewer .bq-editor-selector.square.selected {
+    background-position: -168px -491px;
+}
+
+.viewer .bq-editor-selector.label.selected {
+    background-position: -168px -524px;
+}
+
+/*******************************************************************************
+ toolbar
+*******************************************************************************/
+
+.bq_resource_page .view2d {
+    background-image: url(/core/images/viewer/icons_viewers.svg);
+    background-size: 65px;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-position: 5px 1px;
+}
+
+.bq_resource_page .view3d {
+    background-image: url(/core/images/viewer/icons_viewers.svg);
+    background-size: 65px;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-position: -17px 2px;
+}
+
+.bq_resource_page .movie {
+    background-image: url(/core/images/viewer/icons_viewers.svg);
+    background-size: 65px;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-position: -41px 2px;
+}
+
+.external {
+    background-image: url('/core/images/viewer/external.png');
+    background-size: 16px;
+    background-color: transparent;
+    background-repeat: no-repeat;
+}
+
+.converter {
+    background-image: url('/core/images/viewer/converter.png');
+    background-size: 16px;
+    background-color: transparent;
+    background-repeat: no-repeat;
+}
+
+/*******************************************************************************
+ toolbar
+*******************************************************************************/
+
+.bq-viewer-menu .icon-navigate {
+    background-image: url('/core/js/ResourceTagger/Images/compass.png') !important;
+    background-size: 15px 15px;
+    background-repeat: no-repeat;
+}
+
+.bq-viewer-menu .icon-select {
+    background-image: url('/core/js/ResourceTagger/Images/select.png') !important;
+    background-size: 15px 15px;
+    background-repeat: no-repeat;
+}
+
+
+/*******************************************************************************
+ pixel counter
+*******************************************************************************/
+
+.threshold table{
+    margin-left: 30px;
+}
+
+.threshold th{
+    padding-right: 15px;
+    padding-top: 25px;
+}
+
+.threshold p{
+    text-indent: 30px;
+    padding-right: 15px;
+    padding-left: 15px;
+    padding-top: 15px;
+    /*padding: 15px;*/
+}
+
+.threshold td{
+    text-align: right;
+    padding-right: 15px;
+}
+
+.threshold h2{
+    margin-left: 15px;
+}
+
+.thresholdelements td{
+    /*text-indent: 15px;*/
+    padding-left: 15px;
+}
+
+.icon-pipette {
+    background-image: url('/core/images/viewer/pipette.png');
+    background-size: 24px 24px;
+    background-repeat: no-repeat;
+}
+
+.icon-close {
+    background-image: url('/core/images/viewer/32px_close.png');
+    background-size: 24px 24px;
+    background-repeat: no-repeat;
+}
+
+.preview_button {
+    position: absolute;
+    z-index: 30;
+    width: 64px;
+    height: 32px;
+    left: none;
+    right: 10px;
+    top: 80px;
+    bottom: none;
+    background-color: rgb(0,0,0,0.5);
+    background-repeat: no-repeat;
+    background-position: center center;
+    /*background-image: url(/core/images/viewer/icons_viewer.svg);*/
+    background-size: contain;
+    color: transparent;
+    cursor: default;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    border: 1px solid white !important;
+}
+
+.preview_button.preview {
+    top: 80px;
+}
+
+.preview_button.label {
+    top: 120px;
+}
+
+.preview_image {
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: contain;
+}
+
+
+.bq-viewer-menu.label {
+    background-color: rgba(0,0,0,1.0);
+    opacity: 1.0;
+}
+
+.bq-viewer-menu.label .x-tip-anchor {
+    border-left-color: rgba(0,0,0,0.8);
+    border-bottom-color: transparent;
+}

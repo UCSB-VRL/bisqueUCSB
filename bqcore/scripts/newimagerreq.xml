@@ -1,0 +1,7 @@
+R='
+<image name="test.jpg" value="qqqq" />
+'
+
+echo "Sending $R"
+
+echo $R | curl -X POST -H 'Content-type: text/xml' -d @- http://localhost:9090/data_service/image

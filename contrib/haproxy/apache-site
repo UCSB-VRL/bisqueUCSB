@@ -1,0 +1,26 @@
+# Example apache config to for haproxy.
+# This configuration allows haproxy to forward static requests
+# to this apache while sending all other requests to Bisque 
+# YOU MUST EDIT THIS 
+#  <YOURSERVERNAME> = i.e. mysite.lab.org
+#  <BISQUEDIR>      = top level BISQUE dir (TG should be visible)
+
+<VirtualHost *:8080>
+    ServerName <YOURSERVERNAME>
+    ServerSignature Off
+    AddDefaultCharset utf-8
+    ServerAdmin nomail@nomail.com
+
+    Alias /static <BISQUEDIR>/TG/bisquik/static
+    <Directory "<BISQUEDIR>/TG/bisquik/static">
+       Options Indexes FollowSymlinks
+       order allow,deny
+       Allow from all
+     </Directory>
+
+    LogLevel warn
+    ErrorLog /var/log/apache2/bisque-error.log
+    CustomLog /var/log/apache2/bisque-access.log combined
+    ErrorDocument 503 "Service Temporarily Unavailable: System Upgrade in progress"
+
+</VirtualHost>

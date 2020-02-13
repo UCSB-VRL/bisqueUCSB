@@ -1,0 +1,23 @@
+<h2>Querying resources</h2>
+
+<li><b>[[type:]name:]value</b></li>
+<li>Wildcard: <b>*</b></li>
+<li>Expressions: <b>and, or, ()</b></li>
+<li>Attributes: <b>@</b></li>
+<li>Attributes include: <b>name, value, type, hidden, ts, created</b></li>
+
+<h3>Examples</h3>
+<li>Find anything containing string "GFP": <br><b>*GFP*</b></li>
+<li>Find a resource with value "GFP": <br><b>:GFP</b></li>
+<li>Find a resource with name "antibody" and value "GFP": <br><b>antibody:GFP</b></li>
+<li>Find a resource with name "antibody" and value containing "GFP": <br><b>antibody:*GFP*</b></li>
+<li>Find a resource with type "seed": <br><b>seed::</b></li>
+<li>Find a resource with type "seed" and name "seed1": <br><b>seed:seed1:</b></li>
+
+<h3>Expression examples</h3>
+<li>Find a resource with name "antibody" and value "GFP" and type "seed": <br><b>antibody:GFP and seed::</b></li>
+<li>Find a resource with name "antibody" and value "GFP" or type "seed": <br><b>antibody:GFP or seed::</b></li>
+<li>Find a resource with name "antibody" and value "GFP" or type "seed": <br><b>(antibody:GFP or seed::) and antibody:Beta</b></li>
+
+<h3>Attribute examples</h3>
+<li>Find a resource with time stamp "2012:01:01": <b>@ts=&gt;2012:01:01</b></li>

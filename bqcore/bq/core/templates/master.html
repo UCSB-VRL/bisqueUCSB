@@ -1,0 +1,119 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude"
+      py:strip="">
+
+<py:match path="head" once="true">
+<head py:attrs="select('@*')" profile="http://www.w3.org/2005/10/profile">
+    <link rel="icon" type="image/png" href="/core/images/bisque_icon.png" />
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
+    <meta name = "viewport" content="width=900, maximum-scale=1" />
+
+    <title py:with="title = list(select('title/text()'))">
+    Bisque<py:if test="title">: ${title}</py:if>
+    </title>
+
+
+
+    <!-- Bisque styles -->
+    <!--<link href="http://fonts.googleapis.com/css?family=Abel|Varela+Round" rel="stylesheet" type="text/css" />-->
+    <link href="//fonts.googleapis.com/css?family=Red+Hat+Display|Varela+Round|Roboto:400,300,100" rel="stylesheet" type="text/css" />
+
+    <!-- ExtJS4 styles -->
+    <link rel="stylesheet" type="text/css" href="${tg.url('/core/extjs/resources/css/ext-all.css')}" />
+    <!--<link rel="stylesheet" type="text/css" href="${tg.url('/core/extjs/resources/css/ext-all-neptune.css')}"/>-->
+
+    <!-- ExtJS5 styles -->
+    <!--<link rel="stylesheet" type="text/css" href="${tg.url('/core/extjs/packages/ext-theme-classic/build/resources/ext-theme-classic-all.css')}"/>-->
+    <!--<link rel="stylesheet" type="text/css" href="${tg.url('/core/extjs/packages/ext-theme-crisp/build/resources/ext-theme-crisp-all.css')}"/>-->
+    <!-- BisQue UI code -->
+    ${h.generate_css_files()}
+
+    <!-- ExtJS 4 -->
+    <script py:if="tg.config.get('bisque.js_environment', None) == 'production'" type="text/javascript" src="${tg.url('/core/extjs/ext-all.js')}"></script>
+    <script py:if="tg.config.get('bisque.js_environment', None) != 'production'" type="text/javascript" src="${tg.url('/core/extjs/ext-all-dev.js')}"></script>
+
+    <!-- ExtJS 5 -->
+    <!--
+    <script type="text/javascript">
+        /*var Ext = Ext || {};
+        Ext.manifest = {
+            compatibility: {
+                ext: '4.2'
+            },
+        };*/
+    </script>
+    <script py:if="tg.config.get('bisque.js_environment', None) == 'production'" type="text/javascript" src="${tg.url('/core/extjs/ext-all.js')}"></script>
+    <script py:if="tg.config.get('bisque.js_environment', None) != 'production'" type="text/javascript" src="${tg.url('/core/extjs/ext-all-debug.js')}"></script>
+
+    <script type="text/javascript">
+        // xml reader is used extensively is utilizes .raw property
+        // deprectaed in extjs5, temporary addition back
+        /*Ext.define('App.overrides.data.Model', {
+            override: 'Ext.data.Model',
+            constructor: function (data) {
+                this.raw = Ext.apply({}, data);
+                this.callParent(arguments);
+            },
+        });*/
+    </script>
+    -->
+
+    <!-- Third party libs -->
+    <script type="text/javascript" src="${tg.url('/core/d3/d3.js')}"></script>
+    <script type="text/javascript" src="${tg.url('/core/threejs/three.js')}"></script>
+    <script type="text/javascript" src="${tg.url('/core/async/async.js')}"></script>
+    <script type="text/javascript" src="${tg.url('/core/jquery/jquery.min.js')}"></script>
+    <script type="text/javascript" src="${tg.url('/core/proj4js/proj4.js')}"></script>
+    <script type="text/javascript" src="${tg.url('/core/raphael/raphael.js')}"></script>
+    <script type="text/javascript" src="${tg.url('/core/js/viewer/kinetic-v5.1.0.js')}"></script>
+
+    <!-- GMaps API -->
+    <!--<script type="text/javascript" src="//maps.googleapis.com/maps/api/js?sensor=false"></script>-->
+
+    <!-- Bisque Application instantiation, must be one of the first onReady to run -->
+    <script type="text/javascript" >
+        Ext.onReady( function() {
+            BQApp = Ext.create('BQ.Application');
+        });
+    </script>
+
+    ${h.generate_js_files()}
+
+    <!-- Configuration variables   -->
+    <script type="text/javascript" >
+        // update the configuration in your template
+        BQ.Server.title = "${tg.config.get('bisque.title', 'CBI Repository')}";
+        BQ.Server.root = "${tg.url('/')}";
+    </script>
+
+    <!-- Derived template configuration includes   -->
+    ${select('*[@id="config" and local-name()="script"]')}
+
+    <!-- Derived template includes   -->
+    ${select('*[local-name()!="title" and not(@id="config" and local-name()="script")]')}
+
+    <!--<script type="text/javascript" py:if="tg.flash" >
+        Ext.onReady( function() {
+            BQ.ui.popup( '${tg.flash_obj.status}', '${tg.flash_obj.message}' );
+        });
+    </script>-->
+
+</head>
+</py:match>
+
+
+<py:match path="body" once="true">
+
+<body py:attrs="select('@*')">
+	<div id="content" class="content" >
+    ${select('*|text()')}
+  </div>
+
+
+ <xi:include href="${tg.config.get('bisque.tracking')}" py:if="tg.config.get('bisque.tracking')" />
+</body>
+</py:match>
+
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="master.html" />
+
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
+  <title>Import service: done uploading</title>
+</head>
+
+<body>
+
+<h1>Done uploading file</h1>
+
+<p py:if="error is not None">Okay, Houston, we've had a problem here: "<strong>${error}</strong>"</p>
+<span py:if="error is None">
+<p>Created image is now available at: <a href="/client_service/view?resource=${uri}" target="_blank" >${uri}</a></p>
+<h3>Image parameters</h3>
+
+<ul>
+  <li py:if="info and 'filename' in info">Filename: "<strong>${info['filename']}</strong>"</li>
+  <li py:if="info and 'x' in info">Width: <strong>${info['x']}</strong>px</li>
+  <li py:if="info and 'y' in info">Height: <strong>${info['y']}</strong>px</li>
+  <li py:if="info and 'ch' in info">Channels: <strong>${info['ch']}</strong></li>
+  <li py:if="info and 'z' in info">Z slices: <strong>${info['z']}</strong></li>
+  <li py:if="info and 't' in info">T frames: <strong>${info['t']}</strong></li>          
+</ul>
+
+</span>
+
+</body>
+</html>

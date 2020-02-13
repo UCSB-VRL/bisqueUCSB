@@ -1,0 +1,57 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html  xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+	<title>Botanicam help</title>
+</head>
+
+<body>
+
+<h3>About:</h3>
+
+<p>The Botanicam 3: The Plant Recognizer module can be used to identify bushes and leaves and find 
+similar images in the users data set that match the tags of the image identify. To predict the tags 
+for the image, the module creates either a bush classifier or a leaf classifier depending on the choice of the user. Once the classifiers 
+have been calculated they are predicted with the model using support vector machines. The model is trained
+in Botanicam: The Trainer with a different model for the different classifiers. To see what type of plants have been 
+classified check the file dataset and search &quot;Dataset&quot;:&quot;Botanicam Model&quot; and  &quot;Classification Method&quot;:
+and either &quot;Leaf Descriptor&quot; or &quot;Bush Descriptor.&quot; This module only retrieves the latest model to predict.
+The annotation gives the tags and classes.</p>
+	
+<h3>License</h3>
+
+<p class="license">By using this free and open source software you agree to reference this work and its authors in any products produced using it, including but not limited to scientific papers, posters, technical reports, presentations, leaflets, etc.</p>	
+	
+<h3>How to Use:</h3>
+
+<p>1. In the Select Data for Processing section there are 3 options:</p>
+<p>a. Select an Image allows the user to pick an image from their
+image collection on the Bisque server.<br/>
+b. Select an example allows the user to test out the module with 
+images that the developer has chosen which would work best with the module.<br/>
+c. Upload local images which allows the user to select an image 
+from their computer or other devices to use in the module.</p>
+<p>Select one of the 3 options and select an image of a bush or leaf that you would
+like to determine its classification. <i>Note: The leaf needs to be a scan to work correctly.</i></p>
+<p>2. Once you have selected an image it will appear in a gobect.
+A few option will be displayed above the image. If you would like to crop the image select Rectangle 
+and click on the image. A red box will appear on the image. Click the select option and click on the 
+box to drag the box to the region you want to crop. Select the corners and drag to re-size the region.
+<i>Note: If you do not want to crop you can just move on to the next part without selecting Rectangle and
+the entire image will be processed.</i></p>
+<a href="images/gobject selection.jpg" target="_blank"><img src="images/gobject selection.jpg" alt="Gobject Selection" width="100" height="200" /></a> 
+<br/>Figure 1 : Image of a Gobject with the rectangle tool used to crop a section of the image.
+<p>3. Now that you have your image, select the part of the plant in the
+Parameters section you are analyzing in you image.</p>
+<p>4. Click Run and the module will start processing the image. 
+This will take a few minutes.</p>
+<p>5. After the modules is done a detection summary will be given with 
+a list of tags that the module thinks the image should be labeled. The module will also produce images
+with the same tags in the similar images box.</p>
+
+<h3>Problems?</h3>
+
+<p>If the results you obtained are not what you have expected please <a href="https://groups.google.com/group/bisque-bioimage">contact us</a>!</p>
+
+</body>
+</html>

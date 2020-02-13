@@ -1,0 +1,134 @@
+.msg .x-box-mc {
+    font-size: 12px;
+}
+
+#messagepopup {
+    position:absolute;
+    left:35%;
+    top:45px;
+    width:300px;
+    z-index:20000;
+}
+
+#messagepopup .msg {
+    border-radius: 8px;
+    -moz-border-radius: 8px;
+    background: #F6F6F6;
+    border: 2px solid #ccc;
+    margin-top: 2px;
+    padding: 10px 15px;
+    color: #555;
+}
+
+#messagepopup .msg h3 {
+    margin: 0 0 8px;
+    font-weight: bold;
+    font-size: 15px;
+}
+
+#messagepopup .msg p {
+    margin: 0;
+    overflow: auto;
+    font-size: 12px;
+}
+
+#messagepopup .msg img {
+    float: right;
+    width: 20px;
+    opacity: 0.7;
+}
+
+#messagepopup .warning {
+    width: 450px;
+    font-size: 18px;
+    background: #FFFF99;
+    color: #CC0000;
+    border-color: #CC0000;
+}
+
+#messagepopup .warning h3 {
+    font-size: 20px;
+}
+
+#messagepopup .error {
+    width: 450px;
+    font-size: 18px;
+    background: #CC0000;
+    color: #FFFFFF !important;
+    border-color: #000000 !important;
+}
+
+#messagepopup .error h3 {
+    font-size: 20px;
+}
+
+#messagepopup .notification {
+    width: 450px;
+    font-size: 18px;
+    background: #FFFF99;
+    color: #006633;
+    border-color: #006633;
+}
+
+#messagepopup .notification h3 {
+    font-size: 20px;
+}
+
+.highlight {
+    background-color: rgba(255,255,255,0.6);
+    border-width: 0px;
+    padding: 10px;
+    text-align:center;
+}
+
+.highlight .x-tip-anchor-top {
+    border-bottom-color: rgba(255,255,255,0.6);
+}
+
+.highlight h3 {
+    color: #000000;
+    font-size: 2em;
+}
+
+
+.bq-prompt .x-window-body {
+    padding: 10px;
+}
+
+
+
+.bq-highlight {
+    background-color: rgba(255,210,50,0.6);
+    border-width: 0px;
+    padding: 10px;
+    text-align:center;
+}
+
+.bq-highlight .x-tip-anchor-top {
+    border-bottom-color: rgba(255,210,50,0.6);
+}
+
+.bq-highlight .x-tip-anchor-bottom {
+    border-top-color: rgba(255,210,50,0.6);
+}
+
+.bq-highlight .x-tip-anchor-left {
+    border-right-color: rgba(255,210,50,0.6);
+}
+
+.bq-highlight .x-tip-anchor-right {
+    border-left-color: rgba(255,210,50,0.6);
+}
+
+.bq-highlight h3 {
+    color: #000000;
+    font-size: 2em;
+}
+
+.bq-highlight p {
+    margin: 0.5em 0px 0px 0px;
+    color: #000000;
+    font-size: 16px;
+    font-family: 'Red Hat Display', tahoma, arial, verdana, sans-serif;
+}
+

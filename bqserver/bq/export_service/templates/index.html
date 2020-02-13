@@ -1,0 +1,32 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+<xi:include href="master.html" />
+
+<head>
+    <title>Export</title>
+
+    <!-- Export Service -->
+    <link rel="stylesheet" type="text/css" href="${tg.url('/export/css/BQ.Export.css')}" />
+    <script type="text/javascript" src="${tg.url('/export/js/BQ.Export.js')}"></script>
+    <script type="text/javascript">
+        Ext.onReady(function()
+        {
+            var q = Ext.Object.fromQueryString(location.search);
+            var exportCt = Ext.create('BQ.Export.Panel',
+            {
+                border : 0,
+                bodyStyle : 'background:#9B9',
+                resource: q.resource,
+            });
+
+            BQApp.setCenterComponent(exportCt);
+        });
+    </script>
+
+</head>
+<body></body>
+</html>

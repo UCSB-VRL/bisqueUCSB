@@ -1,0 +1,179 @@
+/*******************************************************************************
+
+  Styles for BQ.share.Dialog.js
+
+  Author: Dima Fedorov
+
+  Version: 1
+
+  History:
+    2014-05-02 13:57:30 - first creation
+
+*******************************************************************************/
+
+.bq-share-dialog {
+    padding: 0px 10px 10px 10px;
+    background-color: #ffffff;
+}
+
+.bq-share-panel h2 {
+    margin: 20px 0px 12px 0px;
+}
+
+.bq-share-panel p {
+    margin: 5px 0px 8px 0px;
+}
+
+.bq-share-bar {
+    margin: 5px 0px 10px 0px;
+}
+
+.bq-share-bar .x-btn {
+    margin-left: 5px;
+}
+
+.bq-visibility-bar {
+}
+
+.bq-visibility-bar h3 {
+    margin-top: 12px;
+    margin-right: 10px;
+}
+
+.bq-visibility-bar p {
+    margin: 2px 0px 5px 10px;
+}
+
+
+.bq-button-visibility {
+    padding: 4px 8px 4px 8px;
+}
+
+.bq-button-visibility .x-btn-inner {
+    font-weight: bold;
+}
+
+.published .x-btn-inner {
+    color: #008000;
+}
+
+.bq-icon-visibility {
+    background-image: url('/core/js/Share/images/lock.png');
+    background-size: 64px 32px;
+    background-repeat: no-repeat;
+}
+
+.published .bq-icon-visibility {
+    background-position: -32px 0px;
+}
+
+.x-btn-default-toolbar-medium .bq-icon-visibility {
+    background-image: url('/core/js/Share/images/lock.png');
+    background-size: 46px 24px;
+    background-repeat:no-repeat;
+}
+
+.x-btn-default-toolbar-medium.published .bq-icon-visibility {
+    background-position: -23px 0px;
+}
+
+.bq-btn-highlight .x-btn-inner {
+    font-weight: bold;
+}
+
+.bq-share-panel .bq-user-picker {
+    margin: 0px 5px 0px 5px;
+}
+
+.bq-share-panel .bq-user-picker input.x-form-field {
+    padding-left: 6px;
+    font-size: 14px;
+    border: solid 1px #bbbbbb;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    height: 28px;
+    margin-top: 2px;
+}
+
+.bq-share-bar .x-form-type-checkbox {
+    margin: 0px 5px 0px 0px !important;
+}
+
+.bq-share-panel .bq-user-picker input[type=text]:hover {
+    -webkit-transition: border-color 0.3s ease-out, -webkit-box-shadow 0.3s ease-out;
+    -moz-transition: border-color 0.3s ease-out, -moz-box-shadow 0.3s ease-out;
+    -o-transition: border-color 0.3s ease-out, -o-box-shadow 0.3s ease-out;
+    transition: border-color 0.3s ease-out, box-shadow 0.3s ease-out;
+    border-color: #0099FF;
+    -webkit-box-shadow: 0px 0px 8px 0px rgba(0, 153, 255, 1);
+    -moz-box-shadow: 0px 0px 8px 0px rgba(0, 153, 255, 1);
+    box-shadow: 0px 0px 8px 0px rgba(0, 153, 255, 1);
+}
+
+.bq-share-panel .users {
+    border: solid 1px #bbbbbb;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+
+.bq-share-panel .users .x-grid-header-ct, .bq-share-panel .users .x-grid-header-ct {
+    border: solid 0px #bbbbbb;
+}
+
+.bq-share-panel .bq_row {
+    height: 32px;
+    font-size: 16px;
+    font-weight: 300;
+    font-family: 'Roboto', sans-serif;
+}
+
+.bq-share-panel .bq_row .x-grid-cell-inner, .bq-share-panel .bq_row .x-column-header-inner {
+    height: 32px;
+    padding-top: 10px;
+}
+
+.bq-share-panel .bq_row .x-grid-cell-inner-action-col {
+    padding: 0px;
+    margin-top: 4px;
+}
+
+.bq-share-panel .icon_add .x-grid-cell-inner {
+    margin: 4px 10px 1px 10px;
+    height: 27px;
+    background-image: url(/core/images/icons_toolbar.svg);
+    background-repeat: no-repeat;
+    background-size: 140px;
+    background-position: 15px 0px;
+    cursor: pointer;
+}
+
+.bq-share-panel .icon_number {
+    background-image: none;
+    font-size: 18px;
+    font-weight: 300;
+    cursor: pointer;
+}
+
+.bq-share-panel .icon_sharing {
+    background-image: none;
+    font-size: 18px;
+    font-weight: 300;
+    cursor: pointer;
+    color: #AAAA00;
+}
+
+.bq-share-panel .icon_remove {
+    width: 27px;
+    height: 27px;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-image: url(/core/images/viewer/icons_viewer.svg);
+    background-size: 180px;
+    background-position: -90px -58px;
+}
+
+.bq-share-panel .permission {
+    cursor: pointer;
+}

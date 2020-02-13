@@ -1,0 +1,105 @@
+/**************************************************************************/
+/*  */
+/**************************************************************************/
+
+.login {
+  width: 650px;
+  height: 330px;
+  margin: 80px 80px 100px 80px;
+  background: #EEEEEE;
+  padding: 10px 40px 40px 15px;
+  border-radius: 25px;
+  -moz-border-radius: 5px;
+}
+
+.login h2 {
+  font-size: 40px;
+  margin: 0px 0px 0px 0px;
+  color: #4d5356;
+  /*text-shadow: #AAAAAA 2px 2px 5px;*/
+  position: absolute;
+}
+
+.login label {
+  display:block;
+  margin-bottom: 15px;
+  margin-top: 10px;
+  width: 250px;
+}
+
+.login label>input {
+  margin-left: 20px;
+  width: 150px;
+  float: right;
+}
+
+.login input[type=submit] {
+  margin-top: 15px;
+  display:block;
+  padding: 4px;
+}
+
+.login input[type=button] {
+    width: 130px;
+    padding: 6px;
+    display:block;
+}
+
+.login .remote {
+    width: 250px;
+    float: left;
+    border-left: solid 1px gray;
+    padding: 5px 15px 15px 30px;
+    margin: 80px 0px 0px 0px;
+}
+
+.login .local {
+    padding: 5px 0px 0px 0px;
+    margin: 80px 0px 0px 10px;
+    float: left;
+    width: 300px;
+}
+
+.login .local h2, .login .remote h2 {
+    font-size: 18px;
+    margin: 0px 0px 15px 0px;
+    color: #737373;
+    text-shadow: none;
+    position: relative;
+}
+
+.login .local .registration {
+    margin: 10px 20px 0px 0px;
+    padding-top: 10px;
+    border-top: dotted 1px #4d5356;
+}
+
+.login .local .registration p {
+    margin: 0.5em 0px 0px 0px;
+    font-size: 12px;
+}
+
+.login .local .registration a {
+    text-decoration: underline;
+    color: #333333;
+}
+
+.login .local .registration a:hover {
+    color: #CC6600;
+}
+
+.login .sigin_button {
+    padding: 0px 0px 10px 0px;
+    margin: 0px;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+.login .sigin_button#submit {
+    margin-top: 10px;
+}
+
+.login .sigin_button img {
+    width: 200px;
+}

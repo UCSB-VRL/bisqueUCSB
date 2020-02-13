@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module name="CalcMaxMisorientation" type="runtime" >
+
+    <tag name="inputs">
+        <tag name="mex_url"      type="system-input" />
+        <tag name="bisque_token" type="system-input" />
+
+        <tag name="dream3d_run" type="mex">
+            <template>
+                <tag name="label" value="Select input MEX" />
+                <tag name="query" value="&amp;name=Dream3D" />
+            </template>
+        </tag>
+
+        <tag name="limitAR" value="1">
+            <template>
+                <tag name="label" value="max aspect ratio (lower = more columnar, max value = 1)" />
+            </template>
+        </tag>
+
+        <tag name="minAvgMisorient" value="4">
+            <template>
+                <tag name="label" value="minimum avg misorientation (in degrees)" />
+            </template>
+        </tag>
+
+        <tag name="minMaxAxisL" value="80">
+            <template>
+                <tag name="label" value="minimum max axis lengths (in microns)" />
+            </template>
+        </tag>
+
+        <tag name="remSurface" value="all features" type="combo">
+            <template>
+                <tag name="label" value="features to consider" />
+                <tag name="select" value="non-surface features" />
+                <tag name="select" value="all features" />
+            </template>
+        </tag>
+
+        <tag name="remSlice" value="none" type="combo">
+            <template>
+                <tag name="label" value="exclude features from boundary slice" />
+                <tag name="select" value="none" />
+                <tag name="select" value="top" />
+                <tag name="select" value="bottom" />
+            </template>
+        </tag>
+    </tag>
+
+    <tag name="outputs">
+        <!--  Normal outputs  -->
+        <tag name="maximum reference misorientation" type="table">
+            <template>
+                <tag name="label" value="Details" />
+            </template>
+        </tag>
+        <tag name="statistics">
+            <template>
+                <tag name="label" value="Statistics" />
+            </template>
+         </tag>
+        <!--  Iterated outputs  -->
+        <tag name="output_table" type="multiparam">
+            <template>
+                <tag name="label" value="Select a row to see individual results"/>
+            </template>
+        </tag>
+    </tag>
+
+    <tag name="execute_options">
+        <tag name="argument_style" value="position" />
+        <tag name="iterable" value="dream3d_run" type="mex">
+            <tag name="xpath" value="//mex[not(./mex)]/@uri"/>  <!-- iterate over all leaf mexes -->
+        </tag>
+        <tag name="iterable" value="limitAR" type="list" />
+        <tag name="postrun_entrypoint" value="collect_outputs" />
+    </tag>
+
+    <tag name="module_options" >
+        <tag name="version" value="1" />
+    </tag>
+
+    <tag name="display_options" >
+        <tag name="group" value="Materials analysis" />
+    </tag>
+
+    <tag name="interface">
+        <tag name="javascript" type="file" value="webapp.js" />
+        <tag name="css" type="file" value="webapp.css" />
+    </tag>
+
+    <tag name="title" value="CalcMaxMisorientation" />
+    <tag name="authors" value="&lt;a href=&quot;mailto:polonsky@ucsb.edu&quot;&gt;Andrew Polonsky (UCSB)" />
+    <tag name="help"      type="file" value="public/help.html" />
+    <tag name="thumbnail" type="file" value="public/thumbnail.png" />
+    <tag name="description" type="string" value="Find maximum reference misorientation for each feature in Dream.3D output." />
+
+</module>

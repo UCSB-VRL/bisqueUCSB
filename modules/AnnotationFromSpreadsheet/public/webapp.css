@@ -1,0 +1,52 @@
+
+.webapp .parameters {
+    padding: 2px;
+}
+
+.bq_selector_spreadsheet_matching .icon_remove {
+    width: 27px;
+    height: 27px;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-image: url(/core/images/viewer/icons_viewer.svg);
+    background-size: 180px;
+    background-position: -90px -58px;
+}
+
+.bq_selector_spreadsheet_matching .bq_row {
+    height: 32px;
+    font-size: 16px;
+    font-weight: 300;
+    font-family: 'Roboto', sans-serif;
+}
+
+.bq_selector_spreadsheet_matching .bq_row .x-grid-cell-inner, .bq_selector_spreadsheet_matching .bq_row .x-column-header-inner {
+    height: 32px;
+    padding-top: 10px;
+}
+
+.bq_selector_spreadsheet_matching .bq_row .x-grid-cell-inner-action-col {
+    padding: 0px;
+    margin-top: 4px;
+}
+
+.bq_selector_spreadsheet_matching .bq_spreadsheet {
+    background-repeat: no-repeat;
+    background-image: url(/module_service/AnnotationFromSpreadsheet/public/arrow.svg);
+    background-size: 18px;
+    background-position: right center;
+}
+
+.bq_selector_spreadsheet_matching .ignored {
+    text-decoration: line-through;
+    color: #990000;
+}
+
+.bq_selector_spreadsheet_matching .system {
+    text-decoration: none;
+    color: #009900;
+}
+
+.bq_selector_spreadsheet_matching .system.ignored {
+    text-decoration: line-through;
+}

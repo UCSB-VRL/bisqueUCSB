@@ -1,0 +1,21 @@
+This is a trivial shell example.
+
+Module using type shell will recieve their formal parameter as long style arguments.
+
+For example:
+<module type="shell" name="ShExample" codeurl="./list_arguments">
+  <tag name="formal-input" value="$client_server" index="0" />
+  <tag name="formal-input" value="$image_url:string" index="1" />
+  <tag name="formal-input" value="ThresholdValue:number='50'" index="2" />
+  <tag name="formal-output" value="resources:string" />
+</module>
+
+
+
+When executed the script './list_arguments' will be executed with 
+
+./list_arguments --client_server="http://somespot.org/bisquik" --image_url="http://somespot.org/ds/images/<NUM>" --ThresholdValue="<param>" 
+
+
+NOTE: output parameters are currently ignored.
+

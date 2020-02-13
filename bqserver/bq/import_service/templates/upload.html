@@ -1,0 +1,50 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html  xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"
+        xmlns:py="http://genshi.edgewall.org/"
+        xmlns:xi="http://www.w3.org/2001/XInclude"
+       >
+
+<xi:include href="master.html" />
+<head>
+    <title>Image upload</title>
+
+    <!-- Image Service -->
+    <script type="text/javascript" src="${tg.url('/image_service/bq_is_formats.js')}"></script>
+
+    <!-- Import Service -->
+    <link rel="stylesheet" type="text/css" href="${tg.url('/import/bq_ui_upload.css')}" />
+    <script type="text/javascript" src="${tg.url('/import/File.js')}"></script>
+    <script type="text/javascript" src="${tg.url('/import/bq_file_upload.js')}"></script>
+    <script type="text/javascript" src="${tg.url('/import/bq_ui_upload.js')}"></script>
+
+<script type="text/javascript">
+
+Ext.onReady(function() {
+    if (!BQ.upload.html5uploads) return;
+    BQApp.setCenterComponent({
+        xtype: 'bq_upload',
+        heading: 'Upload',
+        formconf: { form_action: '/import/transfer', form_file: 'file', form_resource: 'file_resource' },
+    });
+});
+
+</script>
+
+</head>
+<body>
+
+  <h1>Image upload</h1>
+	<p>To upload a new image, please choose an image with the browse button and then click 'upload'.</p>
+    <form action="/import/transfer_legacy" method="POST" enctype="multipart/form-data" >
+        <input name="file" type="file" />
+        <br /><br />
+        <input type="submit" name="submit" value="Upload" />
+    </form>
+
+    <p><em>This is a deprecated upload page, you see it because your browser does not support HTML5 uploads. Consider updating your browser!</em></p>
+
+</body>
+</html>

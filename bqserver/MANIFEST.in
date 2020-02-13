@@ -1,0 +1,5 @@
+recursive-include bq/*/public  *
+#include bq/public/favicon.ico
+recursive-include bq/*/i18n *
+recursive-include bq/*/templates *
+recursive-include bq/*/tests *

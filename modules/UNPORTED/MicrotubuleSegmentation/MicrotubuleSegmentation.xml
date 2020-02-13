@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module name="MicrotubuleSegmentation" path="./MicrotubuleSegmentation" type="matlab">
+ <tag name="formal-input" value="$client_server" index="0" />
+ <tag name="formal-input" value="$image_url" index="1" />
+ <tag name="formal-input" value="gauss_length:number='5'" index="2" />
+ <tag name="formal-input" value="sigma_size:number='2'" index="3"/>
+ <tag name="formal-output" value="resources" />
+ <tag name="group" value="Microtubule" />
+</module>

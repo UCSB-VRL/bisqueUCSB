@@ -1,0 +1,355 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="master.html" />
+
+<!--
+
+Parameters allowed in the URL:
+
+url=MY_URL
+xpath=MY_XPATH
+xmap=MY_XMAP
+xreduce=MY_REDUCE
+run=true
+
+ex: http://vidi.ece.ucsb.edu:8080/stats/?url=http://vidi.ece.ucsb.edu:8080/ds/images/21&xpath=//gobject&xmap=gobject-type&xreduce=vector&run=true
+-->
+
+<head>
+
+  <title>Statistics Service</title>
+
+  <script type="text/javascript" >
+    // update the configuration in your template
+    //bq_config.services = { 'browse': false };
+  </script>
+
+
+<!-- Styles for the form -->
+<style type="text/css">
+    body { background-color: white !important; }
+
+    form label#header {
+      width: 200px;
+      float: left;
+      text-align: right;
+      margin-right: 0.5em;
+      display: block;
+      font-size: 14px;
+      font-family: Tahoma, Geneva, sans-serif;
+      font-weight: bold;
+    }
+    form label {
+      margin-left: 1em;
+      font-size: 14px;
+      font-family: Tahoma, Geneva, sans-serif;
+    }
+
+    form div { margin-top: 10px; }
+    form input[type="text"], form select { width: 400px; }
+    form input#plus_button { margin-left: 220px; }
+</style>
+
+
+
+<!-- Plotting stuff, use Raphael now -->
+<script src="/raphael/raphael.js" type="text/javascript" charset="utf-8"></script>
+<script src="/raphael/g.raphael-min.js" type="text/javascript" charset="utf-8"></script>
+<script src="/raphael/g.line.js" type="text/javascript" charset="utf-8"></script>
+<script src="/raphael/g.bar.js" type="text/javascript" charset="utf-8"></script>
+<script src="/raphael/g.dot-min.js" type="text/javascript" charset="utf-8"></script>
+<script src="/raphael/g.pie-min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- BQAPI -->
+<script type="text/javascript" src="/js/bq_ui_progress.js" charset="utf-8"></script>
+
+<!-- Statistics -->
+<link rel="stylesheet" type="text/css" href="${tg.url('/stats/stats.css')}" />
+<script src="/stats/js/stats.js" type="text/javascript" charset="utf-8"></script>
+
+
+<script type="text/javascript" charset="utf-8">
+//<!--
+preset_options = {
+  'tag_name_unique' : { 'xpath':'//tag', 'xmap':'tag-name-string', 'xreduce':'unique'  },
+  'tag_name_histogram' : { 'xpath':'//tag', 'xmap':'tag-name-string', 'xreduce':'histogram'  },
+  'tag_probaility_vector' : { 'xpath':"//tag[@name='probability']", 'xmap':'tag-value-number', 'xreduce':'vector'  },
+  'gobject_user_types' : { 'xpath':'//gobject', 'xmap':'gobject-type-composed', 'xreduce':'unique'  },
+  'gobject_type_histogram' : { 'xpath':'//gobject | //point | //label | //polyline | //polygon | //circle | //ellipse | //rectangle | //square', 'xmap':'gobject-type', 'xreduce':'histogram'  },
+  'gobject_polyline_length_vector' : { 'xpath':'//polyline', 'xmap':'gobject-length', 'xreduce':'vector'  },
+  'gobject_polygon_area_histogram' : { 'xpath':'//polygon', 'xmap':'gobject-area', 'xreduce':'histogram'  },
+  'gobject_polygon_area_vector' : { 'xpath':'//polygon', 'xmap':'gobject-area', 'xreduce':'vector'  },
+  'gobject_point_number' : { 'xpath':'//point', 'xmap':'gobject-number', 'xreduce':'count'  },
+};
+
+function presetComboChanged() {
+  var cb = document.getElementById("presets");
+  var cb_xpath = document.getElementById("xpath");
+  var cb_xmap = document.getElementById("xmap");
+  var cb_xreduce = document.getElementById("xreduce");
+
+  o = preset_options[cb.value];
+  if (!o) return;
+  cb_xpath.value = o['xpath'];
+  cb_xmap.value = o['xmap'];
+  cb_xreduce.value = o['xreduce'];
+}
+
+function showTip( element, text, opts ) {
+  if (!opts) opts={};
+  if (!('color' in opts)) opts.color = 'red';
+  if (!('timeout' in opts)) opts.timeout = 5000;
+  var tip = new Ext.ToolTip({
+      target: element,
+      anchor: 'top',
+      bodyStyle: 'font-size: 120%; color: '+opts.color+';',
+      html: text
+  });
+  tip.show();
+  setTimeout( function () { tip.destroy(); }, opts.timeout );
+}
+
+
+function validate() {
+  if (document.getElementById("url").value == '') {
+    showTip( 'url', 'Resource URL is not specified!' );
+    return false;
+  }
+  if (document.getElementById("xpath").value == '') {
+    showTip( 'xpath', 'Resource XPath is not specified!' );
+    return false;
+  }
+  return true;
+}
+
+function doSelect(elem, def) {
+  if (def=='') return;
+  var cb = document.getElementById(elem);
+  cb.value = def;
+}
+
+function getXML() {
+  if (!validate()) return;
+  document.getElementById("stats").action = "/stats/xml";
+  document.getElementById("stats").submit();
+}
+
+function getCSV() {
+  if (!validate()) return;
+  document.getElementById("stats").action = "/stats/csv";
+  document.getElementById("stats").submit();
+}
+
+function getValues(baseid) {
+  var v = [document.getElementById(baseid).value];
+  var i=1;
+  while (document.getElementById(baseid+''+i)) {
+    v.push( document.getElementById(baseid+''+i).value );
+    i++;
+  }
+  return v;
+}
+
+function getHiddenValues(surface) {
+  var surface = document.getElementById(surface);
+  var n = surface.children.length;
+  var d = {};
+  for (var i=0; i<surface.children.length; i++) {
+    if (surface.children[i].type != 'hidden') continue;
+    d[surface.children[i].name] = surface.children[i].value;
+  }
+  return d;
+}
+
+function cloneInput(surface, tocopy) {
+  var surface = document.getElementById(surface);
+  var tocopy  = document.getElementById(tocopy);
+  var n = surface.children.length;
+  var d = tocopy.cloneNode(true);
+  d.children[1].name = d.children[1].name + n;
+  d.children[1].id = d.children[1].id + n;
+  surface.appendChild (d);
+  return d;
+}
+
+function doPlot() {
+    if (!validate()) return;
+
+    var url = document.getElementById("url").value;
+    var xpath = getValues("xpath");
+    var xmap = getValues("xmap"); //document.getElementById("xmap").value;
+    var xreduce = getValues("xreduce"); //document.getElementById("xreduce").value;
+    var args = getHiddenValues("xargs");
+
+  //removeAllChildren(plotter);
+  //this.visualizer = new BQStatisticsVisualizer( plotter, url, xpath, xmap, xreduce, { height:500, args: args } );
+
+    var opts = { /*title: 'Plot for ...',*/ args: args, };
+    var plotter = Ext.create('BQ.stats.Dialog', {
+        url     : url,
+        xpath   : xpath,
+        xmap    : xmap,
+        xreduce : xreduce,
+        opts    : opts,
+    });
+
+}
+
+function parseUrlArguments() {
+  var a = document.URL.split('?', 2);
+  if (a.length<2) return;
+  a = a[1].split('&');
+  var d = {};
+  for (var i=0; i<a.length; i++) {
+    var e = a[i].split('=', 2);
+    d[unescape(e[0])] = unescape(e[1]);
+  }
+  return d;
+}
+
+function appendInputs(urldict, id, surface, tocopy) {
+  var i=1;
+  while (id+i.toString() in urldict) {
+    cloneInput(surface, tocopy);
+    var e = document.getElementById(id+i.toString());
+    e.value = urldict[id+i.toString()];
+    i++;
+  }
+}
+
+function doBrowse(surface) {
+  if (typeof surface == 'string')
+    surface = document.getElementById(surface);
+
+  var rb  = new Bisque.ResourceBrowser.Dialog({
+      'height' : '85%',
+      'width' :  '85%',
+      listeners: { 'Select': function(me, resource) { surface.value = resource.uri; },
+                   scope: this },
+  });
+}
+
+function doDatasetBrowse(surface) {
+  if (typeof surface == 'string')
+    surface = document.getElementById(surface);
+
+  var rb  = new Bisque.DatasetBrowser.Dialog({
+      'height' : '85%',
+      'width' :  '85%',
+      listeners: { 'DatasetSelect': function(me, resource) { surface.value = resource.uri; },
+                   scope: this },
+  });
+}
+
+
+Ext.onReady(function() {
+  var myurl = parseUrlArguments();
+  if (!myurl) return;
+  if ('xmap' in myurl) doSelect('xmap', myurl['xmap'] );
+  if ('xreduce' in myurl) doSelect('xreduce', myurl['xreduce'] );
+
+  appendInputs(myurl, 'xpath', 'xpaths', 'xpathbox');
+  appendInputs(myurl, 'xmap', 'xmaps', 'xmapbox');
+  appendInputs(myurl, 'xreduce', 'xreduces', 'xreducebox');
+
+  if ('run' in myurl) doPlot();
+});
+
+//-->
+</script>
+
+</head>
+
+<body>
+<div class="content webapp"> <!-- main wrapping div -->
+
+<!--<span py:if="tg.identity.anonymous"><p>Please log-in to use this service.</p></span>
+<span py:if="not tg.identity.anonymous">-->
+
+
+<h1>Statistics service</h1>
+
+<p>This service allows you to summarize documents stored in the Bisque system. It operates on textual <strong>tag</strong> and graphical <strong>gobject</strong> documents.</p>
+
+<form action="/stats/compute" method="get" name="stats" id="stats">
+
+  <div>
+    <label id="header">Resource URL:</label>
+    <input name="url" type="text" id="url" value="${opts.get('url', '')}" />
+    <input name="browse" id="browse" type="button" value="Browse images" onclick="doBrowse('url')" />
+    <input name="browseD" id="browseD" type="button" value="Browse datasets" onclick="doDatasetBrowse('url')" />
+    <label>URL pointing to an image, tags, gobjects or to a dataset</label>
+  </div>
+
+  <div>
+    <label id="header">Presets:</label>
+    <select id="presets" style="width: 400px;" onchange="presetComboChanged()" >
+      <option value="custom" selected="selected">Custom</option>
+      <option value="tag_name_unique">Unique tag names</option>
+      <option value="tag_name_histogram">Histogram of tag names</option>
+      <option value="tag_probaility_vector">Vector of values of tag &quot;probability&quot;</option>
+      <option value="gobject_user_types">User defined gobject types</option>
+      <option value="gobject_type_histogram">Histogram of gobject types</option>
+      <option value="gobject_polyline_length_vector">Vector of polyline lengths</option>
+      <option value="gobject_polygon_area_histogram">Histogram of polygon areas</option>
+      <option value="gobject_polygon_area_vector">Vector of polygon areas</option>
+      <option value="gobject_point_number">Number of points</option>
+    </select>
+  </div>
+
+  <div id="xpaths">
+    <div id="xpathbox">
+      <label id="header">XPath expression:</label>
+      <input name="xpath" type="text" id="xpath" value="${opts.get('xpath', '')}" />
+      <label><a href="http://www.w3schools.com/xpath/xpath_syntax.asp">XPath</a> expression to convert a document into a vector of resources</label>
+    </div>
+  </div>
+  <div>
+    <input id="plus_button" type="button" value="+ XPath" onclick="cloneInput('xpaths', 'xpathbox')" />
+  </div>
+
+  <div id="xmaps">
+    <div id="xmapbox">
+      <label id="header">Mapping operation:</label>
+      <select name="xmap" id="xmap" >
+        <option py:for="o in op_keys" label="${'[%s] %s'%(o, operators[o])}">${o}</option>
+      </select>
+      <label>Map operation to convert a vector or resources into a vector of numbers or strings</label>
+    </div>
+  </div>
+  <div>
+    <input id="plus_button" type="button" value="+ Map" onclick="cloneInput('xmaps', 'xmapbox')" />
+  </div>
+
+
+  <div id="xreduces">
+    <div id="xreducebox">
+      <label id="header">Summarization operation:</label>
+      <select name="xreduce" id="xreduce" >
+        <option py:for="o in sum_keys" label="${'[%s] %s'%(o, summarizers[o])}">${o}</option>
+      </select>
+      <label>Reduce operation to summarize the vector of numbers or string</label>
+    </div>
+  </div>
+  <div>
+    <input id="plus_button" type="button" value="+ Reduce" onclick="cloneInput('xreduces', 'xreducebox')" />
+  </div>
+
+  <div id="xargs">
+    <input py:for="a in args" id="${a}" name="${a}" type="hidden" value="${args[a]}" />
+  </div>
+
+  <div>
+    <input name="plot" id="plot" type="button" value="Show statistics now!" onclick="doPlot()" />
+    <input name="submitbtn" id="submitbtn" type="button" value="Get statistics as XML" onclick="getXML()" />
+    <input name="submitbtn" id="submitbtn" type="button" value="Get statistics as CSV" onclick="getCSV()" />
+  </div>
+
+</form>
+
+</div>
+</body>
+</html>

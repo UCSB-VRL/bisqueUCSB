@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module name="itkModulePY" path="./itkModulePY" type="python">
+  <tag name="inputs">
+    <tag name="input-system" value="client_server" index="0" />
+    <tag name="input-system" value="image_url" index="1" />
+  </tag>
+  <tag name="help" value="itkModulePY" />   
+</module>

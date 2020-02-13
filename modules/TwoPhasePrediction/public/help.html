@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html  xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<h2>
+  <title>Strength Prediction</title>
+</h2>
+
+<body>
+
+<h3>About:</h3>
+
+<a href="public/marat_workflow.png" target="_blank"> <img src="public/marat_workflow.png" /></a>
+
+<p>
+This module implements a surrogate model that predicts effective yield strength of a composite given its 3-D microstructure.
+</p>
+
+<p>
+The model is developed for composites with strength contrast of 5: strength of hard phase s2/s1 = 5. The model works best on periodic 3-D microstructures.
+</p>
+<p>
+Calibration of the model is done by finite element simulation data by multivariate polynomial regression between principal component scores of 2-point statistics (representing microstructure) and effective yield strength (property). See more details in the paper, <a href="https://www.sciencedirect.com/science/article/pii/S0021999117304588" target="_blank">Data-driven reduced order models for effective yield strength and partitioning of strain in multiphase materials</a>.</p>
+
+
+
+<h3>Input</h3>
+     
+    <p> HDF5 file containing spatial information of phases.</p>
+
+   
+<h3>Output</h3>
+     
+    <p> Predicted effective yield strength.</p>
+</body>
+</html>

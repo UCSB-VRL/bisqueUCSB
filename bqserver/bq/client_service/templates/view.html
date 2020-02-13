@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC
+  "-//W3C//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//EN"
+  "http://www.w3.org/2002/04/xhtml-math-svg/xhtml-math-svg.dtd">
+
+<html  xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+  xmlns:svg="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:py="http://genshi.edgewall.org/"
+  xmlns:xi="http://www.w3.org/2001/XInclude">
+
+<xi:include href="master.html" />
+<head>
+    <title>Resource viewer</title>
+
+    <!-- GMaps API -->
+    <script py:if="tg.config.get('bisque.gmaps', None) is None" type="text/javascript" src="//maps.googleapis.com/maps/api/js?sensor=false"></script>
+    <script py:if="tg.config.get('bisque.gmaps', None) is not None" type="text/javascript" src="//maps.googleapis.com/maps/api/js?key=${tg.config.get('bisque.gmaps')}"></script>
+
+    <!-- Fix for templates that do not create html in the body -->
+    <style type="text/css">
+    #content { margin: 0px; }
+    </style>
+
+    <script type="text/javascript">
+    Ext.onReady(function() {
+        var _SB = BQ.ResourceViewer.dispatch('${resource}');
+    });
+    </script>
+
+</head>
+
+<body>
+</body>
+</html>
+

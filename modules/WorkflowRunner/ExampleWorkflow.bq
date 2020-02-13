@@ -1,0 +1,112 @@
+{
+    "0": {
+        "__Meta__": {
+            "Service": "blob_service",
+            "Method": "POSTXML",
+            "Path": "paths/insert"
+        },
+        "__Label__": "Link resource to BisQue",
+        "Parameters": [
+            {
+                "Inputs": {
+                    "__xmlbody__": "<resource value=\"${file_path}\" name=\"<%\nimport os\nfname = os.path.basename(file_path)\n%>${fname}\" />"
+                }
+            },
+            {
+                "Outputs": {
+                    "uniq": "xpath:/*/@resource_uniq"
+                }
+            }
+        ]
+    },
+    "1": {
+        "__Meta__": {
+            "Service": "image_service",
+            "Method": "GETBLOB",
+            "Path": "${uniq}/thumbnail"
+        },
+        "__Label__": "Request image thumbnail",
+        "Parameters": []
+    },
+    "2": {
+        "__Meta__": {
+            "Service": "data_service",
+            "Method": "POSTXML",
+            "Path": "${uniq}/auth"
+        },
+        "__Label__": "Share with clang",
+        "Parameters": [
+            {
+                "Inputs": {
+                    "__xmlbody__": "<auth email=\"clang@ucsb.edu\" action=\"read\" />"
+                }
+            }
+        ]
+    },
+    "3": {
+        "__Meta__": {
+            "Service": "module_service",
+            "Method": "POSTXML",
+            "Path": "MetaData/execute"
+        },
+        "__Label__": "Run MetaData module",
+        "Parameters": [
+            {
+                "Inputs": {
+                    "__xmlbody__": "<mex><tag name=\"inputs\"><tag type=\"system-input\" name=\"mex_url\"/><tag type=\"system-input\" name=\"bisque_token\"/><tag type=\"image\" name=\"image_url\" value=\"${server_url}/data_service/${uniq}\"/></tag></mex>"
+                }
+            },
+            {
+                "Outputs": {
+                    "mex_uniq": "xpath:/*/@resource_uniq"
+                }
+            }
+        ]
+    },
+    "4": {
+        "__Meta__": {
+            "Service": "module_service",
+            "Method": "GETXML",
+            "Path": "mex/${mex_uniq}",
+            "Poll_cond": "<%\nres=(module_status in ['FINISHED', 'FAILED'])\n%>${res}",
+            "Poll_interval": "10"
+        },
+        "__Label__": "Wait for MetaData completion",
+        "Parameters": [
+            {
+                "Inputs": {
+                    "view": "short"
+                }
+            },
+            {
+                "Outputs": {
+                    "module_status": "xpath:/*/@value"
+                }
+            }
+        ]
+    },
+    "5": {
+        "__Meta__": {
+            "Service": "notify",
+            "Method": "POSTXML",
+            "Path": "email"
+        },
+        "__Label__": "Notify clang",
+        "Parameters": [
+            {
+                "Inputs": {
+                    "recipient": "clang@ucsb.edu",
+                    "subject": "Metadata finished",
+                    "__xmlbody__": "Hi,\nyour Metadata module has ${module_status}.\nThanks,\nChris"
+                }
+            }
+        ]
+    },
+    "__Header__": {
+        "Version": "1.0",
+        "__Type__": "BisqueWorkflow",
+        "Name": "example workflow",
+        "Globals": ["@STRPARAM|file_path"],
+        "Error_mail": "clang@ucsb.edu"
+    }
+}

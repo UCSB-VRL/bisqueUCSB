@@ -1,0 +1,45 @@
+How to add new features to the feature server
+=============================================
+
+About feature files:
+For the newly added feature to work with the feature server first create a file
+with the name of your feature. Make sure that a feature with the same name is 
+that you plan to make is not in the directory. If you want to add another feature
+with the same name but different parameters you can give it a number a letter to 
+differentiate you feature from a  preexisting feature. Also the file has to follow
+the format seen the the Feature.py file. This file is the base class so it is best
+to use this file as an example.
+
+Advice:
+The easiest way to develope a feature module is to copy another feature module change the name
+and parameters to fit your descriptor 
+
+Let us begin:
+1. Create a .py file named after your feature.
+2. Create a class named after your feature and make sure this class calls the Feature base class and 
+also make sure to import the Feature class into your module or you will not be able to link the base class
+into your module
+3. Rename all the initalize parameters to fit your descriptor. Its best to follow a similar pattern
+to the base class so that everything can stay orginized and no confusion between feature tables can
+occur. There is an option to add parameters. If you feature has key points or other information
+that is numerical and changes from feature to feature you can have that information be stored in a 
+parameter column in the table. To fet this parameter column in your table you must define parameter_info
+variable and list out the name of the parameters you wish to store.
+4. Define a appendTable function to you class. The function must have the arguments uri and idnumber
+in that order to work with the feature server.
+5. In Feature.py there is an ImageImport class that allow you to us the uri to import images as a numpy matrix.
+With this image matrix you can perform you feature calculations on the image. Place your feature calculating 
+algorithm here. 
+6. To return you feature array and parameters to the feature server you have to use the self.setRow function
+built into the Feature Class. The arguments are uri,idnumber,descriptors,parameters. If you have no parameters
+do not bother to input anything here. With multiple feature vectors produced by you feature calculating 
+algorithm just call self.setRow for each vector and do not place all the vectors into the function at ones.
+THIS WILL GIVE AN ERROR.
+7. Finally before restarting the feature server add the name of you feature to the __init__.py under all so that
+you feature module is incorparted in the feature server.
+
+
+Advanced:
+There are many other aspects of the feature server that one can control from the feature class like
+chaning the initalizedTable setRow and indexTable functions. If you know what you are doing it is fine
+but if you do not it is easily possible to break the server 

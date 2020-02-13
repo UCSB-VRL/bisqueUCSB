@@ -1,0 +1,22 @@
+h1 {
+    font-size: 30px;
+}
+
+.footer {
+    padding: 10px;   
+}
+
+.footer .x-btn {
+    border: 1px solid rgb(209, 209, 209);
+}
+
+.footer .x-btn-default-toolbar-large .x-btn-inner {
+    font-size: 14px;       
+}
+
+.x-splitter {
+    border-left: 1px solid #98C8FF;
+    border-right: 1px solid #98C8FF;
+    background: url('images/splitter.png') center center no-repeat;
+    background-size: 3px 12px;
+}

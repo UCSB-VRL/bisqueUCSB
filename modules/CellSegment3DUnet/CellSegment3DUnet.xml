@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module name="CellSegment3DUnet" type="runtime">
+
+    <!-- Comments are OK -->
+    <tag name="inputs">
+        <tag name="resource_url" type="resource">
+            <template>
+                <tag name="accepted_type" value="image" />
+                <tag name="label" value="Image Stack for Segmentation" />
+                <tag name="prohibit_upload" value="true" type="boolean" />
+            </template>
+        </tag>
+ 	<tag name="min_dist" value="10" type="number">
+            <template>
+                <tag name="label" value="Minimum Distance" />
+                <tag name="reference" value="resource_url" />
+                <tag name="allowNone" value="true" type="boolean" />
+                <tag name="description" value="Minimum Possible Distance Between TWO Different Seeds" />
+            </template>
+        </tag> 
+
+ 	<tag name="label_threshd" value="10" type="number">
+            <template>
+                <tag name="label" value="Label Threshold" />
+                <tag name="reference" value="resource_url" />
+                <tag name="allowNone" value="true" type="boolean" />
+                <tag name="description" value="Minimum Possible Value for the Local Maximum to be the SINGLE Cell" />
+            </template>
+        </tag> 
+
+	<tag name="threshold" value="0.05" type="number">
+            <template>
+                <tag name="label" value="Threshold" />
+                <tag name="reference" value="resource_url" />
+                <tag name="allowNone" value="true" type="boolean" />
+                <tag name="description" value="The bilateral standard deviation (threshold) for CRF " />
+            </template>
+        </tag>
+      
+
+	<tag name="mex_url" type="system-input" />
+	<tag name="bisque_token" type="system-input" />
+    </tag>
+
+    <tag name="outputs">
+	<tag name="Segmentation" type="image">
+            <template>
+                <tag name="label" value="Segmentation image" />
+            </template>
+        </tag>  
+	<tag name="Metadata">
+            <template>
+                <tag name="label" value="Metadata" />
+            </template>
+        </tag>
+    </tag>
+
+    <tag name="execute_options">
+        <tag name="iterable" value="table_url" type="dataset" />
+    </tag>
+
+    <tag name="module_options">
+        <tag name="version" value="1.2" />
+    </tag>
+
+    <tag name="display_options">
+        <tag name="group" value="Segmentation" />
+    </tag>
+    <tag name="interface">
+        <tag name="javascript" type="file" value="webapp.js" />
+        <tag name="css" type="file" value="webapp.css" />
+    </tag>
+    <tag name="help" type="file" value="public/help.html" />
+    <tag name="thumbnail" type="file" value="public/thumbnail.svg" />
+
+    <tag name="title" type="string" value="CellECT 2.0" />
+    <tag name="authors" type="string" value="Rahul Vishwakarma, Tom Jiang, Amil Khan" />
+    <tag name="description" type="string" value="Analyze the cellular data by providing a workflow of 3D U-Net cell segmentation and probability map" />
+</module>
+
+

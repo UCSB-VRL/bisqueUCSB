@@ -1,0 +1,40 @@
+.bq_settings_panel {
+    margin-top: 10px;
+}
+
+.bq_cache_manager {
+    padding: 10px;
+}
+
+.bq_preferences_manager {
+    padding: 10px;
+}
+
+.bq_preferences_manager .x-btn {
+    margin: 6px;
+}
+
+.bq_preferences_manager .icon-upload {
+    width: 32px;
+    background-image: url(/core/images/icons_toolbar.svg) !important;
+    background-repeat: no-repeat;
+    background-size: 160px;
+    background-position: 0px -33px;
+}
+
+.bq_preferences_manager .icon-download {
+    width: 32px;
+    background-image: url(/core/images/icons_toolbar.svg) !important;
+    background-repeat: no-repeat;
+    background-size: 160px;
+    background-position: 0px -65px;
+}
+
+.bq_preferences_manager .icon-reset {
+    width: 32px;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-image: url('/core/images/viewer/icons_viewer.svg');
+    background-size: 200px;
+    background-position: 1px -261px;
+}

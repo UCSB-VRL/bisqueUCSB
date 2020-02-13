@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:py="http://genshi.edgewall.org/"
+    xmlns:xi="http://www.w3.org/2001/XInclude">
+
+<xi:include href="master.html" />
+
+<head>
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
+    <title>Bisque login</title>
+    <link rel="stylesheet" type="text/css" href="${tg.url('/client_service/css/login.css')}" />
+</head>
+
+<script type="text/javascript">
+
+var providers = ${providers_json};
+
+function redirect_login (url) {
+    document.location = Ext.String.urlAppend( url, 'came_from=${came_from}' );
+}
+
+</script>
+
+
+<body>
+
+<div id="loginform" class="login">
+
+<form action="${tg.url('/auth_service/login_handler', came_from = came_from.encode('utf-8'), __logins = login_counter.encode('utf-8'))}" method="POST" id='login_form' class="loginfields">
+
+    <h2>Welcome Back to BisQue!</h2>
+
+    <div class="local" py:if="'local' in providers" >
+        <h2>Login</h2>
+        <label for="loginusername">Username:<input type="text" id="loginusername" name="login" value="$username" class="text"></input></label>
+        <label for="loginpassword">Password:<input type="password" id="loginpassword" name="password" class="text"></input></label>
+        <button type="submit" id="submit" class="sigin_button" value="Sign-in with Bisque"><img src="/core/images/signin/signin.svg" /></button>
+
+        <div class="registration">
+            <p><a href="/registration/">Register New User</a></p>
+            <p><a href="/registration/lost_password">Forgot Password?</a></p>
+        </div>
+    </div>
+
+    <div class="remote" py:if="len(providers)>1 or 'local' not in providers">
+        <h2>External providers</h2>
+        <?python
+        remote = [k for k in providers.keys() if k != 'local']
+        ?>
+        <button py:for="p in remote" type="button" class="sigin_button" name="${p}" onclick="redirect_login('${providers[p]['url']}')" value="${providers[p]['text']}"><img src="${providers[p]['icon']}" /></button>
+    </div>
+</form>
+
+
+</div>
+
+</body>
+</html>

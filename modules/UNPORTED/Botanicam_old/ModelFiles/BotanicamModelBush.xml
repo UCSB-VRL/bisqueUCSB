@@ -1,0 +1,74 @@
+<resource>
+	<tag name="Dataset" value="Botanicam Model"/>
+	<tag name="Classification Method" value="Bush Descriptor"/>	
+	<tag name="Query" value="&quot;dataset_label&quot;:&quot;COPR&quot; AND &quot;annotator name&quot;:&quot;Jacob&quot;"/>	
+	<tag name="Number of Classifications" value="11"/>
+	<tag name="Classes">
+		<tag name="1">
+			<tag name="VernacularNames" value="Beach Burr"/>
+			<tag name="Genus" value="Ambrosia"/>
+			<tag name="species" value="chamissonis"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Ambrosia_chamissonis"/>
+		</tag>
+		<tag name="2">
+			<tag name="VernacularNames" value="Pink sand verbena"/>
+			<tag name="Genus" value="Abronia"/>
+			<tag name="species" value="umbellata"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Abronia_umbellata"/>
+		</tag>
+		<tag name="3">
+			<tag name="VernacularNames" value="Buckwheat"/>
+			<tag name="Genus" value="Eriogonum"/>
+			<tag name="species" value="fasciculatum"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Eriogonum_fasciculatum"/>
+		</tag>
+		<tag name="4">
+			<tag name="VernacularNames" value="Fennel"/>
+			<tag name="Genus" value="Foeniculum"/>
+			<tag name="species" value="vulgare"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Foeniculum_vulgare"/>
+		</tag>
+		<tag name="5">
+			<tag name="VernacularNames" value="Lemonade Berry"/>
+			<tag name="Genus" value="Rhus"/>
+			<tag name="species" value="integrifolia"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Rhus_integrifolia"/>
+		</tag>
+		<tag name="6">
+			<tag name="VernacularNames" value="Coyote Bush"/>
+			<tag name="Genus" value="Baccharis"/>
+			<tag name="species" value="pilularis"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Baccharis_pilularis"/>
+		</tag>
+		<tag name="7">
+			<tag name="VernacularNames" value="Chaparral Mallow"/>
+			<tag name="Genus" value="Malacothamnus"/>
+			<tag name="species" value="fasciculatus"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Malacothamnus_fasciculatus"/>
+		</tag>
+		<tag name="8">
+			<tag name="VernacularNames" value="CA Coastal Golden Bush"/>
+			<tag name="Genus" value="Isocoma"/>
+			<tag name="species" value="menziesii"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Isocoma_menziesii"/>
+		</tag>
+		<tag name="9">
+			<tag name="VernacularNames" value="CA Coastal Sage"/>
+			<tag name="Genus" value="Artemisia"/>
+			<tag name="species" value="californica"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Artemisia_californica"/>
+		</tag>
+		<tag name="10">
+			<tag name="VernacularNames" value="Quail Bush"/>
+			<tag name="Genus" value="Atriplex"/>
+			<tag name="species" value="lentiformis"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Atriplex_lentiformis"/>
+		</tag>
+		<tag name="11">
+			<tag name="VernacularNames" value="BushLupine"/>
+			<tag name="Genus" value="Lupinus"/>
+			<tag name="species" value="arboreus"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Lupinus_arboreus"/>
+		</tag>
+	</tag>
+</resource>

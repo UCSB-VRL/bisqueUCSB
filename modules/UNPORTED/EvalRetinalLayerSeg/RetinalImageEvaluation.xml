@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module name="RetinalImageEvaluation" path="./RetinalImageEvaluation" type="matlab">
+ <tag name="inputs">
+   <tag name="input-system" value="image_url" />
+ </tag>
+ <tag name="display_options" >
+  <tag name="group" value="RetinaEvaluation" />
+ </tag>
+ <tag name="help" value="RetinalImageEvaluation" />
+</module>
+

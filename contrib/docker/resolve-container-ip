@@ -1,0 +1,9 @@
+#!/bin/bash
+
+HOST=$(host $(head -1 /etc/hosts| awk '{print $2;}') |  awk '/has address/ { print $4 }')
+
+if [[ -n $HOST ]] ; then 
+    echo $HOST
+else
+    echo $(head -1 /etc/hosts| awk '{print $1;}' )
+fi

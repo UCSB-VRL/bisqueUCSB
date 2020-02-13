@@ -1,0 +1,19 @@
+#!/bin/sh
+#  This script is run in a clean condor environment (NO PATH, etc) on the remote
+#  node.   All needed ENV vars must be set up before launching the script.
+#
+#
+unset DISPLAY
+
+echo "+++BEGIN"
+date
+echo "+++NODE"
+hostname
+#echo "+++LOCAL DIR"
+#pwd
+#ls -l 
+#echo "+++ENVIRONMENT"
+#printenv
+
+echo "+++EXEC of ./pydist/CellProfiler/CellProfiler and $@"
+exec ./pydist/CellProfiler/CellProfiler $@

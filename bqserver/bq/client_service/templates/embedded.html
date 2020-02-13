@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC
+  "-//W3C//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//EN"
+  "http://www.w3.org/2002/04/xhtml-math-svg/xhtml-math-svg.dtd">
+
+<html  xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+  xmlns:svg="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:py="http://genshi.edgewall.org/"
+  xmlns:xi="http://www.w3.org/2001/XInclude">
+
+<script type="text/javascript">
+    var BQ = {};
+    BQ.config = BQ.config || {};
+    BQ.config.toolbar_visibility = true;
+</script>
+
+<xi:include href="master.html" />
+<head>
+    <title>Embedded viewer</title>
+
+    <!-- Fix for templates that do not create html in the body -->
+    <style type="text/css">
+    #content { margin: 0px; }
+    </style>
+
+    <script type="text/javascript">
+    <!--
+    Ext.onReady(function() {
+        var q = Ext.Object.fromQueryString(location.search);
+        var view = (q.view || '2d').toLowerCase();
+        var resource = q.resource;
+        q.logo = true;
+        q.simpleview = true;
+
+        if (view == '2d') {
+            BQApp.setCenterComponent({
+                xtype: 'imageviewer',
+                region : 'center',
+                itemId: 'main_view_2d',
+                height: '100%',
+                resource : resource + '?view=deep',
+                parameters : q,
+            });
+        } else if (view == '3d') {
+            BQApp.setCenterComponent({
+                region : 'center',
+                xtype: 'bq_volume_panel',
+                itemId: 'main_view_3d',
+                resource: resource + '?view=deep',
+                parameters : q,
+            });
+        } else if (view == 'movie') {
+            BQApp.setCenterComponent({
+                region : 'center',
+                xtype: 'bq_movie_viewer',
+                itemId: 'main_view_movie',
+                resource: resource,
+                parameters : q,
+            });
+        }
+    });
+    -->
+    </script>
+
+</head>
+
+<body>
+</body>
+</html>
+

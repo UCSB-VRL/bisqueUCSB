@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module name="AnnotationPhysicalDimensions" type="runtime">
+
+    <tag name="inputs">
+        <tag name="mex_url"  type="system-input" />
+        <tag name="bisque_token"  type="system-input" />
+
+        <tag name="dataset_url" type="dataset">
+            <template>
+                <tag name="accepted_type" value="dataset" />
+                <tag name="label" value="Dataset to extract metadata (Leave empty to process all available datasets)" />
+                <tag name="prohibit_upload" value="true" type="boolean" />
+                <tag name="allow_blank" value="true" type="boolean" />
+            </template>
+        </tag>
+
+        <tag name="use_full_path" value="true" type="boolean" >
+            <template>
+                <tag name="label" value="Use full annotation path" />
+                <tag name="description" value="If selected, the annotation 'Anemone' located in 'Secondary' will be named: 'Secondary/Anemone'" />
+            </template>
+        </tag>
+
+        <tag name="ignore_gobs" type="annotation_attr" >
+            <template>
+                <tag name="label" value="Ignore graphical" />
+                <tag name="description" value="Allows to skip specific graphical annotations and all their children" />
+                <tag name="allowBlank" value="true" type="boolean" />
+                <tag name="editable" value="false" type="boolean" />
+                <tag name="multiselect" value="true" type="boolean" />
+
+                <tag name="reference_dataset" value="dataset_url" />
+
+                <tag name="element" value="gobject" />
+                <tag name="attribute" value="type" />
+                <tag name="dataset" value="/data_service/" />
+            </template>
+        </tag>
+
+    </tag>
+
+    <tag name="outputs">
+         <tag name="table" type="table">
+            <template>
+                <tag name="label" value="Dimensions per annotation class" />
+            </template>
+         </tag>
+    </tag>
+
+    <tag name="module_options" >
+        <tag name="version" value="1" />
+    </tag>
+
+    <tag name="display_options" >
+       <tag name="group" value="Marine" />
+       <tag name="group" value="Annotations" />
+    </tag>
+
+    <tag name="help" type="file" value="public/help.html" />
+    <tag name="thumbnail" type="file" value="public/thumbnail.png" />
+
+    <tag name="title" type="string" value="Physical dimensions of graphical annotations" />
+    <tag name="authors" type="string" value="The Bisque team" />
+    <tag name="description" type="string" value="This module summarises physical dimensions of graphical annotations." />
+</module>

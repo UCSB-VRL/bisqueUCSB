@@ -1,0 +1,16 @@
+.icon-store {
+    background-image: url('/core/js/tree/images/store.png') !important;
+    background-size: 16px 16px;
+    background-repeat: no-repeat;
+}
+
+.icon-folder {
+    background-image: url('/core/js/tree/images/folder.svg') !important;
+    background-repeat: no-repeat;
+    background-size: 30px;
+    background-position: -4px -2px;
+    /*height: 32px;
+    width: 32px;
+    background-size: 44px;
+    background-position: -4px -2px;*/
+}

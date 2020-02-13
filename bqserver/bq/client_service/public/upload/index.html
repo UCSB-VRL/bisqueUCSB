@@ -1,0 +1,101 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Untitled Document</title>
+</head>
+
+<body>
+<h3>Upload file (one by one):</h3>
+
+<form action="/notebook_service/savefile" method="post" enctype="multipart/form-data" name="form" id="form">
+  <input name="upload" type="file" id="upload" size="100" />
+  <input type="submit" name="submit" id="submit" value="Transfer" />
+</form>
+
+<hr />
+<h3>Signal database with uploaded BIX/image files:</h3>
+
+<form action="/notebook_service/dn_http_upload" method="post" name="form2" id="form2">
+        <label>bixfiles (: separated) 
+        <input name="bixfiles" type="text" id="bixfiles" size="100" />
+        </label>
+<br />
+        <label>imagefiles (: separated)
+        <input name="imagefiles" type="text" id="imagefiles" size="100" />
+  </label><br />
+        <label>username 
+        <input name="username" type="text" id="username" size="30" />
+  </label><br />
+        <label>password 
+        <input name="password" type="text" id="password" size="30" />
+  </label><br />
+
+<input type="submit" name="submit" id="submit" value="Signal" />
+</form>
+
+<hr />
+
+<h3>Test if hashes exist (provide comma separated list):</h3>
+
+<form action="/notebook_service/dn_test_uploaded" method="post" enctype="multipart/form-data" name="form" id="form">
+  <label>
+  <input name="hashes" type="text" id="hashes" size="100" />
+  </label>
+  <input type="submit" name="submit" id="submit" value="Check" />
+</form>
+
+<h3>Test if hashes exist using savefile (provide comma separated list):</h3>
+
+<form action="/notebook_service/savefile" method="post" enctype="multipart/form-data" name="form" id="form">
+  <input name="upload" type="hidden" value="" />
+  <label>
+  <input name="hashes" type="text" id="hashes" size="100" />
+  </label>
+  <input type="submit" name="submit" id="submit" value="Check" />
+</form>
+
+
+
+
+
+
+<hr />
+
+<h2>DN Services</h2>
+
+<h3>Upload file (one by one)</h3>
+
+<form action="/notebook_service/savefile" method="post" enctype="multipart/form-data" name="form" id="form">
+  <input name="upload" type="file" id="upload" size="100" />
+  <input type="submit" name="submit" id="submit" value="Transfer" />
+</form>
+
+<h3>Test if hashes exist</h3>
+
+<form action="/notebook_service/savefile" method="post" enctype="multipart/form-data" name="form" id="form">
+  <input name="upload" type="hidden" value="" />
+  <label>
+  <input name="hashes" type="text" id="hashes" size="100" />
+  </label>
+  <input type="submit" name="submit" id="submit" value="Check" />
+</form>
+
+<h3>Signal database with uploaded BIX/image files:</h3>
+
+<form action="/notebook_service/notify" method="post" name="form2" id="form2">
+        <label>bixfiles (: separated) 
+        <input name="bixfiles" type="text" id="bixfiles" size="100" />
+        </label>
+<br />
+        <label>imagefiles (: separated)
+        <input name="imagefiles" type="text" id="imagefiles" size="100" />
+  </label><br />
+
+<input type="submit" name="submit" id="submit" value="Signal" />
+</form>
+
+
+
+</body>
+</html>

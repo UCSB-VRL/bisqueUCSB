@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module name="Botanicam" type="runtime" >
+
+    <tag name="inputs">
+        <tag name="mex_url"      type="system-input" />
+        <tag name="bisque_token" type="system-input" />
+                
+        <tag name="image_url" type="image">     
+            <template>
+                <tag name="label" value="Select an input image" />
+                <tag name="example_query" value="example:Botanicam" />
+            </template>
+            
+            <gobject name="roi">
+                <template>
+                    <tag name="label" value="When an input image is selected, you may want to select a sub-region using the 'rectangle' tool if the image has too much background..." />
+                    <tag name="gobject" value="rectangle" />
+                </template>
+            </gobject>		
+        </tag>   
+		<!--
+		<tag name="plant_part" value="bush" type="combo">
+		    <template>
+                <tag name="label" value="Select a visible part of the plant" />
+				<tag name="editable" value="false" type="boolean" />
+                <tag name="select" value="bush" />
+				<tag name="select" value="leaf" />
+            </template>
+		</tag>
+		-->
+    </tag>
+  
+    <tag name="outputs">
+        <tag name="summary">
+            <template>
+                <tag name="label" value="Detection summary" />
+            </template>
+        </tag>      
+        
+        <tag name="similar_images" type="browser">
+            <template>
+                <tag name="label" value="Similar images" />
+                <tag name="path" value="/data_service/image/" />
+                <tag name="value_action" value="query" />
+            </template>
+        </tag>           
+    </tag>       
+  
+    <tag name="execute_options">
+        <tag name="argument_style" value="position" />
+    </tag>
+
+    <tag name="module_options" >
+        <tag name="version" value="7" />
+    </tag>   
+
+    <tag name="display_options" >
+        <tag name="group" value="Plant Analysis" />
+        <tag name="group" value="Classification" />
+    </tag>
+    
+    <tag name="interface">        
+        <tag name="javascript" type="file" value="webapp.js" />
+        <tag name="css" type="file" value="webapp.css" />
+    </tag>    
+    
+    <tag name="title" value="Botanicam: The Plant Recognizer " /> 
+    <tag name="authors" value="Chris Wheat, Mike Korcha, &lt;a href=&quot;mailto:fedorov@ece.ucsb.edu&quot;&gt;Dmitry Fedorov&lt;/a&gt;, Kris Kvilekval, and alumni Golnaz Abdollahian" />    
+    <tag name="help"      type="file" value="public/help.html" />
+    <tag name="thumbnail" type="file" value="public/thumbnail.png" />
+    <tag name="description" type="string" value="The Botanicam 4 can be used to identify bushes and find similar images available in the system." />
+
+</module>

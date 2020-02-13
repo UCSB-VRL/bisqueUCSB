@@ -1,0 +1,87 @@
+.tools {
+    /*background-color: white;*/
+    padding: 10px 10px 10px 15px;
+}
+
+/*.tools .x-btn-default-large {
+    border-color: #CCCCCC;
+    padding: 6px;
+}*/
+
+.tools .x-btn-inner {
+    font-size: 14px;
+}
+
+.footer {
+    padding: 10px 10px 10px 15px;
+}
+
+/*.footer .x-btn-default-large {
+    border-color: #CCCCCC;
+    padding: 6px;
+}*/
+
+.footer .x-btn-inner {
+    font-size: 14px;
+}
+
+.footer .checkbox {
+    margin-left: 30px;
+}
+
+.thumbnail {
+    margin: 0px 10px 0px 10px;
+    width: 40px;
+    height: 40px;
+    background-image: url('/core/js/ResourceBrowser/Images/file.svg');
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+}
+
+.thumbnail.dataset {
+    background-image: url('/core/js/ResourceBrowser/Images/folder.svg');
+}
+
+.thumbnail.dir {
+    background-image: url('/core/js/ResourceBrowser/Images/folder.svg');
+}
+
+.thumbnail.image {
+    background-image: initial;
+}
+
+/* Icons */
+
+.bq-download-panel .icon {
+    width: 34px;
+    background-image: url('/export/css/icons.svg');
+    background-repeat: no-repeat;
+    background-size: 200px;
+    background-position: 0px 0px;
+    background-color: transparent;
+}
+
+.bq-download-panel .icon.select-images {
+    background-position: 0px -97px;
+}
+
+.bq-download-panel .icon.select-dataset {
+    background-position: 0px -129px;
+}
+
+.bq-download-panel .icon.download {
+    background-position: 0px 0px;
+}
+
+.icon-gdocs {
+    background-image: url('/export/images/gdocs.png') !important;
+}
+
+.icon-delete-cross {
+    background-image: url('/export/images/delete.png') !important;
+}
+
+.align {
+    vertical-align: middle;
+}

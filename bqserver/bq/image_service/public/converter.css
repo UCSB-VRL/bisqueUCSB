@@ -1,0 +1,57 @@
+.iconverter {
+
+}
+
+.iconverter .converterbuttons {
+    padding: 20px 10px 10px 10px;
+    border-top: solid 1px #aaaaaa;
+}
+
+.iconverter .service .x-panel-header-text {
+    margin-left: 20px;
+}
+
+.iconverter .service .x-tool {
+    right: 0px !important;
+    left: auto !important;
+}
+
+.iconverter .service .checkbox {
+    left: 0px !important;
+    right: auto !important;
+}
+
+.iconverter .service .surface {
+    padding: 5px;
+}
+
+.iconverter .service .surface label {
+    margin-left: 10px;
+}
+
+.convert {
+    margin-top: 15px;
+}
+
+.convert span {
+    font-size: 16px !important;
+    /*color: green !important;*/
+}
+
+.iconverter .service .checkbox img {
+    background-image: url('/core/images/viewer/tool-checkbox.png');
+    background-size: 15px 30px;
+}
+
+
+.iconverter .service .checkbox .x-tool-pin {
+    background-position: 0 -15px;
+}
+
+.iconverter .service .checkbox .x-tool-unpin {
+    background-position: 0 0;
+}
+
+.iconverter .service .x-form-color input[type="button"] {
+    border: 1px solid #000000;
+}

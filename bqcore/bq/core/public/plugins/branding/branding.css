@@ -1,0 +1,27 @@
+/*******************************************************************************
+  BisQue branding plug-in, store your logo here
+*******************************************************************************/
+
+.toolbar-main .main-logo {
+    height: 30px;
+    background-image: url('/core/images/bisque_logo_gray.svg');
+    background-size: 90px;
+}
+
+.viewer .name.logo {
+    height: 30px !important;
+    background-image: url('/core/images/bisque_logo_gray.svg');
+    background-size: 90px;
+}
+
+.bq-viewer-movie .logo {
+    height: 30px !important;
+    background-image: url('/core/images/bisque_logo_gray.svg');
+    background-size: 90px;
+}
+
+.bq-three-container .logo {
+    height: 30px !important;
+    background-image: url('/core/images/bisque_logo_gray.svg');
+    background-size: 90px;
+}

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module name="AnnotationDelete" type="runtime">
+
+    <tag name="inputs">
+        <tag name="mex_url"  type="system-input" />
+        <tag name="bisque_token"  type="system-input" />
+
+        <tag name="dataset_url" type="dataset">
+            <template>
+                <tag name="accepted_type" value="dataset" />
+                <tag name="label" value="Dataset (Leave empty to process all available datasets)" />
+                <tag name="prohibit_upload" value="true" type="boolean" />
+                <tag name="allow_blank" value="true" type="boolean" />
+            </template>
+        </tag>
+
+        <tag name="annotation_type" value="tag" type="combo" >
+            <template>
+                <tag name="label" value="Annotation" />
+                <tag name="select">
+                    <value>tag</value>
+                    <value>gobject</value>                    
+                </tag>
+                <tag name="editable" value="false" type="boolean" />
+            </template>
+        </tag>       
+
+        <tag name="annotation_attribute" value="name" type="combo" >
+            <template>
+                <tag name="label" value="Attribute" />
+                <tag name="select">
+                    <value>name</value>
+                    <value>value</value>
+                    <value>type</value>                    
+                </tag>
+                <tag name="editable" value="false" type="boolean" />
+            </template>
+        </tag>
+
+        <tag name="value_old" value="" type="annotation_attr" >
+            <template>
+                <tag name="label" value="Attribute value" />
+                <tag name="allowBlank" value="false" type="boolean" />
+                <tag name="editable" value="true" type="boolean" />
+
+                <tag name="reference_dataset" value="dataset_url" />
+                <tag name="reference_type" value="annotation_type" />
+                <tag name="reference_attribute" value="annotation_attribute" />
+
+                <tag name="element" value="tag" />
+                <tag name="attribute" value="name" />
+                <tag name="dataset" value="/data_service/" />
+            </template>
+        </tag>
+
+    </tag>
+
+    <tag name="outputs">
+         <tag name="deleted">
+            <template>
+                <tag name="label" value="Deleted annotations" />
+            </template>
+         </tag>
+    </tag>
+
+    <tag name="module_options" >
+        <tag name="version" value="1" />
+    </tag>
+
+    <tag name="display_options" >
+       <tag name="group" value="Marine" />
+       <tag name="group" value="Annotations" />
+    </tag>
+
+    <tag name="help" type="file" value="public/help.html" />
+    <tag name="thumbnail" type="file" value="public/thumbnail.png" />
+
+    <tag name="title" type="string" value="Delete annotations" />
+    <tag name="authors" type="string" value="The Bisque team" />
+    <tag name="description" type="string" value="This module deletes annotations with a given name, value or type." />
+</module>

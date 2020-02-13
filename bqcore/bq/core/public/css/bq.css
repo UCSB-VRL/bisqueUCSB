@@ -1,0 +1,78 @@
+body {
+/*
+	background-color: #ffffff;
+	font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 1.0em;
+	border:0.0em;
+	margin:0.0em;*/
+    font-size: 14px;
+    /*background-color: white !important;*/
+    background-color: #fefefe !important;
+}
+
+body, html, div  {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+a { text-decoration: none; color: #0000FF; letter-spacing:0.07em;}
+a:visited { text-decoration: none; color: #0000FF; }
+a:hover {
+	text-decoration: none;
+	color: #C60;
+	cursor:pointer;
+}
+a.black { color: #000000; font-weight:normal; }
+
+.content {
+  padding: 20px;
+  font-size: 14px;
+}
+
+.page {
+  /*background-color: #ffffff;*/
+}
+
+h1 {
+  font-family: 'Red Hat Display', sans-serif;
+  font-weight: normal;
+  font-size: 40px;
+}
+
+h2 {
+  font-family:'Red Hat Display', sans-serif;
+  font-weight: normal;
+  font-size: 28px;
+}
+
+h3 {
+  font-family: 'Red Hat Display', sans-serif;
+  font-weight: normal;
+  font-size: 22px;
+}
+
+
+
+/**************************************************************************/
+/*  */
+
+#flash {
+font-size:120%;
+font-weight:bolder;
+margin:0pt auto 0.5em;
+width:680px;
+}
+#flash div {
+padding:5px 15px 15px 55px;
+}
+#flash .ok {
+background:#EEEEFF url(/core/images/ok.png) no-repeat scroll left center;
+border:1px solid #CCCCEE;
+}
+#flash .warning {
+background:#FF9999 url(/core/images/error.png) no-repeat scroll left center;
+border:1px solid #FF3333;
+}
+#flash .alert {
+background:#FFFF99 url(/core/images/info.png) no-repeat scroll left center;
+border:1px solid #FFFF00;
+}

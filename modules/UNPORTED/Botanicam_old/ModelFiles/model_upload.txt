@@ -1,0 +1,6 @@
+In the Bisque environment:
+
+bq-upload-images -u XXX:XXX BotanicamModelBush.zip --tagfile=BotanicamModelBush.xml http://HOST
+
+bq-upload-images -u XXX:XXX BotanicamModelLeaf.zip --tagfile=BotanicamModelLeaf.xml http://HOST
+

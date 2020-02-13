@@ -1,0 +1,39 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="master.html" />
+
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
+  <title>Export service</title>
+</head>
+
+<body>
+  
+  
+  <h1>Export to TAR files</h1>
+  
+  <p>This application allows you to export any of the documents from the Bisque system packaged into a <a href="http://en.wikipedia.org/wiki/Tar_(file_format)">Tar</a> file. </p>
+  <p><em>All data will be packed into a Tar file where images will be in their original formats and metadata written in an XML file (Bisque XML format).</em></p>
+ 
+  <form action="/export/exportTar" method="post" name="export_form" id="export_form" >
+    
+    <div>
+      <label id="header">Document to export:</label>
+      <input name="resource_url" type="text" id="resource_url" value="${opts.get('url', '')}" />
+      <input name="browse" id="browse" type="button" value="Browse images" onclick="doBrowse('resource_url')" />
+      <label>URL pointing to a Bisque Image or a Dataset</label>
+    </div>      
+      
+    <div>
+      <input name="submitbtn" id="submitbtn" type="button" value="Download TAR file!" onclick="doSubmit()" />
+    </div>     
+    
+  </form>
+
+
+</body>
+</html>

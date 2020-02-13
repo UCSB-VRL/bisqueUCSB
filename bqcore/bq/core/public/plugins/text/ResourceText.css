@@ -1,0 +1,61 @@
+/*******************************************************************************
+ Author: Dima Fedorov <dima@dimin.net>
+ Copyright Center for Bio-Image Informatics, UCSB
+*******************************************************************************/
+
+.textio .editor {
+    font-family: monospace;
+    white-space: pre;
+    border: 0px;
+    padding: 15px;
+}
+
+/* ctyles for browser */
+
+.LightShadow.text {
+    background-image: url('/core/plugins/text/text.svg');
+    background-position: center center;
+    background-size: 150px;
+    background-repeat: no-repeat;
+}
+
+.LightShadow.text .x-panel {
+    opacity: 0.8;
+}
+
+.resicon.text {
+    background-image: url('/core/plugins/text/text.svg');
+    background-position: center top;
+    background-size: 100px;
+}
+
+.resicon.text.ImageCard, .resicon.text.ImageFull {
+    /*background-size: 270px;*/
+}
+
+.resicon.gridIcon.text {
+    background-image: url('/core/plugins/text/text.svg');
+    background-size: 29px;
+    background-position: 6px 0px;
+}
+
+.resicon.text .lblHeading1 {
+    margin-top: 125px;
+    background: transparent;
+    font-weight: 400;
+    font-size: 14px;
+    text-shadow: none;
+    max-height: 50px;
+    overflow: hidden;
+    text-align: center;
+}
+
+.resicon.text .lblHeading2, .resicon.text .lblContent {
+    display: none;
+}
+
+.resicon.text.ImageCard .lblHeading1, .resicon.text.ImageFull .lblHeading1  {
+    margin-top: 60px;
+}
+
+

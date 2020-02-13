@@ -1,0 +1,46 @@
+# -*- mode: python -*-
+"""Main server for {{package}}}
+"""
+import os
+import logging
+import pkg_resources
+from pylons.i18n import ugettext as _, lazy_ugettext as l_
+from tg import expose, flash
+from repoze.what import predicates 
+from bq.core.service import ServiceController
+
+
+log = logging.getLogger("bq.{{package}}")
+class {{package}}Controller(ServiceController):
+    #Uncomment this line if your controller requires an authenticated user
+    #allow_only = predicates.not_anonymous()
+    service_type = "{{mount}}"
+
+    def __init__(self, server_url):
+        super({{package}}Controller, self).__init__(server_url)
+        
+    @expose('bq.{{package}}.templates.index')
+    def index(self, **kw):
+        """Add your first page here.. """
+        return dict(msg=_('Hello from {{package}}'))
+
+def initialize(uri):
+    """ Initialize the top level server for this microapp"""
+    # Add you checks and database initialize
+    log.debug ("initialize " + uri)
+    service =  {{package}}Controller(uri)
+    #directory.register_service ('{{package}}', service)
+
+    return service
+
+def get_static_dirs():
+    """Return the static directories for this server"""
+    package = pkg_resources.Requirement.parse ("{{project}}")
+    package_path = pkg_resources.resource_filename(package,'bq')
+    return [(package_path, os.path.join(package_path, '{{package}}', 'public'))]
+
+def get_model():
+    from bq.{{package}} import model
+    return model
+
+__controller__ =  {{package}}Controller

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module name="ImageBasedToolForCountingNuclei" path="./ImageBasedToolForCountingNuclei" type="matlab">
+  <tag name="formal-input" value="$client_server" index="0" />
+  <tag name="formal-input" value="$image_url:string" index="1" />
+  <tag name="formal-input" value="filter_size:number='10'" index="2" />
+  <tag name="formal-input" value="min_distance:number='5'" index="3" />
+  <tag name="formal-input" value="Data Channel:number='1'" index="4" />
+  <tag name="formal-input" value="Nuclei Option:number='0'" index="5" />
+  <tag name="formal-input" value="mask_image:string='ONL'" index="6" />
+  <tag name="formal-output" value="resources:string" />
+  <tag name="group" value="Generic" />
+  <tag name="help" value="ImageBasedToolForCountingNuclei" />  
+</module>

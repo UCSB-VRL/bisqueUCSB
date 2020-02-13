@@ -1,0 +1,13 @@
+/var/log/bisque/*.log {
+        weekly
+        missingok
+        rotate 14
+        compress
+        delaycompress
+        notifempty
+        create 640 root adm
+        sharedscripts
+        postrotate
+         		invoke-rc.d rsyslog reload > /dev/null       
+        endscript
+}

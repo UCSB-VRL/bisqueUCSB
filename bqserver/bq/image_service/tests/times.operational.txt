@@ -1,0 +1,42 @@
+1 server - 2X 4core Xeon E5520 2.27GHz - 16GB RAM
+
+3x1 tests in 288.202s
+
+
+dough: 3 servers
+
+1 uploading2k/tile test ~ 8s
+1 uploading5k/tile test ~ 17s
+1 uploading2k/largemeta test ~ 25s
+3x10 tests in 493.182s
+
+dough: 3 servers v 5.5
+
+1 uploading2k/tile test ~ 8s
+1 uploading5k/tile test ~ 17s
+1 uploading2k/largemeta test ~ 11s
+3x10 tests in 371.647s
+
+1 uploading2k/largemeta test ~ 31s
+
+dough: 3 servers v 5.6
+
+1 uploading2k/tile test ~ 
+1 uploading5k/tile test ~ 
+1 uploading2k/largemeta test ~ 
+3x10 tests in 
+
+
+bovary: 1 servers
+
+1 uploading2k/tile test ~ 11s
+1 uploading5k/tile test ~ 23s
+1 uploading2k/largemeta test ~ 22s
+3x10 tests in 561.516s
+
+v5.5
+
+1 uploading2k/tile test ~ 11s
+1 uploading5k/tile test ~ 23s
+1 uploading2k/largemeta test ~ 17s
+3x10 tests in 528.775s

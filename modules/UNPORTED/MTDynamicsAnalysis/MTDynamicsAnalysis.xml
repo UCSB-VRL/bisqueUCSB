@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module name="MTDynamicsAnalysis" path="./MTDynamicsAnalysis" type="matlab">
+ <tag name="formal-input" value="$client_server" index="0" />
+ <tag name="formal-input" value="$image_url:string" index="1" />
+ <tag name="formal-input" value="growth_rate:number='3'" index="2" />
+ <tag name="formal-input" value="growth_len:number='0.3'" index="3" />
+ <tag name="formal-input" value="short_rate:number='4'" index="4" />
+ <tag name="formal-input" value="short_len:number='0.5'" index="5" />
+ <tag name="formal-input" value="atten_dur:number='5'" index="6" />
+ <tag name="formal-input" value="track_info:gobject='mttrack'" index="7" />
+ <tag name="formal-output" value="resources:string" />
+ <tag name="group" value="Microtubule" />
+</module>

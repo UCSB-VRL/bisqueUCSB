@@ -1,0 +1,175 @@
+/* CSS settings for resource tagger */
+.tab-arrow {
+    width: 11px !important;
+    border-radius: 0px !important;
+    box-shadow: none !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    border-color: transparent !important;
+}
+
+.tab-add {
+    width: 24px !important;
+}
+
+.icon-tag {
+    background-image: url('/core/js/ResourceTagger/Images/text.png') !important;
+    background-size: 15px 15px;
+    background-repeat: no-repeat;
+}
+
+.icon-gobject {
+    background-image: url('/core/js/ResourceTagger/Images/pencil.png') !important;
+    background-size: 15px 15px;
+    background-repeat: no-repeat;
+}
+
+.icon-tab-add {
+    background-image: url('/core/js/ResourceTagger/Images/add.png') !important;
+    left: -6px !important;
+}
+
+.icon-arrow {
+    background-image: url('/core/js/ResourceTagger/Images/arrow.png') !important;
+    left: -12px !important;
+    opacity: 1 !important;
+}
+
+.icon-folder {
+    background-image: url('/core/js/ResourceTagger/Images/folder.png') !important;
+    background-size: 15px 15px;
+    background-repeat: no-repeat;
+}
+
+.icon-add-folder {
+    background-image: url('/core/js/ResourceTagger/Images/add_folder.png') !important;
+    background-size: 15px 15px;
+    background-repeat: no-repeat;
+}
+
+.icon-trash {
+    background-image: url('/core/js/ResourceTagger/Images/trash.png') !important;
+    background-size: 15px 15px;
+    background-repeat: no-repeat;
+}
+
+.icon-color-picker {
+    background-image: url('/core/js/ResourceTagger/Images/color_picker.png') !important;
+    background-size: 20px 20px;
+    background-repeat: no-repeat;
+}
+
+.icon-stats {
+    background-image: url('/core/js/ResourceTagger/Images/stats.png') !important;
+    background-size: 15px 15px;
+    background-repeat: no-repeat;
+}
+
+.icon-file {
+    background-image: url('/core/js/ResourceTagger/Images/file.png') !important;
+}
+
+.icon-grid {
+    background-image: url('/core/js/ResourceTagger/Images/grid.png') !important;
+}
+
+.icon-add {
+    background-image: url('/core/js/ResourceTagger/Images/add.png') !important;
+}
+
+.icon-delete {
+    background-image: url('/core/js/ResourceTagger/Images/delete.gif') !important;
+}
+
+.icon-refresh {
+    background-image: url('/core/js/ResourceTagger/Images/refresh.png') !important;
+}
+
+.icon-save {
+    background-image: url('/core/js/ResourceTagger/Images/save.png') !important;
+}
+
+.icon-check {
+    background-image: url('/core/js/ResourceTagger/Images/check.png') !important;
+}
+
+.icon-uncheck {
+    background-image: url('/core/js/ResourceTagger/Images/uncheck.png') !important;
+}
+
+.icon-import {
+    background-image: url('/core/js/ResourceTagger/Images/import.png') !important;
+}
+
+.icon-export {
+    background-image: url('/core/js/ResourceTagger/Images/export.png') !important;
+}
+
+.icon-add-large {
+    background-image: url('/core/js/ResourceTagger/Images/add.png') !important;
+}
+
+.icon-delete-large {
+    background-image: url('/core/js/ResourceTagger/Images/delete.gif') !important;
+}
+
+.icon-save-large {
+    background-image: url('/core/js/ResourceTagger/Images/save.png') !important;
+}
+
+.editGrid {
+    color: #444;
+    font-size: 11px;
+}
+
+.x-grid-row-checker {
+    margin-left: 5px;
+    margin-top: 2px;
+}
+
+/* This is to block the tag name validation message box, since there's no way to configure this
+ */
+.x-grid-row-editor-errors {
+    display: none;
+}
+
+.bq-row-gob-custom {
+    color: #00AA00;
+}
+
+.bq_tagger_progress {
+    text-align: right;
+    padding: 0px 20px 0px 0px !important;
+}
+
+.bq_inprogress {
+    background-image: url('/core/images/progress_circles.gif') !important;
+    background-size: 15px 15px;
+    background-position: right center;
+    background-repeat: no-repeat;
+}
+
+.bq-gob-tagger .x-grid-tree-loading .x-tree-elbow-img {
+    background-image: url('/core/images/progress_circles.gif') !important;
+    background-size: 12px 12px;
+    background-position: left center;
+    background-repeat: no-repeat;
+}
+
+.bq-gob-tagger .icon-navigate {
+    background-image: url('/core/js/ResourceTagger/Images/compass.png') !important;
+    background-size: 15px 15px;
+    background-position: left center;
+    background-repeat: no-repeat;
+}
+
+.bq-gob-tagger .icon-select {
+    background-image: url('/core/js/ResourceTagger/Images/select.png') !important;
+    background-size: 15px 15px;
+    background-position: left center;
+    background-repeat: no-repeat;
+}
+
+.bq-gob-tagger .x-btn-toolbar .x-btn-inner {
+    padding-left: 20px !important;
+}

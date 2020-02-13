@@ -1,0 +1,18 @@
+
+This is the bisque metadata demo module.
+
+This module contains example code on how to  prepare a module
+for running under the bisque system either on condor or by command line.
+
+MetaData.py  : This is core script
+MetaData.sh* : Help script for condor (when using compiled python)
+MetaData.xml : The module description for bisque
+public/      : Resources used by bisque to show the module
+README       : This files
+runtime-module.cfg : how the runtime should handle running  the module under different platforms
+setup.py     : compile the module for condor exec (not needed for local command)
+
+
+
+
+

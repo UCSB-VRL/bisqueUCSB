@@ -1,0 +1,8 @@
+Alias /static /usr/local/turbogears/bisquik/bisquik/static
+
+WSGIScriptAlias /bisquik /usr/local/turbogears/bisquik/apache/myfirstapp.wsgi
+
+<Directory /usr/local/turbogears/bisquik/apache>
+Order deny,allow
+Allow from all
+</Directory>

@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" >
+
+<head>
+  <title>Metadata help</title>
+</head>
+
+<body>
+    <h2>Annotations from spreadsheet</h2>
+    <p>This analysis module can annotate files in the dataset from a spreadsheet. Any format supported by the table service is accepted: Excel, CSV, HDF-5.</p>
+
+    <h3>Requirements</h3>
+    <ol>
+    <li>The spreadsheet with annotations must be a member of the dataset being annotated.</li>
+    <li>One of the spreadsheet columns must contain a filename exactly as it appears on a resource name, with extension but without path.</li>
+    </ol>
+
+    <h3>Special system tags</h3>
+
+    <li>'file.name' - is used to find the resource to annotate, it is automatically set as a first column but can be changed with a drop down.</li>
+
+    <p>The system with try to match 'lat', 'long' and 'alt' in order to set resource's geo location. If matched the following tags will be added:</p>
+    <li>'geo.latitude'</li>
+    <li>'geo.longitude'</li>
+    <li>'geo.altitude'</li>
+
+    <p>The system with try to match 'width', 'height' and 'units' in order to set resource's physical dimensions. Width and height tag names will be parsed in order to detect the resolution units, unless a column is provided. If matched and found the following tags will be added:</p>
+    <li>'res.width'</li>
+    <li>'res.height'</li>
+    <li>'res.units'</li>
+
+    <h3>Overwriting</h3>
+
+    <p>The default setting is to overwrite values of annotations already present on images. If you wish to simply append new annotations un-select the "overwrite annotations" checkbox.</p>
+
+</body>
+</html>
+
+
+
+
+

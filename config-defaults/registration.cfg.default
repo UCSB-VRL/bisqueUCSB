@@ -1,0 +1,102 @@
+# the following line should be commented out from your cfg file too.
+#[global]
+from  bq.util.registration import registration_cb
+
+registration.site_name = 'www.example.com'
+registration.callback  = registration_cb
+
+# Below is a list of group names that the user will be added to once 
+# their email address has been validated.  It is your responsibility 
+# to ensure that these groups exist in your database. 
+
+# Example:
+# registration.verified_user.groups = ['validated']
+
+registration.verified_user.groups =[]
+
+# You have the option of immediately placing newly registered (and 
+# unvalidated) users in the Users group, and adding them to 
+# a list of groups.  When they validate, they will be taken out 
+# of the unverified groups and put into verified_user groups.
+# Example:
+# registration.unverified_user.groups = ['limited']
+#
+# Again, it is your responsibility to ensure these groups exist in
+# the database.
+#
+# If you don't want unverified people placed in the Users group,
+# just leave this list empty.
+
+registration.unverified_user.groups = []
+
+# Your site's password reset policy.  Options are 'send_current'
+# and 'reset'.  'send_current' sends the user their current password,
+# 'reset' sends them a new (reset) password.  Note that if you have 
+# identity's 'encryption_algorithm' set to encrypt passwords, the only
+# valid option is 'reset'
+
+registration.lost_password_policy = 'reset'
+
+# Mail related fields. You will need to enter appropriate values for 
+# your environment.  If you have different mail environments in 
+# development and production, you should probably separate these out 
+# into dev.cfg and prod.cfg
+
+# Note that if you have TurboMail installed, these values will be ignored
+# and TurboMail will be used to send email messages.  TurboMail is 
+# strongly suggested for production applications, as the registration
+# code is only single threaded will not exit certain controllers until
+# the email is sent.
+
+registration.mail.smtp_server = 'localhost'  #e.g. 'mail.example.com'
+registration.mail.smtp_server_port = 25
+registration.mail.smtp_server_username = None
+registration.mail.smtp_server_password = None
+
+
+# This email address is used as the From address for all emails, as well
+# as a point of contact for problems.
+registration.mail.admin_email = 'Captain Fancypants <cfp@example.com>'
+
+# The Subject line that will be on the new user validation email.
+registration.mail.new.subject = 'Welcome - New User Registration'
+
+# The Subject line that will be on the lost password email
+registration.mail.lost_password.subject = "Password Information"
+
+# The Subject line that will be on the validation email for changed email addresses
+registration.mail.changed_email.subject = "Your email address change"
+
+# The public and private key for reCAPTCHA. You may obtain these by registering 
+# at reCAPTCHA
+registration.recaptcha.public_key = 'you know it'
+registration.recaptcha.private_key = 'you know it'
+registration.recaptcha.disabled = True
+
+# The templates for the pages served by the registration controller.
+registration.templates.new = 'tgext.registration2.templates.new'
+registration.templates.invite = 'tgext.registration2.templates.invite'
+registration.templates.invite_create = 'tgext.registration2.templates.invite_create'
+registration.templates.accept_invitation = 'tgext.registration2.templates.accept_invitation'
+registration.templates.invitation_accepted = 'tgext.registration2.templates.invitation_accepted'
+registration.templates.create = 'tgext.registration2.templates.create'
+registration.templates.validate = 'tgext.registration2.templates.validate'
+registration.templates.lost_password = 'tgext.registration2.templates.lost_password'
+registration.templates.recover_lost_password = 'tgext.registration2.templates.recover_lost_password'
+registration.templates.validate_reset_password = 'tgext.registration2.templates.validate_reset_password'
+registration.templates.edit_user = 'tgext.registration2.templates.edit_user'
+registration.templates.validate_email = 'tgext.registration2.templates.validate_email'
+registration.templates.delete_user = 'tgext.registration2.templates.delete_user'
+
+# The templates for the email body of various messages.
+# The values are tuples of (_module_name_, _file_under_module_).
+registration.email_body.new = ('tgext.registration2',
+        'templates/email_body_new.txt')
+registration.email_body.invitation = ('tgext.registration2',
+        'templates/email_body_invitation.txt')
+registration.email_body.reset_password = ('tgext.registration2',
+        'templates/email_body_reset_password.txt')
+registration.email_body.lost_password = ('tgext.registration2',
+        'templates/email_body_lost_password.txt')
+registration.email_body.changed_email = ('tgext.registration2',
+        'templates/email_body_changed_email.txt')

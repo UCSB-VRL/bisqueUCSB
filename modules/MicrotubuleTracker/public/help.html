@@ -1,0 +1,40 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html  xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<body>
+
+    Microtubule (MT) Tracker is designed to track individual MTs in grayscale time-lapse images. You can upload a time-lapse image from your local 
+    storage or work on images that are already in BISQUE environment.
+    <br><br>
+    <b>Steps to run the algorithm:</b>
+    <br>
+    <br>
+    1. Open your time-lapse image by double-clicking it in "Select an Image" or "Upload local images" tabs on the left.
+    <br>
+    <br>
+    2. From the menu, select "POLYLINE". Click to mark a polyline on a microtubule on first frame, which you wish to track.
+    <img src="1.png" />
+    
+    <br>
+    <br>
+    3. Press the 'Run' button. Analysis may take some time depending on the image.
+    
+    <br>
+    <br>
+    4. The tracking result will appear in section 3, and will be stored in BISQUE for later use. The result can be exported to Google docs, XML, CSV, or visualized as overlaid on a movie.
+    <img src="2.png" />
+
+    <br>
+    <br>
+    <b>Notes</b>
+    <br>
+    <br>
+    
+    The tracking algorithm is sensitive to the quality of provided image. e.g. if a blank image is provided, and an arbitrary polyline is given, the 
+    resulting MT track will not be a meaningful track.
+    
+    <p>While most image and microscopy formats are supported by BISQUE, there may be newer formats that are not supported.  Please contact BISQUE team 
+    in such cases.</p>
+    
+</body>
+</html>

@@ -1,0 +1,3 @@
+
+class HttpProxy (object):
+    pass

@@ -1,0 +1,34 @@
+body {
+    background: url('images/nuclei.png');
+    background-position: -70px bottom;
+    background-repeat: no-repeat;
+    background-size: 60%; 
+}
+
+.help .help-container img {
+    border: none;
+}
+
+.x-panel-body {
+    background-color: transparent;
+}  
+
+.webapp .box {
+    background-color: rgba(238, 238, 238, 0.9);
+}
+
+.help {
+    background-color: transparent;
+}
+
+.help .help-container {
+    background-color: rgba(225, 255, 233, 0.9);
+}
+
+.webapp img#thumbnail {
+    /*visibility:hidden;*/
+}
+
+.webapp h1, .heading-2 {
+    text-shadow: #ffffff 0px 0px 6px;
+}

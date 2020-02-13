@@ -1,0 +1,75 @@
+This folder contains the XML Toolbox for Matlab.
+
+Copyright (c) 2005-2007 The Geodise Project, University of Southampton
+Project: GeodiseLab, http://www.geodise.org, http://www.omii.ac.uk
+Toolbox: XML Toolbox for Matlab
+Author : Marc Molinari <m.molinari@soton.ac.uk>
+Version: 3.2.1 (Tag: XMLTOOLBOX_3_2_1 )
+
+=====================================================================
+VERSION OVERVIEW
+=====================================================================
+----------------------------------------------------------
+Function\Version 1.0 2.0 2.2 3.0 3.1 3.1.3 3.2.0
+----------------------------------------------------------
+ xml_format       x   x   x   x   x    x     x
+ xml_format_att   -   -   -   x   -    -  
+ xml_formatany    -   -   -   -   x    x
+ xml_parse        x   x   x   x   x    x
+ xml_parse_att    -   -   -   x   -    -
+ xml_parseany     -   -   -   -   x    x
+ xml_help         x   x   x   x   x    x
+ xml_load         x   x   x   x   x    x
+ xml_save         x   x   x   x   x    x
+ demo_xml         -   -   -   -   -    x
+ tests/xml_tests  -   x   x   x   x    x
+ xml_toolbox_version  -   -   -   -    -     x
+ xml_toolbox_test -   -   -   -   -    -     x
+ matlab.xsd       x   -   -   -   -    -
+ strsplit         -   x   x   x   x    x
+ unblank          -   -   x   x   x    x
+----------------------------------------------------------
+
+=====================================================================
+HISTORY
+=====================================================================
+Version 3.2.1
+
+ + New types recognised: 
+   single, int8, int16, int32, int64, uint8, uint16, uint32, uint64
+
+ + Support for numbers now includes 17 significant digits and up 
+   to a maximum of 14 decimals (due to funny behaviour of 
+   sprintf('%0.15g ', [-1:0.01:1]) around -0.06).
+ 
+ + New error reporting: displays helpful message on stderr and 
+   throw unique error identifier.
+
+ + Parser has lost backward compatibility with Version 1.x.
+
+ + Bugfix: arrays of cell type have had wrong size information.
+ 
+ + Rewrite of test-suite and inclusion in Release
+
+ + (planned) Default Matlab class object serialisation
+ 
+-------------------------------------------------------
+Version 4.0.0 (planned)
+ + Matlab class objects
+ + xml_parseany symmetric to xml_formatany
+ + additional compatibility with Python types
+ + (XPath search option)
+-------------------------------------------------------
+Past versions:
+ Varsion 3.2.0
+ Version 3.1.4
+ Version 3.1.3
+ Version 3.1.2
+ Version 3.1
+ Version 3.0
+ Version 2.2
+ Version 2.1
+ Version 2.0
+ Version 1.1
+ Version 1.0
+-------------------------------------------------------

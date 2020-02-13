@@ -1,0 +1,38 @@
+.bq-color-picker {
+  cursor: pointer; 
+  font-size: 0px;
+}
+
+.bq-color-picker a {
+  border: 1px solid rgba(0,0,0,0);
+  float: left;
+  padding: 2px;
+  text-decoration: none;
+  -moz-outline: 0 none;
+  outline: 0 none;
+  cursor: pointer; 
+}
+
+.bq-color-picker a:hover,
+.bq-color-picker a.x-color-picker-selected {
+  background-color: #ffffff;
+  /*width: 60px;*/
+  color: #000000 !important; 
+  font-size: 12px;
+  font-style: normal;    
+  text-align: center;
+  border-radius: 3px;
+}
+
+.bq-color-picker em {
+  display: block;
+  border: 1px solid #aca899; 
+}
+
+.bq-color-picker em span {
+  cursor: pointer;
+  display: block;
+  height: 50px;
+  width: 50px;
+  line-height: 50px; 
+} 

@@ -1,0 +1,43 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html  xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+  <title>Botanicam Trainer help</title>
+</head>
+
+<body>
+
+<h3>About:</h3>
+
+<p>Botanicam: The Trainer is a module that trains model with Principle Component Analysis and Support Vector Machine on a set of images divided into classes by their given tags. The feature used to create the model is the Homogeneous Texture Descriptor extracted from non-overlapping tiled images of the original image. Each tile is 64 by 64 pixels.  The output of this module is a zip file containing the model and tags on the model file providing information on the model like number of classes, tags attached to the classes, etc.  The last file created is used by Botanicam 4: The Plant Recognizer as the model file.  All the model files can be found <a href="/client_service/browser?resource=/data_service/file?tag_query=%22module_identifier%22:%22Botanicam%22%20AND%20%22Classification%20Method%22:%22Bush%20Descriptor%22&tag_order=@ts:desc&wpublic=1" target="_blank">here</a>
+</p>
+
+<h3>Whats new?</h3>
+
+<p>Botanicam Trainer has moved to use all Python! The new module now uses <a href="http://scikit-learn.sourceforge.net/stable/" target="_blank">scikit-learn's</a> SVM module to create a model and bisque's <a href="http://biodev.ece.ucsb.edu/projects/bisquik/wiki/Developer/FeatureService" target="_blank">feature service</a> for the feature calculations and bisque's very own <a href="http://biodev.ece.ucsb.edu/projects/bisquik/browser/bisque/bqapi/bqapi" target="_blank">API</a> to make requests. Check out the source code <a href="http://biodev.ece.ucsb.edu/projects/bisquik/browser/bisque/modules/BotanicamTrainer/BotanicamTrainer.py" target="_blank">here</a>!
+</p>
+
+<h3>License</h3>
+
+<p class="license">By using this free and open source software you agree to reference this work and its authors in any products produced using it, including but not limited to scientific papers, posters, technical reports, presentations, leaflets, etc.
+</p>
+	
+<h3>How to Use:</h3>
+<p>1. In the "Select Data for Processing" section there are 2 options:
+	<OL TYPE="I">
+		<LI>"Select a set of images" allows the user to pick a dataset of images. 
+		<LI>"Query for a set of images" allows to create a query of their image collection to select a set of images.
+	</OL>
+</p>
+<a href="images/ResourceBrowser.jpg" target="_blank"><img src="images/ResourceBrowser.jpg" alt="Gobject Selection" width="100" height="180" /></a><br/>Figure 1 : Image of the Resource Browers selecting a tag on the left.
+<p>2. In the parameters section use the drop down menu to select the tags divide the images into classes. <i>Note: You can select one or more of these tags.</i>
+</p>
+<a href="images/TagSelect.jpg" target="_blank"><img src="images/TagSelect.jpg" alt="Gobject Selection" width="100" height="180" /></a><br/>Figure 2 : Image of multiple tags being selected.
+<p>3. Finally to run the module click "Run." Make sure that you have selected the correct data and parameters. The module can take from a few minutes to a few hours depending on the size of the dataset selected.
+</p>
+
+<h3>Problems?</h3>
+<p>If the results you obtained are not what you have expected please <a href="https://groups.google.com/group/bisque-bioimage">contact us</a>!</p>
+	
+</body>
+</html>

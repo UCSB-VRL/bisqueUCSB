@@ -1,0 +1,70 @@
+.bq-picker-path {
+    padding: 5px;
+    background-color: #cccccc;
+}
+
+.bq-picker-path .prefix {
+    cursor: pointer;
+    margin: 0px 15px 0px 23px;
+    padding: 4px 4px 2px 4px;
+    font-size: 18px;
+    font-weight: 500;
+    font-family: Abel, tahoma, arial, verdana, sans-serif;
+    border-radius: 5px;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.bq-picker-path .prefix:hover {
+    background-color: #FF9900;
+    color: #000000;
+}
+
+.bq-picker-path .path {
+    cursor: pointer;
+    padding: 4px 3px 4px 0px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: Abel, tahoma, arial, verdana, sans-serif;
+    border-radius: 5px;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.bq-picker-path .path:hover {
+    background-color: #99bce8;
+    color: #000000;
+}
+
+.bq-picker-path .path:after {
+    padding-left: 3px;
+    content: "/";
+    color: #999999;
+}
+
+.bq-picker-path .stream .x-box-inner .x-box-target {
+    left: auto;
+    right: 0px;
+    overflow: visible;
+    height: 100%;
+    width: auto !important;
+    display: inline-block;
+    min-width: 100%;
+    white-space: nowrap;
+}
+
+.bq-picker-path .stream .x-box-inner .x-box-target>div {
+    position: static !important;
+    left: auto !important;
+    right: auto !important;
+    display: inline-block;
+}
+

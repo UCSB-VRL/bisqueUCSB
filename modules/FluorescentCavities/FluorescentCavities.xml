@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module name="FluorescentCavities" type="runtime" >
+
+    <tag name="inputs">
+        <tag name="mex_url"      type="system-input" />
+        <tag name="bisque_token" type="system-input" />
+
+        <tag name="resource_url" type="resource">
+            <template>
+                <tag name="label" value="Select input resource" />
+                <tag name="accepted_type" value="dataset" />
+            </template>
+        </tag>
+    </tag>
+
+    <tag name="outputs">
+        <tag name="summary">
+            <template>
+                <tag name="label" value="Detection summary" />
+            </template>
+        </tag>
+
+        <tag name="MedianAreas" type="table">
+            <template>
+                <tag name="label" value="Median areas of cavities" />
+            </template>
+        </tag>
+
+    </tag>
+
+    <tag name="execute_options">
+        <tag name="argument_style" value="position" />
+    </tag>
+
+    <tag name="module_options" >
+        <tag name="version" value="1" />
+    </tag>
+
+    <tag name="display_options" >
+        <tag name="group" value="Fluorescence Analysis" />
+        <tag name="group" value="Detection" />
+    </tag>
+
+    <tag name="interface">
+        <tag name="javascript" type="file" value="webapp.js" />
+        <tag name="css" type="file" value="webapp.css" />
+    </tag>
+
+    <tag name="title" value="Detector of cavities in fluorescence images" />
+    <tag name="authors" value="&lt;a href=&quot;mailto:fedorov@ece.ucsb.edu&quot;&gt;Dmitry Fedorov&lt;/a&gt;." />
+    <tag name="help"      type="file" value="public/help.html" />
+    <tag name="thumbnail" type="file" value="public/thumbnail.png" />
+    <tag name="description" type="string" value="This application detects cavities in fluorescence images." />
+
+</module>

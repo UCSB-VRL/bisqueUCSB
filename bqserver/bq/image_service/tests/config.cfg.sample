@@ -1,0 +1,4 @@
+[Host]
+root: http://myhost.com
+user: myuser
+password: mypassword

@@ -1,0 +1,95 @@
+# Combined server and engine file
+# to be placed in /etc/nginx/sites-{available,enabled}
+
+# Serve static content with NGINX
+# Don't forget to use bq-admin deploy public to
+# You must EDIT and remove #EDIT before starting Nginx
+
+#####################################
+# Bisque MAIN server
+server {
+    #charset utf-8;
+    # Set the port of main bisque  server
+    listen       80;
+#EDIT    root         /path/to/bisque/public;
+
+    location = /favicon.ico {
+     #empty_gif;
+     return 204;
+    }
+    location /robots.txt {
+        return 200 "User-agent: *\nDisallow: /";
+    }
+
+    # Filter static files (in root) and serve directly
+    location ~* ^.+\.(jpg|jpeg|gif|png|ico|css|zip|tgz|gz|rar|bz2|pdf|txt|tar|wav|bmp|rtf|js|flv|swf|html|htm)$ {
+      try_files $uri  @bisque;
+      expires 7d;
+    }
+
+    # Use NGinx Uploader module (handles file transfers). OPTIONAL comment out this section if troublesome.
+    # http://www.grid.net.ru/nginx/upload.en.html
+    location /import/transfer {
+      # Store files in this directory
+#EDIT      upload_store /path/to/bisque/nginx_store;
+      upload_store_access user:rw group:rw all:rw;
+      # Set specified fields in request body
+      # this puts the original filename, new path+filename and content type in the requests params
+      upload_set_form_field $upload_field_name.uploaded "<resource name='$upload_file_name' value='file://$upload_tmp_path'/>";
+
+      upload_pass_form_field "^.*_resource$";
+      upload_cleanup 400 404 499 500-505;
+      upload_pass @bisque;
+
+      # Breaks on long filenames
+      upload_max_part_header_len 2048;
+      # Allow Large form  uploads
+      upload_max_output_body_len 0;
+     }
+
+    # Default try to server then send to bisque
+    location / {
+      try_files $uri  @bisque;
+    }
+
+    # Bisque is behind Uwsgi
+    location @bisque {
+        #uwsgi_pass 0.0.0.0:3031;
+        uwsgi_pass unix:///tmp/bisque.sock;
+        include uwsgi_params;
+        uwsgi_param SCRIPT_NAME "";
+        uwsgi_read_timeout 600;
+        uwsgi_send_timeout 600;
+        uwsgi_buffering off;
+    }
+
+    #error_page   500 502 503 504  /50x.html;
+    #location = /50x.html {
+    #    root   html;
+    #}
+}
+
+###########################################
+# ENGINE Configuration (remove or comment if not used)
+server {
+    # Engine PORT address
+    listen       27000;
+#EDIT    root /path/to/bisque/public;
+    charset utf-8;
+    location / {
+        #uwsgi_pass 0.0.0.0:3052;
+        uwsgi_pass unix:///tmp/engine.sock;
+        include uwsgi_params;
+        uwsgi_param SCRIPT_NAME "";
+        uwsgi_read_timeout 600;
+        uwsgi_send_timeout 600;
+        uwsgi_buffering off;
+    }
+
+    #error_log /var/log/nginx/engine-error debug;
+    #error_page   500 502 503 504  /50x.html;
+    #location = /50x.html {
+    #    root   html;
+    #}
+}
+

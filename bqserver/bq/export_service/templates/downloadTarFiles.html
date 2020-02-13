@@ -1,0 +1,46 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="master.html" />
+
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
+  <title>Export service</title>
+  
+<script>
+function downloadMoreZip(offset,limit,part) {
+  var query=document.getElementById("query").value;
+  var view="short";
+  var wpublicVal=document.getElementById("wpublic").value;
+  if(wpublicVal == "on") {
+    wpublic="true";
+  } else {
+    wpublic="false";
+  }
+  var action="downloadTar?tag_query="+query+"&amp;view="+view+"&amp;wpublic="+wpublic+"&amp;offset="+offset+"&amp;limit="+limit+"&amp;part="+part;
+  document.location.href=action;
+}
+
+function goBack() {
+  document.location.href="/bisquik/browser";
+}
+</script>  
+  
+</head>
+
+<body>
+
+<form action=""> 
+  <b>Download: Search query returned a .tar file with size more than 2GB, please download the files in parts.</b>
+  <ul>
+	  <li py:for="x in range(len(offsets))"><a onclick="downloadMoreZip(${offsets[x]},${limits[x]},${x+1})">${query}_${x+1}</a></li>
+	</ul>
+	<input type="hidden" id="view" value="${view}"></input>
+  <input type="button"  id="back" value="back" onclick="goBack()"></input>
+</form>
+
+</body>
+</html>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module name="MTTracker" path="./launch.py" type="runtime">
+	<tag name="formal-input" value="$client_server" index="0" />
+	<tag name="formal-input" value="$mex_url" index="1" />
+	<tag name="formal-input" value="$image_url:string" index="2" />
+    <tag name="formal-input" value="$frame_number" index="3" />
+    <tag name="formal-output" value="gobject_url:string" />
+    <tag name="group" value="Generic" />
+</module>

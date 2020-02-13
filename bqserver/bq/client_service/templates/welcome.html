@@ -1,0 +1,290 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+
+<xi:include href="master.html" />
+
+<head>
+
+    <title py:if="not welcome_message">Welcome</title>
+    <title py:if="welcome_message">${welcome_message}</title>
+
+    <link rel="stylesheet" type="text/css" href="${tg.url('/core/js/carousel/carousel.css')}" />
+    <script type="text/javascript" src="${tg.url('/core/js/carousel/Panel.js')}" ></script>
+
+    <script type="text/javascript" src="${tg.url('/usage/bq_usage_stats.js')}" ></script>
+
+    <link rel="stylesheet" type="text/css" href="${tg.url('/client_service/css/welcome.css')}" />
+
+<style type="text/css" py:if="thumbnail">
+    body {
+        background-image: url('${thumbnail}=800,600');
+    }
+</style>
+<style type="text/css" py:if="not thumbnail">
+    body {
+        background-image: url('${tg.url("/client_service/welcomebackground?size=800,600")}');
+    }
+</style>
+
+
+<script type="text/javascript">
+
+    function doResize ( comp, id ) {
+        setTimeout(function() {
+            var w = document.getElementById(id);
+            comp.setSize(w.offsetWidth, w.offsetHeight);
+        }, 100);
+    }
+
+    function onWelcomePreferences ( ) {
+        var message = BQ.Preferences.get('system', 'Welcome/message', '');
+        if (message) {
+            BQ.ui.notification( message, 15000 );
+        }
+    }
+
+    Ext.onReady( function() {
+
+        /*
+        // dima: moved to bq application
+        if (!(Ext.isChrome || Ext.firefoxVersion || Ext.isSafari)) {
+            BQ.ui.warning('<b>BISQUE</b> runs best on Chrome, Firefox and Safari.', 15000);
+        }*/
+        // dima: only show notification messages in the welcome page
+        BQ.Preferences.on('update_system_pref', onWelcomePreferences);
+        if (BQ.Preferences.isLoaded('system'))
+            onWelcomePreferences();
+
+        var main = BQApp.getCenterComponent();
+        main.body.addCls('welcome_front');
+        main.setAutoScroll( false );
+
+        this.usageExplorer = Ext.create('Ext.panel.Panel', {
+            renderTo: 'stats',
+            title: 'Bisque Usage',
+            header : { cls: 'widget-header', height: 45, },
+            width: 350,
+            height: 220,
+            cls: 'widget',
+            collapsible: true,
+            collapseDirection: 'left',
+            layout: 'fit',
+            border: 0,
+            defaults: { border: 0, cls: 'usage', },
+            items: [{
+                xtype: 'carouselpanel',
+                items: [{
+                    xtype: 'uploadstats',
+                    height: 120,
+                    showAxisTitles: false,
+                }, {
+                    xtype: 'monthlyuploadstats',
+                    height: 120,
+                    showAxisTitles: false,
+                }, {
+                    xtype: 'analysisstats',
+                    height: 120,
+                    showAxisTitles: false,
+                }, {
+                    xtype: 'monthlyanalysisstats',
+                    height: 120,
+                    showAxisTitles: false,
+                }, {
+                    xtype: 'usagestats',
+                }],
+            }],
+        });
+
+        this.recentsExplorer = Ext.create('Ext.panel.Panel', {
+            renderTo: 'activity',
+            width: '100%',
+            height: '100%',
+            cls: 'widget',
+            header : { cls: 'widget-header', height: 45, },
+            collapsible: true,
+            collapseDirection: 'top',
+            layout: 'fit',
+            border: 0,
+            defaults: { border: 0, cls: 'usage', },
+        });
+        Ext.EventManager.addListener( window, 'resize', function(e) {
+            doResize ( this.recentsExplorer, "activity" );
+        }, this );
+        doResize ( this.recentsExplorer, "activity" );
+
+    });
+
+</script>
+
+<script type="text/javascript" >
+    var my_items = [];
+</script>
+
+
+<script py:if="not tg.identity" type="text/javascript" >
+
+    Ext.onReady( function() {
+        this.recentsExplorer.setTitle('Explore published data');
+
+        var moduleBrowser = new Bisque.ResourceBrowser.Browser({
+            title: 'Applications',
+            layout: Bisque.ResourceBrowser.LayoutFactory.LAYOUT_KEYS.IconList,
+            viewMode: 'ModuleBrowser',
+            showOrganizer: false,
+            dataset: '/module_service',
+            wpublic: true,
+            border: true,
+            selType: 'SINGLE',
+            cls: 'apps welcome',
+            listeners: { 'Select': function(me, resource) {
+                          if (resource.available === false) return;
+                          window.open(BQ.Server.url('/module_service/'+resource.name));
+                       },
+                       scope: this },
+
+        });
+        my_items.push(moduleBrowser);
+
+
+        var s = '<img src="';
+        s += '${tg.url('/core/images/browse_80.png')}';
+        s += '" alt="Browse public images" />';
+        s += '<h3>Browse</h3>';
+
+        var imagesbtn = BQApp.getToolbar().queryById('menu_images');
+        BQ.ui.highlight(imagesbtn.getId(), s, {
+            anchor:'left',
+            width: 150,
+            height: 160,
+        });
+
+    });
+</script>
+
+<script py:if="not tg.identity" type="text/javascript" >
+    var tag_query = 'welcome_page:true';
+    var title = 'Featured Datasets';
+</script>
+<script py:if="tg.identity" type="text/javascript" >
+    var tag_query = undefined;
+    var title = 'Datasets';
+</script>
+
+
+<script type="text/javascript" >
+    Ext.onReady( function() {
+        var imgBrowser = new Bisque.ResourceBrowser.Browser({
+          title : 'Images',
+          viewMode: 'ViewerOnly',
+          tagOrder: '"@ts":desc',
+          selType: 'SINGLE',
+          showOrganizer: false,
+          wpublic: false,
+          border: true,
+          cls: 'welcome',
+          listeners: { 'Select': function(me, resource) {
+                          window.open(BQ.Server.url('/client_service/view?resource='+resource.uri));
+                       },
+                       scope: this },
+        });
+
+        var setBrowser = new Bisque.ResourceBrowser.Browser({
+              layout: Bisque.ResourceBrowser.LayoutFactory.LAYOUT_KEYS.Compact,
+              title: title,
+              viewMode: 'ViewerOnly',
+              tagOrder: '"@ts":desc',
+              dataset: '/data_service/dataset',
+              selType: 'SINGLE',
+              showOrganizer: false,
+              wpublic: false,
+              border: true,
+              cls: 'welcome',
+              tagQuery: tag_query,
+              listeners: {
+                  'Select': function(me, resource) {
+                      window.open(BQ.Server.url('/client_service/view?resource='+resource.uri));
+                  },
+                  scope: this
+              },
+        });
+
+        my_items.push(setBrowser);
+        my_items.push(imgBrowser);
+
+    });
+</script>
+
+<script py:if="tg.identity" type="text/javascript" >
+    Ext.onReady( function() {
+        this.recentsExplorer.setTitle('My recent stuff');
+
+        var mexBrowser = new Bisque.ResourceBrowser.Browser({
+          //layout: Bisque.ResourceBrowser.LayoutFactory.LAYOUT_KEYS.Grid,
+          layout: Bisque.ResourceBrowser.LayoutFactory.LAYOUT_KEYS.List,
+          title : 'Analysis',
+          /*layoutConfig: {
+              colIconWidth:   25,
+              colValueText:   'Name',
+              colValueText:   'Status'
+          },*/
+          viewMode : 'MexBrowser',
+          dataset : '/data_service/mex',
+          tagOrder: '"@ts":desc',
+          selType: 'SINGLE',
+          showOrganizer: false,
+          wpublic: ${wpublicjs},
+          border: true,
+          cls: 'welcome',
+          listeners: {
+              scope: this,
+              'Select': function(me, resource) {
+                  window.open( BQ.Server.url('/module_service/'+resource.name+'/?mex='+resource.uri) );
+              },
+              show: function(me) {
+                  me.activateAutoReload();
+              },
+          },
+        });
+        my_items.push(mexBrowser);
+    });
+</script>
+
+<script type="text/javascript" >
+    Ext.onReady( function() {
+        var tabs = Ext.create('Ext.tab.Panel', {
+            region : 'east',
+            activeTab : 0,
+            split : true,
+            cls: 'apps welcome',
+            plain : true,
+            border: false,
+            items : my_items,
+        });
+        this.recentsExplorer.add(tabs);
+    });
+
+</script>
+
+
+</head>
+
+<body>
+
+    <div class="box heading" id="heading" py:if="not tg.identity and welcome_message">
+        <h2>${welcome_message}</h2>
+    </div>
+
+    <div class="box randomimage" id="randomimage" py:if="not tg.identity and imageurl">
+        <a href="${imageurl}">Current random image</a>
+    </div>
+
+    <div class="stats" id="stats"></div>
+
+    <div class="activity intro" id="activity" py:if="not tg.identity"></div>
+    <div class="activity" id="activity" py:if="tg.identity"></div>
+</body>
+</html>

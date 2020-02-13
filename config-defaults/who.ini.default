@@ -1,0 +1,157 @@
+# Bisque who.ini
+# Specialized code for authentication schemes in bq.core.lib
+
+
+########### REQUIRED PLUGINS ################
+[plugin:friendlyform]
+use = repoze.who.plugins.friendlyform:FriendlyFormPlugin
+login_form_url= /auth_service/login
+login_handler_path= /auth_service/login_handler
+logout_handler_path = /auth_service/logout_handler
+post_login_url = /auth_service/post_login
+post_logout_url = /auth_service/post_logout
+rememberer_name = auth_tkt
+
+[plugin:auth_tkt]
+use = repoze.who.plugins.auth_tkt:make_plugin
+secret = images
+#cookie_name=bisque
+#secure=False
+#include_ip=False
+#timeout = 60
+#reissue_time = 5
+
+[plugin:basicauth]
+use = repoze.who.plugins.basicauth:make_plugin
+
+[plugin:sqlauth]
+# An SQLAlchemy authorization plugin
+use = bq.core.lib.sqlauth:auth_plugin
+
+[plugin:mexauth]
+# An SQLAlchemy authorization plugin
+use = bq.core.lib.mex_auth:make_plugin
+
+
+[plugin:autoregister]
+use = bq.core.lib.autoreg:AutoRegister
+
+
+################# OPTIONAL PLUGINS #######################
+
+#LDAP
+# dependency:  repoze.who.plugins.ldap
+# https://pypi.python.org/pypi/repoze.who.plugins.ldap
+# external libs : libsasl2-dev libldap2-dev
+# pip install https://launchpad.net/repoze.who.plugins.ldap/trunk/1.1a1/+download/repoze.who.plugins.ldap-1.1a1.tar.gz
+#LDAP[plugin:ldap_auth]
+#use = bq.core.lib.ldap_auth:LDAPAuthenticatorPluginExt
+#  your ldap service
+#ldap_connection = ldap://directory.ucsb.edu
+#ldap_connection = ldaps://ldap.ucsb.edu:636
+#returned_id=login
+# This is the base of the 'distinguished names' (DNs) of persons in your
+# particular LDAP instance.  It will vary from server to server.
+#base_dn= ou=People,o=ucsb
+#attributes = uid,cn,sn,mail
+#auto_register = autoregister
+
+
+# OpenID
+# dependency:  repoze.who.plugins.openid
+# pip install repoze.who.plugins.openid
+# [plugin:openid]
+# use = repoze.who.plugins.openid:make_identification_plugin
+# store = file
+# store_file_path = %(here)s/data/sstore
+# # Arguments for login_handler giving provider url and return page
+# openid_field = openid_provider
+# came_from_field = came_from
+# error_field = error
+# session_name = beaker.session
+# login_form_url = /auth_service/login
+# login_handler_path = /auth_service/openid_login_handler
+# logout_handler_path = /auth_service/logout_handler
+# logged_in_url = /
+# logged_out_url = /auth_service/post_logout
+# rememberer_name = auth_tkt
+# # Required by google open id http://code.google.com/apis/accounts/docs/OpenID.html
+# ax_require=email=http://axschema.org/contact/email firstname=http://axschema.org/namePerson/first lastname=http://axschema.org/namePerson/last
+
+# [plugin:openid_auth]
+# # # Local plugin maps
+# use = bq.core.lib.openid:make_plugin
+# # Provide a plugin name that will register unknown users.
+# auto_register=autoregister
+
+
+# # CAS : Central Authentication Service
+# dependency:
+# [plugin:cas_auth]
+# use = bq.core.lib.cas_auth:make_plugin
+# cas_base_url = https://auth.iplantcollaborative.org/cas4
+# login_path  = /auth_service/cas_login_handler
+# logout_path =/auth_service/logout_handler
+# post_logout = /auth_service/post_logout
+# remember_name = auth_tkt
+# validate_plugin=autoregister:register_user
+# validate_plugin=autoregister:validate_user
+# registration_url = https://user.cyverse.org
+
+
+#[plugin:appauth]
+## An app authorization plugin for ajax
+#use = bq.core.lib.app_auth:make_plugin
+#login_path = /auth_service/login_app
+#logout_path = /auth_service/logout_app
+#post_logout =/auth_service/post_logout
+#rememberer_name = auth_tkt
+
+
+
+################  Configuration  ########################
+# organized into sections see repoze.who docs for real explanation
+#
+# In each section (identifieres, challengers, etc)  order is important!
+#  Each plugin is tried until one reports success. Please don't reorder
+
+
+[general]
+request_classifier = bq.core.lib.challenge_decider:bisque_request_classifier
+challenge_decider = bq.core.lib.challenge_decider:bisque_challenge_decider
+
+[identifiers]
+plugins =
+# plugin order matters: friendlyform on logout_handler send httpunathorized
+    friendlyform;browser
+    auth_tkt
+    basicauth
+    mexauth
+#    appauth;json
+#    openid
+#    cas_auth
+# Cas must be last because openid replaces logout with redirect /post_logout
+
+[challengers]
+plugins =
+# Cas must be first challenger (as openid always send challenge to google)
+#    cas_auth
+#    openid
+#    appauth;json
+    friendlyform;browser
+    basicauth
+
+[authenticators]
+plugins =
+    sqlauth
+#    ldap_auth
+    mexauth
+#    cas_auth
+#    openid_auth
+
+
+[mdproviders]
+plugins =
+    bq.core.lib.sqlauth:md_plugin
+    bq.core.lib.sqlauth:md_group_plugin
+#    autoregister

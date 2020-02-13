@@ -1,0 +1,19 @@
+1 server - 2X 4core Xeon E5520 2.27GHz - 16GB RAM - v5.6
+========================================================
+
+v5.7:
+Ran 45 tests in 252.215s
+
+v5.8:
+Ran 45 tests in 358.582s
+
+
+dough: 3 servers - v5.6
+=======================
+
+Ran 45 tests in 177.367s FAILED (failures=9)
+
+
+bovary: 1 servers - v5.6
+=======================
+

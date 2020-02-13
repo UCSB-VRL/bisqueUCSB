@@ -1,0 +1,37 @@
+[Host]
+
+root: http://localhost:8080
+user: test
+password: test
+
+
+[Store]
+
+location: http://hammer.ece.ucsb.edu/~bisque/test_data/images/
+local_dir: SampleData
+results_dir: Results
+temp_dir: temp
+
+
+[SimpleTest]
+
+#simple rgb image, if not found in local dir
+#will try to fetch from the data storage provided
+test_image: flowers_24bit_nointr.png
+feature_response: Feature_Response_Results.h5
+feature_sample: Feature_Past_Response_Results.h5
+
+
+[ParallelTest]
+
+threads: 4
+test_image: changing_tides.jpg
+feature_response: Feature_Parallel_Response_Results.h5
+feature_sample: Feature_Parallel_Past_Response_Results.h5
+
+
+[nosetests]
+
+verbosity=2
+#nocapture = 1
+#pdb=1

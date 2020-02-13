@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html  xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+	<title>Botanicam help</title>
+</head>
+
+<body>
+
+<h3>About:</h3>
+
+<p>Botanicam 4: The Plant Recognizer module identifies bushes in images and searches for similar images in the users image collection that match the tags for the class of the identified bush. In order to predict the type of bush for the image, the module downloads the latest model file created by the Botanicam Trainer stored on the Bisque system. The feature used to classify is the Homogeneous Texture Descriptor extracted from non-overlapping tiled images of the original image. Each tile is 64 by 64 pixels. The resulting features are classified with Principle Component Analysis and Support Vector Machine. The majority vote is used to decide the class for the image. The confidence in the results section is the amount of features for the majority over the total amount of features. The model files can be found <a href="/client_service/browser?resource=/data_service/file?tag_query=%22module_identifier%22:%22Botanicam%22%20AND%20%22Classification%20Method%22:%22Bush%20Descriptor%22&limit=1&tag_order=@ts:desc&wpublic=1" target="_blank">here</a>.
+</p>
+
+<h3>What's new?</h3>
+
+<p>Botanicam has moved to use all Python! The new module now uses  <a href="http://scikit-learn.sourceforge.net/stable/" target="_blank">scikit-learn's</a> SVM module to classify and bisque's <a href="http://biodev.ece.ucsb.edu/projects/bisquik/wiki/Developer/FeatureService" target="_blank">feature service</a> for the feature calculations and bisque's very own <a href="http://biodev.ece.ucsb.edu/projects/bisquik/browser/bisque/bqapi/bqapi" target="_blank">API</a> to make requests. Check out the source code <a href="http://biodev.ece.ucsb.edu/projects/bisquik/browser/bisque/modules/Botanicam/Botanicam.py" target="_blank">here</a>!
+</p>
+
+<h3>License</h3>
+
+<p class="license">By using this free and open source software you agree to reference this work and its authors in any products produced using it, including but not limited to scientific papers, posters, technical reports, presentations, leaflets, etc.
+</p>
+	
+<h3>How to Use:</h3>
+<p>1. In the "Select Data for Processing" section there are 3 options:
+	<OL TYPE="I">
+		<LI>"Select an Image" allows the user to pick an image from their image collection on the Bisque system.
+		<LI>"Select an example" allows the user to test out the module with images that the developer has chosen which would work best with the module.
+		<LI>"Upload local images" which allows the user to select an image from their desktop or other devices to use in the module.
+	</OL>
+</p>
+<p>2. Once you have selected an image it will appear in the viewer. A few option will be displayed above the image. If you would like to crop the image select Rectangle and click on the image. A red box will appear on the image. Click the select option and click on the box to drag the box to the region you want to crop. Select the corners and drag to re-size the region.
+</p>
+<a href="images/gobject selection.jpg" target="_blank"><img src="images/gobject selection.jpg" alt="Gobject Selection" width="100" height="200" /></a>
+<br/>Figure 1 : Image of a Gobject with the rectangle tool used to crop a section of the image.
+<p>3. Click Run and the module will start processing the image. This will take a few minutes.
+</p>
+<p>4. After the modules is done, a detection summary will be given with a list of tags that the module thinks the image should be labelled. The module will also query images on the system with the same tags in the similar images box.
+</p>
+
+<h3>Problems?</h3>
+
+<p>If the results you obtained are not what you have expected please <a href="https://groups.google.com/group/bisque-bioimage">contact us</a>!</p>
+
+</body>
+</html>

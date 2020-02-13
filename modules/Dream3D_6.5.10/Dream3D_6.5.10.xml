@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module name="Dream3D_6.5.10" type="runtime" >
+
+    <tag name="inputs">
+        <tag name="mex_url"      type="system-input" />
+        <tag name="bisque_token" type="system-input" />
+
+        <tag name="InputFile"  type="resource">
+            <template>
+                <tag name="label" value="HDF input" />
+				<tag name="accepted_type" value="table" />
+				<tag name="accepted_type" value="dataset" />
+				<tag name="prohibit_upload" value="true" />
+            </template>
+        </tag>
+
+        <tag name="pipeline_url"  type="resource">
+            <template>
+                <tag name="label" value="Select a pipeline" />
+                <tag name="accepted_type" value="dream3d_pipeline" />
+                <tag name="prohibit_upload" value="true" />
+            </template>
+        </tag>
+
+        <tag name="pipeline_params" type="pipelineparams">
+            <template>
+            	<tag name="label" value="Pipeline parameters" />
+            	<tag name="reference" value="pipeline_url" />
+            </template>
+        </tag>
+
+        <tag name="OutputPrefix"   value="myoutput"  type="string">
+       	    <template>
+            	<tag name="label" value="Name prefix for the output HDF resource(s)" />
+            </template>
+        </tag>
+    </tag>
+
+    <tag name="outputs">
+    	<!--  Normal outputs  -->
+		<tag name="output_hdf" type="table">
+			<template>
+				<tag name="label" value="Resulting HDF resource" />
+			</template>
+		</tag>
+		<!--  Iterated outputs  -->
+		<tag name="output_table" type="multiparam">
+			<template>
+				<tag name="label" value="Select a row to see individual results"/>
+			</template>
+		</tag>
+    </tag>
+
+    <tag name="execute_options">
+		<tag name="iterable" value="InputFile" type="dataset" />
+		<tag name="postrun_entrypoint" value="collect_outputs" />
+	</tag>
+
+    <tag name="module_options" >
+        <tag name="version" value="1" />
+    </tag>
+
+    <tag name="display_options" >
+        <tag name="group" value="Materials analysis" />
+    </tag>
+
+    <tag name="interface">
+        <tag name="javascript" type="file" value="webapp.js" />
+    </tag>
+
+    <tag name="title" value="Dream3D 6.5.10" />
+    <tag name="authors" value="UCSB" />
+    <tag name="help"      type="file" value="public/help.html" />
+    <tag name="thumbnail" type="file" value="public/thumbnail.png" />
+    <tag name="description" type="string" value="This app runs Dream3D on an input HDF resource and a pipeline and creates an output HDF resource." />
+	<tag name="asynchronous" value="True"/>
+</module>

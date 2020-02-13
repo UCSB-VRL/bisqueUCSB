@@ -1,0 +1,148 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html  xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"
+        xmlns:py="http://genshi.edgewall.org/"
+        xmlns:xi="http://www.w3.org/2001/XInclude">
+
+<script type="text/javascript"><!--
+    var BQ = BQ || {};
+    BQ.config = BQ.config || {};
+    if (location.search.indexOf('embed=true')>0) {
+        BQ.config.embedded_mode = true;
+        BQ.config.toolbar_visibility = true;
+    }
+--></script>
+
+<!--?python tg.config['bisque.js_environment'] = 'production' ?-->
+
+<xi:include py:if="tg.config.get('bisque.js_environment', None) != 'production'" href="master.html" />
+
+<head profile="http://www.w3.org/2005/10/profile">
+    <title>${module_name}</title>
+
+    <link rel="icon" type="image/png" href="/core/images/bisque_icon.png" />
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
+    <meta name = "viewport" content="width=900, maximum-scale=1" />
+    <link href="//fonts.googleapis.com/css?family=Abel|Varela+Round|Roboto:400,300,100" rel="stylesheet" type="text/css" />
+
+    <link py:if="tg.config.get('bisque.js_environment', 'production') == 'production'" rel="stylesheet" type="text/css" href="/core/extjs/resources/css/ext-all-gray.css"/>
+    <script py:if="tg.config.get('bisque.js_environment', 'production') == 'production'" type="text/javascript" src="/core/extjs/ext-all.js"> </script>
+
+    <!-- Third party libs -->
+    <script py:if="tg.config.get('bisque.js_environment', 'production') == 'production'" type="text/javascript" src="${tg.url('/core/d3/d3.js')}"></script>
+    <script py:if="tg.config.get('bisque.js_environment', 'production') == 'production'" type="text/javascript" src="${tg.url('/core/threejs/three.js')}"></script>
+    <script py:if="tg.config.get('bisque.js_environment', 'production') == 'production'" type="text/javascript" src="${tg.url('/core/async/async.js')}"></script>
+    <script py:if="tg.config.get('bisque.js_environment', 'production') == 'production'" type="text/javascript" src="${tg.url('/core/jquery/jquery.min.js')}"></script>
+    <script py:if="tg.config.get('bisque.js_environment', 'production') == 'production'" type="text/javascript" src="${tg.url('/core/proj4js/proj4.js')}"></script>
+    <script py:if="tg.config.get('bisque.js_environment', 'production') == 'production'" type="text/javascript" src="${tg.url('/core/raphael/raphael.js')}"></script>
+    <script py:if="tg.config.get('bisque.js_environment', 'production') == 'production'" type="text/javascript" src="${tg.url('/core/js/viewer/kinetic-v5.1.0.js')}"></script>
+
+    <!-- BisQue styles -->
+    <link py:if="tg.config.get('bisque.js_environment', 'production') == 'production'" rel="stylesheet" type="text/css" href="/core/css/all_css.css" />
+
+    <script type="text/javascript" >
+        var module_definition_xml = '${Markup(module_xml.replace('\'', '\\\'').replace('\n', ''))}';
+    </script>
+
+    <script py:if="tg.config.get('bisque.js_environment', 'production') == 'production'" type="text/javascript" >
+        Ext.onReady( function() {
+            BQApp = Ext.create('BQ.Application');
+        });
+    </script>
+
+    <script type="text/javascript" >
+        Ext.onReady( function() {
+            //BQApp = Ext.create('BQ.Application');
+
+            webapp = new WebApp();
+            Ext.util.Observable.observe(BQ.Application);
+            BQ.Application.on( 'nouser', webapp.onnouser );
+
+            // load help
+            if (!BQ.config.embedded_mode) {
+                var h = BQApp.main.getHelpComponent();
+                h.setVisible(true);
+                h.add({
+                    xtype: 'container',
+                    cls: 'help-container',
+                    loader: {
+                        url: 'help',
+                        renderer: 'html',
+                        autoLoad: true,
+                        ajaxOptions: {
+                            disableCaching: false,
+                        },
+                    },
+                    autoScroll: true,
+                });
+            }
+        });
+    </script>
+
+    <script py:if="tg.config.get('bisque.js_environment', 'production') == 'production'" type="text/javascript" src="/core/js/all_js.js"> </script>
+
+    <script type="text/javascript" >
+        BQ.Server.title = 'Bisque WebApp';
+        BQ.Server.root = "${tg.url('/')}";
+    </script>
+
+    <!-- Additional includes from the module -->
+    <link py:if="'interface/css' in module_def" rel="stylesheet" type="text/css" href="${module_def['interface/css']}" />
+    <script py:if="'interface/javascript' in module_def" type="text/javascript" src="${module_def['interface/javascript']}"></script>
+
+</head>
+<body id="webapp" class="webapp">
+
+<div id="content" class="content webapp">
+
+
+<div id="webapp_main" class="main">
+
+<img id="thumbnail" py:if="'thumbnail' in module_def" width="150" alt="Thumnail" src="thumbnail" />
+<h1 id="title"></h1>
+
+
+<p><span id="version" py:if="'module_options/version' in module_def">Version: ${module_def['module_options/version']},</span>
+   <span id="authors" py:if="'authors' in module_def">Authors: ${module_def['authors']}</span></p>
+
+<p py:if="'description' in module_def"><em id="description">${module_def['description']}</em></p>
+
+<ol class="method-steps">
+<div id="webapp_input">
+    <li class="heading-2">Select data for processing:</li>
+    <div id="inputs" class="input box"></div>
+</div>
+
+
+<div id="webapp_parameters" style="display:none;">
+    <li class="heading-2">Parameters:</li>
+    <div id="parameters" class="parameters box"></div>
+</div>
+
+
+<div id="webapp_run" >
+    <li class="heading-2">Run algorithm:</li>
+    <div id="run" class="box run">
+        <p><button id="webapp_run_button" onclick="webapp.run()" >Run</button>
+          <label id="webapp_status_text">This may take some time, progress will be shown here.</label></p>
+    </div>
+</div>
+
+
+<div id="webapp_results" py:if="outputs is not None and len(outputs)>0">
+    <li class="heading-2">Results:</li>
+
+    <div id="outputs" class="box results" >
+        <span id="webapp_results_summary"><h3>No results yet, please run the module first.</h3></span>
+        <div id="webapp_results_dataset"></div>
+        <div id="outputs-sub" />
+    </div>
+
+</div>
+</ol>
+
+<div style="height: 20px;"></div>
+
+</div> <!-- main -->
+</div> <!-- webapp -->
+</body>
+</html>

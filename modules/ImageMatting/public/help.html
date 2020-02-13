@@ -1,0 +1,41 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html  xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<body>
+    This application allows the user to find a segmentation on an image, provided two strokes or polylines. First polyline should be inside the object of interest (foreground) and the second polyline across the background.
+    <br><br>
+    <b>Steps to run the algorithm:</b>
+    <br>
+    <br>
+    1. Select an image to be analyzed. This image can either come from images already loaded into your account or publicly available images. User can even upload images on this page itself.
+    <br>
+    <br>
+    2. Mark a polyline<b>*</b> on the object of interest. Select polyline from the menu and click on the object of interest. Your polyline should look similar to polyline marked below.
+    <img src="1.png"  style="width:100%" />
+    
+    <br>
+    <br>
+    3. Similarily, mark a polyline on the background (or region that is not of interest).
+    <img src="2.png" style="width:100%" />
+    
+    <br>
+    <br>
+    4. Press the 'Run' button. Analysis may take some time depending on the image.
+    
+    <br>
+    <br>
+    5. If the algorithm segments object successfully, the segmented object will be marked as a translucent polygon. The coordinates of this polygon are stored on the execution record. These can be exported right here or can be accessed at a later date.
+    <img src="3.png"  style="width:100%" />
+    
+    <br>
+    <br>
+    <b>* How to draw a polyline</b>
+    <br>
+    1. From the annotations toolbar on the image, click on polyline button.
+    <br>
+    2. Click on image where you want the polyline vertices to be.
+    <br>
+    3. Finish the polyline by double-clicking the last vertex.
+
+</body>
+</html>

@@ -1,0 +1,8 @@
+
+packages needed
+ aptitude install liblog-log4perl-perl libxml-libxml-perl libtext-csv-perl libxml-simple-perl
+
+
+
+
+

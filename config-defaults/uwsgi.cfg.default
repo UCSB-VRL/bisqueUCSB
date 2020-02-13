@@ -1,0 +1,91 @@
+#
+# Bisque UWSGI file
+#
+# The %(here)s variable will be replaced with the parent directory of this file
+#
+#  DO NOT EDIT
+#
+#  re-generate with bq-admin setup configuration from changes in site.cfg
+#  Or modify config-defaults/uwsgi.cfg.default
+
+[DEFAULT]
+
+[sa_auth]
+cookie_secret = 670cbb6c-641d-4089-95a4-7128e2e23d75
+
+[app:main]
+use = config:site.cfg
+bisque.server =
+bisque.services_enabled =
+bisque.services_disabled = engine_service
+
+[uwsgi]
+####################
+# main options
+# Lazy-apps needed for threading to work
+lazy-apps = true
+
+#socket on which uwsgi listens
+socket =
+chmod-socket = 666
+
+#number of worker processes to run
+processes = 4
+
+#enable python threads
+enable-threads = true
+#number of uwsgi threads per worker process
+threads=1
+
+#########
+#path to the uwsgi log file
+#daemonize =
+#path to the uwsgi pidfile
+#pidfile =
+
+#path to the virtualenv under which to run
+virtualenv = $virtualenv
+
+#create a master process to manage all the workers
+#master = true
+
+###############
+#limits
+
+#socket timeout
+socket-timeout = 600
+
+#brutally kill workers that will not terminate within 120 seconds during graceful reload
+reload-mercy = 120
+
+#recycle a worker every 10000 requests
+max-requests = 10000
+
+#recycle a worker if it consumes more than 4 GB of virtual address space
+#reload-on-as = 4096
+
+#recycle a worker if it consumers more than 2 GB of physical unshared address space
+#reload-on-rss = 2048
+
+#destroy workers after 900 seconds of inactivity (dont start new worker till a request arrives)
+#idle = 900
+
+#misc options
+
+#set meaningful names to uwsgi processes
+auto-procname = true
+
+#prefix of the uwsgi process name
+procname-prefix = uwsgi_bisque_
+
+#automatically kill workers without a master process
+no-orphans = true
+
+#automatically remove unix socket and pidfiles on server exit
+vacuum = true
+
+# post-buffering : buffer post large
+post-buffering = 1
+
+#buffer-size : internal buffer size for uwsgi packet parsing.
+buffer-size = 8192

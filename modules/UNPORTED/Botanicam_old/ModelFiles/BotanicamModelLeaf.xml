@@ -1,0 +1,373 @@
+<resource>
+	<tag name="Dataset" value="Botanicam Model"/>
+	<tag name="Classification Method" value="Leaf Descriptor"/>		
+	<tag name="Query" value="&quot;dataset&quot;:&quot;ImageCLEF2011&quot; AND &quot;Type&quot;:&quot;Scan&quot;"/>
+	<tag name="Number of Classifications" value="61"/>
+	<tag name="Classes">
+		<tag name="1">
+			<tag name="VernacularNames" value="Japanese Mock-orange"/>
+			<tag name="Genus" value="Pittosporum"/>
+			<tag name="Species" value="tobira"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Pittosporum_tobira"/>
+		</tag>
+		<tag name="2">
+			<tag name="VernacularNames" value="Nerium Oleander"/>
+			<tag name="Genus" value="Nerium"/>
+			<tag name="Species" value="oleander"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Nerium_oleander"/>
+		</tag>
+		<tag name="3">
+			<tag name="VernacularNames" value="European Nettle Tree"/>
+			<tag name="Genus" value="Celtis"/>
+			<tag name="Species" value="australis"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Celtis_australis"/>
+		</tag>
+		<tag name="4">
+			<tag name="VernacularNames" value="Kermes Oak"/>
+			<tag name="Genus" value="Quercus"/>
+			<tag name="Species" value="coccifera"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Quercus_coccifera"/>
+		</tag>
+		<tag name="5">
+			<tag name="VernacularNames" value="Laurel Tree"/>
+			<tag name="Genus" value="Laurus"/>
+			<tag name="Species" value="nobilis"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Laurus_nobilis"/>
+		</tag>
+		<tag name="6">
+			<tag name="VernacularNames" value="chaste Tree"/>
+			<tag name="Genus" value="Vitex"/>
+			<tag name="Species" value="agnus-castus"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Vitex_agnus-castus"/>
+		</tag>
+		<tag name="7">
+			<tag name="VernacularNames" value="Laurestine"/>
+			<tag name="Genus" value="Viburnum"/>
+			<tag name="Species" value="tinus"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Viburnum_tinus"/>
+		</tag>
+		<tag name="8">
+			<tag name="VernacularNames" value="Azarole"/>
+			<tag name="Genus" value="Crataegus"/>
+			<tag name="Species" value="azarolus"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Crataegus_azarolus"/>
+		</tag>
+		<tag name="9">
+			<tag name="VernacularNames" value="Common Walnut"/>
+			<tag name="Genus" value="Juglans"/>
+			<tag name="Species" value="regia"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Juglans_regia"/>
+		</tag>
+		<tag name="10">
+			<tag name="VernacularNames" value="Common Laburnum"/>
+			<tag name="Genus" value="Laburnum"/>
+			<tag name="Species" value="anagyroides"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Laburnum_anagyroides"/>
+		</tag>
+		<tag name="11">
+			<tag name="VernacularNames" value="Pomegranate"/>
+			<tag name="Genus" value="Punica"/>
+			<tag name="Species" value="granatum"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Punica_granatum"/>
+		</tag>
+		<tag name="12">
+			<tag name="VernacularNames" value="Holm Oak"/>
+			<tag name="Genus" value="Quercus"/>
+			<tag name="Species" value="ilex"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Quercus_ilex"/>
+		</tag>
+		<tag name="13">
+			<tag name="VernacularNames" value="Goat Willow"/>
+			<tag name="Genus" value="Salix"/>
+			<tag name="Species" value="caprea"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Salix_caprea"/>
+		</tag>
+		<tag name="14">
+			<tag name="VernacularNames" value="Wayfaring Tree"/>
+			<tag name="Genus" value="Viburnum"/>
+			<tag name="Species" value="lantana"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Viburnum_lantana"/>
+		</tag>
+		<tag name="15">
+			<tag name="VernacularNames" value="St Lucie Cherry"/>
+			<tag name="Genus" value="Prunus"/>
+			<tag name="Species" value="mahaleb"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Prunus_mahaleb"/>
+		</tag>
+		<tag name="16">
+			<tag name="VernacularNames" value="Common Fig"/>
+			<tag name="Genus" value="Ficus"/>
+			<tag name="Species" value="carica"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Ficus_carica"/>
+		</tag>
+		<tag name="17">
+			<tag name="VernacularNames" value="European Wild Apple"/>
+			<tag name="Genus" value="Malus"/>
+			<tag name="Species" value="sylvestris"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Malus_sylvestris"/>
+		</tag>
+		<tag name="18">
+			<tag name="VernacularNames" value="Olive Tree"/>
+			<tag name="Genus" value="Olea"/>
+			<tag name="Species" value="europaea"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Olea_europaea"/>
+		</tag>
+		<tag name="19">
+			<tag name="VernacularNames" value="Montpellier Maple"/>
+			<tag name="Genus" value="Acer"/>
+			<tag name="Species" value="monspessulanum"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Acer_monspessulanum"/>
+		</tag>
+		<tag name="20">
+			<tag name="VernacularNames" value="Silver Birch"/>
+			<tag name="Genus" value="Betula"/>
+			<tag name="Species" value="pendula"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Betula_pendula"/>
+		</tag>
+		<tag name="21">
+			<tag name="VernacularNames" value="Sweet Chestnut"/>
+			<tag name="Genus" value="Castanea"/>
+			<tag name="Species" value="sativa"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Castanea_sativa"/>
+		</tag>
+		<tag name="22">
+			<tag name="VernacularNames" value="Horse Chestnut"/>
+			<tag name="Genus" value="Aesculus"/>
+			<tag name="Species" value="hippocastanum"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Aesculus_hippocastanum"/>
+		</tag>
+		<tag name="23">
+			<tag name="VernacularNames" value="Black Locust"/>
+			<tag name="Genus" value="Robinia"/>
+			<tag name="Species" value="pseudoacacia"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Robinia_pseudoacacia"/>
+		</tag>
+		<tag name="24">
+			<tag name="VernacularNames" value="Durmast Oak"/>
+			<tag name="Genus" value="Quercus"/>
+			<tag name="Species" value="petraea"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Quercus_petraea"/>
+		</tag>
+		<tag name="25">
+			<tag name="VernacularNames" value="European Privet"/>
+			<tag name="Genus" value="Ligustrum"/>
+			<tag name="Species" value="vulgare"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Ligustrum_vulgare"/>
+		</tag>
+		<tag name="26">
+			<tag name="VernacularNames" value="Common Lilac"/>
+			<tag name="Genus" value="Syringa"/>
+			<tag name="Species" value="vulgaris"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Syringa_vulgaris"/>
+		</tag>
+		<tag name="27">
+			<tag name="VernacularNames" value="Mastic"/>
+			<tag name="Genus" value="Pistacia"/>
+			<tag name="Species" value="lentiscus"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Pistacia_lentiscus"/>
+		</tag>
+		<tag name="28">
+			<tag name="VernacularNames" value="Ginkgo"/>
+			<tag name="Genus" value="Ginkgo"/>
+			<tag name="Species" value="biloba"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Ginkgo_biloba"/>
+		</tag>
+		<tag name="29">
+			<tag name="VernacularNames" value="Hybrid Plane"/>
+			<tag name="Genus" value="Platanus"/>
+			<tag name="Species" value="x hispanica"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Platanus_x hispanica"/>
+		</tag>
+		<tag name="30">
+			<tag name="VernacularNames" value="Service Tree"/>
+			<tag name="Genus" value="Sorbus"/>
+			<tag name="Species" value="domestica"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Sorbus_domestica"/>
+		</tag>
+		<tag name="31">
+			<tag name="VernacularNames" value="Southern Magnolia"/>
+			<tag name="Genus" value="Magnolia"/>
+			<tag name="Species" value="grandiflora"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Magnolia_grandiflora"/>
+		</tag>
+		<tag name="32">
+			<tag name="VernacularNames" value="Narrow Leafed Ash"/>
+			<tag name="Genus" value="Fraxinus"/>
+			<tag name="Species" value="angustifolia"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Fraxinus_angustifolia"/>
+		</tag>
+		<tag name="33">
+			<tag name="VernacularNames" value="Manna Ash"/>
+			<tag name="Genus" value="Fraxinus"/>
+			<tag name="Species" value="ornus"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Fraxinus_ornus"/>
+		</tag>
+		<tag name="34">
+			<tag name="Genus" value="Diospyros"/>
+			<tag name="Species" value="kaki"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Diospyros_kaki"/>
+		</tag>
+		<tag name="35">
+			<tag name="VernacularNames" value="Common Hazel"/>
+			<tag name="Genus" value="Corylus"/>
+			<tag name="Species" value="avellana"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Corylus_avellana"/>
+		</tag>
+		<tag name="36">
+			<tag name="VernacularNames" value="Japanese Medlar"/>
+			<tag name="Genus" value="Eriobotrya"/>
+			<tag name="Species" value="japonica"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Eriobotrya_japonica"/>
+		</tag>
+		<tag name="37">
+			<tag name="VernacularNames" value="Italian Buckthorn"/>
+			<tag name="Genus" value="Rhamnus"/>
+			<tag name="Species" value="alaternus"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Rhamnus_alaternus"/>
+		</tag>
+		<tag name="38">
+			<tag name="VernacularNames" value="Strawberry Tree"/>
+			<tag name="Genus" value="Arbutus"/>
+			<tag name="Species" value="unedo"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Arbutus_unedo"/>
+		</tag>
+		<tag name="39">
+			<tag name="VernacularNames" value="Small Leaved Lime"/>
+			<tag name="Genus" value="Tilia"/>
+			<tag name="Species" value="cordata"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Tilia_cordata"/>
+		</tag>
+		<tag name="40">
+			<tag name="VernacularNames" value="Purging Buckthorn"/>
+			<tag name="Genus" value="Rhamnus"/>
+			<tag name="Species" value="cathartica"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Rhamnus_cathartica"/>
+		</tag>
+		<tag name="41">
+			<tag name="VernacularNames" value="European Holly"/>
+			<tag name="Genus" value="Ilex"/>
+			<tag name="Species" value="aquifolium"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Ilex_aquifolium"/>
+		</tag>
+		<tag name="42">
+			<tag name="VernacularNames" value="European Beech"/>
+			<tag name="Genus" value="Fagus"/>
+			<tag name="Species" value="sylvatica"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Fagus_sylvatica"/>
+		</tag>
+		<tag name="43">
+			<tag name="VernacularNames" value="Eastern Black Walnut"/>
+			<tag name="Genus" value="Juglans"/>
+			<tag name="Species" value="nigra"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Juglans_nigra"/>
+		</tag>
+		<tag name="44">
+			<tag name="VernacularNames" value="Eurasian Smoketree"/>
+			<tag name="Genus" value="Cotinus"/>
+			<tag name="Species" value="coggygria"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Cotinus_coggygria"/>
+		</tag>
+		<tag name="45">
+			<tag name="VernacularNames" value="Pubescent Oak"/>
+			<tag name="Genus" value="Quercus"/>
+			<tag name="Species" value="pubescens"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Quercus_pubescens"/>
+		</tag>
+		<tag name="46">
+			<tag name="VernacularNames" value="Persian Silk Tree"/>
+			<tag name="Genus" value="Albizia"/>
+			<tag name="Species" value="julibrissin"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Albizia_julibrissin"/>
+		</tag>
+		<tag name="47">
+			<tag name="VernacularNames" value="Turpentine Tree"/>
+			<tag name="Genus" value="Pistacia"/>
+			<tag name="Species" value="terebinthus"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Pistacia_terebinthus"/>
+		</tag>
+		<tag name="48">
+			<tag name="VernacularNames" value="Box Elder Maple"/>
+			<tag name="Genus" value="Acer"/>
+			<tag name="Species" value="negundo"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Acer_negundo"/>
+		</tag>
+		<tag name="49">
+			<tag name="VernacularNames" value="Jerusalem Thorn"/>
+			<tag name="Genus" value="Paliurus"/>
+			<tag name="Species" value="spina-christi"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Paliurus_spina-christi"/>
+		</tag>
+		<tag name="50">
+			<tag name="VernacularNames" value="Wild Black Cherry"/>
+			<tag name="Genus" value="Prunus"/>
+			<tag name="Species" value="serotina"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Prunus_serotina"/>
+		</tag>
+		<tag name="51">
+			<tag name="VernacularNames" value="Judas Tree"/>
+			<tag name="Genus" value="Cercis"/>
+			<tag name="Species" value="siliquastrum"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Cercis_siliquastrum"/>
+		</tag>
+		<tag name="52">
+			<tag name="VernacularNames" value="Pagoda Tree"/>
+			<tag name="Genus" value="Sophora"/>
+			<tag name="Species" value="japonica"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Sophora_japonica"/>
+		</tag>
+		<tag name="53">
+			<tag name="VernacularNames" value="Honey Locust"/>
+			<tag name="Genus" value="Gleditsia"/>
+			<tag name="Species" value="triacanthos"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Gleditsia_triacanthos"/>
+		</tag>
+		<tag name="54">
+			<tag name="VernacularNames" value="Mock Privet"/>
+			<tag name="Genus" value="Phillyrea"/>
+			<tag name="Species" value="angustifolia"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Phillyrea_angustifolia"/>
+		</tag>
+		<tag name="55">
+			<tag name="VernacularNames" value="Hawthorn"/>
+			<tag name="Genus" value="Crataegus"/>
+			<tag name="Species" value="monogyna"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Crataegus_monogyna"/>
+		</tag>
+		<tag name="56">
+			<tag name="VernacularNames" value="Black Alder"/>
+			<tag name="Genus" value="Alnus"/>
+			<tag name="Species" value="glutinosa"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Alnus_glutinosa"/>
+		</tag>
+		<tag name="57">
+			<tag name="VernacularNames" value="European Hornbeam"/>
+			<tag name="Genus" value="Carpinus"/>
+			<tag name="Species" value="betulus"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Carpinus_betulus"/>
+		</tag>
+		<tag name="58">
+			<tag name="VernacularNames" value="Field Maple"/>
+			<tag name="Genus" value="Acer"/>
+			<tag name="Species" value="campestre"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Acer_campestre"/>
+		</tag>
+		<tag name="59">
+			<tag name="VernacularNames" value="Blackthorn"/>
+			<tag name="Genus" value="Prunus"/>
+			<tag name="Species" value="spinosa"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Prunus_spinosa"/>
+		</tag>
+		<tag name="60">
+			<tag name="VernacularNames" value="Norway Maple"/>
+			<tag name="Genus" value="Acer"/>
+			<tag name="Species" value="platanoides"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Acer_platanoides"/>
+		</tag>
+		<tag name="61">
+			<tag name="VernacularNames" value="Black Elder"/>
+			<tag name="Genus" value="Sambucus"/>
+			<tag name="Species" value="nigra"/>
+			<tag name="Wikipedia" value="http://en.wikipedia.org/wiki/Sambucus_nigra"/>
+		</tag>
+	</tag>
+</resource>

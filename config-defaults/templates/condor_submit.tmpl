@@ -1,0 +1,29 @@
+## This is bisque condor_submit template written for the mako template engine.
+## Variables are substitued from the runtime-bisque.cfg and from the executing mex
+##
+universe = vanilla
+executable=${executable}
+error = ./launcher.err
+output = ./launcher.out
+log = ./launcher.log
+#on_exit_remove = (ExitBySignal == False)&&(ExitCode == 0)
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT_OR_EVICT
+notification = never
+# variables from local environment here
+${condor_submit}
+# store mex id for stopping
++MexID = "${mexes[0].mex_id}"
+
+%for mex in mexes:
+<%
+    if not mex.executable:
+        continue
+%>
+initialdir = ${mex.staging_path}
+#transfer_input_files  = ${','.join(mex.transfers)}
+#transfer_output_files = ${','.join(mex.transfers_out)}
+transfer_output_files = .
+arguments  = ${' '.join(mex.executable[1:])}
+queue
+%endfor

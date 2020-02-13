@@ -1,0 +1,55 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+
+<xi:include href="master.html" />
+
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
+  <title>Usage</title>
+
+  <style type="text/css">
+    body { background-color: white !important; }
+  </style>
+
+  <link rel="stylesheet" type="text/css" href="${tg.url('/usage/bq_usage_stats.css')}" />
+  <script type="text/javascript" src="${tg.url('/usage/bq_usage_stats.js')}" ></script>
+
+
+<script type="text/javascript" >
+
+Ext.onReady(function() {
+
+    var uploader = Ext.create('Ext.panel.Panel', {
+        closable: false,
+        autoShow: true,
+        autoScroll: true,
+        border: 0,
+        defaults: {border: 0, },
+        bodyPadding: 30,
+
+        items: [
+            { html: '<h1>Bisque usage statistics</h1>' },
+            { xtype: 'usagestats', border: 0, },
+            { xtype: 'uploadstats', height: 250, },
+            { xtype: 'monthlyuploadstats', height: 250, },
+            { xtype: 'analysisstats', height: 250, },
+            { xtype: 'monthlyanalysisstats', height: 250, },
+        ],
+    });
+
+    BQApp.setCenterComponent(uploader);
+});
+
+</script>
+
+
+</head>
+
+<body>
+
+</body>
+</html>

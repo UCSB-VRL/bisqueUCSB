@@ -1,0 +1,311 @@
+
+/*-------------------------------------------------------
+  extjs fixes
+-------------------------------------------------------*/
+
+.webapp .x-btn-group-default-framed {
+    background-color: #DDDDDD;
+    border-color: #BBBBBB;
+}
+
+.webapp .x-menu-body {
+    background-color: #f0f0f0 !important;
+}
+
+/*.x-btn-icon-text-left .x-btn-icon-el {
+    background-position: center center;
+}*/
+
+/*-------------------------------------------------------
+  html styles
+-------------------------------------------------------*/
+
+body#webapp {
+    background-color: white !important;
+}
+
+.webapp h2 {
+  clear: left;
+}
+
+.webapp h3 {
+    font-size: 18px;
+}
+
+.webapp .content {
+  margin: 0px 20px 0px 20px;
+}
+
+.webapp .content p {
+  text-align: left;
+}
+
+.bordered {
+  /*border-radius: 5px;
+  -moz-border-radius: 5px;*/
+  border: 1px solid #CCCCCC; /* #006699;*/
+}
+
+ol.method-steps {
+    padding-left: 0;
+}
+
+ol li {
+    list-style-type: decimal;
+    list-style-position: inside;
+}
+
+.heading-2 {
+    font-family: Georgia, serif;
+    font-weight: normal;
+    font-size: 28px;
+    clear: left;
+    margin: 0.5em 0px;
+}
+
+/*-------------------------------------------------------
+  scrollbars
+-------------------------------------------------------*/
+
+.webapp ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.webapp ::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+.webapp ::-webkit-scrollbar-track:hover {
+    border-radius: 6px;
+    background-color: rgba(0,0,0,0.2);
+}
+
+.webapp ::-webkit-scrollbar-thumb {
+    /*background-color: transparent;*/
+    /*-webkit-box-shadow: none;*/
+    border-radius: 6px;
+    background-color: rgba(0,0,0,0.05);
+}
+
+.webapp ::-webkit-scrollbar-thumb:hover {
+    border-radius: 6px;
+    /*-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);*/
+    background-color: rgba(0,0,0,0.4);
+}
+
+
+/*-------------------------------------------------------
+  MAIN
+-------------------------------------------------------*/
+
+.webapp .main {
+  /*margin-right: 340px;*/
+}
+
+.webapp img#thumbnail {
+    float: right;
+    margin: 0px 30px 10px 30px;
+}
+
+/*-------------------------------------------------------
+  HELP
+-------------------------------------------------------*/
+
+.help {
+    padding: 20px 10px 10px 0px;
+    background-color: white;
+}
+
+.help .x-panel-header {
+    -webkit-border-top-left-radius: 5px;
+    -webkit-border-top-right-radius: 5px;
+    -moz-border-radius-topleft: 5px;
+    -moz-border-radius-topright: 5px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+.x-splitter {
+    background-color: white;
+    /*
+    margin: 22px 0px 20px 0px;
+    background-image: -webkit-gradient(linear, 0% 0%, 100% 0%, from(#FFFFFF), to(#DDDDDD));
+    background-image: -moz-linear-gradient(right, #FFFFFF,#DDDDDD);
+    background-image: linear-gradient(right, #FFFFFF,#DDDDDD); */
+}
+
+.help .help-container {
+    float: right;
+    width: 320px;
+    height: 95%;
+    /*margin: 0px 10px 10px 10px;*/
+    padding: 10px;
+    background-color: #E1FFE9;
+    border: #CCCCCC solid 1px;
+    border-top: none;
+    -webkit-border-bottom-right-radius: 5px;
+    -webkit-border-bottom-left-radius: 5px;
+    -moz-border-radius-bottomright: 5px;
+    -moz-border-radius-bottomleft: 5px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+
+.help .help-container img {
+  border: solid 1px #999999;
+  width: 250px;
+}
+
+.help .help-container p {
+  text-align: left;
+}
+
+.webapp .box {
+  background-color: #EEEEEE;
+  border-color: #CCCCCC;
+  border-style: solid;
+  border-width: 1px;
+  padding: 10px 10px 10px 10px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+}
+
+/*-------------------------------------------------------
+  NOTIFICATION
+-------------------------------------------------------*/
+
+.webapp .notification {
+  padding: 5px 5px 5px 5px;
+  background-color: #FFCC66;
+  border: #FF6600 solid 2px;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+}
+
+/*-------------------------------------------------------
+  LICENSE
+-------------------------------------------------------*/
+
+.license {
+    font-style: italic;
+    padding: 5px 5px 5px 5px;
+    background-color: rgba(255, 204, 102, 0.5);
+    border: #FF6600 dotted 1px;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+}
+
+/*-------------------------------------------------------
+  INPUT
+-------------------------------------------------------*/
+
+.webapp .input {
+}
+
+.webapp .input h3 {
+    font-size: 120%;
+    margin: 1em 0px 0.6em 0px;
+}
+
+/*-------------------------------------------------------
+  PARAMETERS
+-------------------------------------------------------*/
+
+.webapp .parameters {
+}
+
+.webapp .parameters form {
+  margin: 0px 0px 0px 0px;
+}
+
+.webapp .parameters label {
+  width: 15em;
+  display: inline-block;
+}
+
+.webapp .parameters p {
+  margin: 0px 0px 0.4em 0px;
+  border-bottom-color: #BBBBBB;
+  border-bottom-width: 1px;
+}
+
+.webapp .parameters em {
+  font-size: 75%;
+}
+
+.webapp .parameters .thumbnail {
+  height: 180px;
+}
+
+.webapp .parameters .viewer {
+  position: relative; top: 0px; left: 0px;
+}
+
+
+/*-------------------------------------------------------
+  RUN
+-------------------------------------------------------*/
+
+.webapp .run {
+
+}
+
+.webapp .run p {
+    margin: 0px;
+}
+
+.webapp .run button {
+    padding: 6px;
+    min-height: 30px;
+    min-width: 90px;
+}
+
+.webapp .run-status {
+    margin-top: 15px;
+}
+
+/*-------------------------------------------------------
+  RESULTS
+-------------------------------------------------------*/
+
+.webapp .results {
+
+}
+
+.webapp .results h3 {
+    font-size: 140%;
+}
+
+.webapp .results .error {
+    color: red;
+}
+
+.webapp .results .good {
+    color: green;
+}
+
+.webapp .imageviewer {
+  margin-top: 15px;
+  position: relative;
+  top: 0px;
+  left: 0px;
+  height: 400px;
+  width: 100%;
+}
+
+.webapp .results .image_viewer_display {
+  /*height: 440px;*/
+}
+
+.webapp .plotter {
+  margin-top: 15px;
+  position: relative;
+  top: 0px;
+  left: 0px;
+}
+
+.webapp .plotter>div {
+  margin-top: 15px;
+}

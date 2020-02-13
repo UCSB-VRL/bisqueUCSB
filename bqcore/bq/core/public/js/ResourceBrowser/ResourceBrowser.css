@@ -1,0 +1,878 @@
+/* CSS settings for resource container */
+.resource-view-over {
+    /*-moz-box-shadow: 1px 1px 6px 2px #999;
+    -webkit-box-shadow: 1px 1px 6px 2px #999;
+    box-shadow: 1px 1px 6px 2px #999;*/
+    -webkit-box-shadow: 0px 0px 8px 0px rgba(0, 153, 255, 1);
+    -moz-box-shadow: 0px 0px 8px 0px rgba(0, 153, 255, 1);
+    box-shadow: 0px 0px 8px 0px rgba(0, 153, 255, 1);
+}
+
+.resource-view-selected {
+    -moz-box-shadow: 0px 0px 8px 3px hsl(210, 75%, 70%) !important;
+    -webkit-box-shadow: 0px 0px 8px 3px hsl(210, 75%, 70%) !important;
+    box-shadow: 0px 0px 8px 3px hsl(210, 75%, 70%) !important;
+}
+
+.imageCenterHoz {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.gridCellIcon {
+    display: table-cell;
+    vertical-align: middle;
+    height: 40px
+}
+
+.background-transparent {
+    background: transparent;
+}
+
+.browser {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.browser-main {
+    background: white;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.browser .x-toolbar {
+    width: 100% !important;
+}
+
+.browser_toolbar_menu {
+    z-index: 2147483648 !important;
+}
+
+.organizer-tabs {
+    margin: 4px 0px 4px 4px;
+    padding: 0px;
+    border-color: transparent;
+    background-color: transparent;
+}
+
+.organizer-filter {
+    margin: 4px;
+}
+
+.alignLeft {
+    float: left;
+    margin: 0;
+    padding: 0;
+}
+
+.alignRightTag {
+    float: right;
+    margin: 0;
+    padding: 0px 5px 0px 0px;
+    color: #99E;
+}
+
+.alignRightGobject {
+    float: right;
+    margin: 0;
+    padding: 0px 5px 0px 0px;
+    color: #9C9;
+}
+
+/* ResourceLayout settings: */
+
+.bq_resource {
+    background-color: #eeeeee;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+
+.bq_resource .mex_status {
+    padding-top: 0px;
+    padding-left: 5px;
+}
+
+.bq_resource .mex_status.FINISHED {
+    color: green;
+}
+
+.bq_resource .mex_status.FAILED {
+    color: red;
+}
+
+.bq_resource .date {
+    padding-top: 10px;
+    padding-left: 5px;
+}
+
+.bq_resource .title {
+    color: #555;
+    font-size: 14px;
+    font-family: tahoma, arial, verdana, sans-serif !important;
+    padding: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.bq_resource .thumbnail {
+    background-image: none;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-size: 30px;
+    background-position: 0px 0px;
+    width : 30px;
+    height : 30px;
+    padding: 0px 0px 0px 0px;
+}
+
+/* ResourceLayout settings: */
+.ImageCompact {
+    margin: 15px;
+    padding: 0px;
+    padding-top: 5px;
+    width: 160px;
+    height: 160px;
+    border: solid 0px #F00 !important;	/* FBFBFB */
+    position: relative;
+
+    background-color: #eeeeee;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+
+.ImageCompact .thumbnail {
+    background-size: 35px;
+    background-position: 0px 0px;
+    width : 35px;
+    height : 35px;
+}
+
+.ImageCard {
+    margin: 10px;
+    padding: 2px;
+    width: 270px;
+    height: 310px;
+    background-color: #F9F9F9;
+    border: solid 4px #E0E0E0 !important;
+}
+
+.ImageFull {
+    margin: 10px;
+    padding: 5px;
+    height: 280px;
+    width: 99%;
+    background-color: #F9F9F9;
+    border: solid 1px #EEE !important;
+}
+
+.ResourceList {
+    margin: 4px;
+    height: 34px;
+    width: 98%;
+    background-color: #EEEEEE;
+    border: solid 0px #E0E0E0 !important;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -moz-box-shadow: 0px 0px 5px #ffcccc;
+}
+
+.ResourceList.LightShadow {
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
+.ResourceIconList {
+    margin: 4px;
+    height: 90px;
+    width: 98%;
+    background-color: #eeeeee;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    border: 0px !important;
+}
+
+.ResourceIconList.LightShadow {
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
+.bq_browser_grid .thumbnail {
+    background-image: none;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-size: 30px;
+    background-position: 0px 0px;
+    width : 30px;
+    height : 30px;
+    padding: 0px 0px 0px 0px;
+}
+
+.LightShadow {
+    /*-moz-box-shadow: 1px 1px 5px #999;
+    -webkit-box-shadow: 1px 1px 5px #999;
+    box-shadow: 1px 1px 5px #999;*/
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
+.Res-ImgMed {
+    border: 3px solid #000;
+    padding: 3px;
+    height: 175px;
+    background-color: #fff;
+    width: 210px;
+}
+
+.LoadingMask {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -16px;
+    margin-left: -16px;
+}
+
+.TagStyle {
+    font-size: 110%;
+    font-weight: bold;
+}
+
+.Org-Tools {
+    float: right;
+    font-weight: normal;
+    margin-left: 6px;
+}
+
+.Org-Header {
+    cursor: move;
+}
+
+.Browser-Panel {
+    overflow-y: auto;
+}
+
+.DS-Tbar {
+    border-color: #b9bfc3;
+    background-color: #E1E1E8;
+    background-image: url("/core/js/ResourceBrowser/Images/blank.gif");
+}
+
+.DS-Tbar-HLite {
+    background-color: #E8F1FA;
+}
+
+/*
+ dima: Global mask style is defined and overriden in bisquik_extjs_fixes in js and css, no specific changes are needed
+ */
+
+/* fix for overwritten x-mask style */
+/*
+ .x-masked>.x-mask {
+ opacity: 0.6;
+ background-color: #F0F0F0;
+ }
+ */
+/*
+ .x-mask {
+ z-index: 100;
+ position: absolute;
+ top: 0;
+ left: 0;
+ }
+
+ .x-mask-msg {
+ z-index: 20001;
+ position: absolute;
+ top: 0;
+ left: 0;
+ padding: 0px;
+ border: 0px;
+ background-image: none;
+ background-color: #f0f0f0;
+ }
+
+ .x-mask-msg div {
+ width: 16px;
+ height: 16px;
+ padding: 0px;
+ background-image: url('/core/js/ResourceBrowser/Images/loading.gif');
+ background-repeat: no-repeat;
+ opacity: 1;
+ background-position: 0px center;
+ cursor: wait;
+ border: 0px;
+ background-color: #f0f0f0;
+ }
+ */
+
+/* Align certain buttons left */
+.button-alignleft .x-btn-text {
+    text-align: left;
+}
+
+/* Customized resourceQueue slider */
+
+/* dima: extjs 4.1 version */
+/*
+.sliderBackground .x-slider-horz, .sliderBackground .x-slider-horz .x-slider-end, .sliderBackground .x-slider-horz .x-slider-inner {
+    background-image: url('/core/js/ResourceBrowser/Images/res-slider-bg.png') !important;
+}
+
+.sliderLeftButton .x-slider-horz {
+    padding-left: 12px;
+    background: transparent no-repeat 0 -61px;
+}
+
+.sliderRightButton .x-slider-horz .x-slider-end {
+    margin-right: -5px;
+    background: transparent no-repeat right -61px;
+}
+
+.sliderBothButtons .x-slider-horz .x-slider-end {
+    margin-right: -10px;
+    background: transparent no-repeat right -61px;
+}
+
+.sliderBothButtons .x-slider-horz {
+    padding-left: 12px;
+    background: transparent no-repeat 0 -61px;
+}
+/* End: extjs 4.1 version */
+
+/* dima: extjs 4.2.1+ version */
+.sliderBackground .x-slider-horz,.sliderBackground .x-slider-horz .x-slider-end,.sliderBackground .x-slider-horz .x-slider-inner {
+    /*z-index : -1;*/
+    background-image:url('/core/js/ResourceBrowser/Images/res-slider-bg.png') !important;
+}
+
+.sliderLeftButton .x-slider-horz {
+    padding-left:12px;
+    background:transparent no-repeat 0 -62px;
+}
+
+.sliderRightButton .x-slider-horz .x-slider-end {
+    margin-right:-5px;
+    background:transparent no-repeat right -62px;
+}
+
+.sliderBothButtons .x-slider-horz .x-slider-end {
+    margin-right:-10px;
+    background:transparent no-repeat right -62px;
+}
+
+.sliderBothButtons .x-slider-horz {
+    padding-left:12px;
+    background:transparent no-repeat 0 -62px;
+}
+
+/* End: extjs 4.2.1+ version */
+
+.fieldSet {
+    border-left: 0;
+    border-right: 0;
+    border-bottom: 0;
+}
+
+.lblModuleName {
+    color: #555;
+    font-size: 14px;
+    font-family: 'Red Hat Display', arial, verdana, sans-serif !important;
+    padding: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.compact .lblModuleName {
+    padding: 5px;
+}
+
+.icon-list .lblModuleName {
+    padding: 0px 0px 1px 3px;
+    text-shadow: none;
+    font-weight: normal;
+    font-size: 18px;
+    font-family: 'Red Hat Display', tahoma, arial, verdana, sans-serif !important;
+}
+
+.lblModuleOwner {
+    color: #4B85BF;
+    text-shadow: 0px 1px 1px #DDD;
+    font-size: 11px;
+    font-family: tahoma, arial, verdana, sans-serif !important;
+    padding: 5px;
+}
+
+.compact .lblModuleOwner {
+    padding: 0px 0px 0px 5px;
+}
+
+.icon-list .lblModuleOwner {
+    padding: 0px 0px 0px 3px;
+}
+
+.lblModuleOwnerFin {
+    color: #07AD0C !important;
+    text-shadow: 0px 1px 1px #DDD;
+    font-size: 11px;
+    font-family: 'Red Hat Display', arial, verdana, sans-serif !important;
+}
+
+.lblModuleOwnerFail {
+    color: #BF1B1B !important;
+    text-shadow: 0px 1px 1px #DDD;
+    font-size: 11px;
+    font-family: 'Red Hat Display', arial, verdana, sans-serif !important;
+}
+
+.rbFontFamily .lblModuleName .lblModuleOwner {
+    font-family: 'Red Hat Display', arial, verdana, sans-serif !important;
+}
+
+.lblModuleDate {
+    padding: 8px 8px 8px 5px;
+    color: #444;
+    font-size: 11px;
+    text-align: right;
+}
+
+.lblBig {
+    color: #BABABA;
+    font-size: 36px;
+    font-family: 'Red Hat Display', arial, verdana, sans-serif !important;
+}
+
+.compact .lblModuleDate {
+    padding: 8px 8px 8px 5px;
+}
+
+.list .lblModuleDate {
+    padding: 0px 0px 0px 8px;
+    font-family: 'Red Hat Display', arial, verdana, sans-serif !important;
+}
+
+.lblHeading1 {
+    color: #555;
+    background: #f4f4f4;
+    text-shadow: 1px 1px 1px #CCC;
+    font-weight: bold;
+    font-family: 'Red Hat Display', arial, verdana, sans-serif !important;
+    word-wrap: break-word;
+    padding: 3px;
+}
+
+.lblHeading2 {
+    color: #07AD0C;
+    background: #f4f4f4;
+    text-shadow: 1px 1px 1px #CCC;
+    font-family: 'Red Hat Display', arial, verdana, sans-serif !important;
+    word-wrap: break-word;
+    padding: 3px;
+}
+
+.lblContent {
+    padding: 5px;
+    word-wrap: break-word;
+}
+
+.textOnImage {
+    color: #FFF;
+    position: absolute;
+    text-shadow: 1px 1px 3px rgba(0,0,0,1);
+    margin-top: 137px;
+    font-size: 10px;
+    background-color: rgba(10,10,10,.05);
+    font-weight: bold;
+    text-align: center;
+    z-index: 1;
+}
+
+.labelOnImage {
+    color: #FFF;
+    position: absolute;
+    text-shadow: 1px 1px 3px rgba(0,0,0,1);
+    margin-top: 15px;
+    padding: 2px 5px 5px 7px;
+    font-size: 13px;
+    background-color: rgba(10,10,10,.3);
+    font-weight: bold;
+    z-index: 1;
+}
+
+.smallLabelOnImage {
+    font-size: 9px;
+}
+
+.white {
+    background-color: #FFF;
+}
+
+.align {
+    vertical-align: middle;
+}
+
+.icon-lightning {
+    background-image: url('/core/js/ResourceBrowser/Images/lightning.png') !important;
+}
+
+.icon-cog {
+    background-image: url('/core/js/ResourceBrowser/Images/cog.png') !important;
+}
+
+.icon-eye {
+    background-image: url('/core/js/ResourceBrowser/Images/eye.png') !important;
+}
+
+.icon-eye-close {
+    background-image: url('/core/js/ResourceBrowser/Images/eye-close.png') !important;
+}
+
+.icon-group {
+    background-image: url('/core/js/ResourceBrowser/Images/group.png') !important;
+}
+
+.icon-owner {
+    background-image: url('/core/js/ResourceBrowser/Images/owner.png') !important;
+}
+
+.icon-download-small {
+    background-image: url('/core/js/ResourceBrowser/Images/download-small.png') !important;
+}
+
+.x-grid-checkheader {
+    height: 14px;
+    background-image: url('/core/js/ResourceBrowser/Images/unchecked.gif');
+    background-position: 50% -2px;
+    background-repeat: no-repeat;
+    background-color: transparent;
+}
+
+.x-grid-checkheader-checked {
+    background-image: url('/core/js/ResourceBrowser/Images/checked.gif');
+}
+
+.x-grid-checkheader-editor .x-form-cb-wrap {
+    text-align: center;
+}
+
+.heading {
+    font-size: 14px !important;
+}
+
+.heading .x-btn-inner {
+    font-size: 14px !important;
+}
+
+
+.bq-btn-edit .x-btn-inner {
+    font-weight: bold;
+    color: #666666;
+}
+
+.bq-btn-edit.active .x-btn-inner {
+    color: #009900;
+}
+
+.mex_preview {
+    margin: 10px;
+}
+
+.mex_preview h2 {
+    margin: 0px 0px 4px 0px;
+}
+
+.mex_preview h3 {
+    margin: 4px 0px 2px 0px;
+}
+
+.mex_preview p {
+    margin: 2px 0px 2px 5px;
+}
+
+/*****************************************************************
+  Browser grid
+*****************************************************************/
+
+.bq_browser_grid .bq_sorted .x-column-header-text {
+    font-weight: bold;
+    color: #666666;
+}
+
+.bq_browser_grid .sorted_asc .x-column-header-text {
+    font-weight: bold;
+    color: #666666;
+}
+
+.bq_browser_grid .sorted_desc .x-column-header-text {
+    font-weight: bold;
+    color: #666666;
+}
+
+/*****************************************************************
+  Resource renderers
+  .ImageCompact
+*****************************************************************/
+
+
+.resicon {
+    position: relative;
+    background-position: 0px 0px;
+    background-size: 160px;
+    background-repeat: no-repeat;
+    background-color: transparent;
+
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    padding: 10px;
+    border: 0px !important;
+}
+
+.resicon.ImageCard, .resicon.ImageFull {
+    background-size: 270px;
+    padding: 30px;
+}
+
+.resicon.gridIcon {
+    width: 42px;
+    height: 40px;
+    background-size: 28px;
+    background-repeat: no-repeat;
+    background-position: 0px 0px;
+    margin-left: 0px;
+}
+
+.resicon .format {
+    font-size: 16px;
+    text-overflow: ellipsis;
+}
+
+.resicon .lblHeading1 {
+    margin-top: 40px;
+    background: transparent;
+    font-weight: 400;
+    font-size: 14px;
+    text-shadow: none;
+    max-height: 40px;
+    overflow: hidden;
+}
+
+.resicon .lblHeading1>span>div {
+    display: inline;
+    text-overflow: ellipsis;
+    height: 1em;
+}
+
+.resicon.ImageCard .lblHeading1, .resicon.ImageFull .lblHeading1  {
+    margin-top: 60px;
+}
+
+.resicon .lblHeading2 {
+    visibility: hidden;
+    height: 0px;
+}
+
+.ImageCompact .status_icon {
+    width: 32px;
+    height: 32px;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-image: url('/core/images/viewer/icons_viewer.svg');
+    background-size: 200px;
+    background-position: 30px 30px;
+}
+
+.ImageCompact .status_icon.started {
+    background-position: -100px -163px;
+}
+
+.ImageCompact .status_icon.finished {
+    background-position: -134px -163px;
+}
+
+.ImageCompact .status_icon.validated {
+    background-position: -165px -163px;
+}
+
+/* store */
+
+.resicon.store {
+    background-image: url('/core/js/ResourceBrowser/Images/store_512.png');
+    background-position: 15px 0px;
+    background-size: 130px;
+}
+
+.resicon.store.ImageCard, .resicon.store.ImageFull {
+}
+
+.resicon.gridIcon.store {
+    background-image: url('/core/js/ResourceBrowser/Images/store.png');
+    background-size: 40px;
+}
+
+.resicon.store .lblHeading1 {
+    margin-top: 115px;
+    font-size: 16px;
+    text-align: center;
+    color: #666666;
+}
+
+.resicon.store.ImageCard .lblHeading1, .resicon.store.ImageFull .lblHeading1  {
+    margin-top: 110px;
+}
+
+/* folder */
+
+.resicon.folder {
+    background-image: url('/core/js/ResourceBrowser/Images/folder.svg');
+    background-position: 0px 10px;
+    background-size: 185px;
+}
+
+.resicon.folder.ImageCard, .resicon.folder.ImageFull {
+    background-size: 300px;
+}
+
+.resicon.gridIcon.folder {
+    background-image: url('/core/js/ResourceBrowser/Images/folder.svg');
+    background-size: 45px;
+    background-position: 0px 0px;
+}
+
+/* file */
+
+.file {
+    background-image: url('/core/js/ResourceBrowser/Images/file.svg');
+    background-position: 10px 40px;
+    background-size: 230px;
+    background-repeat: no-repeat;
+}
+
+.file .x-panel {
+    opacity: 0.8;
+}
+
+.resicon.file {
+    background-image: url('/core/js/ResourceBrowser/Images/file.svg');
+    background-position: 0px 0px;
+    background-size: 160px;
+    /*padding: 15px 20px 10px 20px;*/
+}
+
+.resicon.file.ImageCard, .resicon.file.ImageFull {
+    /*background-size: 270px;*/
+}
+
+.resicon.gridIcon.file {
+    background-image: url('/core/js/ResourceBrowser/Images/file.svg');
+    background-size: 35px;
+    background-position: 2px 3px;
+}
+
+.resicon.file .lblHeading1 {
+    margin-top: 20px;
+    background: transparent;
+    font-weight: 400;
+    font-size: 14px;
+    text-shadow: none;
+    max-height: 50px;
+    overflow: hidden;
+}
+
+.resicon.file.ImageCard .lblHeading1, .resicon.file.ImageFull .lblHeading1  {
+    margin-top: 60px;
+}
+
+/*****************************************************************
+  .icon-list
+*****************************************************************/
+
+.icon-list.mex .thumbnail {
+    background-image: none;
+    width : 65px;
+    height : 65px;
+    padding: 0px 0px 0px 4px;
+    top: 10px !important;
+}
+
+.ResourceIconList.disabled {
+    opacity: 0.5;
+}
+
+/*****************************************************************
+  module
+*****************************************************************/
+
+.resicon.module {
+    /*background-image: url('icons.svg');*/
+    background-position: center top;
+    background-size: 100px;
+    background-repeat: no-repeat;
+}
+
+.resicon.module.ImageCard, .resicon.module.ImageFull {
+    /*background-size: 270px;*/
+}
+
+.resicon.gridIcon.module {
+    /*background-image: url('icons.svg');*/
+    background-size: 35px;
+    background-position: 2px 3px;
+}
+
+.resicon.module .lblHeading1 {
+    margin-top: 95px;
+    background: transparent;
+    font-weight: 400;
+    font-size: 14px;
+    text-shadow: none;
+    max-height: 50px;
+    overflow: hidden;
+    text-align: center;
+}
+
+.resicon.module .lblHeading2, .resicon.module .lblContent {
+    display: none;
+}
+
+.resicon.module.ImageCard .lblHeading1, .resicon.module.ImageFull .lblHeading1  {
+    margin-top: 60px;
+}
+
+/*****************************************************************
+  module organizer
+*****************************************************************/
+
+.browser-main .organizer-modules {
+    margin: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    border: 1px solid #eeeeee;
+}
+
+/*****************************************************************
+  annotator
+*****************************************************************/
+
+.bq-annotator {
+    padding: 5px;
+}
+
+.bq-annotator .bq_resource_page {
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    border: 1px solid #bbbbbb;
+}

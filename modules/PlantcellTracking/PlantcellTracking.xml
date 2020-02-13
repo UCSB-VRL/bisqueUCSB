@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module name="PlantcellTracking" type="runtime" >
+
+    <tag name="inputs">
+        <tag name="mex_url"      type="system-input" />
+        <tag name="bisque_token" type="system-input" />
+
+        <tag name="image_url" type="image">
+            <template>
+                <tag name="label" value="Select an input image" />
+                <tag name="example_query" value="example:Plantcell" />
+            </template>
+
+            <gobject name="roi">
+                <template>
+                    <tag name="label" value="When an input image is selected, you may want to select a sub-region using the 'rectangle' tool if the image has too much background..." />
+                    <tag name="gobject" value="rectangle" />
+                </template>
+            </gobject>
+        </tag>
+
+
+    </tag>
+
+    -<tag name="outputs">
+<!-- Normal outputs -->
+
+-<tag name="summary">
+           -<template>
+                <tag name="label" value="Tracking summary" />
+            </template>
+        </tag>
+
+
+ -<tag type="image" name="Segmented Image">
+-<template>
+<tag name="label" value="Output image with cells segmented and tracked."/>
+</template>
+<gobject name="Tracked Cells"/>
+</tag>
+</tag>
+
+
+
+    <tag name="execute_options">
+        <tag name="argument_style" value="position" />
+    </tag>
+
+    <tag name="module_options" >
+        <tag name="version" value="1" />
+    </tag>
+
+    <tag name="display_options" >
+        <tag name="group" value="Plant Analysis" />
+    </tag>
+
+    <tag name="interface">
+        <tag name="javascript" type="file" value="webapp.js" />
+        <tag name="css" type="file" value="webapp.css" />
+    </tag>
+
+    <tag name="title" value="PlantcellTracking" />
+    <tag name="authors" value="Min Liu" />
+    <tag name="help"      type="file" value="public/help.html" />
+    <tag name="thumbnail" type="file" value="public/thumbnail.png" />
+    <tag name="description" type="string" value="This application allows user to track the individual cells which are segemented out of a time series of plant cell images or image stacks." />
+
+
+</module>

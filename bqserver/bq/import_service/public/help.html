@@ -1,0 +1,66 @@
+<h1>BisQue import</h1>
+
+BisQue will try to recognize file types based on their extensions and content and create resources with appropriate types. For example files recongnized as images with produce image resources. Multiple files may compose one N-D image. Molecule files will produce molecule resources thus allowing a special renderer to be activated showing 3D molecule view. Text files will be ingested as text files and enable textual viewer and so on.
+
+<h2>Unrecognized files</h2>
+
+<p>If the file format could not be recognized it will be uploaded and stored into the system as a <b>file</b> type. You will be able to annotate this file textually and download the original at any moment.</p>
+
+
+<h2>Compressed files</h2>
+
+<p>BisQue ingest system supports most common compressed file formats and can perform operations with their content. Supported formats are:</p>
+
+<ol><li>ZIP, TAR compressed as BZ2, ZIP, GZIP.</li></ol>
+
+<p>After unpacking files can be ingested as:</p>
+
+<ol>
+<li>BisQue archives</li>
+<li>a dataset of separate images</li>
+<li>a multi-dimensional image combined from all files</li>
+<li>a proprietory multi-file-multi-image, such as: Volocity, AndorIQ, Leica LEI, Olympus OIF, etc.</li>
+<li>a group of DICOM files</li>
+</ol>
+
+
+<h2>BisQue archives</h2>
+
+<p>BisQue archives contain all metadata about binary resources, they can also contain datasets and analysis results. Once can download a BisQue archive by using "Download manager".</p>
+
+
+
+<h2>Multi-dimensional images</h2>
+
+<p>BisQue can represent 5D images composed by many files using original files. BisQue will read appropriate sub-files as needed and try to reconstruct images only as needed. Such files should be packaged into a ZIP or TAR archive and when dragged into the uploader you will be given a chance to specify the number of Time and Z planes. There are some restrictions regarding file names. They must be sortable alphanumerically to produce an order of <b>Channel -> Z -> T</b>. All channels (samples) first, then Z positions for a given time point, then all channels then Z positions for the next time point, etc... One can skip some of these dimensions but must preserve the order. If channels are stored as separate file one must indicate their number.</p>
+
+<p>Sorting is done using a block algorithm where letters and numbers are split in blocks and sorted according to their type. This means that dapi_z1, dapi_z2, ..., dapi_10 will be sorted properly.</p>
+
+<p>Example file names composing a 4D file with 2 time points and 3 Z planes <b>sample_4d.zip</b>:</p>
+<li> T000_Z0.tif</li>
+<li> T000_Z1.tif</li>
+<li> T000_Z2.tif</li>
+<li> T001_Z0.tif</li>
+<li> T001_Z1.tif</li>
+<li> T001_Z2.tif</li>
+
+<p>Example file names composing a 3D file with 3 Z slices and 2 channels stored as separate files <b>sample_3d_2c.zip</b>:</p>
+<li> Z00_C1.tif</li>
+<li> Z00_C2.tif</li>
+<li> Z01_C1.tif</li>
+<li> Z01_C2.tif</li>
+<li> Z02_C1.tif</li>
+<li> Z02_C2.tif</li>
+
+
+ 
+<h2>Proprietory multi-file-multi-image files</h2>
+
+<p>BisQue Ingest proprietory multi-file-multi-image files, such as: Volocity, AndorIQ, Leica LEI, Olympus OIF, etc. Such files should be uplaoded in one package, such as ZIP or TAR. Currently only one proprietory multi-file-multi-image per package is processed. Files will be unpacked and a multi-file resource will be created from an original set of files. Downloading such a resource back will create a packaged archive and stream its contents.</p>
+
+
+
+<h2>DICOM files</h2>
+
+<p>BisQue will group multiple DICOM files contained in packages using their metadata. Such imports will produce a dataset with N-D images and otehr files properly imported and annotated using DICOM metadata. Most useful fields are annotated onto image resources directly and all others are available via embedded metadata view. Due to the nature of current BisQue import system DICOM images composed of multiple files should be uploaded in one package.</p>
+

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module name="AnnotationFromSpreadsheet" type="runtime">
+
+    <tag name="inputs">
+        <tag name="mex_url"  type="system-input" />
+        <tag name="bisque_token"  type="system-input" />
+
+        <tag name="dataset_url" type="dataset">
+            <template>
+                <tag name="accepted_type" value="dataset" />
+                <tag name="label" value="Dataset to annotate" />
+                <tag name="prohibit_upload" value="true" type="boolean" />
+                <tag name="allow_blank" value="false" type="boolean" />
+            </template>
+        </tag>
+
+        <tag name="tag_matching" type="spreadsheet_matching" >
+            <tag name="spreadsheet_uuid" />
+            <tag name="matches" />
+            <template>
+                <tag name="label" value="Annotation matching with spreadsheet" />
+                <tag name="description" value="Allows to skip specific textual annotations and all their children" />
+                <tag name="reference_dataset" value="dataset_url" />
+            </template>
+        </tag>
+
+        <!-- get types http://localhost:8080/data_service/ -->
+        <!--<tag name="resource_type" value="Image" type="combo" >
+            <template>
+                <tag name="label" value="Types of resources to annotate" />
+                <tag name="select">
+                    <value>All</value>
+                    <value>Image</value>
+                </tag>
+                <tag name="editable" value="false" type="boolean" />
+            </template>
+        </tag>-->
+
+        <tag name="overwrite_values" value="true" type="boolean" >
+            <template>
+                <tag name="label" value="Overwrite annotations" />
+                <tag name="description" value="Overwrite annotation values if they already exist in the reosurce. Otherwise append another one." />
+            </template>
+        </tag>
+
+    </tag>
+
+    <tag name="outputs">
+        <tag name="summary">
+            <template>
+                <tag name="label" value="Annotation summary" />
+            </template>
+        </tag>
+    </tag>
+
+    <tag name="module_options" >
+        <tag name="version" value="1" />
+    </tag>
+
+    <tag name="display_options" >
+       <tag name="group" value="Marine" />
+       <tag name="group" value="Annotations" />
+    </tag>
+
+    <tag name="interface">
+        <tag name="javascript" type="file" value="public/webapp.js" />
+        <tag name="css" type="file" value="public/webapp.css" />
+    </tag>
+
+    <tag name="help" type="file" value="public/help.html" />
+    <tag name="thumbnail" type="file" value="public/thumbnail.png" />
+
+    <tag name="title" type="string" value="Annotate dataset from spreadsheet" />
+    <tag name="authors" type="string" value="The Bisque team" />
+    <tag name="description" type="string" value="This module annotates all images in the dataset from a spreadsheet file located in the same dataset." />
+</module>

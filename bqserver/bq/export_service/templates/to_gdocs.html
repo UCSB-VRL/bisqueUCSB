@@ -1,0 +1,151 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="master.html" />
+
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
+  <title>Export service</title>
+
+<!-- ResourceBrowser -->
+<link rel="stylesheet" href="${tg.url('/core/js/ResourceBrowser/ResourceBrowser.css')}" type="text/css"/>
+
+<script type="text/javascript" src="${tg.url('/core/js/ResourceBrowser/Browser.js')}"></script>
+<script type="text/javascript" src="${tg.url('/core/js/ResourceBrowser/LayoutFactory.js')}"></script>
+<script type="text/javascript" src="${tg.url('/core/js/ResourceBrowser/Organizer.js')}"></script>
+<script type="text/javascript" src="${tg.url('/core/js/ResourceBrowser/ResourceQueue.js')}"></script>
+<script type="text/javascript" src="${tg.url('/core/js/ResourceBrowser/DatasetManager.js')}"></script>
+<script type="text/javascript" src="${tg.url('/core/js/ResourceBrowser/CommandBar.js')}"></script>
+<script type="text/javascript" src="${tg.url('/core/js/ResourceBrowser/viewStateManager.js')}"></script>
+
+<script type="text/javascript" src="${tg.url('/core/js/ResourceBrowser/ResourceFactory/ResourceFactory.js')}"></script>
+<script type="text/javascript" src="${tg.url('/core/js/ResourceBrowser/ResourceFactory/ResourceImage.js')}"></script>
+<script type="text/javascript" src="${tg.url('/core/js/ResourceBrowser/ResourceFactory/ResourceMex.js')}"></script>
+<script type="text/javascript" src="${tg.url('/core/js/ResourceBrowser/ResourceFactory/ResourceModule.js')}"></script>
+
+<script type="text/javascript" src="${tg.url('/core/js/ResourceBrowser/Misc/MessageBus.js')}"></script>
+<script type="text/javascript" src="${tg.url('/core/js/ResourceBrowser/Misc/GestureManager.js')}"></script>
+<script type="text/javascript" src="${tg.url('/core/js/ResourceBrowser/Misc/ComponentDataView.js')}"></script>
+<script type="text/javascript" src="${tg.url('/core/js/ResourceBrowser/Misc/Slider.js')}"></script>
+<script type="text/javascript" src="${tg.url('/core/js/ResourceBrowser/Misc/DataTip.js')}"></script>
+
+
+
+
+
+<!-- Styles for the form -->
+<style type="text/css">
+    form label#header {
+      width: 200px;
+      float: left;
+      text-align: right;
+      margin-right: 0.5em;
+      display: block;
+      font-size: 14px;
+      font-family: Tahoma, Geneva, sans-serif;
+      font-weight: bold;
+    }
+    form label {
+      margin-left: 1em;
+      font-size: 14px;
+      font-family: Tahoma, Geneva, sans-serif;
+    }
+
+    form div { margin-top: 10px; }
+    form input[type="text"], form select { width: 400px; }
+    form input#plus_button { margin-left: 220px; }
+</style>
+
+<script type="text/javascript" charset="utf-8">
+//<!--
+
+function showTip( element, text, opts ) {
+  if (!opts) opts={};
+  if (!('color' in opts)) opts.color = 'red';
+  if (!('timeout' in opts)) opts.timeout = 5000;
+  var tip = new Ext.ToolTip({
+      target: element,
+      anchor: 'top',
+      bodyStyle: 'font-size: 120%; color: '+opts.color+';',
+      html: text
+  });
+  tip.show();
+  setTimeout( function () { tip.destroy(); }, opts.timeout );
+}
+
+
+function validate() {
+  if (document.getElementById("google_id").value == '') {
+    showTip( 'google_id', 'Google ID is not specified!' );
+    return false;
+  }
+  if (document.getElementById("google_password").value == '') {
+    showTip( 'google_password', 'Google password is not specified!' );
+    return false;
+  }
+  if (document.getElementById("document_url").value == '') {
+    showTip( 'document_url', 'Resource URL is not specified!' );
+    return false;
+  }
+  return true;
+}
+
+function doSubmit() {
+  if (!validate()) return;
+  document.getElementById("export_form").submit();
+}
+
+function doBrowse(surface) {
+  if (typeof surface == 'string')
+    surface = document.getElementById(surface);
+
+  var rb  = new Bisque.ResourceBrowser.Dialog({
+      'height' : '85%',
+      'width' :  '85%',
+      listeners: { 'Select': function(me, resource) { surface.value = resource.uri; },
+                   scope: this },
+  });
+}
+
+//-->
+</script>
+
+
+</head>
+
+<body>
+<h1>Export to Google Documents</h1>
+
+<p>This application allows you to export any of the documents from the Bisque system into the <a href="http://en.wikipedia.org/wiki/Google_Documents">Google Spreadsheet</a> service using <a href="http://en.wikipedia.org/wiki/Comma-separated_values">CSV</a> format.</p>
+
+<form action="/export/to_gdocs_send" method="post" name="export_form" id="export_form" >
+
+  <div>
+    <label id="header">Google id (e-mail):</label>
+    <input name="google_id" type="text" id="google_id" />
+    <label>Usually your google e-mail address</label>
+  </div>
+
+  <div>
+    <label id="header">Google password:</label>
+    <input name="google_password" type="password" id="google_password" />
+  </div>
+
+  <div>
+    <label id="header">Document to export:</label>
+    <input name="document_url" type="text" id="document_url" value="${opts.get('url', '')}" />
+    <input name="browse" id="browse" type="button" value="Browse images" onclick="doBrowse('document_url')" />
+    <label>URL pointing to a Bisque Resource (image, tags, gobjects or a dataset)</label>
+  </div>
+
+  <div>
+    <input name="submitbtn" id="submitbtn" type="button" value="Export now!" onclick="doSubmit()" />
+  </div>
+
+</form>
+
+</body>
+</html>

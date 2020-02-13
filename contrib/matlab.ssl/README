@@ -1,0 +1,9 @@
+1. Download certificate from your SSL website.
+  In chrome, click on lock icon in the left side in the browse bar
+  Then select "Certificate information"
+  Then "Details" and "Copy to file"
+
+2. you need to update the cacerts file of the jre, which for me was located at: $Matlab/sys/java/jre/win64/jre/lib/security/cacerts
+
+Use "protecle" to open cert store and to add the certificate using the default password: "changeit"
+

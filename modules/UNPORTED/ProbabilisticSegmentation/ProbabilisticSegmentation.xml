@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module name="ProbabilisticSegmentation" path="./ProbabilisticSegmentation" type="python">
+    <tag name="formal-input" value="$client_server" />
+    <tag name="formal-input" value="$image_url" />
+    <tag name="formal-input" value="-r" />
+    <tag name="formal-input" value="-thresh" />
+</module>

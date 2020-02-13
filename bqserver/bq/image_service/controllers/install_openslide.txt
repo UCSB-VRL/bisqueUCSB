@@ -1,0 +1,16 @@
+Windows:
+#install pre-packaged PIL without JPEG support in 2.4.0
+pip install --upgrade --use-wheel Pillow
+or 
+pip install --upgrade PIL-1.1.7.win-amd64-py2.7.exe
+
+pip install --upgrade openslide-python
+copy libopenslide dlls to bqenv\Scripts\
+
+Linux:
+apt-get install python-openslide
+yum install openslide-python
+
+MacOSX:
+port install openslide
+brew install openslide

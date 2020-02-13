@@ -1,0 +1,110 @@
+/*********************************************************************
+  Changes to ExtJS styles
+*********************************************************************/
+
+/*
+  Mask
+*/
+.x-mask {
+    opacity: .5;
+    background: #000000;
+}
+
+.x-css-shadow {
+    box-shadow: none !important;
+}
+
+.x-mask-msg {
+    background-color: transparent;
+    border: 0px;
+
+    background-image: url('/core/images/progress_circles.gif');
+    background-size: 40px 40px;
+    background-position: center 15px;
+    background-repeat: no-repeat;
+    cursor: wait;
+
+    min-width: 40px;
+    min-height: 40px;
+}
+
+.x-mask-msg .x-mask-msg-text {
+    color: #000;
+    font-size: 24px;
+    font-weight: 300;
+    font-family: 'Red Hat Display', tahoma, arial, verdana, sans-serif;
+}
+
+.x-mask-msg div {
+    background-color: transparent;
+    background-image: none;
+    margin: 70px 15px 10px 15px;
+    padding: 0px;
+
+    opacity: 1;
+    cursor: wait;
+    border: 0px;
+}
+
+/*
+
+*/
+
+.x-toolbar-text { padding-right: 10px; }
+
+
+/*
+  Fixes to normal HTML style after extjs css import
+*/
+
+h1 {
+  font-size: 2em;
+  margin: 0.67em 0px;
+}
+
+h2 {
+  font-size: 1.6em;
+  margin: 0.5em 0px;
+}
+
+h3 {
+  font-size: 1.2em;
+  margin: 0.5em 0px;
+}
+
+
+p {
+  margin: 1em 0px;
+}
+
+input:not([type]), input[type="text"], input[type="password"] {
+  padding: 1px 0px;
+}
+
+input[type="button"], input[type="submit"], input[type="reset"], input[type="file"]::-webkit-file-upload-button, button {
+  padding: 1px 6px;
+}
+
+ul, ol {
+  padding-left: 2em;
+}
+
+li {
+  list-style: disc;
+}
+
+.x-boundlist-item {
+    list-style: none;
+}
+
+.x-boundlist ul, .x-boundlist ol {
+    padding-left: 0px;
+}
+
+i, cite, em, var, address {
+  font-style: italic;
+}
+
+strong, b {
+  font-weight: bolder;
+}

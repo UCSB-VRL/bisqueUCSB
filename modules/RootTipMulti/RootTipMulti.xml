@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module name="RootTipMulti" type="runtime" >
+    <tag name="inputs">
+        <!--
+        <tag name="input-formal" value="image_url" type="image" />
+        <tag name="input-system" value="mex_url" />
+        -->
+        <tag name="image_url" type="image">
+          <template>
+            <tag name="require_geometry">
+              <tag name="t" value="stack" />
+              <tag name="fail_message" value="Need a time-series" />
+            </tag>
+          </template>
+          <gobject name="tips">
+            <template>
+              <tag name="gobject" value="point" />
+              <tag name="require_gobjects">
+                  <tag name="amount" value="many" />
+                  <tag name="fail_message" value="Requires select of root tips" />
+              </tag>
+            </template>
+          </gobject>
+        </tag>
+        <tag name="mex_url"      type="system-input" />
+        <tag name="bisque_token" type="system-input" />
+    </tag>
+
+    <tag name="outputs">
+      <tag name="rootimage" type="image">
+        <template>
+          <tag name="label" value="Tracked root tips" />
+        </template>
+        <gobject name="root_tips">
+            <template>
+                <tag name="plot"          value="true"  type="boolean" />
+                <tag name="export_csv"    value="true"  type="boolean" />
+                <tag name="export_xml"    value="true"  type="boolean" />
+                <tag name="export_excel"  value="false" type="boolean" />
+                <tag name="export_gdocs"  value="false" type="boolean" />
+                <tag name="preview_movie" value="false" type="boolean" />
+            </template>
+        </gobject>
+
+      </tag>
+    </tag>
+
+    <tag name="execute_options">
+        <tag name="argument_style" value="named" />
+    </tag>
+
+    <tag name="module_options" >
+        <tag name="version" value="3" />
+    </tag>
+
+    <tag name="display_options" >
+        <tag name="group" value="Plant Analysis" />
+        <tag name="group" value="Root Analysis" />
+        <tag name="group" value="Tracking" />
+    </tag>
+
+    <tag name="interface">
+        <tag name="javascript" type="file" value="my_renderes.js" />
+        <tag name="css" type="file" value="webapp.css" />
+    </tag>
+    <tag name="title"  value="MultiRoot growth analyzer" />
+    <tag name="help"      type="file" value="public/help.html" />
+    <tag name="thumbnail" type="file" value="public/thumbnail.png" />
+    <tag name="description"  value="This tracks several root tips in a time series image." />
+    <tag name="authors"  value="Nathan Miller, Logan Johnson, Kris Kvilekval and Dmitry Fedorov" />
+
+</module>

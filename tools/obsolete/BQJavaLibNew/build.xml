@@ -1,0 +1,76 @@
+<project>
+    <property name="install.dir" value="../../lib"/>
+    <property name="jar.dir" value="build/jar"/>
+    <property name="lib.dir" value="."/>
+    <property name="lib-folder" location="${lib.dir}"/>
+    <property name="classes.dir" value="build/classes"/>
+    <property name="BQMatlabToolbox.dir" value="../BQMatlabToolbox"/>
+    <property name="BQBisqueJ.dir" value="../BQBisqueJ"/>
+    <property name="user.name" value="Boguslaw Obara"/>
+
+    <path id="classpath.lib">
+        <fileset dir="${lib.dir}">
+            <!--<include name="*.jar" />-->
+            <include name="jai_imageio.jar" />
+            <include name="clibwrapper_jiio.jar" />
+            <include name="jai_codec.jar" />
+            <include name="jai_core.jar" />
+        </fileset>
+    </path>
+
+    <manifestclasspath property="manifest.class.path" jarfile="bisque.jar" >
+        <classpath refid="classpath.lib"/>
+    </manifestclasspath>
+
+    <pathconvert property="classpath.lib.manifest"
+                 refid="classpath.lib"
+                 pathsep=" "
+                 dirsep="/">
+        <map from="${lib-folder}" to="."/>
+    </pathconvert>
+
+    <target name="clean">
+        <delete dir="build"/>
+    </target>
+
+    <target name="compile">
+        <mkdir dir="${classes.dir}"/>
+        <javac srcdir="." destdir="${classes.dir}" debug="true" target="1.5"> 
+            <classpath refid="classpath.lib"/>
+        </javac>
+    </target>
+
+    <target name="jar" depends="compile" >
+        <mkdir dir="${jar.dir}"/>
+        <jar destfile="${jar.dir}/bisque.jar" basedir="${classes.dir}">
+            <manifest>
+                <attribute name="Built-By" value="${user.name}"/>
+                <attribute name="Main-Class" value="bisque.BQTest"/>
+                <attribute name="Class-Path" value="${manifest.class.path}"/>
+                <!--<attribute name="Class-Path" value="${classpath.lib.manifest}"/>-->
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="install" depends="jar" >
+        <copy todir="${install.dir}">
+            <fileset dir="${jar.dir}" excludes="**/*.java"/>
+        </copy>
+        <copy todir="${BQMatlabToolbox.dir}">
+            <fileset dir="${jar.dir}" excludes="**/*.java"/>
+        </copy>
+        <copy todir="${BQBisqueJ.dir}">
+            <fileset dir="${jar.dir}" excludes="**/*.java"/>
+        </copy>
+
+        <copy todir="${install.dir}/">
+            <path refid="classpath.lib"/>
+        </copy>
+        <copy todir="${BQMatlabToolbox.dir}/">
+            <path refid="classpath.lib"/>
+        </copy>
+        <copy todir="${BQBisqueJ.dir}/">
+            <path refid="classpath.lib"/>
+        </copy>
+    </target>
+</project>
