@@ -12,6 +12,11 @@ BisQue is a web-based platform specifically designed to provide researchers with
 
 The official documentation covers the [BisQue cloud service](https://bisque.ece.ucsb.edu) running live at UCSB, module development for the platform, and the BQAPI. If you have any questions, feel free to reach out. We will be continuously updating the documentation so check back often for updates!
 
+## Recent Papers using BisQue
+
+* Latypov, M.I., Khan, A., Lang, C.A. et al. Integr Mater Manuf Innov (2019) 8: 52. https://doi.org/10.1007/s40192-019-00128-5
+* Polonsky, A.T., Lang, C.A., Kvilekval, K.G. et al. Integr Mater Manuf Innov (2019) 8: 37. https://doi.org/10.1007/s40192-019-00126-7
+
 ## Developers
 
 * Amil Khan  (BisQue Team)
