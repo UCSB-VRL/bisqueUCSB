@@ -80,7 +80,7 @@ repoze.who==1.0.19
 repoze.who-friendlyform==1.0.8
 repoze.who-testutil==1.0.1
 repoze.who.plugins.sa==1.0.1
-requests==2.18.4
+requests==2.20.0
 requests_toolbelt==0.6.2
 s3transfer==0.1.10
 shortuuid==0.4
