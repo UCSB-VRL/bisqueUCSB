@@ -1,0 +1,158 @@
+##--index-url https://biodev.ece.ucsb.edu/py/bisque/dev/+simple
+Babel==1.3
+Beaker==1.6.4
+#Cython==0.25.2
+FormEncode==1.3.1
+Genshi==0.7
+Mako==0.9.1
+MarkupSafe==0.21
+Minimatic==1.0.4
+Paste==1.7.5.2
+PasteDeploy==1.3.4
+PasteScript==1.7.3
+Paver==1.2.4
+Pillow==4.2.1
+Pygments==1.6
+Pylons==1.0
+Routes==2.0
+SQLAlchemy==1.2.5
+PySqlite==2.8.3
+tempita==0.5.2
+ToscaWidgets==0.9.12
+TurboGears2==2.1.5
+TurboMail==3.0.3
+WebError==0.10.3
+WebFlash==0.1a9
+WebHelpers==1.3
+WebOb==1.0.8
+WebTest==1.1
+alembic==0.6.3
+altgraph==0.9
+#argparse==1.2.1
+#astroid==1.0.1
+#bbfreeze==1.1.3
+#bbfreeze-loader==1.1.0
+beautifulsoup4==4.3.2
+#boto==2.48.0
+boto3==1.4.8
+jmespath==0.9.2
+botocore==1.8.2
+docutils==0.13.1
+cssutils==1.0
+#cuisine==0.6.5
+decorator==3.4.0
+ecdsa==0.11
+furl==0.3.7
+futures==3.0.5
+future==0.16.0
+funcsigs==1.0.2
+filechunkio==1.6
+gdata==2.0.18
+httplib2==0.7.1-1
+importlib==1.0.3
+lxml==3.7.3
+nose==1.3.1
+openslide-python==1.1.1
+ordereddict==1.1
+orderedset==2.0.1
+orderedmultidict==0.7.1
+#paramiko==1.13.0
+pbr==0.6
+pkginfo==1.2b1
+ply==3.4
+poster==0.8.1
+psutil==4.3.0
+python_irodsclient==0.6.0
+python_multipart==0.0.4
+pycrypto==2.6.1
+python-dateutil==2.7.3
+python-mimeparse==1.6.0
+pyinstaller==3.2.1
+pytz==2013.9
+recaptcha-client==1.0.6
+repoze.lru==0.6
+repoze.tm2==2.0
+repoze.what==1.0.9
+repoze.what-pylons==1.0
+repoze.what-quickstart==1.0.9
+repoze.what.plugins.sql==1.0.1
+repoze.who==1.0.19
+repoze.who-friendlyform==1.0.8
+repoze.who-testutil==1.0.1
+repoze.who.plugins.sa==1.0.1
+requests==2.18.4
+requests_toolbelt==0.6.2
+s3transfer==0.1.10
+shortuuid==0.4
+simplejson==3.3.3
+six==1.11
+#sqlalchemy-migrate==0.9
+tgext.registration2==0.5.2
+transaction==1.4.1
+tw.forms==0.9.9
+tw.output==0.5.0dev-20110906
+tw.recaptcha==0.8
+#BQ uwsgi==2.0.14
+unittest2==0.5.1
+#virtualenv==1.11.4
+waitress==0.8.8
+wsgiref==0.1.2
+xmlrunner==1.7.7
+zope.interface==4.1.0
+zope.sqlalchemy==0.7.7
+
+### debug tools ###
+##profiler
+linesman==0.3.2
+pygraphviz==1.3.1
+networkx==1.8
+olefile==0.44
+
+# KML export
+pyproj==1.9.3
+geojson==1.0.9
+
+# DICOM
+pydicom==0.9.8
+
+# table service
+#json== #standard python package
+xlrd==0.9.4
+numexpr==2.6.2
+numpy==1.12.0
+tables==3.4.2
+pandas==0.19.2
+
+# Feature service
+mahotas==1.4.3
+libtiff==0.4.0
+
+# Databases
+psycopg2==2.6.1
+
+#DEVELOPER REQS
+pylint==1.9.2
+configparser==3.5.0
+py==1.4.34
+mccabe==0.6.1
+singledispatch==3.4.0.3
+astroid==1.6.5
+lazy-object-proxy==1.3.1
+wrapt==1.10.10
+pytest==3.1.1
+prettytable==0.7.2
+backports.functools-lru-cache==1.5
+isort==4.2.5
+pluggy==0.4.0
+
+# bqapi needs
+tifffile==0.14.0
+enum34==1.1.6
+
+# list all Bisque Dirs:  DO NOT REMOVE/UNCOMMENT
+# These are used downstream by installers
+#BQ ./bqengine
+#BQ ./bqapi
+#BQ ./bqcore
+#BQ ./bqserver
+#BQ ./bqfeature
