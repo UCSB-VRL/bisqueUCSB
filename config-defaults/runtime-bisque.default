@@ -1,0 +1,39 @@
+# This file created by bq-admin setup and contains runtime variables needed by modules
+# Original copy is config and linked into the modules
+#
+# Mode is a list of allow runtime platforms i.e. command, condor, [hadoop]
+runtime.platforms = command
+# Where staging directory are createed
+runtime.staging_base =
+runtime.matlab_home =
+# will be replaced with the system version if unmodified
+runtime.matlab_launcher = config-defaults/templates/matlab_launcher_SYS.tmpl
+
+[docker]
+docker.enabled = false
+# A  hub where to push containers to
+docker.hub =
+docker.hub.user =
+docker.hub.password =
+docker.hub.email=
+# This is used only if docker hub is defined
+docker.login_tmpl =
+# Example full login
+#docker.login_tmpl = docker login -u {docker_hub_user} -p {docker_hub_password} -e {docker_hub_email} {docker_hub}
+
+# A matlab runtime base container for matlab modules
+docker.image.matlab_runtime = biodev.ece.ucsb.edu:5000/mcr_runtime_2015b
+docker.image.dream3d = biodev.ece.ucsb.edu:5000/dream3d
+docker.image.cellprofiler = biodev.ece.ucsb.edu:5000/cellprofiler
+
+[condor]
+condor.enabled = False
+condor.dag_template = config-defaults/templates/condor_dag.tmpl
+condor.submit_template = config-defaults/templates/condor_submit.tmpl
+condor.dag_config_template = config-defaults/templates/condor_dag_conf.tmpl
+
+[condor_submit]
+request_cpus = 1
+request_memory = 2000
+match_list_length = 3
+requirements = (Arch == "x86_64") && (TARGET.Name =!= LastMatchName1) && (OpSys == "LINUX")

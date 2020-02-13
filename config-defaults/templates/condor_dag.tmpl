@@ -1,0 +1,6 @@
+## This mako template is used to create a condor DAGman file for running postprocessing
+##
+JOB ${mex_id}  ./${mex_id}.cmd
+CONFIG ./${mex_id}.dag.config
+SCRIPT POST ${mex_id} ${post_exec} ${post_args}
+RETRY ${mex_id} 3

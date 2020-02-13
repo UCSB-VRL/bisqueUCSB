@@ -1,0 +1,38 @@
+# # BisqueCore - Pylons development environment configuration
+#
+# The %(here)s variable will be replaced with the parent directory of this file
+#
+# This file is for deployment specific config options -- other configuration
+# that is always required for the app is done in the config directory,
+# and generally should not be modified by end users.
+
+# Variabled defined by startservers
+#  host: an unadorned FQDN hostname
+#  port: the server port
+#  url : The full url of the server
+
+[DEFAULT]
+
+[server:main]
+use = egg:Paste#http
+host = localhost
+port = 8080
+
+
+[app:main]
+use = config:site.cfg
+sqlalchemy.url = sqlite:///./test1.db
+skip_authentication = true
+
+
+
+[test]
+host.root= http://loup.ece.ucsb.edu:8888
+host.user= test
+host.password= test
+
+[store]
+samples_url= http://flour.ece.ucsb.edu:8080/~bisque/test_data/images/
+input_dir= sampledata
+results_dir= results
+files= flowers_24bit_nointr.png

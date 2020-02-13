@@ -1,0 +1,482 @@
+#####################################
+# Site Names and server address
+#####################################
+# Top Level root .. Allows subservers
+
+[servers]
+# Allow site admins to configure a number of parallel servers
+# per machine.  Can be used with proxying server such as
+# apache, haproxy, nginx etc..
+backend = paster
+# backend = uwsgi
+
+# control which servers are active
+#servers = h1,h2,h3,h4,e1
+servers = h1
+# Server definitions
+# url = full url to proxy server
+# services_enabled  = list of bisque_service to enable
+# services_disabled = list of bisque_service to disable
+# proxyroot =  the value of bisque.root for engines
+
+h1.url = http://0.0.0.0:8080
+h1.services_disabled =
+# Extra params for uwsgi servers
+# h1.uwsgi.socket = unix:///tmp/bisque.sock
+# h1.uwsgi.threads = 8
+# h1.uwsgi.master = true
+# h1.uwsgi.processes = 4
+# h1.bisque.static_files = false
+# Example h1 with only image service, feature and helpers
+#h1.services_enabled = blob_service, data_service, image_service, features
+
+# You can define more than one host for paster when used with frontent proxy (haproxy)
+# Not needed by uwsgi as it already run multiple background processes
+#h2.url = http://localhost:9092
+#h2.services_disabled = engine_service
+#h3.url = http://localhost:9093
+#h3.services_disabled = engine_service
+#h4.url = http://localhost:9094
+#h4.services_disabled = engine_service
+
+
+# Engine on this host (enable this above in servers)
+e1.url = http://0.0.0.0:27000
+e1.services_enabled = engine_service
+e1.bisque.has_database = false
+e1.bisque.static_files = false
+# Extra params uwsgi
+# e1.uwsgi.socket = unix:///tmp/engine.sock
+
+# Define where the logs and PID files will go (otherwise will create in local dir)
+#log_dir = /var/log/bisque
+#pid_dir = /var/run/bisque
+
+# Run a logging server.. very important if multiple bisques are running(uwsgi, paster)
+# See
+#logging_server = python contrib/logging/loggingwebmonitor.py  -c config/loggingwebmonitor.ini
+
+
+###############################
+# Extra filters to be added
+#[filter:linesman]
+# Linesname can be used for profiling
+#use = egg:linesman#profiler
+
+
+[app:main]
+# pylons/paster config
+use = egg:bqcore
+full_stack = true
+#filter-with = linesman
+
+
+##########################################################
+# Bisque Configuration
+##########################################################
+# Visible titles
+bisque.organization = ORG
+bisque.title = BioImage Repository
+bisque.admin_email = admin@nowhere.com
+bisque.admin_id = admin
+bisque.welcome_message = Welcome to the Bisque database
+#bisque.background_query = welcome_background:
+#bisque.background_resource  =
+#set environment to development for test/debug (option debug below must be false for this to effective)
+#bisque.js_environment = development
+bisque.js_environment = production
+#bisque.static_files = true
+
+
+
+# server defaults
+bisque.server = http://0.0.0.0:8080
+bisque.services_disabled = engine_service
+#bisque.services_enabled = client_service
+#bisque.site = http://localhost:8080
+bisque.installed =  false
+bisque.paths.root  =  .       # or /usr/share/python/bisque
+bisque.paths.data  =  ./data  # or /var/run/bisque
+bisque.paths.config = ./config # or /etc/bisque/config
+bisque.paths.share  = .       # or /usr/share/bisque
+bisque.paths.run    = .       # or /var/run/bisque
+bisque.paths.public = ./public # or /var/run/bisque/public
+bisque.paths.depot = ./external
+bisque.paths.virtualenv = ./bqenv
+bisque.paths.default = ./config-defaults
+bisque.paths.bin = ./bqenv/bin
+bisque.paths.packages = ./bqenv/lib/python2.7/site-packages
+bisque.paths.jslocation = ./bqcore
+
+#bisque.logger = http://localhost:8888
+
+# Blobservice
+# Store paths all uploaded objects (into a store resource)
+#bisque.blob_service.store_paths = true
+# Use subtransactions for storing paths (must  be true sqlite now supports subtransaction)
+bisque.blob_service.subtransaction = true
+
+# Ordered list of stores .. path is created based on template
+# bisque.blob_service.stores = irods1,s3,local
+bisque.blob_service.stores=local
+bisque.stores.local.mounturl = file://$datadir/imagedir/$user/
+bisque.stores.local.top = file://$datadir/imagedir/
+
+# Example irods store
+#bisque.stores.irods1.mounturl=irods://data.iplantcollaborative.org/iplant/home/$user/bisque_data/uploads/$date/$filebase.$filehash$fileext
+#bisque.stores.irods1.credentials=bisque:<password>
+#bisque.stores.irods1.readonly = true
+# example S3
+#bisque.stores.s3.path=s3://$user/
+#bisque.stores.s3.credentials = <access_key>:<secret_key>
+#bisque.stores.s3.bucket_id = None
+#bisque.stores.s3.location = us-west
+
+# Feature service
+# Set if a feature is cached (all features are set to not cache by default)
+#bisque.feature.default.cache = False
+#set for specific feature
+#bisque.feature.HTD.cache = False
+
+# Data service
+#bisque.data_service.caching=true
+#bisque.data_service.server_cache=.server_cache
+#bisque.data_service.max_response_time = 0
+# Module Service
+#bisque.module_service.queue_wait =  5
+#bisque.module_service.blocksize = 3
+
+# Engine Service
+#bisque.engine =  http://localhost:8080
+#bisque.engine_service.module_dirs = modules
+#bisque.engine_service.poolsize = 4
+
+# Image Service
+#bisque.image_service.work_dir  = ./data/workdir
+bisque.image_service.imgcnv.omp_num_threads = 4
+
+# Import service
+bisque.import_service.upload_dir = ./data/uploads
+
+# HTTP client
+#bisque.http_client.cache_dir = data/client_cache
+
+#
+# Login identification  systems
+#bisque.login.timeout  = check session status every timeout period
+#  Browser windows will check every TIMEOUT seconds to see if you are still logged in
+#  0 == never check .. bad idea
+#  60    check every minute
+# bisque.login.session_length  = length in seconds of a session
+#  60480 7 days (60*60*24*7)
+#  1814400 30 days
+bisque.login.timeout=60
+bisque.login.session_length=60480
+# password can be hashed or freetext
+bisque.login.password=hashed
+# list of login providers
+# NOTE: you must also edit config/who.ini to enable these openid, ldap etc
+bisque.login.providers =  local
+#bisque.login.providers =  iplant, local
+
+#bisque.login.iplant.text = iPlant Login
+#bisque.login.iplant.url = /auth_service/cas_login_handler
+#bisque.login.iplant.icon = /core/images/signin/signin_iplant.png
+#bisque.login.iplant.type = cas
+
+#bisque.login.google.text = Google Login
+#bisque.login.google.url = /auth_service/openid_login_handler?openid_provider=https://www.google.com/accounts/o9/id
+#bisque.login.google.icon = /core/images/signin/signin_google.png
+#bisque.login.google.type = openid
+
+#bisque.login.yahoo.text = Yahoo Login
+#bisque.login.yahoo.url = /auth_service/openid_login_handler?openid_provider=https://www.yahoo.com/
+#bisque.login.yahoo.icon = /core/images/signin/signin_yahoo.png
+#bisque.login.yahoo.type = openid
+
+bisque.login.local.text = Local Login
+bisque.login.local.url = /auth_service/login
+bisque.login.local.icon = /core/images/signin/signin_bisque.png
+bisque.login.local.type = internal
+
+# User traffic tracking
+# You can use google (http://www.google.com/analytics/)  or piwik (http://piwik.org/), etc.
+#bisque.tracking = piwik.html
+#bisque.tracking = google.html
+#bisque.tracking.piwik_url = http://yourpiwikhost.org
+#bsique.tracking.google_id  = <your google id> i.e. UA-3923721-4
+
+# Google Maps API Key
+#bisque.gmaps = ABC
+
+# Bisque Cluster Runtime
+condor.enabled = False
+condor.dag_template =
+condor.submit_template =
+condor.dag_config_template =
+runtime.staging_base =
+runtime.matlab_home =
+runtime.mode = command
+
+
+###############################################################
+# Package dependencies config
+
+# Beaker Sessions Config
+# If you'd like to fine-tune the individual locations of the cache data dirs
+# for the Cache data, or the Session saves, un-comment the desired settings
+# here:
+#beaker.cache.data_dir = %(here)s/data/cache
+#beaker.session.data_dir = %(here)s/data/sessions
+#cache_dir = %(here)s/data
+#beaker.session.type = cookie
+beaker.session.key = bq
+beaker.session.secret = somesecret
+#beaker.session.type = ext:database
+#beaker.session.sa.url = postgresql://localhost:5432/bq058
+# Beaker Cache
+beaker.cache.type = file
+beaker.cache.data_dir = data/beakercache
+beaker.cache.lock_dir = data/beakerlock
+#beaker.cache.type=ext:memcached
+#beaker.cache.url = 127.0.0.1:11211
+#
+
+# Paster  Error Config
+error_subject_prefix = Bisque Error:
+error_message = An Unexpected exception:
+error_email_from = bisque_admin@localhost
+email_to = bisque_admin@localhost
+smtp_server = localhost
+
+
+# TGExt.Registration2 Config
+registration_config = %(here)s/registration.cfg
+registration.site_name = Bisque
+registration.mail.admin_email = admin@nowhere.com
+registration.host = http://localhost:8080
+registration.mail.smtp_server = localhost
+
+# TurboMail Config
+mail.on = false
+mail.smtp.server = localhost
+mail.manager = immediate
+mail.transport = smtp
+
+# SQLAlchemy
+sqlalchemy.url = sqlite:///data/bisque.db
+#sqlalchemy.url = postgresql://localhost:5432/bisque05
+sqlalchemy.echo = false
+sqlalchemy.echo_pool = false
+sqlalchemy.pool_recycle = 3600
+sqlalchemy.pool_pre_ping = true
+
+# Repoze.who stuff
+#  log_level is  'debug', 'info', 'warning', 'error'
+#  log_file  is [ 'stdout' or path/to/who.log ]
+who.config_file = %(here)s/who.ini
+who.log_level=error
+# log_stream can be stderr, stdout or a logger (see auth below)
+who.log_stream=auth
+
+#linesman profiler
+bisque.profiler.enable = false
+bisque.profiler.path = __profiler__
+
+
+# WARNING: *THE LINE BELOW MUST BE UNCOMMENTED ON A PRODUCTION ENVIRONMENT*
+# Debug mode will enable the interactive debugging tool, allowing ANYONE to
+# execute malicious code after an exception is raised.
+set debug = false
+
+# if you are using Mako and want to be able to reload
+# the mako template from disk during the development phase
+# you should say 'true' here
+# This option is only used for mako templating engine
+# WARNING: if you want to deploy your application using a zipped egg
+# (ie: if your application's setup.py defines zip-safe=True, then you
+# MUST put "false" for the production environment because there will
+# be no disk and real files to compare time with.
+# On the contrary if your application defines zip-safe=False and is
+# deployed in an unzipped manner, then you can leave this option to true
+templating.mako.reloadfromdisk = true
+
+# the compiled template dir is a directory that must be readable by your
+# webserver. It will be used to store the resulting templates once compiled
+# by the TemplateLookup system.
+# During development you generally don't need this option since paste's HTTP
+# server will have access to you development directories, but in production
+# you'll most certainly want to have apache or nginx to write in a directory
+# that does not contain any source code in any form for obvious security reasons.
+templating.mako.compiled_templates_dir = %(here)s/data/templates
+
+
+
+#turn this setting to "min" if you would like tw to produce minified
+#javascript files (if your library supports that)
+toscawidgets.framework.resource_variant=debug
+
+
+################################################################################
+# Logging configuration
+# Add additional loggers, handlers, formatters here
+# Uses python's logging config file format
+# http://docs.python.org/lib/logging-config-fileformat.html
+# ERROR WARN INFO DEBUG
+################################################################################
+
+[loggers]
+#keys = root, bq, bqroot, bqapi, sqlalchemy, auth, image, locks, import, export, blobs, usage, engine, registration
+keys = root, bqapi, bq, locks, sqlalchemy, auth
+
+[handlers]
+#keys = console, syslog, file, timedfile, pylog
+keys = console
+
+[formatters]
+#keys = generic, syslog, full
+keys = generic
+
+###########################
+# Loggers
+# If you create additional loggers, add them as a key to [loggers] above
+
+[logger_root]
+level = ERROR
+#handlers = console, syslog
+handlers = console
+
+[logger_bqapi]
+level = WARN
+handlers =
+qualname = bqapi
+
+[logger_bq]
+level = INFO
+handlers =
+qualname = bq
+
+#[logger_bqroot]
+#level = INFO
+#handlers =
+#qualname = bq.root
+
+
+#[logger_image]
+#level = INFO
+#handlers =
+#qualname = bq.image_service
+
+#[logger_import]
+#level = INFO
+#handlers =
+#qualname = bq.import_service
+
+#[logger_export]
+#level = INFO
+#handlers =
+#qualname = bq.export_service
+
+#[logger_blobs]
+#level = INFO
+#handlers =
+#qualname = bq.blobs
+
+#[logger_usage]
+#level = WARN
+#handlers =
+#qualname = bq.usage
+
+#[logger_engine]
+#level = INFO
+#handlers =
+#qualname = bq.engine_service
+
+[logger_locks]
+level = INFO
+handlers =
+qualname = bq.util.locks
+
+[logger_sqlalchemy]
+level = WARN
+handlers =
+qualname = sqlalchemy.engine
+# "level = INFO" logs SQL queries.
+# "level = DEBUG" logs SQL queries and results.
+# "level = WARN" logs neither.  (Recommended for production systems.)
+
+#[logger_sqlalchemy_pool]
+#level = INFO
+#handlers =
+#qualname = sqlalchemy.pool
+# "level = INFO" logs SQL queries.
+# "level = DEBUG" logs SQL queries and results.
+# "level = WARN" logs neither.  (Recommended for production systems.)
+
+
+# A logger for authentication, identification and authorization -- this is
+# repoze.who and repoze.what:
+[logger_auth]
+level = WARN
+handlers =
+qualname = auth
+
+
+# A logger for registration events (user create etc)
+[logger_registration]
+level=INFO
+handlers=
+qualname = registration
+
+#######################################
+# Handlers
+# If you create additional handlers, add them as a key to [handlers]
+[handler_console]
+class = StreamHandler
+args = (sys.stderr,)
+level = NOTSET
+formatter = generic
+
+#[handler_file]
+#class=handlers.RotatingFileHandler
+#level=NOTSET
+#formatter=generic
+## Create bisque.log with 100MB max size and keeps 14 previous version
+#args=('bisque.log', 'a', 100*1024*1024, 14)
+
+#[handler_timedfile]
+#class=handlers.TimedRotatingFileHandler
+#level=NOTSET
+#formatter=generic
+## Create bisque.log with 7 days/log and 14 weeks of backups
+#args=('bisque.log', 'D', 7, 14)
+
+#[handler_syslog]
+#class=handlers.SysLogHandler
+#level=NOTSET
+#args=(('localhost', handlers.SYSLOG_UDP_PORT), handlers.SysLogHandler.LOG_LOCAL1)
+#args=('/dev/log',handlers.SysLogHandler.LOG_LOCAL1)
+#formatter= generic
+
+
+#[handler_pylog]
+## Install a SocketListener like python-loggingserver
+## see contrib/logging and enable the logging server in the [servers] section.
+#class= handlers.SocketHandler
+#level=NOTSET
+#formatter=generic
+#args=('localhost', handlers.DEFAULT_TCP_LOGGING_PORT)
+
+#########################################
+# Formatters
+# If you create additional formatters, add them as a key to [formatters]
+[formatter_generic]
+format = %(asctime)s,%(msecs)03d %(levelname)-5.5s [%(name)s] %(message)s
+datefmt = %H:%M:%S
+
+#[formatter_full]
+#format = %(asctime)s,%(msecs)03d:%(process)d-%(thread)x: %(levelname)-5.5s [%(name)s] %(message)s
+#datefmt = %H:%M:%S
+
+#[formatter_syslog]
+#format = %(levelname)s [%(name)s] %(message)s

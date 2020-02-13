@@ -1,0 +1,38 @@
+#  This file contains a list of external binary files to be fetched
+# during system setup.  Each file external file must be in the form
+# of sha1_filename.ext where sha1 is UPPERCASE SHA1 hex hash of the file contents.
+#
+# Accessing http://biodev.ece.ucsb.edu/binaries/upload will allow you to place
+# a file on the binary server and create the correct name.
+# There is also a script bqdev-upload-binary for uploading local files.
+#
+[common]
+#B607E3504810D63D02298529449F0918826FE072-ext-4.0.2a-gpl.zip=extjs.zip
+#BEBB0991B63A985A8C31D97942D4395E17F84444-extjs-4.1.1-gpl.zip=extjs.zip
+06B0FFFCAFA78EBE6843BDAADB14939554A85B66-ext-4.2.1-gpl.zip=extjs.zip
+
+# Bioformats 5.1.1
+FD36E37414682D1218295356A7EE14FE5695B4D5-bftools.5.1.1.zip=bioformats-pack.zip
+
+# PLATFORM dependent files
+# These sections titles use shell like 'glob'ing to match
+# To add a new platform, start up python and do a
+#   import platform
+#   platform.platform().replace('-', '-%s-'%platform.architecture()[0], 1)
+
+[Windows-64bit-*]
+1723CD0A2DFB196D80A54769B9A0FB3EE4D434C8-imgcnv_win64_2.2.2.zip=imgcnv.zip
+077DCE3016BE95CDDA0C83A9193823E233CD13BA-ImarisConvert_win64_8.0.2.zip=ImarisConvert.zip
+A9F01C51244733E6DB79F44AC13090BC0E1A233B-openslide-bisque-Windows-64bit.1.1.0.zip=openslide-bisque.zip
+5C728E34AF824E23BF42D74451C62C36574D6010-feature_extractors-Windows-64bit.zip=feature_extractors.zip
+5D94C53AC535A8D058124F1C6D483A04D5EC002B-opencv-2.4.6-Windows-64bit.zip=opencv-2.4.6.zip
+
+[Linux-64bit-*]
+511B5E84692B123A89576086201B793C93096A74-libmbgl-linux-64-large.a
+7B92AE8430943F2EC4C51AAC207FD41C39627584-feature_extractors-Linux-64bit.zip=feature_extractors.zip
+9E7E137FCBA36D1CAC6189C5CE2AE82B079BC5B8-imarisconvert_glibc2.11.tar.gz=ImarisConvert.tar.gz
+E672BCA974C87F22D4A72BFDF15C79AEDFA0A979-opencv-2.4.6-Linux-64bit.zip=opencv-2.4.6.zip
+
+
+[Darwin-64bit-*]
+D2ACB5E2CAD07D811F1CDEE8161A79338735FC9E-imarisconvert_macx_8.0.2.tar.gz=ImarisConvert.tar.gz

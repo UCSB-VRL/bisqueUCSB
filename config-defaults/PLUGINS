@@ -1,0 +1,12 @@
+# List of module plugins or urls
+# Get a plugin and install to directory
+# The installed directory name will default to the base of  repository name unless given as parameter
+#
+# Syntax:
+#   dir path [ name ]
+#   hg  url[#tag]  [ name ]
+#   git url[#[tag/branch]  [ name ]
+#   tar url  [ name ]  # NOT IMPLEMENTED
+#   zip url  [ name ]  # NOT IMPLEMENTED
+
+#hg  https://bitbucket.org/CBIucsb/intercom#stable

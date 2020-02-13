@@ -1,0 +1,66 @@
+Example nginx config
+
+This example uses ngnix to run the bisque
+client interface via uwsgi instead of Paster.
+
+1. Configure and install uwsgi
+   Activate the bqenv virtual environment and run
+      $ easy_install uwsgi
+   to install the python uwsgi wrapper and the uwsgi server
+
+2. Configure and install nginx
+   Inorder to run uwsgi behind nginx, you need to
+   install nginx with the uwsgi module integrated
+
+   on Debian:
+
+    $ sudo apt-get install nginx-extras
+     or
+
+    sudo echo "deb http://backports.debian.org/debian-backports squeeze-backports main contrib non-free" >>/etc/apt/sources.list.d/backports.list
+    sudo apt-get install nginx-full
+
+3. Configure Bisque to run via uwsgi.
+  A) In your site.cfg set
+     [servers]
+      backend=uwsgi
+
+  B) for every server say s, specify
+    s.url = <the http addressable url> (dnsname+http_port)
+    s.server = <host>:<port> (leave host to empty if you want it to listen on 0.0.0.0)
+    s.threads = 8
+    s.master = true
+    s.processes = 4
+
+  C) copy the uwsgi_engine.cfg.default and uwsgi_client.cfg.default from the contrib/uwsgi/ directory to your config/ directory
+
+     uwsgi supports a host of customization options. the
+     comprehensive list of options is available at
+     http://projects.unbit.it/uwsgi/wiki/Doc
+
+4.Configure nginx to proxy requests to uwsgi
+
+     copy the given sample nginx config to /etc/nginx
+      $ cp contrib/nginx/nginx.conf /etc/nginx/
+     copy the bisque-client and bisque-engine files to /etc/nginx/sites-enabled and
+      $ cp contrib/nginx/bisque-* /etc/nginx/sites-enabled
+
+     edit the following directives for each bisque-
+      listen <http_port>;
+      server_name  <dns_name_of_your_server>;
+      root <path_to_client_service_public_directory>; #for static content
+      uwsgi_pass <host>:<port>; (the one you specified in site.cfg for this server)
+
+    refer to the nginx documentation on configuration:
+    http://wiki.nginx.org/Configuration
+    for more configuration options and customization
+
+Run Nginx via:
+sudo /etc/init.d/nginx start
+
+you can stop nginx by using
+sudo /etc/init.d/nginx stop
+
+and restart it using
+sudo /etc/init.d/nginx restart
+

@@ -1,0 +1,163 @@
+#####################################
+# Engine server address
+#####################################
+
+[servers]
+#backend=uwsgi
+backend=paster
+
+# Allow site admins to configure a number of parallel servers
+# per machine.
+
+#servers = h1,h2,h3,h4,e1
+servers = e1
+
+# Engine on this host
+# Each engine must have the proxyroot parameter set
+e1.url = http://yourhost:27000
+e1.services_enabled = engine_service
+e1.has_database = false
+#e1.uwsgi.server = unix:/tmp/engine.sock
+#e1.uwsgi.http   = 0.0.0.0:27000
+
+# Place log file and pid files elsewhere
+#log_dir = /var/log/bisque
+#pid_dir = /var/run/bisque
+
+[app:main]
+use = egg:bqcore
+full_stack = true
+
+##########################################################
+# Bisque Configuration
+##########################################################
+# server defaults
+bisque.root = http://localhost:9090
+bisque.server = http://localhost:9090
+bisque.services_enabled = engine_service
+bisque.installed = finished
+bisque.paths.root = .
+#bisque.paths.data  = /home/kgk/bisquik/bisque05/data
+#bisque.paths.config  = /home/kgk/bisquik/bisque05/config
+
+# Engine Service
+bisque.engine = http://localhost:27000
+#bisque.engine_service.module_dirs = modules
+#bisque.engine_service.poolsize = 4
+
+
+###############################################################
+# Package dependencies config
+
+# Beaker Sessions Config
+# If you'd like to fine-tune the individual locations of the cache data dirs
+# for the Cache data, or the Session saves, un-comment the desired settings
+# here:
+#beaker.cache.data_dir = %(here)s/data/cache
+#beaker.session.data_dir = %(here)s/data/sessions
+cache_dir = %(here)s/../data/
+beaker.session.key = bq
+beaker.session.secret = somesecret
+
+
+# Paster  Config
+smtp_server = localhost
+error_email_from = paste@localhost
+
+# Repoze.who stuff
+#  log_level is  'debug', 'info', 'warning', 'error'
+#  log_file  is [ 'stdout' or path/to/who.log ]
+who.config_file = %(here)s/who.ini
+who.log_level = error
+who.log_stream = stdout
+
+
+# WARNING: *THE LINE BELOW MUST BE UNCOMMENTED ON A PRODUCTION ENVIRONMENT*
+# Debug mode will enable the interactive debugging tool, allowing ANYONE to
+# execute malicious code after an exception is raised.
+set debug = true
+# if you are using Mako and want to be able to reload
+# the mako template from disk during the development phase
+# you should say 'true' here
+# This option is only used for mako templating engine
+# WARNING: if you want to deploy your application using a zipped egg
+# (ie: if your application's setup.py defines zip-safe=True, then you
+# MUST put "false" for the production environment because there will
+# be no disk and real files to compare time with.
+# On the contrary if your application defines zip-safe=False and is
+# deployed in an unzipped manner, then you can leave this option to true
+templating.mako.reloadfromdisk = true
+
+# the compiled template dir is a directory that must be readable by your
+# webserver. It will be used to store the resulting templates once compiled
+# by the TemplateLookup system.
+# During development you generally don't need this option since paste's HTTP
+# server will have access to you development directories, but in production
+# you'll most certainly want to have apache or nginx to write in a directory
+# that does not contain any source code in any form for obvious security reasons.
+templating.mako.compiled_templates_dir = %(here)s/data/templates
+
+
+
+#turn this setting to "min" if you would like tw to produce minified
+#javascript files (if your library supports that)
+toscawidgets.framework.resource_variant = debug
+
+
+################################################################################
+# Logging configuration
+# Add additional loggers, handlers, formatters here
+# Uses python's logging config file format
+# http://docs.python.org/lib/logging-config-fileformat.html
+# ERROR WARN INFO DEBUG
+################################################################################
+
+[loggers]
+keys = root, bq, auth
+
+[handlers]
+#keys = console, syslog
+keys = console
+
+[formatters]
+keys = generic
+
+# If you create additional loggers, add them as a key to [loggers]
+[logger_root]
+level = INFO
+#handlers = console, syslog
+handlers = console
+
+[logger_bq]
+level = INFO
+handlers =
+qualname = bq
+
+# A logger for authentication, identification and authorization -- this is
+# repoze.who and repoze.what:
+[logger_auth]
+level = INFO
+handlers =
+qualname = auth
+
+# If you create additional handlers, add them as a key to [handlers]
+[handler_console]
+class = StreamHandler
+args = (sys.stderr,)
+level = NOTSET
+formatter = generic
+
+
+#[handler_syslog]
+#class:handlers.SysLogHandler
+#level=NOTSET
+#args:('/dev/log',handlers.SysLogHandler.LOG_LOCAL1)
+#formatter: generic
+
+#Change args to:
+
+
+# If you create additional formatters, add them as a key to [formatters]
+[formatter_generic]
+format = %(asctime)s,%(msecs)03d %(levelname)-5.5s [%(name)s] %(message)s
+datefmt = %H:%M:%S
