@@ -31,7 +31,6 @@
   
 <link rel="prev" href="plant-cell-segmentation.html"/>
 <link rel="next" href="dockerfile.html"/>
-<script src="libs/header-attrs-2.1/header-attrs.js"></script>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -52,26 +51,25 @@
 
 
 <style type="text/css">
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
 }
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
+    border: none; pointer-events: all; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -80,9 +78,9 @@ pre.numberSource code > span > a:first-child::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {   }
+  {  }
 @media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+a.sourceLine::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -131,44 +129,36 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="#index">Official UCSB BisQue Documentation</a></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Cloud Service | Module Development | Python API</a>
-<ul>
-<li class="chapter" data-level="" data-path="docker-installation.html"><a href="docker-installation.html"><i class="fa fa-check"></i>Docker Installation</a>
-<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Cloud Service | Module Development | Python API</a><ul>
+<li class="chapter" data-level="" data-path="docker-installation.html"><a href="docker-installation.html"><i class="fa fa-check"></i>Docker Installation</a><ul>
 <li><a href="docker-installation.html#intro-bisque-docker-container"><strong>Intro: BisQue Docker Container</strong></a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="1" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>1</b> BisQue Cloud Service</a>
-<ul>
+<li class="chapter" data-level="1" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>1</b> BisQue Cloud Service</a><ul>
 <li class="chapter" data-level="1.1" data-path="how-to-login-or-create-a-new-user.html"><a href="how-to-login-or-create-a-new-user.html"><i class="fa fa-check"></i><b>1.1</b> How to Login or Create a New User</a></li>
-<li class="chapter" data-level="1.2" data-path="how-to-upload-data.html"><a href="how-to-upload-data.html"><i class="fa fa-check"></i><b>1.2</b> How to Upload Data</a>
-<ul>
+<li class="chapter" data-level="1.2" data-path="how-to-upload-data.html"><a href="how-to-upload-data.html"><i class="fa fa-check"></i><b>1.2</b> How to Upload Data</a><ul>
 <li class="chapter" data-level="" data-path="how-to-upload-data.html"><a href="how-to-upload-data.html#step-1.-login"><i class="fa fa-check"></i>Step 1. Login</a></li>
 <li class="chapter" data-level="" data-path="how-to-upload-data.html"><a href="how-to-upload-data.html#step-2.-upload-file-or-folder"><i class="fa fa-check"></i>Step 2. Upload File or Folder</a></li>
 <li class="chapter" data-level="" data-path="how-to-upload-data.html"><a href="how-to-upload-data.html#step-3.-build-a-dataset"><i class="fa fa-check"></i>Step 3. Build a Dataset</a></li>
 <li class="chapter" data-level="" data-path="how-to-upload-data.html"><a href="how-to-upload-data.html#step-4.-setting-permissions"><i class="fa fa-check"></i>Step 4. Setting Permissions</a></li>
 </ul></li>
-<li class="chapter" data-level="1.3" data-path="how-to-add-annotations.html"><a href="how-to-add-annotations.html"><i class="fa fa-check"></i><b>1.3</b> How to Add Annotations</a>
-<ul>
+<li class="chapter" data-level="1.3" data-path="how-to-add-annotations.html"><a href="how-to-add-annotations.html"><i class="fa fa-check"></i><b>1.3</b> How to Add Annotations</a><ul>
 <li class="chapter" data-level="" data-path="how-to-add-annotations.html"><a href="how-to-add-annotations.html#overview"><i class="fa fa-check"></i>Overview</a></li>
 </ul></li>
 <li class="chapter" data-level="1.4" data-path="how-to-run-a-module.html"><a href="how-to-run-a-module.html"><i class="fa fa-check"></i><b>1.4</b> How to Run a Module</a></li>
-<li class="chapter" data-level="1.5" data-path="imagej-module.html"><a href="imagej-module.html"><i class="fa fa-check"></i><b>1.5</b> ImageJ Module</a>
-<ul>
+<li class="chapter" data-level="1.5" data-path="imagej-module.html"><a href="imagej-module.html"><i class="fa fa-check"></i><b>1.5</b> ImageJ Module</a><ul>
 <li class="chapter" data-level="" data-path="imagej-module.html"><a href="imagej-module.html#overview-1"><i class="fa fa-check"></i>Overview</a></li>
 <li class="chapter" data-level="" data-path="imagej-module.html"><a href="imagej-module.html#uploading-of-imagej-pipelines"><i class="fa fa-check"></i>Uploading of ImageJ Pipelines</a></li>
 <li class="chapter" data-level="" data-path="imagej-module.html"><a href="imagej-module.html#running-an-imagej-macro"><i class="fa fa-check"></i>Running an ImageJ Macro</a></li>
 <li class="chapter" data-level="" data-path="imagej-module.html"><a href="imagej-module.html#special-bisque-extensions-for-imagej"><i class="fa fa-check"></i>Special BisQue extensions for ImageJ</a></li>
 </ul></li>
-<li class="chapter" data-level="1.6" data-path="cellprofiler-module.html"><a href="cellprofiler-module.html"><i class="fa fa-check"></i><b>1.6</b> CellProfiler Module</a>
-<ul>
+<li class="chapter" data-level="1.6" data-path="cellprofiler-module.html"><a href="cellprofiler-module.html"><i class="fa fa-check"></i><b>1.6</b> CellProfiler Module</a><ul>
 <li class="chapter" data-level="" data-path="cellprofiler-module.html"><a href="cellprofiler-module.html#overview-2"><i class="fa fa-check"></i>Overview</a></li>
 <li class="chapter" data-level="" data-path="cellprofiler-module.html"><a href="cellprofiler-module.html#uploading-of-cellprofiler-pipelines"><i class="fa fa-check"></i>Uploading of CellProfiler Pipelines</a></li>
 <li class="chapter" data-level="" data-path="cellprofiler-module.html"><a href="cellprofiler-module.html#running-a-cellprofiler-pipeline"><i class="fa fa-check"></i>Running a CellProfiler Pipeline</a></li>
 <li class="chapter" data-level="" data-path="cellprofiler-module.html"><a href="cellprofiler-module.html#results"><i class="fa fa-check"></i>Results</a></li>
 </ul></li>
-<li class="chapter" data-level="1.7" data-path="plant-cell-segmentation.html"><a href="plant-cell-segmentation.html"><i class="fa fa-check"></i><b>1.7</b> Plant Cell Segmentation</a>
-<ul>
+<li class="chapter" data-level="1.7" data-path="plant-cell-segmentation.html"><a href="plant-cell-segmentation.html"><i class="fa fa-check"></i><b>1.7</b> Plant Cell Segmentation</a><ul>
 <li class="chapter" data-level="" data-path="plant-cell-segmentation.html"><a href="plant-cell-segmentation.html#overview-3"><i class="fa fa-check"></i>Overview</a></li>
 <li><a href="plant-cell-segmentation.html#input"><strong><code>Input</code></strong></a></li>
 <li class="chapter" data-level="" data-path="plant-cell-segmentation.html"><a href="plant-cell-segmentation.html#hyperparameters"><i class="fa fa-check"></i>Hyperparameters</a></li>
@@ -176,40 +166,33 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="plant-cell-segmentation.html#output"><strong><code>Output</code></strong></a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="2" data-path="module-development.html"><a href="module-development.html"><i class="fa fa-check"></i><b>2</b> Module Development</a>
-<ul>
+<li class="chapter" data-level="2" data-path="module-development.html"><a href="module-development.html"><i class="fa fa-check"></i><b>2</b> Module Development</a><ul>
 <li><a href="module-development.html#how-to-begin-building-modules"><strong>How to Begin Building Modules</strong></a></li>
-<li class="chapter" data-level="2.1" data-path="dockerfile.html"><a href="dockerfile.html"><i class="fa fa-check"></i><b>2.1</b> Dockerfile</a>
-<ul>
+<li class="chapter" data-level="2.1" data-path="dockerfile.html"><a href="dockerfile.html"><i class="fa fa-check"></i><b>2.1</b> Dockerfile</a><ul>
 <li><a href="dockerfile.html#example-composite-strength"><strong>Example: Composite Strength</strong></a></li>
 </ul></li>
-<li class="chapter" data-level="2.2" data-path="module-xml.html"><a href="module-xml.html"><i class="fa fa-check"></i><b>2.2</b> Module XML</a>
-<ul>
+<li class="chapter" data-level="2.2" data-path="module-xml.html"><a href="module-xml.html"><i class="fa fa-check"></i><b>2.2</b> Module XML</a><ul>
 <li><a href="module-xml.html#example"><strong>Example</strong></a></li>
 <li class="chapter" data-level="" data-path="module-xml.html"><a href="module-xml.html#module-description"><i class="fa fa-check"></i>Module Description</a></li>
 <li class="chapter" data-level="" data-path="module-xml.html"><a href="module-xml.html#configurations-for-images-datasets-and-resources"><i class="fa fa-check"></i>Configurations for Images, Datasets, and Resources</a></li>
 <li class="chapter" data-level="" data-path="module-xml.html"><a href="module-xml.html#data-parallel-execution"><i class="fa fa-check"></i>Data-Parallel Execution</a></li>
 </ul></li>
-<li class="chapter" data-level="2.3" data-path="python-script-wrapper.html"><a href="python-script-wrapper.html"><i class="fa fa-check"></i><b>2.3</b> Python Script Wrapper</a>
-<ul>
+<li class="chapter" data-level="2.3" data-path="python-script-wrapper.html"><a href="python-script-wrapper.html"><i class="fa fa-check"></i><b>2.3</b> Python Script Wrapper</a><ul>
 <li><a href="python-script-wrapper.html#example.-python-script-wrapper"><em>Example.</em> Python Script Wrapper</a></li>
 </ul></li>
-<li class="chapter" data-level="2.4" data-path="source-code.html"><a href="source-code.html"><i class="fa fa-check"></i><b>2.4</b> Source Code</a>
-<ul>
+<li class="chapter" data-level="2.4" data-path="source-code.html"><a href="source-code.html"><i class="fa fa-check"></i><b>2.4</b> Source Code</a><ul>
 <li><a href="source-code.html#example.-composite-strength-module"><em>Example.</em> Composite Strength Module</a></li>
 </ul></li>
-<li class="chapter" data-level="2.5" data-path="runtime-module-configuration.html"><a href="runtime-module-configuration.html"><i class="fa fa-check"></i><b>2.5</b> Runtime Module Configuration</a>
-<ul>
+<li class="chapter" data-level="2.5" data-path="runtime-module-configuration.html"><a href="runtime-module-configuration.html"><i class="fa fa-check"></i><b>2.5</b> Runtime Module Configuration</a><ul>
 <li><a href="runtime-module-configuration.html#example.-composite-strength-module-1"><em>Example.</em> Composite Strength Module</a></li>
 </ul></li>
 <li class="chapter" data-level="2.6" data-path="python-setup.html"><a href="python-setup.html"><i class="fa fa-check"></i><b>2.6</b> Python Setup</a></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="bqapi.html"><a href="bqapi.html"><i class="fa fa-check"></i><b>3</b> BQAPI</a>
-<ul>
-<li><a href="download-an-array.html#download-an-array"><strong>Download an Array</strong></a>
-<ul>
+<li class="chapter" data-level="3" data-path="bqapi.html"><a href="bqapi.html"><i class="fa fa-check"></i><b>3</b> BQAPI</a><ul>
+<li><a href="download-an-array.html#download-an-array"><strong>Download an Array</strong></a><ul>
 <li class="chapter" data-level="" data-path="download-an-array.html"><a href="download-an-array.html"><i class="fa fa-check"></i>Access an HDF5 Table from BisQue</a></li>
 </ul></li>
+<li><a href="upload-an-image.html#upload-an-image"><strong>Upload an Image</strong></a></li>
 </ul></li>
 <li class="divider"></li>
 <li><a href="https://bisque.ece.ucsb.edu/" target="blank">UCSB BisQue Cloud Platform</a></li>
@@ -231,54 +214,54 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="module-development" class="section level1" number="2">
+<div id="module-development" class="section level1">
 <h1><span class="header-section-number">2</span> Module Development</h1>
 <blockquote>
 <p>BisQue Modules are analysis extensions to the bisque system that allow users to incorporate their own custom analysis scripts written in <code>Python, C++, Java, MATLAB, etc.</code> that perform high-end computations such as deep learning based methods for use by the system and others.</p>
 </blockquote>
 <p>One of the main reasons to convert your source code into a BisQue module is for reproducibility. Researchers in the field have exceptional work, but poor coding practices hinders the widespread adoption and justification of their findings. This is by no means their fault, but luckily help is here.</p>
 <div class="figure">
-<img src="images/moduleexplanation.svg" alt="" />
+<img src="images/moduleexplanation.svg" alt="Module Files. There are six files that are needed for a module to be built and deployed on the BisQue platform." />
 <p class="caption"><strong>Module Files.</strong> There are six files that are needed for a module to be built and deployed on the BisQue platform.</p>
 </div>
-<div id="how-to-begin-building-modules" class="section level3 unnumbered" number="">
+<div id="how-to-begin-building-modules" class="section level3 unnumbered">
 <h3><strong>How to Begin Building Modules</strong></h3>
-<div id="step-1.-source-code-prep" class="section level4 unnumbered" number="">
+<div id="step-1.-source-code-prep" class="section level4 unnumbered">
 <h4><strong>STEP 1.</strong> Source Code Prep</h4>
 <p><strong><a href="source-code.html#source-code">Source Code</a></strong></p>
 <p>Building modules requires, of course, source code. Your first order of business is to upload your code to GitHub so you have a copy of your entire codebase in the event <code>rm -rf *</code> happens. Next, verify that your source code and <code>README</code> are clear enough for someone to run and understand. <em>Do not skip this step</em>. I have provided an <a href="https://github.com/UCSB-VRL/bisqueUCSB/blob/master/example_README.md">example <code>README</code> here</a> to help you get started. You solved a problem, now share the solution!</p>
 <p>Once you have working source code that others have tested to make sure it runs, you can begin the process of building your very own BisQue module.</p>
 </div>
-<div id="step-2.-fill-out-the-module-xml" class="section level4 unnumbered" number="">
+<div id="step-2.-fill-out-the-module-xml" class="section level4 unnumbered">
 <h4>STEP 2. Fill Out the Module XML</h4>
 <p><strong><a href="module-xml.html#module-xml">Module XML</a></strong></p>
 <p>This file should tell the user what to input. For example, if your module segments pictures of cats and dogs, you should probably have something like this:</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode xml"><code class="sourceCode xml"><span id="cb25-1"><a href="module-development.html#cb25-1"></a><span class="kw">&lt;tag</span><span class="ot"> name=</span><span class="st">&quot;accepted_type&quot;</span><span class="ot"> value=</span><span class="st">&quot;image&quot;</span> <span class="kw">/&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode xml"><code class="sourceCode xml"><a class="sourceLine" id="cb25-1" title="1"><span class="kw">&lt;tag</span><span class="ot"> name=</span><span class="st">&quot;accepted_type&quot;</span><span class="ot"> value=</span><span class="st">&quot;image&quot;</span> <span class="kw">/&gt;</span></a></code></pre></div>
 <p>Similarly, you should define your output to be what you are outputting. For example, if the output is a segmented image of a dog, you should have something like this:</p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode xml"><code class="sourceCode xml"><span id="cb26-1"><a href="module-development.html#cb26-1"></a><span class="kw">&lt;tag</span><span class="ot"> name=</span><span class="st">&quot;Segmentation&quot;</span><span class="ot"> type=</span><span class="st">&quot;image&quot;</span><span class="kw">&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode xml"><code class="sourceCode xml"><a class="sourceLine" id="cb26-1" title="1"><span class="kw">&lt;tag</span><span class="ot"> name=</span><span class="st">&quot;Segmentation&quot;</span><span class="ot"> type=</span><span class="st">&quot;image&quot;</span><span class="kw">&gt;</span></a></code></pre></div>
 <p>The main purpose of the XML is to put your focus on filling out relevant information instead of learning <code>HTML</code>. BisQue uses the information in the XML to build the user interface for your module so you don’t have to.</p>
 </div>
-<div id="step-3.-write-the-dockerfile" class="section level4 unnumbered" number="">
+<div id="step-3.-write-the-dockerfile" class="section level4 unnumbered">
 <h4>STEP 3. Write the Dockerfile</h4>
 <p><strong><a href="dockerfile.html#dockerfile">Dockerfile</a></strong></p>
 <p>Probably the most important part to your module—the <code>Dockerfile</code>. Feel free to use example Dockerfiles from the community to get started. The main tasks you need to do are define your working directory as <code>module</code> and COPY all the necessary files needed to run your source code:</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb27-1"><a href="module-development.html#cb27-1"></a><span class="ex">WORKDIR</span> /module</span>
-<span id="cb27-2"><a href="module-development.html#cb27-2"></a><span class="ex">COPY</span> predict_strength.py /module/</span>
-<span id="cb27-3"><a href="module-development.html#cb27-3"></a><span class="co">#  COPY ./source /module/source   &lt;--- If you have a source folder</span></span></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb27-1" title="1"><span class="ex">WORKDIR</span> /module</a>
+<a class="sourceLine" id="cb27-2" title="2"><span class="ex">COPY</span> predict_strength.py /module/</a>
+<a class="sourceLine" id="cb27-3" title="3"><span class="co">#  COPY ./source /module/source   &lt;--- If you have a source folder</span></a></code></pre></div>
 <p>There is plenty to do while creating and building the Dockerfile so please read the full description carefully. The best tip we can give you is try to replicate your current setup where your code ran successfully. If you are using Ubuntu 16.04, define that as your base image and continue to build your Dockerfile from there. Now, do not go crazy and add every pip install package you have on your system. Remember, keep your container as light as possible. Only install the necessary packages needed for your source code to run in the container.</p>
 </div>
-<div id="step-4.-modify-the-python-script-wrapper" class="section level4 unnumbered" number="">
+<div id="step-4.-modify-the-python-script-wrapper" class="section level4 unnumbered">
 <h4>STEP 4. Modify the Python Script Wrapper</h4>
 <p><strong><a href="python-script-wrapper.html#python-script-wrapper">Python Script Wrapper</a></strong></p>
 <p>Similar to how you would run your source code locally, the <code>PythonScriptWrapper.py</code> will help communicate the input from and output to BisQue. The main change to make is what file does the module need to run for the analysis. For instance, let’s say I have a <code>predict_strength.py</code> file with a <code>predict</code> function that will do everything. Then I would simply import the file and modify the outputs variable to be:</p>
-<div class="sourceCode" id="cb28"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb28-1"><a href="module-development.html#cb28-1"></a>outputs <span class="op">=</span> predict( bq, log, <span class="op">**</span><span class="va">self</span>.options.__dict__ )</span></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb28-1" title="1">outputs <span class="op">=</span> predict( bq, log, <span class="op">**</span><span class="va">self</span>.options.__dict__ )</a></code></pre></div>
 <p>Feel free to add any logging and catches you wish while diagnosing your module. This script will be your main point of contact when attempting to pinpoint missing files and dependencies, Python related issues, and many more. Look for the <code>PythonScript.log</code> file when testing your module.</p>
 </div>
-<div id="step-5.-modify-the-runtime-config-file" class="section level4 unnumbered" number="">
+<div id="step-5.-modify-the-runtime-config-file" class="section level4 unnumbered">
 <h4>STEP 5. Modify the Runtime Config File</h4>
 <p><strong><a href="runtime-module-configuration.html#runtime-module-configuration">Runtime Module Configuration</a></strong></p>
 <p>Give a name to the module docker container. The other arguments can be left alone. Use this as a means to control versioning. For instance,</p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb29-1"><a href="module-development.html#cb29-1"></a><span class="ex">docker.image</span> = cellseg-3dunet-v2  <span class="co">#  ---&gt;  cellseg-3dunet-v{}</span></span></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb29-1" title="1"><span class="ex">docker.image</span> = cellseg-3dunet-v2  <span class="co">#  ---&gt;  cellseg-3dunet-v{}</span></a></code></pre></div>
 </div>
 </div> 
 </div>

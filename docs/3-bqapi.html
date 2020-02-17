@@ -5,7 +5,7 @@
 <meta charset="utf-8" />
 <meta name="generator" content="pandoc" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta property="og:title" content="Docker Installation | Getting Started with BisQue" />
+<meta property="og:title" content="3 BQAPI | Getting Started with BisQue" />
 <meta property="og:type" content="book" />
 
 <meta property="og:image" content="images/cover.png" />
@@ -23,7 +23,7 @@ MathJax.Hub.Config({
 
 <meta name="description" content="BisQue (Bio-Image Semantic Query User Environment) : Store, visualize,organize and analyze images in the cloud.">
 
-<title>Docker Installation | Getting Started with BisQue</title>
+<title>3 BQAPI | Getting Started with BisQue</title>
 
 <script src="libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -204,94 +204,91 @@ img {
 </div>
 <div class="row">
 <div class="col-sm-12">
-<div id="docker-installation" class="section level2 unnumbered">
-<h2>Docker Installation</h2>
+<div id="bqapi" class="section level1">
+<h1><span class="header-section-number">3</span> BQAPI</h1>
+<div id="pip-install" class="section level4 unnumbered">
+<h4>PIP Install</h4>
+<div class="sourceCode" id="cb153"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb153-1" title="1">pip install <span class="op">-</span>i https:<span class="op">//</span>biodev.ece.ucsb.edu<span class="op">/</span>py<span class="op">/</span>bisque<span class="op">/</span>prod<span class="op">/+</span>simple bisque_api</a></code></pre></div>
 <hr />
-<div id="download" class="section level4 unnumbered">
-<h4>Download</h4>
-<p>Ensure you have the latest release by first running the following pull command:</p>
-<pre><code>  docker pull amilworks/bisque05-caffe-xenial:amil</code></pre>
-</div>
-<div id="intro-bisque-docker-container" class="section level3 unnumbered">
-<h3><strong>Intro: BisQue Docker Container</strong></h3>
-<div id="run-the-bisque-docker-container" class="section level4 unnumbered">
-<h4>Run the BisQue Docker Container</h4>
-<p>To run the docker version of BisQue locally, start a bisque server on the host port 8080:</p>
-<pre><code>docker run --name bisque --rm -p 8080:8080 amilworks/bisque05-caffe-xenial:amil</code></pre>
-<p>and point your browser at <code>http://localhost:8080</code>. You should see a BisQue homepage similar to the one on <a href="https://bisque.ece.ucsb.edu/client_service/">bisque.ece.ucsb.edu</a>. If you do <strong>not</strong> see the homepage, check to make sure that port 8080 is not being used by another container or application <em>and</em> that you have correctly mapped the ports using <code>-p 8080:8080</code>, where <code>-p</code> is short for port.</p>
-</div>
-<div id="registering-modules" class="section level4 unnumbered">
-<h4>Registering Modules</h4>
-<p>To register all the modules to your local server:
-* Login to your BisQue server using admin:admin
-* Find the module manager under the Admin button on the top right hand corner
-* Put <code>http://localhost:8080/engine_service</code> in the right panel where it says <strong>Enter Engine URL</strong> and hit Load
-* NOTE: Use <code>localhost:8080</code> here because it’s internal to the container.
-* Drag and Drop <strong>MetaData</strong> to the left panel—or whatever module you would like—and the module will now be registered and available for use. You can make the module Public by hitting <strong>Set Public</strong> in the left panel, which basically means the module is Published and ready for public use.</p>
-</div>
-<div id="custom-modules-copying-folders-out-of-the-container" class="section level4 unnumbered">
-<h4>Custom Modules, Copying Folders out of the Container</h4>
-<p>If you would like to build and test your own module locally, using host mounted modules will make life easier to build, test, debug, and deploy locally.</p>
-<ol style="list-style-type: decimal">
-<li><p>Copy the module directory out of the container and into the folder on your local system named <code>container-modules</code>.</p>
-<pre><code>   docker cp bisque:/source/modules container-modules</code></pre></li>
-<li>Copy your module into the <code>container-modules</code> folder on your local system.</li>
-<li><p>Restart the container with host mounted modules. Be careful with the command <code>$(pwd)/container-modules</code> that we are using here. If the <code>/container-modules</code> is <strong>not</strong> in the specified path, you will not see any of the modules during the registration process.</p>
-<pre><code>docker stop bisque
-docker run --name bisque --rm -p 8080:8080 -v $(pwd)/container-modules:/source/modules  amilworks/bisque05-caffe-xenial:amil</code></pre></li>
-<li><p>Register your module from the above steps in “3. <strong>Registering Modules. </strong>”, using the Module Manager.</p></li>
-</ol>
+<p>BQAPI provides bisque users with a means to extract features from resources using the feature service. Below is information on the Python API and a few example on how to use it.</p>
 <blockquote>
-<p><strong>Pushing your Module to Production.</strong> If you feel that your module is ready to be added to the production version of BisQue, please feel free to contact us and we will gladly begin the process.</p>
+<p><code>FeatureResource(image=None, mask=None, gobject=None)</code></p>
 </blockquote>
-</div>
-<div id="data-storage" class="section level4 unnumbered">
-<h4>Data Storage</h4>
-<p>Use an external data directory so you don’t lose data when the service stops
-- Uploaded image and workdirs are store in <code>/source/data</code>. You can change this to be a host mounted directory with</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb5-1" title="1"><span class="ex">docker</span> run --name bisque --rm -p 8080:8080 -v <span class="va">$(</span><span class="bu">pwd</span><span class="va">)</span>/container-data:/source/data  amilworks/bisque05-caffe-xenial:amil</a></code></pre></div>
+<p>Named tuple to make it easier to organize resources. Of course, one can always just make a simple list of tuples for the resource list.</p>
+<blockquote>
+<p><code>class Feature()</code></p>
+</blockquote>
+<p>The Feature class is the base implementation of the feature service API for when one need to extract a set of features on a small set of resources. BQSession is used as the communication layer for bqfeatures, therefore before making any requests a local BQSession has to be instantiated to pass to any feature request.</p>
+<blockquote>
+<p><code>fetch(session, name, resource_list, path=None)</code></p>
+</blockquote>
+<p>Requests the feature server to calculate features on provided resources.</p>
+<p><strong>Input</strong></p>
 <ul>
-<li>The default sqlite database is stored inside the container at <code>/source/data/bisque.db</code></li>
-<li>The uploaded images are stored inside the container at <code>/source/data/imagedir</code></li>
+<li>session - a local instantiated BQSession attached to a MEX.</li>
+<li>name - the name of the feature one wishes to extract.</li>
+<li>resource_list - list of the resources to extract. Format: [(<code>image_url</code>, <code>mask_url</code>, <code>gobject_url</code>),…] if a parameter is not required just provided None.</li>
+<li>path - the location were the HDF5 file is stored. If None is set, the file will be placed in a temporary file and a Pytables file handle will be returned. (default: None)</li>
 </ul>
+<p><strong>Output</strong></p>
+<ul>
+<li>return - returns either a Pytables file handle or the file name when the path is provided</li>
+</ul>
+<p>Lets upload an image an calculate a single feature on it.</p>
+<div class="sourceCode" id="cb154"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb154-1" title="1"><span class="im">import</span> os</a>
+<a class="sourceLine" id="cb154-2" title="2"><span class="im">from</span> bqapi.comm <span class="im">import</span> BQSession</a>
+<a class="sourceLine" id="cb154-3" title="3"><span class="im">from</span> bqapi.bqfeature <span class="im">import</span> Feature, FeatureResource</a>
+<a class="sourceLine" id="cb154-4" title="4"></a>
+<a class="sourceLine" id="cb154-5" title="5"><span class="co"># initialize local session</span></a>
+<a class="sourceLine" id="cb154-6" title="6">session <span class="op">=</span> BQSession().init_local(user, pwd, bisque_root<span class="op">=</span><span class="st">&#39;http://bisque.ece.ucsb.edu&#39;</span>) </a>
+<a class="sourceLine" id="cb154-7" title="7"></a>
+<a class="sourceLine" id="cb154-8" title="8"><span class="co">#post image to bisque and get the response</span></a>
+<a class="sourceLine" id="cb154-9" title="9">response_xml <span class="op">=</span> session.postblob(<span class="st">&#39;myimage.jpg&#39;</span>) </a>
+<a class="sourceLine" id="cb154-10" title="10"></a>
+<a class="sourceLine" id="cb154-11" title="11"><span class="co">#construct resource list of the image just uploaded</span></a>
+<a class="sourceLine" id="cb154-12" title="12">resource_list <span class="op">=</span> [FeatureResource(image<span class="op">=</span><span class="st">&#39;http://bisque.ece.ucsb.edu/image_service/</span><span class="sc">%s</span><span class="st">&#39;</span> <span class="op">%</span> response_xml.attrib[<span class="st">&#39;resource_uniq&#39;</span>])]</a>
+<a class="sourceLine" id="cb154-13" title="13"></a>
+<a class="sourceLine" id="cb154-14" title="14"><span class="co">#fetch features on image resource</span></a>
+<a class="sourceLine" id="cb154-15" title="15">pytables_response <span class="op">=</span> Feature().fetch(session, <span class="st">&#39;HTD&#39;</span>, resource_list)</a>
+<a class="sourceLine" id="cb154-16" title="16"></a>
+<a class="sourceLine" id="cb154-17" title="17"><span class="co">#get a numpy list of features for the downloaded HDF5 file.</span></a>
+<a class="sourceLine" id="cb154-18" title="18">feature <span class="op">=</span> pytables_response.root.values[:][<span class="st">&#39;feature&#39;</span>]</a>
+<a class="sourceLine" id="cb154-19" title="19"></a>
+<a class="sourceLine" id="cb154-20" title="20"><span class="co">#close and remove the HDF5 file since it is stored in a tempfile</span></a>
+<a class="sourceLine" id="cb154-21" title="21">pytables_response.close()</a>
+<a class="sourceLine" id="cb154-22" title="22">os.remove(pytables_response.filename)</a></code></pre></div>
+<blockquote>
+<p><code>fetch_vector(session, name, resource_list)</code></p>
+</blockquote>
+<p>Requests the feature server to calculate features on provided resources. Designed more for requests of very few features since all the features will be loaded into memory.</p>
+<p><strong>Input</strong></p>
+<ul>
+<li>session - a local instantiated BQSession attached to a MEX.</li>
+<li>name - the name of the feature one wishes to extract</li>
+<li>resource_list - list of the resources to extract. format: [(image_url, mask_url, gobject_url),…] if a parameter is not required just provided None</li>
+</ul>
+<p><strong>Output</strong></p>
+<ul>
+<li>return - a list of features as numpy array</li>
+</ul>
+<blockquote>
+<p><code>length(session, name)</code></p>
+</blockquote>
+<p>Static method that returns the length of the feature requested.</p>
+<p><strong>Input</strong></p>
+<ul>
+<li>session - a local instantiated BQSession attached to a MEX.</li>
+<li>name - the name of the feature one wishes to extract</li>
+</ul>
+<p><strong>Output</strong></p>
+<ul>
+<li>return feature length</li>
+</ul>
+</div> 
 </div>
-<div id="view-downloaded-images-running-containers" class="section level4 unnumbered">
-<h4>View Downloaded Images, Running Containers</h4>
-<p>List all the docker <strong>images</strong> on your system:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb6-1" title="1"><span class="ex">docker</span> images</a></code></pre></div>
-<p>List all running <strong>containers</strong> on your system:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb7-1" title="1"><span class="ex">docker</span> ps</a></code></pre></div>
-</div>
-<div id="ssh-into-the-container" class="section level4 unnumbered">
-<h4>SSH into the Container</h4>
-<p>If you would like to see everything inside the container, you can use the following command <em>while the container is running</em>:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb8-1" title="1"><span class="ex">docker</span> exec -it amilworks/bisque05-caffe-xenial:amil bash</a></code></pre></div>
-<p>The <code>-it</code> flag enables you to run interactively inside the container. There are numerous other flags you can take advantage of as shown here:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb9-1" title="1"><span class="ex">--detach</span> ,      -d    Detached mode: run command in the background</a>
-<a class="sourceLine" id="cb9-2" title="2"><span class="ex">--detach-keys</span>         Override the key sequence for detaching a container</a>
-<a class="sourceLine" id="cb9-3" title="3"><span class="ex">--env</span> ,         -e    Set environment variables</a>
-<a class="sourceLine" id="cb9-4" title="4"><span class="ex">--interactive</span> , -i    Keep STDIN open even if not attached</a>
-<a class="sourceLine" id="cb9-5" title="5"><span class="ex">--privileged</span>          Give extended privileges to the command</a>
-<a class="sourceLine" id="cb9-6" title="6"><span class="ex">--tty</span> ,         -t    Allocate a pseudo-TTY</a>
-<a class="sourceLine" id="cb9-7" title="7"><span class="ex">--user</span> ,        -u    Username or UID (format: <span class="op">&lt;</span>name<span class="kw">|</span><span class="ex">uid</span><span class="op">&gt;</span>[:<span class="op">&lt;</span>group<span class="kw">|</span><span class="ex">gid</span><span class="op">&gt;</span>])</a>
-<a class="sourceLine" id="cb9-8" title="8"><span class="ex">--workdir</span> ,     -w    Working directory inside the container</a></code></pre></div>
-<p>Now, let’s say you want to ssh into an image without fully starting BisQue. More precisely, you want to ssh into a non-running container. You can accomplish this by running:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb10-1" title="1"><span class="ex">docker</span> run -it amilworks/bisque05-caffe-xenial:amil bash</a></code></pre></div>
-<p>If you want to <strong>exit</strong>, simply type <code>exit</code> and you will be taken back outside of the container.</p>
-</div>
-<div id="stop-the-container" class="section level4 unnumbered">
-<h4>Stop the Container</h4>
-<p>Say you are done playing with your container for today, you can stop the container by using the following command:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb11-1" title="1"><span class="ex">docker</span> stop amilworks/bisque05-caffe-xenial:amil </a>
-<a class="sourceLine" id="cb11-2" title="2"><span class="ex">docker</span> stop <span class="dt">{YOUR_CONTAINER_NAME}</span> <span class="co">#  &lt;--- If you named the container</span></a></code></pre></div>
-
-</div>
-</div>
-</div>
-<!-- </div> -->
 <p style="text-align: center;">
-<a href="index.html"><button class="btn btn-default">Previous</button></a>
-<a href="1-intro.html"><button class="btn btn-default">Next</button></a>
+<a href="2-6-python-setup.html"><button class="btn btn-default">Previous</button></a>
+<a href="download-an-array.html"><button class="btn btn-default">Next</button></a>
 </p>
 </div>
 </div>

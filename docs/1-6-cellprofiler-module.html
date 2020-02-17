@@ -5,7 +5,7 @@
 <meta charset="utf-8" />
 <meta name="generator" content="pandoc" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta property="og:title" content="Docker Installation | Getting Started with BisQue" />
+<meta property="og:title" content="1.6 CellProfiler Module | Getting Started with BisQue" />
 <meta property="og:type" content="book" />
 
 <meta property="og:image" content="images/cover.png" />
@@ -23,7 +23,7 @@ MathJax.Hub.Config({
 
 <meta name="description" content="BisQue (Bio-Image Semantic Query User Environment) : Store, visualize,organize and analyze images in the cloud.">
 
-<title>Docker Installation | Getting Started with BisQue</title>
+<title>1.6 CellProfiler Module | Getting Started with BisQue</title>
 
 <script src="libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -204,94 +204,63 @@ img {
 </div>
 <div class="row">
 <div class="col-sm-12">
-<div id="docker-installation" class="section level2 unnumbered">
-<h2>Docker Installation</h2>
+<div id="cellprofiler-module" class="section level2">
+<h2><span class="header-section-number">1.6</span> CellProfiler Module</h2>
+<div id="overview-2" class="section level3 unnumbered">
+<h3>Overview</h3>
+<p>The CellProfiler module allows to execute arbitrary CellProfiler pipelines on single images or datasets of images. Pipeline parameters can be changed and parameter value lists can be provided to experiment with parameter variations. The results are stored back in BisQue as Gobjects, tables, or images.</p>
 <hr />
-<div id="download" class="section level4 unnumbered">
-<h4>Download</h4>
-<p>Ensure you have the latest release by first running the following pull command:</p>
-<pre><code>  docker pull amilworks/bisque05-caffe-xenial:amil</code></pre>
 </div>
-<div id="intro-bisque-docker-container" class="section level3 unnumbered">
-<h3><strong>Intro: BisQue Docker Container</strong></h3>
-<div id="run-the-bisque-docker-container" class="section level4 unnumbered">
-<h4>Run the BisQue Docker Container</h4>
-<p>To run the docker version of BisQue locally, start a bisque server on the host port 8080:</p>
-<pre><code>docker run --name bisque --rm -p 8080:8080 amilworks/bisque05-caffe-xenial:amil</code></pre>
-<p>and point your browser at <code>http://localhost:8080</code>. You should see a BisQue homepage similar to the one on <a href="https://bisque.ece.ucsb.edu/client_service/">bisque.ece.ucsb.edu</a>. If you do <strong>not</strong> see the homepage, check to make sure that port 8080 is not being used by another container or application <em>and</em> that you have correctly mapped the ports using <code>-p 8080:8080</code>, where <code>-p</code> is short for port.</p>
+<div id="uploading-of-cellprofiler-pipelines" class="section level3 unnumbered">
+<h3>Uploading of CellProfiler Pipelines</h3>
+<p>Most CellProfiler pipelines can be uploaded and used directly without modifications. In order to upload a pipeline, click <strong>Upload</strong>, select the pipeline file, and click <strong>Upload</strong>. If the file extension is <code>.cp</code> or <code>.cppipe</code>, the file will automatically be recognized as a CellProfiler pipeline. In order to verify the pipeline, it can be opened by browsing the <code>cellprofiler_pipeline</code> resources and opening the recently uploaded pipeline. It will look like this:</p>
+<div class="figure">
+<img src="images/cpmanual_browse.png" alt="ImageJ Pipeline" />
+<p class="caption">ImageJ Pipeline</p>
 </div>
-<div id="registering-modules" class="section level4 unnumbered">
-<h4>Registering Modules</h4>
-<p>To register all the modules to your local server:
-* Login to your BisQue server using admin:admin
-* Find the module manager under the Admin button on the top right hand corner
-* Put <code>http://localhost:8080/engine_service</code> in the right panel where it says <strong>Enter Engine URL</strong> and hit Load
-* NOTE: Use <code>localhost:8080</code> here because it’s internal to the container.
-* Drag and Drop <strong>MetaData</strong> to the left panel—or whatever module you would like—and the module will now be registered and available for use. You can make the module Public by hitting <strong>Set Public</strong> in the left panel, which basically means the module is Published and ready for public use.</p>
+<p>Each box represents one CellProfiler module and the arrows indicate the pipeline flow through the modules. Note that some boxes have different colors. For example, the first box (<code>BisQueLoadImages</code>) is shown in blue to indicate that the original module(s) from the pipeline have been replaced with a BisQue specific component that allows to read images directly from BisQue. These pipeline conversions happen automatically when the pipeline is uploaded into BisQue. The next three steps in the pipeline are shown in transparent color to indicate that they were inactivated. Certain operations (such as <strong>Crop</strong> in this example) are not currently compatible with BisQue and are ignored without affecting the rest of the pipeline. Green boxes indicate regular CellProfiler modules that were kept unchanged. Red boxes indicate incompatible operations that could not be modified and will render the pipeline non-executable. The pipeline can be modified to replace the operations in red with other steps and the pipeline re-uploaded to fix this problem.</p>
+<hr />
 </div>
-<div id="custom-modules-copying-folders-out-of-the-container" class="section level4 unnumbered">
-<h4>Custom Modules, Copying Folders out of the Container</h4>
-<p>If you would like to build and test your own module locally, using host mounted modules will make life easier to build, test, debug, and deploy locally.</p>
-<ol style="list-style-type: decimal">
-<li><p>Copy the module directory out of the container and into the folder on your local system named <code>container-modules</code>.</p>
-<pre><code>   docker cp bisque:/source/modules container-modules</code></pre></li>
-<li>Copy your module into the <code>container-modules</code> folder on your local system.</li>
-<li><p>Restart the container with host mounted modules. Be careful with the command <code>$(pwd)/container-modules</code> that we are using here. If the <code>/container-modules</code> is <strong>not</strong> in the specified path, you will not see any of the modules during the registration process.</p>
-<pre><code>docker stop bisque
-docker run --name bisque --rm -p 8080:8080 -v $(pwd)/container-modules:/source/modules  amilworks/bisque05-caffe-xenial:amil</code></pre></li>
-<li><p>Register your module from the above steps in “3. <strong>Registering Modules. </strong>”, using the Module Manager.</p></li>
-</ol>
-<blockquote>
-<p><strong>Pushing your Module to Production.</strong> If you feel that your module is ready to be added to the production version of BisQue, please feel free to contact us and we will gladly begin the process.</p>
-</blockquote>
+<div id="running-a-cellprofiler-pipeline" class="section level3 unnumbered">
+<h3>Running a CellProfiler Pipeline</h3>
+<p>In order to demonstrate how to run a CellProfiler pipeline, open the <code>ExampleFly.cppipe</code> pipeline that can be found in the public <strong>Fly</strong> dataset inside the <strong>CellProfiler Examples</strong> dataset (please ensure to check <strong>Show public data</strong> in the options menu on the top right; otherwise, you will not see these resources):</p>
+<div class="figure">
+<img src="images/cpmanual_examples.png" alt="ImageJ Pipeline" />
+<p class="caption">ImageJ Pipeline</p>
 </div>
-<div id="data-storage" class="section level4 unnumbered">
-<h4>Data Storage</h4>
-<p>Use an external data directory so you don’t lose data when the service stops
-- Uploaded image and workdirs are store in <code>/source/data</code>. You can change this to be a host mounted directory with</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb5-1" title="1"><span class="ex">docker</span> run --name bisque --rm -p 8080:8080 -v <span class="va">$(</span><span class="bu">pwd</span><span class="va">)</span>/container-data:/source/data  amilworks/bisque05-caffe-xenial:amil</a></code></pre></div>
-<ul>
-<li>The default sqlite database is stored inside the container at <code>/source/data/bisque.db</code></li>
-<li>The uploaded images are stored inside the container at <code>/source/data/imagedir</code></li>
-</ul>
+<p>After viewing the pipeline, click on <strong>Analyze</strong> and then on <strong>CellProfiler</strong>:</p>
+<div class="figure">
+<img src="images/cpmanual_analyze.jpg" alt="ImageJ Pipeline" />
+<p class="caption">ImageJ Pipeline</p>
 </div>
-<div id="view-downloaded-images-running-containers" class="section level4 unnumbered">
-<h4>View Downloaded Images, Running Containers</h4>
-<p>List all the docker <strong>images</strong> on your system:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb6-1" title="1"><span class="ex">docker</span> images</a></code></pre></div>
-<p>List all running <strong>containers</strong> on your system:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb7-1" title="1"><span class="ex">docker</span> ps</a></code></pre></div>
+<p>The CellProfiler module page opens. Click <strong>Select an Image</strong> to choose a single image to run the pipeline on (alternatively, a dataset of images can be selected to run the pipeline on multiple images in parallel):</p>
+<div class="figure">
+<img src="images/cpmanual_module1.jpg" alt="ImageJ Pipeline" />
+<p class="caption">ImageJ Pipeline</p>
 </div>
-<div id="ssh-into-the-container" class="section level4 unnumbered">
-<h4>SSH into the Container</h4>
-<p>If you would like to see everything inside the container, you can use the following command <em>while the container is running</em>:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb8-1" title="1"><span class="ex">docker</span> exec -it amilworks/bisque05-caffe-xenial:amil bash</a></code></pre></div>
-<p>The <code>-it</code> flag enables you to run interactively inside the container. There are numerous other flags you can take advantage of as shown here:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb9-1" title="1"><span class="ex">--detach</span> ,      -d    Detached mode: run command in the background</a>
-<a class="sourceLine" id="cb9-2" title="2"><span class="ex">--detach-keys</span>         Override the key sequence for detaching a container</a>
-<a class="sourceLine" id="cb9-3" title="3"><span class="ex">--env</span> ,         -e    Set environment variables</a>
-<a class="sourceLine" id="cb9-4" title="4"><span class="ex">--interactive</span> , -i    Keep STDIN open even if not attached</a>
-<a class="sourceLine" id="cb9-5" title="5"><span class="ex">--privileged</span>          Give extended privileges to the command</a>
-<a class="sourceLine" id="cb9-6" title="6"><span class="ex">--tty</span> ,         -t    Allocate a pseudo-TTY</a>
-<a class="sourceLine" id="cb9-7" title="7"><span class="ex">--user</span> ,        -u    Username or UID (format: <span class="op">&lt;</span>name<span class="kw">|</span><span class="ex">uid</span><span class="op">&gt;</span>[:<span class="op">&lt;</span>group<span class="kw">|</span><span class="ex">gid</span><span class="op">&gt;</span>])</a>
-<a class="sourceLine" id="cb9-8" title="8"><span class="ex">--workdir</span> ,     -w    Working directory inside the container</a></code></pre></div>
-<p>Now, let’s say you want to ssh into an image without fully starting BisQue. More precisely, you want to ssh into a non-running container. You can accomplish this by running:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb10-1" title="1"><span class="ex">docker</span> run -it amilworks/bisque05-caffe-xenial:amil bash</a></code></pre></div>
-<p>If you want to <strong>exit</strong>, simply type <code>exit</code> and you will be taken back outside of the container.</p>
+<p>For this example, we use the image <code>CPExample Fly1</code>. Note that the pipeline expects a three-channel image as input (this can be seen in the <code>BisQueLoadImages</code> step at the beginning of the pipeline). Next, modify any pipeline parameters if desired in section 2 (the values shown are the defaults found in the pipeline). Besides single parameters, this module also allows lists of parameters to be entered. For example, for <strong>Size of smoothing filter</strong>, one can enter <span class="math inline">\([10,20,30]\)</span> to run the pipeline with all three smoothing filter settings in parallel. This allows to study the effect of this parameter on the final output.</p>
+<p>Finally, click the <strong>Run</strong> button to start the pipeline execution.</p>
+<hr />
 </div>
-<div id="stop-the-container" class="section level4 unnumbered">
-<h4>Stop the Container</h4>
-<p>Say you are done playing with your container for today, you can stop the container by using the following command:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb11-1" title="1"><span class="ex">docker</span> stop amilworks/bisque05-caffe-xenial:amil </a>
-<a class="sourceLine" id="cb11-2" title="2"><span class="ex">docker</span> stop <span class="dt">{YOUR_CONTAINER_NAME}</span> <span class="co">#  &lt;--- If you named the container</span></a></code></pre></div>
-
+<div id="results" class="section level3 unnumbered">
+<h3>Results</h3>
+<p>Once the execution finishes, the pipeline outputs are shown in section 4:</p>
+<div class="figure">
+<img src="images/cpmanual_module2.jpg" alt="ImageJ Pipeline" />
+<p class="caption">ImageJ Pipeline</p>
+</div>
+<p>In this case, one image and one table are generated. Additionally, Gobjects are created by a BisQue specific pipeline step <code>BisQueExtractGObjects</code> towards the end of the pipeline. This step reads certain columns from a generated table and interprets them as GObject parameters (in this case, ellipse coordinates and minor/major axis). The generated GObjects are stored as part of the Mex document, as with any other module. In order to view the Gobjects, open the input image (<code>CPExample Fly1</code>) again and under the <strong>Graphical</strong> tab, check the top-most <strong>CellProfiler</strong> line (representing the last module run). This displays three types of ellipses overlayed over the image, one for detected nuclei, one for the cell boundaries, and one for the detected locations of cytoplasm:</p>
+<div class="figure">
+<img src="images/cpmanual_gobjects.jpg" alt="ImageJ Pipeline" />
+<p class="caption">ImageJ Pipeline</p>
+</div>
+<p>The GObjects were generated by the three <code>BisQueExtractGObjects</code> steps at the end of the pipeline, one for objects from the “Nuclei” table, one for objects from the “Cells” table, and one for objects from the <strong>Cytoplasm</strong> table. The colors were set in these steps as red, green, and blue respectively. By hovering with the mouse pointer over any of the Gobjects, additional statistics are displayed.</p>
+<p>The generated tables and Gobjects can now be processed further in additional BisQue modules or shared with other users.</p>
 </div>
 </div>
-</div>
-<!-- </div> -->
 <p style="text-align: center;">
-<a href="index.html"><button class="btn btn-default">Previous</button></a>
-<a href="1-intro.html"><button class="btn btn-default">Next</button></a>
+<a href="1-5-imagej-module.html"><button class="btn btn-default">Previous</button></a>
+<a href="1-7-plant-cell-segmentation.html"><button class="btn btn-default">Next</button></a>
 </p>
 </div>
 </div>

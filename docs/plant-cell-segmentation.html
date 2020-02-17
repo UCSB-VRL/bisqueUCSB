@@ -31,7 +31,6 @@
   
 <link rel="prev" href="cellprofiler-module.html"/>
 <link rel="next" href="module-development.html"/>
-<script src="libs/header-attrs-2.1/header-attrs.js"></script>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -52,26 +51,25 @@
 
 
 <style type="text/css">
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
 }
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
+    border: none; pointer-events: all; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -80,9 +78,9 @@ pre.numberSource code > span > a:first-child::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {   }
+  {  }
 @media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+a.sourceLine::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -131,44 +129,36 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="#index">Official UCSB BisQue Documentation</a></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Cloud Service | Module Development | Python API</a>
-<ul>
-<li class="chapter" data-level="" data-path="docker-installation.html"><a href="docker-installation.html"><i class="fa fa-check"></i>Docker Installation</a>
-<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Cloud Service | Module Development | Python API</a><ul>
+<li class="chapter" data-level="" data-path="docker-installation.html"><a href="docker-installation.html"><i class="fa fa-check"></i>Docker Installation</a><ul>
 <li><a href="docker-installation.html#intro-bisque-docker-container"><strong>Intro: BisQue Docker Container</strong></a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="1" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>1</b> BisQue Cloud Service</a>
-<ul>
+<li class="chapter" data-level="1" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>1</b> BisQue Cloud Service</a><ul>
 <li class="chapter" data-level="1.1" data-path="how-to-login-or-create-a-new-user.html"><a href="how-to-login-or-create-a-new-user.html"><i class="fa fa-check"></i><b>1.1</b> How to Login or Create a New User</a></li>
-<li class="chapter" data-level="1.2" data-path="how-to-upload-data.html"><a href="how-to-upload-data.html"><i class="fa fa-check"></i><b>1.2</b> How to Upload Data</a>
-<ul>
+<li class="chapter" data-level="1.2" data-path="how-to-upload-data.html"><a href="how-to-upload-data.html"><i class="fa fa-check"></i><b>1.2</b> How to Upload Data</a><ul>
 <li class="chapter" data-level="" data-path="how-to-upload-data.html"><a href="how-to-upload-data.html#step-1.-login"><i class="fa fa-check"></i>Step 1. Login</a></li>
 <li class="chapter" data-level="" data-path="how-to-upload-data.html"><a href="how-to-upload-data.html#step-2.-upload-file-or-folder"><i class="fa fa-check"></i>Step 2. Upload File or Folder</a></li>
 <li class="chapter" data-level="" data-path="how-to-upload-data.html"><a href="how-to-upload-data.html#step-3.-build-a-dataset"><i class="fa fa-check"></i>Step 3. Build a Dataset</a></li>
 <li class="chapter" data-level="" data-path="how-to-upload-data.html"><a href="how-to-upload-data.html#step-4.-setting-permissions"><i class="fa fa-check"></i>Step 4. Setting Permissions</a></li>
 </ul></li>
-<li class="chapter" data-level="1.3" data-path="how-to-add-annotations.html"><a href="how-to-add-annotations.html"><i class="fa fa-check"></i><b>1.3</b> How to Add Annotations</a>
-<ul>
+<li class="chapter" data-level="1.3" data-path="how-to-add-annotations.html"><a href="how-to-add-annotations.html"><i class="fa fa-check"></i><b>1.3</b> How to Add Annotations</a><ul>
 <li class="chapter" data-level="" data-path="how-to-add-annotations.html"><a href="how-to-add-annotations.html#overview"><i class="fa fa-check"></i>Overview</a></li>
 </ul></li>
 <li class="chapter" data-level="1.4" data-path="how-to-run-a-module.html"><a href="how-to-run-a-module.html"><i class="fa fa-check"></i><b>1.4</b> How to Run a Module</a></li>
-<li class="chapter" data-level="1.5" data-path="imagej-module.html"><a href="imagej-module.html"><i class="fa fa-check"></i><b>1.5</b> ImageJ Module</a>
-<ul>
+<li class="chapter" data-level="1.5" data-path="imagej-module.html"><a href="imagej-module.html"><i class="fa fa-check"></i><b>1.5</b> ImageJ Module</a><ul>
 <li class="chapter" data-level="" data-path="imagej-module.html"><a href="imagej-module.html#overview-1"><i class="fa fa-check"></i>Overview</a></li>
 <li class="chapter" data-level="" data-path="imagej-module.html"><a href="imagej-module.html#uploading-of-imagej-pipelines"><i class="fa fa-check"></i>Uploading of ImageJ Pipelines</a></li>
 <li class="chapter" data-level="" data-path="imagej-module.html"><a href="imagej-module.html#running-an-imagej-macro"><i class="fa fa-check"></i>Running an ImageJ Macro</a></li>
 <li class="chapter" data-level="" data-path="imagej-module.html"><a href="imagej-module.html#special-bisque-extensions-for-imagej"><i class="fa fa-check"></i>Special BisQue extensions for ImageJ</a></li>
 </ul></li>
-<li class="chapter" data-level="1.6" data-path="cellprofiler-module.html"><a href="cellprofiler-module.html"><i class="fa fa-check"></i><b>1.6</b> CellProfiler Module</a>
-<ul>
+<li class="chapter" data-level="1.6" data-path="cellprofiler-module.html"><a href="cellprofiler-module.html"><i class="fa fa-check"></i><b>1.6</b> CellProfiler Module</a><ul>
 <li class="chapter" data-level="" data-path="cellprofiler-module.html"><a href="cellprofiler-module.html#overview-2"><i class="fa fa-check"></i>Overview</a></li>
 <li class="chapter" data-level="" data-path="cellprofiler-module.html"><a href="cellprofiler-module.html#uploading-of-cellprofiler-pipelines"><i class="fa fa-check"></i>Uploading of CellProfiler Pipelines</a></li>
 <li class="chapter" data-level="" data-path="cellprofiler-module.html"><a href="cellprofiler-module.html#running-a-cellprofiler-pipeline"><i class="fa fa-check"></i>Running a CellProfiler Pipeline</a></li>
 <li class="chapter" data-level="" data-path="cellprofiler-module.html"><a href="cellprofiler-module.html#results"><i class="fa fa-check"></i>Results</a></li>
 </ul></li>
-<li class="chapter" data-level="1.7" data-path="plant-cell-segmentation.html"><a href="plant-cell-segmentation.html"><i class="fa fa-check"></i><b>1.7</b> Plant Cell Segmentation</a>
-<ul>
+<li class="chapter" data-level="1.7" data-path="plant-cell-segmentation.html"><a href="plant-cell-segmentation.html"><i class="fa fa-check"></i><b>1.7</b> Plant Cell Segmentation</a><ul>
 <li class="chapter" data-level="" data-path="plant-cell-segmentation.html"><a href="plant-cell-segmentation.html#overview-3"><i class="fa fa-check"></i>Overview</a></li>
 <li><a href="plant-cell-segmentation.html#input"><strong><code>Input</code></strong></a></li>
 <li class="chapter" data-level="" data-path="plant-cell-segmentation.html"><a href="plant-cell-segmentation.html#hyperparameters"><i class="fa fa-check"></i>Hyperparameters</a></li>
@@ -176,40 +166,33 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="plant-cell-segmentation.html#output"><strong><code>Output</code></strong></a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="2" data-path="module-development.html"><a href="module-development.html"><i class="fa fa-check"></i><b>2</b> Module Development</a>
-<ul>
+<li class="chapter" data-level="2" data-path="module-development.html"><a href="module-development.html"><i class="fa fa-check"></i><b>2</b> Module Development</a><ul>
 <li><a href="module-development.html#how-to-begin-building-modules"><strong>How to Begin Building Modules</strong></a></li>
-<li class="chapter" data-level="2.1" data-path="dockerfile.html"><a href="dockerfile.html"><i class="fa fa-check"></i><b>2.1</b> Dockerfile</a>
-<ul>
+<li class="chapter" data-level="2.1" data-path="dockerfile.html"><a href="dockerfile.html"><i class="fa fa-check"></i><b>2.1</b> Dockerfile</a><ul>
 <li><a href="dockerfile.html#example-composite-strength"><strong>Example: Composite Strength</strong></a></li>
 </ul></li>
-<li class="chapter" data-level="2.2" data-path="module-xml.html"><a href="module-xml.html"><i class="fa fa-check"></i><b>2.2</b> Module XML</a>
-<ul>
+<li class="chapter" data-level="2.2" data-path="module-xml.html"><a href="module-xml.html"><i class="fa fa-check"></i><b>2.2</b> Module XML</a><ul>
 <li><a href="module-xml.html#example"><strong>Example</strong></a></li>
 <li class="chapter" data-level="" data-path="module-xml.html"><a href="module-xml.html#module-description"><i class="fa fa-check"></i>Module Description</a></li>
 <li class="chapter" data-level="" data-path="module-xml.html"><a href="module-xml.html#configurations-for-images-datasets-and-resources"><i class="fa fa-check"></i>Configurations for Images, Datasets, and Resources</a></li>
 <li class="chapter" data-level="" data-path="module-xml.html"><a href="module-xml.html#data-parallel-execution"><i class="fa fa-check"></i>Data-Parallel Execution</a></li>
 </ul></li>
-<li class="chapter" data-level="2.3" data-path="python-script-wrapper.html"><a href="python-script-wrapper.html"><i class="fa fa-check"></i><b>2.3</b> Python Script Wrapper</a>
-<ul>
+<li class="chapter" data-level="2.3" data-path="python-script-wrapper.html"><a href="python-script-wrapper.html"><i class="fa fa-check"></i><b>2.3</b> Python Script Wrapper</a><ul>
 <li><a href="python-script-wrapper.html#example.-python-script-wrapper"><em>Example.</em> Python Script Wrapper</a></li>
 </ul></li>
-<li class="chapter" data-level="2.4" data-path="source-code.html"><a href="source-code.html"><i class="fa fa-check"></i><b>2.4</b> Source Code</a>
-<ul>
+<li class="chapter" data-level="2.4" data-path="source-code.html"><a href="source-code.html"><i class="fa fa-check"></i><b>2.4</b> Source Code</a><ul>
 <li><a href="source-code.html#example.-composite-strength-module"><em>Example.</em> Composite Strength Module</a></li>
 </ul></li>
-<li class="chapter" data-level="2.5" data-path="runtime-module-configuration.html"><a href="runtime-module-configuration.html"><i class="fa fa-check"></i><b>2.5</b> Runtime Module Configuration</a>
-<ul>
+<li class="chapter" data-level="2.5" data-path="runtime-module-configuration.html"><a href="runtime-module-configuration.html"><i class="fa fa-check"></i><b>2.5</b> Runtime Module Configuration</a><ul>
 <li><a href="runtime-module-configuration.html#example.-composite-strength-module-1"><em>Example.</em> Composite Strength Module</a></li>
 </ul></li>
 <li class="chapter" data-level="2.6" data-path="python-setup.html"><a href="python-setup.html"><i class="fa fa-check"></i><b>2.6</b> Python Setup</a></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="bqapi.html"><a href="bqapi.html"><i class="fa fa-check"></i><b>3</b> BQAPI</a>
-<ul>
-<li><a href="download-an-array.html#download-an-array"><strong>Download an Array</strong></a>
-<ul>
+<li class="chapter" data-level="3" data-path="bqapi.html"><a href="bqapi.html"><i class="fa fa-check"></i><b>3</b> BQAPI</a><ul>
+<li><a href="download-an-array.html#download-an-array"><strong>Download an Array</strong></a><ul>
 <li class="chapter" data-level="" data-path="download-an-array.html"><a href="download-an-array.html"><i class="fa fa-check"></i>Access an HDF5 Table from BisQue</a></li>
 </ul></li>
+<li><a href="upload-an-image.html#upload-an-image"><strong>Upload an Image</strong></a></li>
 </ul></li>
 <li class="divider"></li>
 <li><a href="https://bisque.ece.ucsb.edu/" target="blank">UCSB BisQue Cloud Platform</a></li>
@@ -231,56 +214,57 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="plant-cell-segmentation" class="section level2" number="1.7">
+<div id="plant-cell-segmentation" class="section level2">
 <h2><span class="header-section-number">1.7</span> Plant Cell Segmentation</h2>
-<div id="overview-3" class="section level3 unnumbered" number="">
+<div id="overview-3" class="section level3 unnumbered">
 <h3>Overview</h3>
 <p>This module is for segmenting 3D membrane tagged cell images. The workflow is as follows: 3D UNet to output the probability map of a cell boundary, 3D watershed to get the initial cell label, and 3D Conditional Random Field (CRF) to refine the segmentation label.</p>
-<div id="cellect-2.0-module-homepage" class="section level4 unnumbered" number="">
+<div id="cellect-2.0-module-homepage" class="section level4 unnumbered">
 <h4>CellECT 2.0 Module Homepage</h4>
 <p>Using the <strong>Analyze</strong> tab on BisQue, you should see the Cell Segmentation 3D UNET module. Click on it and you should see a landing page like this.</p>
 <div class="figure">
-<img src="images/CellECT.png" alt="" />
+<img src="images/CellECT.png" alt="CellECT 2.0 Module Homepage. Here is the landing page for the GPU-enabled CellECT 2.0 module." />
 <p class="caption"><strong>CellECT 2.0 Module Homepage.</strong> Here is the landing page for the GPU-enabled CellECT 2.0 module.</p>
 </div>
 </div>
-<div id="algorithm-workflow-diagram" class="section level4 unnumbered" number="">
+<div id="algorithm-workflow-diagram" class="section level4 unnumbered">
 <h4>Algorithm Workflow Diagram</h4>
 <p>By using 3D UNET on the backend, we are able to segment the 3D volumes of the cells. We then create the segmentation map and use a Conditional Random Field (CRF) to further refine the segmentation map. Lastly, we use the information from the algorithm to extract features about the cells such as volume, surface coordinates, and many others.</p>
 <div class="figure">
-<img src="images/tom_workflow.svg" alt="" />
+<img src="images/tom_workflow.svg" alt="CellECT 2.0 Workflow. The Plant Cell Segmentation Workflow from the algorithmic view." />
 <p class="caption"><strong>CellECT 2.0 Workflow.</strong> The Plant Cell Segmentation Workflow from the algorithmic view.</p>
 </div>
 </div>
-<div id="module-integration-workflow" class="section level4 unnumbered" number="">
+<div id="module-integration-workflow" class="section level4 unnumbered">
 <h4>Module Integration Workflow</h4>
+<p>The module workflow consists of a source code folder with information on how to run the algorithm. We can then Dockerize the source code folder using a base image that includes the necessary CUDA libraries and dependencies and beginning testing whther the source code runs inside the container. Thereafter, we deploy the module on BisQue for public usage.</p>
 <div class="figure">
-<img src="images/tom_moduleflow.svg" alt="" />
+<img src="images/tom_moduleflow.svg" alt="Module Integration Workflow. Workflow for integrating the Plant Cell Segmentation module." />
 <p class="caption"><strong>Module Integration Workflow.</strong> Workflow for integrating the Plant Cell Segmentation module.</p>
 </div>
 <hr />
 </div>
 </div>
-<div id="input" class="section level3 unnumbered" number="">
+<div id="input" class="section level3 unnumbered">
 <h3><strong><code>Input</code></strong></h3>
 <div class="figure">
-<img src="images/tiff_images.svg" alt="" />
+<img src="images/tiff_images.svg" alt="Sample Plant Cell Images. These images are taken from time series data stored in TIFF files." />
 <p class="caption"><strong>Sample Plant Cell Images.</strong> These images are taken from time series data stored in <code>TIFF</code> files.</p>
 </div>
 <ul>
 <li><code>TIFF Image</code> with minimum <span class="math inline">\(z &gt; 1\)</span></li>
 </ul>
 </div>
-<div id="hyperparameters" class="section level3 unnumbered" number="">
+<div id="hyperparameters" class="section level3 unnumbered">
 <h3>Hyperparameters</h3>
 <ul>
 <li><p><code>Threshold</code> - The bilateral standard deviation (threshold) for CRF define how much intensity-homogeneity is required within a region. Higher values allow greater variations under the same label.</p></li>
-<li><p><code>Label Threshold</code> - The minimum possible volume of cells to avoid segmenting intercellular space as an individual cell.</p></li>
+<li><code>Label Threshold</code> - The minimum possible volume of cells to avoid segmenting intercellular space as an individual cell.</li>
 <li><p><code>Minimum Distance</code> - In the seeds detection for watershed, the minimum possible distance between two seeds. The lower the value is, the more likely to have over-segmentation.</p></li>
-<li><p><code>Minimum Cell Size</code> - Minimum</p></li>
+<li><p><code>Minimum Cell Size</code> - Minimum size to be considered a cell</p></li>
 </ul>
 </div>
-<div id="cell-features" class="section level3 unnumbered" number="">
+<div id="cell-features" class="section level3 unnumbered">
 <h3>Cell Features</h3>
 <ul>
 <li><code>Cell Number</code> - The number of cells in each image stack.</li>
@@ -291,7 +275,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><code>3-way Conjunction Points</code> - The touch points of 3 neighboring cells</li>
 </ul>
 </div>
-<div id="output" class="section level3 unnumbered" number="">
+<div id="output" class="section level3 unnumbered">
 <h3><strong><code>Output</code></strong></h3>
 <ul>
 <li><code>Segmented TIFF Image</code></li>

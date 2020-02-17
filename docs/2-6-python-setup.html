@@ -5,7 +5,7 @@
 <meta charset="utf-8" />
 <meta name="generator" content="pandoc" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta property="og:title" content="Docker Installation | Getting Started with BisQue" />
+<meta property="og:title" content="2.6 Python Setup | Getting Started with BisQue" />
 <meta property="og:type" content="book" />
 
 <meta property="og:image" content="images/cover.png" />
@@ -23,7 +23,7 @@ MathJax.Hub.Config({
 
 <meta name="description" content="BisQue (Bio-Image Semantic Query User Environment) : Store, visualize,organize and analyze images in the cloud.">
 
-<title>Docker Installation | Getting Started with BisQue</title>
+<title>2.6 Python Setup | Getting Started with BisQue</title>
 
 <script src="libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -204,94 +204,33 @@ img {
 </div>
 <div class="row">
 <div class="col-sm-12">
-<div id="docker-installation" class="section level2 unnumbered">
-<h2>Docker Installation</h2>
-<hr />
-<div id="download" class="section level4 unnumbered">
-<h4>Download</h4>
-<p>Ensure you have the latest release by first running the following pull command:</p>
-<pre><code>  docker pull amilworks/bisque05-caffe-xenial:amil</code></pre>
-</div>
-<div id="intro-bisque-docker-container" class="section level3 unnumbered">
-<h3><strong>Intro: BisQue Docker Container</strong></h3>
-<div id="run-the-bisque-docker-container" class="section level4 unnumbered">
-<h4>Run the BisQue Docker Container</h4>
-<p>To run the docker version of BisQue locally, start a bisque server on the host port 8080:</p>
-<pre><code>docker run --name bisque --rm -p 8080:8080 amilworks/bisque05-caffe-xenial:amil</code></pre>
-<p>and point your browser at <code>http://localhost:8080</code>. You should see a BisQue homepage similar to the one on <a href="https://bisque.ece.ucsb.edu/client_service/">bisque.ece.ucsb.edu</a>. If you do <strong>not</strong> see the homepage, check to make sure that port 8080 is not being used by another container or application <em>and</em> that you have correctly mapped the ports using <code>-p 8080:8080</code>, where <code>-p</code> is short for port.</p>
-</div>
-<div id="registering-modules" class="section level4 unnumbered">
-<h4>Registering Modules</h4>
-<p>To register all the modules to your local server:
-* Login to your BisQue server using admin:admin
-* Find the module manager under the Admin button on the top right hand corner
-* Put <code>http://localhost:8080/engine_service</code> in the right panel where it says <strong>Enter Engine URL</strong> and hit Load
-* NOTE: Use <code>localhost:8080</code> here because it’s internal to the container.
-* Drag and Drop <strong>MetaData</strong> to the left panel—or whatever module you would like—and the module will now be registered and available for use. You can make the module Public by hitting <strong>Set Public</strong> in the left panel, which basically means the module is Published and ready for public use.</p>
-</div>
-<div id="custom-modules-copying-folders-out-of-the-container" class="section level4 unnumbered">
-<h4>Custom Modules, Copying Folders out of the Container</h4>
-<p>If you would like to build and test your own module locally, using host mounted modules will make life easier to build, test, debug, and deploy locally.</p>
-<ol style="list-style-type: decimal">
-<li><p>Copy the module directory out of the container and into the folder on your local system named <code>container-modules</code>.</p>
-<pre><code>   docker cp bisque:/source/modules container-modules</code></pre></li>
-<li>Copy your module into the <code>container-modules</code> folder on your local system.</li>
-<li><p>Restart the container with host mounted modules. Be careful with the command <code>$(pwd)/container-modules</code> that we are using here. If the <code>/container-modules</code> is <strong>not</strong> in the specified path, you will not see any of the modules during the registration process.</p>
-<pre><code>docker stop bisque
-docker run --name bisque --rm -p 8080:8080 -v $(pwd)/container-modules:/source/modules  amilworks/bisque05-caffe-xenial:amil</code></pre></li>
-<li><p>Register your module from the above steps in “3. <strong>Registering Modules. </strong>”, using the Module Manager.</p></li>
-</ol>
+<div id="python-setup" class="section level2">
+<h2><span class="header-section-number">2.6</span> Python Setup</h2>
 <blockquote>
-<p><strong>Pushing your Module to Production.</strong> If you feel that your module is ready to be added to the production version of BisQue, please feel free to contact us and we will gladly begin the process.</p>
+<p><strong>FILENAME: </strong> <code>setup.py</code></p>
 </blockquote>
-</div>
-<div id="data-storage" class="section level4 unnumbered">
-<h4>Data Storage</h4>
-<p>Use an external data directory so you don’t lose data when the service stops
-- Uploaded image and workdirs are store in <code>/source/data</code>. You can change this to be a host mounted directory with</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb5-1" title="1"><span class="ex">docker</span> run --name bisque --rm -p 8080:8080 -v <span class="va">$(</span><span class="bu">pwd</span><span class="va">)</span>/container-data:/source/data  amilworks/bisque05-caffe-xenial:amil</a></code></pre></div>
-<ul>
-<li>The default sqlite database is stored inside the container at <code>/source/data/bisque.db</code></li>
-<li>The uploaded images are stored inside the container at <code>/source/data/imagedir</code></li>
-</ul>
-</div>
-<div id="view-downloaded-images-running-containers" class="section level4 unnumbered">
-<h4>View Downloaded Images, Running Containers</h4>
-<p>List all the docker <strong>images</strong> on your system:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb6-1" title="1"><span class="ex">docker</span> images</a></code></pre></div>
-<p>List all running <strong>containers</strong> on your system:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb7-1" title="1"><span class="ex">docker</span> ps</a></code></pre></div>
-</div>
-<div id="ssh-into-the-container" class="section level4 unnumbered">
-<h4>SSH into the Container</h4>
-<p>If you would like to see everything inside the container, you can use the following command <em>while the container is running</em>:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb8-1" title="1"><span class="ex">docker</span> exec -it amilworks/bisque05-caffe-xenial:amil bash</a></code></pre></div>
-<p>The <code>-it</code> flag enables you to run interactively inside the container. There are numerous other flags you can take advantage of as shown here:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb9-1" title="1"><span class="ex">--detach</span> ,      -d    Detached mode: run command in the background</a>
-<a class="sourceLine" id="cb9-2" title="2"><span class="ex">--detach-keys</span>         Override the key sequence for detaching a container</a>
-<a class="sourceLine" id="cb9-3" title="3"><span class="ex">--env</span> ,         -e    Set environment variables</a>
-<a class="sourceLine" id="cb9-4" title="4"><span class="ex">--interactive</span> , -i    Keep STDIN open even if not attached</a>
-<a class="sourceLine" id="cb9-5" title="5"><span class="ex">--privileged</span>          Give extended privileges to the command</a>
-<a class="sourceLine" id="cb9-6" title="6"><span class="ex">--tty</span> ,         -t    Allocate a pseudo-TTY</a>
-<a class="sourceLine" id="cb9-7" title="7"><span class="ex">--user</span> ,        -u    Username or UID (format: <span class="op">&lt;</span>name<span class="kw">|</span><span class="ex">uid</span><span class="op">&gt;</span>[:<span class="op">&lt;</span>group<span class="kw">|</span><span class="ex">gid</span><span class="op">&gt;</span>])</a>
-<a class="sourceLine" id="cb9-8" title="8"><span class="ex">--workdir</span> ,     -w    Working directory inside the container</a></code></pre></div>
-<p>Now, let’s say you want to ssh into an image without fully starting BisQue. More precisely, you want to ssh into a non-running container. You can accomplish this by running:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb10-1" title="1"><span class="ex">docker</span> run -it amilworks/bisque05-caffe-xenial:amil bash</a></code></pre></div>
-<p>If you want to <strong>exit</strong>, simply type <code>exit</code> and you will be taken back outside of the container.</p>
-</div>
-<div id="stop-the-container" class="section level4 unnumbered">
-<h4>Stop the Container</h4>
-<p>Say you are done playing with your container for today, you can stop the container by using the following command:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb11-1" title="1"><span class="ex">docker</span> stop amilworks/bisque05-caffe-xenial:amil </a>
-<a class="sourceLine" id="cb11-2" title="2"><span class="ex">docker</span> stop <span class="dt">{YOUR_CONTAINER_NAME}</span> <span class="co">#  &lt;--- If you named the container</span></a></code></pre></div>
+<p>The only changes to make in this file are naming. Specifically, this line:</p>
+<div class="sourceCode" id="cb151"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb151-1" title="1">docker_setup(<span class="st">&#39;Composite_Strength&#39;</span>, <span class="st">&#39;TwoPhasePrediction&#39;</span>, <span class="st">&#39;twophaseprediction&#39;</span>, params<span class="op">=</span>params)</a></code></pre></div>
+<p><strong>NOTE:</strong> Before running <code>python setup.py</code>, please make sure that all the files are created and configured correctly. If not, save yourself hours of troubleshooting by going through the other file tutorials.</p>
+<div class="sourceCode" id="cb152"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb152-1" title="1"><span class="im">import</span> sys</a>
+<a class="sourceLine" id="cb152-2" title="2"><span class="im">from</span> bq.setup.module_setup <span class="im">import</span> python_setup, docker_setup, require, read_config</a>
+<a class="sourceLine" id="cb152-3" title="3"></a>
+<a class="sourceLine" id="cb152-4" title="4"></a>
+<a class="sourceLine" id="cb152-5" title="5"><span class="kw">def</span> setup(params, <span class="op">*</span>args, <span class="op">**</span>kw):</a>
+<a class="sourceLine" id="cb152-6" title="6">    python_setup(<span class="st">&#39;PythonScriptWrapper.py&#39;</span>, params<span class="op">=</span>params)</a>
+<a class="sourceLine" id="cb152-7" title="7">    docker_setup(<span class="st">&#39;Composite_Strength&#39;</span>, <span class="st">&#39;TwoPhasePrediction&#39;</span>, <span class="st">&#39;twophaseprediction&#39;</span>, params<span class="op">=</span>params)</a>
+<a class="sourceLine" id="cb152-8" title="8">    </a>
+<a class="sourceLine" id="cb152-9" title="9"><span class="cf">if</span> <span class="va">__name__</span> <span class="op">==</span><span class="st">&quot;__main__&quot;</span>:</a>
+<a class="sourceLine" id="cb152-10" title="10">    params <span class="op">=</span> read_config(<span class="st">&#39;runtime-bisque.cfg&#39;</span>)</a>
+<a class="sourceLine" id="cb152-11" title="11">    <span class="cf">if</span> <span class="bu">len</span>(sys.argv)<span class="op">&gt;</span><span class="dv">1</span>:</a>
+<a class="sourceLine" id="cb152-12" title="12">        params <span class="op">=</span> <span class="bu">eval</span> (sys.argv[<span class="dv">1</span>])</a>
+<a class="sourceLine" id="cb152-13" title="13">    sys.exit(setup(params))</a></code></pre></div>
 
-</div>
-</div>
 </div>
 <!-- </div> -->
 <p style="text-align: center;">
-<a href="index.html"><button class="btn btn-default">Previous</button></a>
-<a href="1-intro.html"><button class="btn btn-default">Next</button></a>
+<a href="2-5-runtime-module-configuration.html"><button class="btn btn-default">Previous</button></a>
+<a href="3-bqapi.html"><button class="btn btn-default">Next</button></a>
 </p>
 </div>
 </div>

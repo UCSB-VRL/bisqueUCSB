@@ -2,60 +2,46 @@
 <html lang="" xml:lang="">
 <head>
 
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>2.1 Dockerfile | Getting Started with BisQue</title>
-  <meta name="description" content="BisQue (Bio-Image Semantic Query User Environment) : Store, visualize,organize and analyze images in the cloud." />
-  <meta name="generator" content="bookdown 0.17 and GitBook 2.6.7" />
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta property="og:title" content="2.1 Dockerfile | Getting Started with BisQue" />
+<meta property="og:type" content="book" />
 
-  <meta property="og:title" content="2.1 Dockerfile | Getting Started with BisQue" />
-  <meta property="og:type" content="book" />
-  
-  <meta property="og:image" content="images/cover.png" />
-  <meta property="og:description" content="BisQue (Bio-Image Semantic Query User Environment) : Store, visualize,organize and analyze images in the cloud." />
-  
-
-  <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="2.1 Dockerfile | Getting Started with BisQue" />
-  
-  <meta name="twitter:description" content="BisQue (Bio-Image Semantic Query User Environment) : Store, visualize,organize and analyze images in the cloud." />
-  <meta name="twitter:image" content="images/cover.png" />
+<meta property="og:image" content="images/cover.png" />
+<meta property="og:description" content="BisQue (Bio-Image Semantic Query User Environment) : Store, visualize,organize and analyze images in the cloud." />
 
 
 
 
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-  
-  
-<link rel="prev" href="module-development.html"/>
-<link rel="next" href="module-xml.html"/>
-<script src="libs/jquery-2.2.3/jquery.min.js"></script>
-<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
-<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
-<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
-<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
-<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
-<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
-<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS_CHTML-full" type="text/javascript"></script>
+
+<meta name="description" content="BisQue (Bio-Image Semantic Query User Environment) : Store, visualize,organize and analyze images in the cloud.">
+
+<title>2.1 Dockerfile | Getting Started with BisQue</title>
+
+<script src="libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="libs/navigation-1.1/tabsets.js"></script>
 
 
-
-
-
-
-
-
-
-
-
+<style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
 a.sourceLine { display: inline-block; line-height: 1.25; }
 a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
 a.sourceLine:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
@@ -112,108 +98,112 @@ code span.va { color: #19177c; } /* Variable */
 code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
 
 <link rel="stylesheet" href="style.css" type="text/css" />
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+</style>
 </head>
 
 <body>
 
+<div class="container-fluid main-container">
 
 
-  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
-
-    <div class="book-summary">
-      <nav role="navigation">
-
-<ul class="summary">
-<li><a href="#index">Official UCSB BisQue Documentation</a></li>
-
-<li class="divider"></li>
-<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Cloud Service | Module Development | Python API</a><ul>
-<li class="chapter" data-level="" data-path="docker-installation.html"><a href="docker-installation.html"><i class="fa fa-check"></i>Docker Installation</a><ul>
+<div class="row">
+<div class="col-sm-12">
+<div id="TOC">
+<ul>
+<li class="has-sub"><a href="index.html#cloud-service-module-development-python-api">Cloud Service | Module Development | Python API</a><ul>
+<li class="has-sub"><a href="docker-installation.html#docker-installation">Docker Installation</a><ul>
 <li><a href="docker-installation.html#intro-bisque-docker-container"><strong>Intro: BisQue Docker Container</strong></a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="1" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>1</b> BisQue Cloud Service</a><ul>
-<li class="chapter" data-level="1.1" data-path="how-to-login-or-create-a-new-user.html"><a href="how-to-login-or-create-a-new-user.html"><i class="fa fa-check"></i><b>1.1</b> How to Login or Create a New User</a></li>
-<li class="chapter" data-level="1.2" data-path="how-to-upload-data.html"><a href="how-to-upload-data.html"><i class="fa fa-check"></i><b>1.2</b> How to Upload Data</a><ul>
-<li class="chapter" data-level="" data-path="how-to-upload-data.html"><a href="how-to-upload-data.html#step-1.-login"><i class="fa fa-check"></i>Step 1. Login</a></li>
-<li class="chapter" data-level="" data-path="how-to-upload-data.html"><a href="how-to-upload-data.html#step-2.-upload-file-or-folder"><i class="fa fa-check"></i>Step 2. Upload File or Folder</a></li>
-<li class="chapter" data-level="" data-path="how-to-upload-data.html"><a href="how-to-upload-data.html#step-3.-build-a-dataset"><i class="fa fa-check"></i>Step 3. Build a Dataset</a></li>
-<li class="chapter" data-level="" data-path="how-to-upload-data.html"><a href="how-to-upload-data.html#step-4.-setting-permissions"><i class="fa fa-check"></i>Step 4. Setting Permissions</a></li>
+<li class="has-sub"><a href="1-intro.html#intro"><span class="toc-section-number">1</span> BisQue Cloud Service</a><ul>
+<li><a href="1-1-how-to-login-or-create-a-new-user.html#how-to-login-or-create-a-new-user"><span class="toc-section-number">1.1</span> How to Login or Create a New User</a></li>
+<li class="has-sub"><a href="1-2-how-to-upload-data.html#how-to-upload-data"><span class="toc-section-number">1.2</span> How to Upload Data</a><ul>
+<li><a href="1-2-how-to-upload-data.html#step-1.-login">Step 1. Login</a></li>
+<li><a href="1-2-how-to-upload-data.html#step-2.-upload-file-or-folder">Step 2. Upload File or Folder</a></li>
+<li><a href="1-2-how-to-upload-data.html#step-3.-build-a-dataset">Step 3. Build a Dataset</a></li>
+<li><a href="1-2-how-to-upload-data.html#step-4.-setting-permissions">Step 4. Setting Permissions</a></li>
 </ul></li>
-<li class="chapter" data-level="1.3" data-path="how-to-add-annotations.html"><a href="how-to-add-annotations.html"><i class="fa fa-check"></i><b>1.3</b> How to Add Annotations</a><ul>
-<li class="chapter" data-level="" data-path="how-to-add-annotations.html"><a href="how-to-add-annotations.html#overview"><i class="fa fa-check"></i>Overview</a></li>
+<li class="has-sub"><a href="1-3-how-to-add-annotations.html#how-to-add-annotations"><span class="toc-section-number">1.3</span> How to Add Annotations</a><ul>
+<li><a href="1-3-how-to-add-annotations.html#overview">Overview</a></li>
 </ul></li>
-<li class="chapter" data-level="1.4" data-path="how-to-run-a-module.html"><a href="how-to-run-a-module.html"><i class="fa fa-check"></i><b>1.4</b> How to Run a Module</a></li>
-<li class="chapter" data-level="1.5" data-path="imagej-module.html"><a href="imagej-module.html"><i class="fa fa-check"></i><b>1.5</b> ImageJ Module</a><ul>
-<li class="chapter" data-level="" data-path="imagej-module.html"><a href="imagej-module.html#overview-1"><i class="fa fa-check"></i>Overview</a></li>
-<li class="chapter" data-level="" data-path="imagej-module.html"><a href="imagej-module.html#uploading-of-imagej-pipelines"><i class="fa fa-check"></i>Uploading of ImageJ Pipelines</a></li>
-<li class="chapter" data-level="" data-path="imagej-module.html"><a href="imagej-module.html#running-an-imagej-macro"><i class="fa fa-check"></i>Running an ImageJ Macro</a></li>
-<li class="chapter" data-level="" data-path="imagej-module.html"><a href="imagej-module.html#special-bisque-extensions-for-imagej"><i class="fa fa-check"></i>Special BisQue extensions for ImageJ</a></li>
+<li><a href="1-4-how-to-run-a-module.html#how-to-run-a-module"><span class="toc-section-number">1.4</span> How to Run a Module</a></li>
+<li class="has-sub"><a href="1-5-imagej-module.html#imagej-module"><span class="toc-section-number">1.5</span> ImageJ Module</a><ul>
+<li><a href="1-5-imagej-module.html#overview-1">Overview</a></li>
+<li><a href="1-5-imagej-module.html#uploading-of-imagej-pipelines">Uploading of ImageJ Pipelines</a></li>
+<li><a href="1-5-imagej-module.html#running-an-imagej-macro">Running an ImageJ Macro</a></li>
+<li><a href="1-5-imagej-module.html#special-bisque-extensions-for-imagej">Special BisQue extensions for ImageJ</a></li>
 </ul></li>
-<li class="chapter" data-level="1.6" data-path="cellprofiler-module.html"><a href="cellprofiler-module.html"><i class="fa fa-check"></i><b>1.6</b> CellProfiler Module</a><ul>
-<li class="chapter" data-level="" data-path="cellprofiler-module.html"><a href="cellprofiler-module.html#overview-2"><i class="fa fa-check"></i>Overview</a></li>
-<li class="chapter" data-level="" data-path="cellprofiler-module.html"><a href="cellprofiler-module.html#uploading-of-cellprofiler-pipelines"><i class="fa fa-check"></i>Uploading of CellProfiler Pipelines</a></li>
-<li class="chapter" data-level="" data-path="cellprofiler-module.html"><a href="cellprofiler-module.html#running-a-cellprofiler-pipeline"><i class="fa fa-check"></i>Running a CellProfiler Pipeline</a></li>
-<li class="chapter" data-level="" data-path="cellprofiler-module.html"><a href="cellprofiler-module.html#results"><i class="fa fa-check"></i>Results</a></li>
+<li class="has-sub"><a href="1-6-cellprofiler-module.html#cellprofiler-module"><span class="toc-section-number">1.6</span> CellProfiler Module</a><ul>
+<li><a href="1-6-cellprofiler-module.html#overview-2">Overview</a></li>
+<li><a href="1-6-cellprofiler-module.html#uploading-of-cellprofiler-pipelines">Uploading of CellProfiler Pipelines</a></li>
+<li><a href="1-6-cellprofiler-module.html#running-a-cellprofiler-pipeline">Running a CellProfiler Pipeline</a></li>
+<li><a href="1-6-cellprofiler-module.html#results">Results</a></li>
 </ul></li>
-<li class="chapter" data-level="1.7" data-path="plant-cell-segmentation.html"><a href="plant-cell-segmentation.html"><i class="fa fa-check"></i><b>1.7</b> Plant Cell Segmentation</a><ul>
-<li class="chapter" data-level="" data-path="plant-cell-segmentation.html"><a href="plant-cell-segmentation.html#overview-3"><i class="fa fa-check"></i>Overview</a></li>
-<li><a href="plant-cell-segmentation.html#input"><strong><code>Input</code></strong></a></li>
-<li class="chapter" data-level="" data-path="plant-cell-segmentation.html"><a href="plant-cell-segmentation.html#hyperparameters"><i class="fa fa-check"></i>Hyperparameters</a></li>
-<li class="chapter" data-level="" data-path="plant-cell-segmentation.html"><a href="plant-cell-segmentation.html#cell-features"><i class="fa fa-check"></i>Cell Features</a></li>
-<li><a href="plant-cell-segmentation.html#output"><strong><code>Output</code></strong></a></li>
+<li class="has-sub"><a href="1-7-plant-cell-segmentation.html#plant-cell-segmentation"><span class="toc-section-number">1.7</span> Plant Cell Segmentation</a><ul>
+<li><a href="1-7-plant-cell-segmentation.html#overview-3">Overview</a></li>
+<li><a href="1-7-plant-cell-segmentation.html#input"><strong><code>Input</code></strong></a></li>
+<li><a href="1-7-plant-cell-segmentation.html#hyperparameters">Hyperparameters</a></li>
+<li><a href="1-7-plant-cell-segmentation.html#cell-features">Cell Features</a></li>
+<li><a href="1-7-plant-cell-segmentation.html#output"><strong><code>Output</code></strong></a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="2" data-path="module-development.html"><a href="module-development.html"><i class="fa fa-check"></i><b>2</b> Module Development</a><ul>
-<li><a href="module-development.html#how-to-begin-building-modules"><strong>How to Begin Building Modules</strong></a></li>
-<li class="chapter" data-level="2.1" data-path="dockerfile.html"><a href="dockerfile.html"><i class="fa fa-check"></i><b>2.1</b> Dockerfile</a><ul>
-<li><a href="dockerfile.html#example-composite-strength"><strong>Example: Composite Strength</strong></a></li>
+<li class="has-sub"><a href="2-module-development.html#module-development"><span class="toc-section-number">2</span> Module Development</a><ul>
+<li><a href="2-module-development.html#how-to-begin-building-modules"><strong>How to Begin Building Modules</strong></a></li>
+<li class="has-sub"><a href="2-1-dockerfile.html#dockerfile"><span class="toc-section-number">2.1</span> Dockerfile</a><ul>
+<li><a href="2-1-dockerfile.html#example-composite-strength"><strong>Example: Composite Strength</strong></a></li>
 </ul></li>
-<li class="chapter" data-level="2.2" data-path="module-xml.html"><a href="module-xml.html"><i class="fa fa-check"></i><b>2.2</b> Module XML</a><ul>
-<li><a href="module-xml.html#example"><strong>Example</strong></a></li>
-<li class="chapter" data-level="" data-path="module-xml.html"><a href="module-xml.html#module-description"><i class="fa fa-check"></i>Module Description</a></li>
-<li class="chapter" data-level="" data-path="module-xml.html"><a href="module-xml.html#configurations-for-images-datasets-and-resources"><i class="fa fa-check"></i>Configurations for Images, Datasets, and Resources</a></li>
-<li class="chapter" data-level="" data-path="module-xml.html"><a href="module-xml.html#data-parallel-execution"><i class="fa fa-check"></i>Data-Parallel Execution</a></li>
+<li class="has-sub"><a href="2-2-module-xml.html#module-xml"><span class="toc-section-number">2.2</span> Module XML</a><ul>
+<li><a href="2-2-module-xml.html#example"><strong>Example</strong></a></li>
+<li><a href="2-2-module-xml.html#module-description">Module Description</a></li>
+<li><a href="2-2-module-xml.html#configurations-for-images-datasets-and-resources">Configurations for Images, Datasets, and Resources</a></li>
+<li><a href="2-2-module-xml.html#data-parallel-execution">Data-Parallel Execution</a></li>
 </ul></li>
-<li class="chapter" data-level="2.3" data-path="python-script-wrapper.html"><a href="python-script-wrapper.html"><i class="fa fa-check"></i><b>2.3</b> Python Script Wrapper</a><ul>
-<li><a href="python-script-wrapper.html#example.-python-script-wrapper"><em>Example.</em> Python Script Wrapper</a></li>
+<li class="has-sub"><a href="2-3-python-script-wrapper.html#python-script-wrapper"><span class="toc-section-number">2.3</span> Python Script Wrapper</a><ul>
+<li><a href="2-3-python-script-wrapper.html#example.-python-script-wrapper"><em>Example.</em> Python Script Wrapper</a></li>
 </ul></li>
-<li class="chapter" data-level="2.4" data-path="source-code.html"><a href="source-code.html"><i class="fa fa-check"></i><b>2.4</b> Source Code</a><ul>
-<li><a href="source-code.html#example.-composite-strength-module"><em>Example.</em> Composite Strength Module</a></li>
+<li class="has-sub"><a href="2-4-source-code.html#source-code"><span class="toc-section-number">2.4</span> Source Code</a><ul>
+<li><a href="2-4-source-code.html#example.-composite-strength-module"><em>Example.</em> Composite Strength Module</a></li>
 </ul></li>
-<li class="chapter" data-level="2.5" data-path="runtime-module-configuration.html"><a href="runtime-module-configuration.html"><i class="fa fa-check"></i><b>2.5</b> Runtime Module Configuration</a><ul>
-<li><a href="runtime-module-configuration.html#example.-composite-strength-module-1"><em>Example.</em> Composite Strength Module</a></li>
+<li class="has-sub"><a href="2-5-runtime-module-configuration.html#runtime-module-configuration"><span class="toc-section-number">2.5</span> Runtime Module Configuration</a><ul>
+<li><a href="2-5-runtime-module-configuration.html#example.-composite-strength-module-1"><em>Example.</em> Composite Strength Module</a></li>
 </ul></li>
-<li class="chapter" data-level="2.6" data-path="python-setup.html"><a href="python-setup.html"><i class="fa fa-check"></i><b>2.6</b> Python Setup</a></li>
+<li><a href="2-6-python-setup.html#python-setup"><span class="toc-section-number">2.6</span> Python Setup</a></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="bqapi.html"><a href="bqapi.html"><i class="fa fa-check"></i><b>3</b> BQAPI</a><ul>
-<li><a href="download-an-array.html#download-an-array"><strong>Download an Array</strong></a><ul>
-<li class="chapter" data-level="" data-path="download-an-array.html"><a href="download-an-array.html"><i class="fa fa-check"></i>Access an HDF5 Table from BisQue</a></li>
+<li class="has-sub"><a href="3-bqapi.html#bqapi"><span class="toc-section-number">3</span> BQAPI</a><ul>
+<li class="has-sub"><a href="download-an-array.html#download-an-array"><strong>Download an Array</strong></a><ul>
+<li><a href="download-an-array.html#access-an-hdf5-table-from-bisque">Access an HDF5 Table from BisQue</a></li>
 </ul></li>
 <li><a href="upload-an-image.html#upload-an-image"><strong>Upload an Image</strong></a></li>
 </ul></li>
-<li class="divider"></li>
-<li><a href="https://bisque.ece.ucsb.edu/" target="blank">UCSB BisQue Cloud Platform</a></li>
-
 </ul>
-
-      </nav>
-    </div>
-
-    <div class="book-body">
-      <div class="body-inner">
-        <div class="book-header" role="navigation">
-          <h1>
-            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Getting Started with BisQue</a>
-          </h1>
-        </div>
-
-        <div class="page-wrapper" tabindex="-1" role="main">
-          <div class="page-inner">
-
-            <section class="normal" id="section-">
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-12">
 <div id="dockerfile" class="section level2">
 <h2><span class="header-section-number">2.1</span> Dockerfile</h2>
 <blockquote>
@@ -313,76 +303,24 @@ ENV PATH /module:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin</c
 </div>
 </div>
 </div>
-            </section>
+<p style="text-align: center;">
+<a href="2-module-development.html"><button class="btn btn-default">Previous</button></a>
+<a href="2-2-module-xml.html"><button class="btn btn-default">Next</button></a>
+</p>
+</div>
+</div>
 
-          </div>
-        </div>
-      </div>
-<a href="module-development.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="module-xml.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
-    </div>
-  </div>
-<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
-<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
-<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
-<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
-<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
-<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
-<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
-<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
-<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+
+</div>
+
 <script>
-gitbook.require(["gitbook"], function(gitbook) {
-gitbook.start({
-"sharing": {
-"github": true,
-"facebook": false,
-"twitter": true,
-"linkedin": false,
-"weibo": false,
-"instapaper": true,
-"vk": false,
-"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
-},
-"fontsettings": {
-"theme": "white",
-"family": "sans",
-"size": 2
-},
-"edit": {
-"link": null,
-"text": null
-},
-"history": {
-"link": null,
-"text": null
-},
-"view": {
-"link": null,
-"text": null
-},
-"download": ["bisqueUCSB.pdf", "bisqueUCSB.epub"],
-"toc": {
-"collapse": "subsection"
-}
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
 });
-});
+
 </script>
 
-<!-- dynamically load mathjax for compatibility with self-contained -->
-<script>
-  (function () {
-    var script = document.createElement("script");
-    script.type = "text/javascript";
-    var src = "true";
-    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
-    if (location.protocol !== "file:")
-      if (/^https?:/.test(src))
-        src = src.replace(/^https?:/, '');
-    script.src = src;
-    document.getElementsByTagName("head")[0].appendChild(script);
-  })();
-</script>
 </body>
-
 </html>

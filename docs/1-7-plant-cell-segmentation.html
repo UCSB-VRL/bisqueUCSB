@@ -5,7 +5,7 @@
 <meta charset="utf-8" />
 <meta name="generator" content="pandoc" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta property="og:title" content="Docker Installation | Getting Started with BisQue" />
+<meta property="og:title" content="1.7 Plant Cell Segmentation | Getting Started with BisQue" />
 <meta property="og:type" content="book" />
 
 <meta property="og:image" content="images/cover.png" />
@@ -23,7 +23,7 @@ MathJax.Hub.Config({
 
 <meta name="description" content="BisQue (Bio-Image Semantic Query User Environment) : Store, visualize,organize and analyze images in the cloud.">
 
-<title>Docker Installation | Getting Started with BisQue</title>
+<title>1.7 Plant Cell Segmentation | Getting Started with BisQue</title>
 
 <script src="libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -204,94 +204,129 @@ img {
 </div>
 <div class="row">
 <div class="col-sm-12">
-<div id="docker-installation" class="section level2 unnumbered">
-<h2>Docker Installation</h2>
+<div id="plant-cell-segmentation" class="section level2">
+<h2><span class="header-section-number">1.7</span> Plant Cell Segmentation</h2>
+<div id="overview-3" class="section level3 unnumbered">
+<h3>Overview</h3>
+<p>This module is for segmenting 3D membrane tagged cell images. The workflow is as follows: 3D UNet to output the probability map of a cell boundary, 3D watershed to get the initial cell label, and 3D Conditional Random Field (CRF) to refine the segmentation label.</p>
+<div id="cellect-2.0-module-homepage" class="section level4 unnumbered">
+<h4>CellECT 2.0 Module Homepage</h4>
+<p>Using the <strong>Analyze</strong> tab on BisQue, you should see the Cell Segmentation 3D UNET module. Click on it and you should see a landing page like this.</p>
+<div class="figure">
+<img src="images/CellECT.png" alt="CellECT 2.0 Module Homepage. Here is the landing page for the GPU-enabled CellECT 2.0 module." />
+<p class="caption"><strong>CellECT 2.0 Module Homepage.</strong> Here is the landing page for the GPU-enabled CellECT 2.0 module.</p>
+</div>
+</div>
+<div id="algorithm-workflow-diagram" class="section level4 unnumbered">
+<h4>Algorithm Workflow Diagram</h4>
+<p>By using 3D UNET on the backend, we are able to segment the 3D volumes of the cells. We then create the segmentation map and use a Conditional Random Field (CRF) to further refine the segmentation map. Lastly, we use the information from the algorithm to extract features about the cells such as volume, surface coordinates, and many others.</p>
+<div class="figure">
+<img src="images/tom_workflow.svg" alt="CellECT 2.0 Workflow. The Plant Cell Segmentation Workflow from the algorithmic view." />
+<p class="caption"><strong>CellECT 2.0 Workflow.</strong> The Plant Cell Segmentation Workflow from the algorithmic view.</p>
+</div>
+</div>
+<div id="module-integration-workflow" class="section level4 unnumbered">
+<h4>Module Integration Workflow</h4>
+<p>The module workflow consists of a source code folder with information on how to run the algorithm. We can then Dockerize the source code folder using a base image that includes the necessary CUDA libraries and dependencies and beginning testing whther the source code runs inside the container. Thereafter, we deploy the module on BisQue for public usage.</p>
+<div class="figure">
+<img src="images/tom_moduleflow.svg" alt="Module Integration Workflow. Workflow for integrating the Plant Cell Segmentation module." />
+<p class="caption"><strong>Module Integration Workflow.</strong> Workflow for integrating the Plant Cell Segmentation module.</p>
+</div>
 <hr />
-<div id="download" class="section level4 unnumbered">
-<h4>Download</h4>
-<p>Ensure you have the latest release by first running the following pull command:</p>
-<pre><code>  docker pull amilworks/bisque05-caffe-xenial:amil</code></pre>
 </div>
-<div id="intro-bisque-docker-container" class="section level3 unnumbered">
-<h3><strong>Intro: BisQue Docker Container</strong></h3>
-<div id="run-the-bisque-docker-container" class="section level4 unnumbered">
-<h4>Run the BisQue Docker Container</h4>
-<p>To run the docker version of BisQue locally, start a bisque server on the host port 8080:</p>
-<pre><code>docker run --name bisque --rm -p 8080:8080 amilworks/bisque05-caffe-xenial:amil</code></pre>
-<p>and point your browser at <code>http://localhost:8080</code>. You should see a BisQue homepage similar to the one on <a href="https://bisque.ece.ucsb.edu/client_service/">bisque.ece.ucsb.edu</a>. If you do <strong>not</strong> see the homepage, check to make sure that port 8080 is not being used by another container or application <em>and</em> that you have correctly mapped the ports using <code>-p 8080:8080</code>, where <code>-p</code> is short for port.</p>
 </div>
-<div id="registering-modules" class="section level4 unnumbered">
-<h4>Registering Modules</h4>
-<p>To register all the modules to your local server:
-* Login to your BisQue server using admin:admin
-* Find the module manager under the Admin button on the top right hand corner
-* Put <code>http://localhost:8080/engine_service</code> in the right panel where it says <strong>Enter Engine URL</strong> and hit Load
-* NOTE: Use <code>localhost:8080</code> here because it’s internal to the container.
-* Drag and Drop <strong>MetaData</strong> to the left panel—or whatever module you would like—and the module will now be registered and available for use. You can make the module Public by hitting <strong>Set Public</strong> in the left panel, which basically means the module is Published and ready for public use.</p>
+<div id="input" class="section level3 unnumbered">
+<h3><strong><code>Input</code></strong></h3>
+<div class="figure">
+<img src="images/tiff_images.svg" alt="Sample Plant Cell Images. These images are taken from time series data stored in TIFF files." />
+<p class="caption"><strong>Sample Plant Cell Images.</strong> These images are taken from time series data stored in <code>TIFF</code> files.</p>
 </div>
-<div id="custom-modules-copying-folders-out-of-the-container" class="section level4 unnumbered">
-<h4>Custom Modules, Copying Folders out of the Container</h4>
-<p>If you would like to build and test your own module locally, using host mounted modules will make life easier to build, test, debug, and deploy locally.</p>
-<ol style="list-style-type: decimal">
-<li><p>Copy the module directory out of the container and into the folder on your local system named <code>container-modules</code>.</p>
-<pre><code>   docker cp bisque:/source/modules container-modules</code></pre></li>
-<li>Copy your module into the <code>container-modules</code> folder on your local system.</li>
-<li><p>Restart the container with host mounted modules. Be careful with the command <code>$(pwd)/container-modules</code> that we are using here. If the <code>/container-modules</code> is <strong>not</strong> in the specified path, you will not see any of the modules during the registration process.</p>
-<pre><code>docker stop bisque
-docker run --name bisque --rm -p 8080:8080 -v $(pwd)/container-modules:/source/modules  amilworks/bisque05-caffe-xenial:amil</code></pre></li>
-<li><p>Register your module from the above steps in “3. <strong>Registering Modules. </strong>”, using the Module Manager.</p></li>
-</ol>
-<blockquote>
-<p><strong>Pushing your Module to Production.</strong> If you feel that your module is ready to be added to the production version of BisQue, please feel free to contact us and we will gladly begin the process.</p>
-</blockquote>
-</div>
-<div id="data-storage" class="section level4 unnumbered">
-<h4>Data Storage</h4>
-<p>Use an external data directory so you don’t lose data when the service stops
-- Uploaded image and workdirs are store in <code>/source/data</code>. You can change this to be a host mounted directory with</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb5-1" title="1"><span class="ex">docker</span> run --name bisque --rm -p 8080:8080 -v <span class="va">$(</span><span class="bu">pwd</span><span class="va">)</span>/container-data:/source/data  amilworks/bisque05-caffe-xenial:amil</a></code></pre></div>
 <ul>
-<li>The default sqlite database is stored inside the container at <code>/source/data/bisque.db</code></li>
-<li>The uploaded images are stored inside the container at <code>/source/data/imagedir</code></li>
+<li><code>TIFF Image</code> with minimum <span class="math inline">\(z &gt; 1\)</span></li>
 </ul>
 </div>
-<div id="view-downloaded-images-running-containers" class="section level4 unnumbered">
-<h4>View Downloaded Images, Running Containers</h4>
-<p>List all the docker <strong>images</strong> on your system:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb6-1" title="1"><span class="ex">docker</span> images</a></code></pre></div>
-<p>List all running <strong>containers</strong> on your system:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb7-1" title="1"><span class="ex">docker</span> ps</a></code></pre></div>
+<div id="hyperparameters" class="section level3 unnumbered">
+<h3>Hyperparameters</h3>
+<ul>
+<li><p><code>Threshold</code> - The bilateral standard deviation (threshold) for CRF define how much intensity-homogeneity is required within a region. Higher values allow greater variations under the same label.</p></li>
+<li><code>Label Threshold</code> - The minimum possible volume of cells to avoid segmenting intercellular space as an individual cell.</li>
+<li><p><code>Minimum Distance</code> - In the seeds detection for watershed, the minimum possible distance between two seeds. The lower the value is, the more likely to have over-segmentation.</p></li>
+<li><p><code>Minimum Cell Size</code> - Minimum size to be considered a cell</p></li>
+</ul>
 </div>
-<div id="ssh-into-the-container" class="section level4 unnumbered">
-<h4>SSH into the Container</h4>
-<p>If you would like to see everything inside the container, you can use the following command <em>while the container is running</em>:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb8-1" title="1"><span class="ex">docker</span> exec -it amilworks/bisque05-caffe-xenial:amil bash</a></code></pre></div>
-<p>The <code>-it</code> flag enables you to run interactively inside the container. There are numerous other flags you can take advantage of as shown here:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb9-1" title="1"><span class="ex">--detach</span> ,      -d    Detached mode: run command in the background</a>
-<a class="sourceLine" id="cb9-2" title="2"><span class="ex">--detach-keys</span>         Override the key sequence for detaching a container</a>
-<a class="sourceLine" id="cb9-3" title="3"><span class="ex">--env</span> ,         -e    Set environment variables</a>
-<a class="sourceLine" id="cb9-4" title="4"><span class="ex">--interactive</span> , -i    Keep STDIN open even if not attached</a>
-<a class="sourceLine" id="cb9-5" title="5"><span class="ex">--privileged</span>          Give extended privileges to the command</a>
-<a class="sourceLine" id="cb9-6" title="6"><span class="ex">--tty</span> ,         -t    Allocate a pseudo-TTY</a>
-<a class="sourceLine" id="cb9-7" title="7"><span class="ex">--user</span> ,        -u    Username or UID (format: <span class="op">&lt;</span>name<span class="kw">|</span><span class="ex">uid</span><span class="op">&gt;</span>[:<span class="op">&lt;</span>group<span class="kw">|</span><span class="ex">gid</span><span class="op">&gt;</span>])</a>
-<a class="sourceLine" id="cb9-8" title="8"><span class="ex">--workdir</span> ,     -w    Working directory inside the container</a></code></pre></div>
-<p>Now, let’s say you want to ssh into an image without fully starting BisQue. More precisely, you want to ssh into a non-running container. You can accomplish this by running:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb10-1" title="1"><span class="ex">docker</span> run -it amilworks/bisque05-caffe-xenial:amil bash</a></code></pre></div>
-<p>If you want to <strong>exit</strong>, simply type <code>exit</code> and you will be taken back outside of the container.</p>
+<div id="cell-features" class="section level3 unnumbered">
+<h3>Cell Features</h3>
+<ul>
+<li><code>Cell Number</code> - The number of cells in each image stack.</li>
+<li><code>Cell Volume</code> - The size of each cell in terms of number of voxels.</li>
+<li><code>Cell Center</code> - The centroid of each cell.</li>
+<li><code>Cell Coordinates</code> - The surface coordinate of each cell.</li>
+<li><code>Adjacency Table</code> - The graph represents the neighbor of each cell</li>
+<li><code>3-way Conjunction Points</code> - The touch points of 3 neighboring cells</li>
+</ul>
 </div>
-<div id="stop-the-container" class="section level4 unnumbered">
-<h4>Stop the Container</h4>
-<p>Say you are done playing with your container for today, you can stop the container by using the following command:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb11-1" title="1"><span class="ex">docker</span> stop amilworks/bisque05-caffe-xenial:amil </a>
-<a class="sourceLine" id="cb11-2" title="2"><span class="ex">docker</span> stop <span class="dt">{YOUR_CONTAINER_NAME}</span> <span class="co">#  &lt;--- If you named the container</span></a></code></pre></div>
+<div id="output" class="section level3 unnumbered">
+<h3><strong><code>Output</code></strong></h3>
+<ul>
+<li><code>Segmented TIFF Image</code></li>
+<li><code>HDF5 Table with Cell Features</code></li>
+</ul>
+<table>
+<caption><span id="tab:unnamed-chunk-1">TABLE 1.1: </span>Sample HDF5 Table with Cell Features</caption>
+<thead>
+<tr class="header">
+<th align="right">CellNumber</th>
+<th align="right">CellVolume</th>
+<th align="left">CellCenter</th>
+<th align="left">SegmentedImage</th>
+<th align="left">SurfaceCoordinates</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">1</td>
+<td align="right">9832</td>
+<td align="left">[5, 57, 5]</td>
+<td align="left">SEGMENTED TIFF as ARRAY</td>
+<td align="left">ARRAY of Surface Coordinates</td>
+</tr>
+<tr class="even">
+<td align="right">2</td>
+<td align="right">2387</td>
+<td align="left">[5, 87, 5]</td>
+<td align="left">SEGMENTED TIFF as ARRAY</td>
+<td align="left">ARRAY of Surface Coordinates</td>
+</tr>
+<tr class="odd">
+<td align="right">3</td>
+<td align="right">945</td>
+<td align="left">[5, 23, 5]</td>
+<td align="left">SEGMENTED TIFF as ARRAY</td>
+<td align="left">ARRAY of Surface Coordinates</td>
+</tr>
+<tr class="even">
+<td align="right">4</td>
+<td align="right">2843</td>
+<td align="left">[5, 38, 5]</td>
+<td align="left">SEGMENTED TIFF as ARRAY</td>
+<td align="left">ARRAY of Surface Coordinates</td>
+</tr>
+<tr class="odd">
+<td align="right">5</td>
+<td align="right">1029</td>
+<td align="left">[5, 27, 5]</td>
+<td align="left">SEGMENTED TIFF as ARRAY</td>
+<td align="left">ARRAY of Surface Coordinates</td>
+</tr>
+</tbody>
+</table>
 
-</div>
 </div>
 </div>
 <!-- </div> -->
 <p style="text-align: center;">
-<a href="index.html"><button class="btn btn-default">Previous</button></a>
-<a href="1-intro.html"><button class="btn btn-default">Next</button></a>
+<a href="1-6-cellprofiler-module.html"><button class="btn btn-default">Previous</button></a>
+<a href="2-module-development.html"><button class="btn btn-default">Next</button></a>
 </p>
 </div>
 </div>
