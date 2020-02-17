@@ -218,7 +218,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h1><span class="header-section-number">3</span> BQAPI</h1>
 <div id="pip-install" class="section level4 unnumbered">
 <h4>PIP Install</h4>
-<div class="sourceCode" id="cb153"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb153-1" title="1">pip install <span class="op">-</span>i https:<span class="op">//</span>biodev.ece.ucsb.edu<span class="op">/</span>py<span class="op">/</span>bisque<span class="op">/</span>prod<span class="op">/+</span>simple bisque_api</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb1-1" title="1">pip install <span class="op">-</span>i https:<span class="op">//</span>biodev.ece.ucsb.edu<span class="op">/</span>py<span class="op">/</span>bisque<span class="op">/</span>prod<span class="op">/+</span>simple bisque_api</a></code></pre></div>
 <hr />
 <p>BQAPI provides bisque users with a means to extract features from resources using the feature service. Below is information on the Python API and a few example on how to use it.</p>
 <blockquote>
@@ -245,28 +245,28 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li>return - returns either a Pytables file handle or the file name when the path is provided</li>
 </ul>
 <p>Lets upload an image an calculate a single feature on it.</p>
-<div class="sourceCode" id="cb154"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb154-1" title="1"><span class="im">import</span> os</a>
-<a class="sourceLine" id="cb154-2" title="2"><span class="im">from</span> bqapi.comm <span class="im">import</span> BQSession</a>
-<a class="sourceLine" id="cb154-3" title="3"><span class="im">from</span> bqapi.bqfeature <span class="im">import</span> Feature, FeatureResource</a>
-<a class="sourceLine" id="cb154-4" title="4"></a>
-<a class="sourceLine" id="cb154-5" title="5"><span class="co"># initialize local session</span></a>
-<a class="sourceLine" id="cb154-6" title="6">session <span class="op">=</span> BQSession().init_local(user, pwd, bisque_root<span class="op">=</span><span class="st">&#39;http://bisque.ece.ucsb.edu&#39;</span>) </a>
-<a class="sourceLine" id="cb154-7" title="7"></a>
-<a class="sourceLine" id="cb154-8" title="8"><span class="co">#post image to bisque and get the response</span></a>
-<a class="sourceLine" id="cb154-9" title="9">response_xml <span class="op">=</span> session.postblob(<span class="st">&#39;myimage.jpg&#39;</span>) </a>
-<a class="sourceLine" id="cb154-10" title="10"></a>
-<a class="sourceLine" id="cb154-11" title="11"><span class="co">#construct resource list of the image just uploaded</span></a>
-<a class="sourceLine" id="cb154-12" title="12">resource_list <span class="op">=</span> [FeatureResource(image<span class="op">=</span><span class="st">&#39;http://bisque.ece.ucsb.edu/image_service/</span><span class="sc">%s</span><span class="st">&#39;</span> <span class="op">%</span> response_xml.attrib[<span class="st">&#39;resource_uniq&#39;</span>])]</a>
-<a class="sourceLine" id="cb154-13" title="13"></a>
-<a class="sourceLine" id="cb154-14" title="14"><span class="co">#fetch features on image resource</span></a>
-<a class="sourceLine" id="cb154-15" title="15">pytables_response <span class="op">=</span> Feature().fetch(session, <span class="st">&#39;HTD&#39;</span>, resource_list)</a>
-<a class="sourceLine" id="cb154-16" title="16"></a>
-<a class="sourceLine" id="cb154-17" title="17"><span class="co">#get a numpy list of features for the downloaded HDF5 file.</span></a>
-<a class="sourceLine" id="cb154-18" title="18">feature <span class="op">=</span> pytables_response.root.values[:][<span class="st">&#39;feature&#39;</span>]</a>
-<a class="sourceLine" id="cb154-19" title="19"></a>
-<a class="sourceLine" id="cb154-20" title="20"><span class="co">#close and remove the HDF5 file since it is stored in a tempfile</span></a>
-<a class="sourceLine" id="cb154-21" title="21">pytables_response.close()</a>
-<a class="sourceLine" id="cb154-22" title="22">os.remove(pytables_response.filename)</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb2-1" title="1"><span class="im">import</span> os</a>
+<a class="sourceLine" id="cb2-2" title="2"><span class="im">from</span> bqapi.comm <span class="im">import</span> BQSession</a>
+<a class="sourceLine" id="cb2-3" title="3"><span class="im">from</span> bqapi.bqfeature <span class="im">import</span> Feature, FeatureResource</a>
+<a class="sourceLine" id="cb2-4" title="4"></a>
+<a class="sourceLine" id="cb2-5" title="5"><span class="co"># initialize local session</span></a>
+<a class="sourceLine" id="cb2-6" title="6">session <span class="op">=</span> BQSession().init_local(user, pwd, bisque_root<span class="op">=</span><span class="st">&#39;http://bisque.ece.ucsb.edu&#39;</span>) </a>
+<a class="sourceLine" id="cb2-7" title="7"></a>
+<a class="sourceLine" id="cb2-8" title="8"><span class="co">#post image to bisque and get the response</span></a>
+<a class="sourceLine" id="cb2-9" title="9">response_xml <span class="op">=</span> session.postblob(<span class="st">&#39;myimage.jpg&#39;</span>) </a>
+<a class="sourceLine" id="cb2-10" title="10"></a>
+<a class="sourceLine" id="cb2-11" title="11"><span class="co">#construct resource list of the image just uploaded</span></a>
+<a class="sourceLine" id="cb2-12" title="12">resource_list <span class="op">=</span> [FeatureResource(image<span class="op">=</span><span class="st">&#39;http://bisque.ece.ucsb.edu/image_service/</span><span class="sc">%s</span><span class="st">&#39;</span> <span class="op">%</span> response_xml.attrib[<span class="st">&#39;resource_uniq&#39;</span>])]</a>
+<a class="sourceLine" id="cb2-13" title="13"></a>
+<a class="sourceLine" id="cb2-14" title="14"><span class="co">#fetch features on image resource</span></a>
+<a class="sourceLine" id="cb2-15" title="15">pytables_response <span class="op">=</span> Feature().fetch(session, <span class="st">&#39;HTD&#39;</span>, resource_list)</a>
+<a class="sourceLine" id="cb2-16" title="16"></a>
+<a class="sourceLine" id="cb2-17" title="17"><span class="co">#get a numpy list of features for the downloaded HDF5 file.</span></a>
+<a class="sourceLine" id="cb2-18" title="18">feature <span class="op">=</span> pytables_response.root.values[:][<span class="st">&#39;feature&#39;</span>]</a>
+<a class="sourceLine" id="cb2-19" title="19"></a>
+<a class="sourceLine" id="cb2-20" title="20"><span class="co">#close and remove the HDF5 file since it is stored in a tempfile</span></a>
+<a class="sourceLine" id="cb2-21" title="21">pytables_response.close()</a>
+<a class="sourceLine" id="cb2-22" title="22">os.remove(pytables_response.filename)</a></code></pre></div>
 <blockquote>
 <p><code>fetch_vector(session, name, resource_list)</code></p>
 </blockquote>
@@ -352,20 +352,6 @@ gitbook.start({
 });
 </script>
 
-<!-- dynamically load mathjax for compatibility with self-contained -->
-<script>
-  (function () {
-    var script = document.createElement("script");
-    script.type = "text/javascript";
-    var src = "true";
-    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
-    if (location.protocol !== "file:")
-      if (/^https?:/.test(src))
-        src = src.replace(/^https?:/, '');
-    script.src = src;
-    document.getElementsByTagName("head")[0].appendChild(script);
-  })();
-</script>
 </body>
 
 </html>
