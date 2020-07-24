@@ -123,9 +123,9 @@ bisque.stores.local.mounturl = file://$datadir/imagedir/$user/
 bisque.stores.local.top = file://$datadir/imagedir/
 
 # Example irods store
-#bisque.stores.irods1.mounturl=irods://data.iplantcollaborative.org/iplant/home/$user/bisque_data/uploads/$date/$filebase.$filehash$fileext
-#bisque.stores.irods1.credentials=bisque:<password>
-#bisque.stores.irods1.readonly = true
+bisque.stores.irods1.mounturl=irods://data.cyverse.org/iplant/home/$user/bisque_data/uploads/$date/$filebase.$filehash$fileext
+bisque.stores.irods1.credentials=amilkhan:password
+bisque.stores.irods1.readonly = true
 # example S3
 #bisque.stores.s3.path=s3://$user/
 #bisque.stores.s3.credentials = <access_key>:<secret_key>

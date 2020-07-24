@@ -87,16 +87,16 @@ use = bq.core.lib.autoreg:AutoRegister
 
 # # CAS : Central Authentication Service
 # dependency:
-# [plugin:cas_auth]
-# use = bq.core.lib.cas_auth:make_plugin
-# cas_base_url = https://auth.iplantcollaborative.org/cas4
-# login_path  = /auth_service/cas_login_handler
-# logout_path =/auth_service/logout_handler
-# post_logout = /auth_service/post_logout
-# remember_name = auth_tkt
-# validate_plugin=autoregister:register_user
-# validate_plugin=autoregister:validate_user
-# registration_url = https://user.cyverse.org
+[plugin:cas_auth]
+use = bq.core.lib.cas_auth:make_plugin
+cas_base_url = https://flour.ece.ucsb.edu/realms/BisQue/protocol/openid-connect/auth
+login_path  = /auth_service/cas_login_handler
+logout_path =/auth_service/logout_handler
+post_logout = /auth_service/post_logout
+remember_name = auth_tkt
+validate_plugin=autoregister:register_user
+validate_plugin=autoregister:validate_user
+registration_url = https://user.cyverse.org
 
 
 #[plugin:appauth]
@@ -129,13 +129,13 @@ plugins =
     mexauth
 #    appauth;json
 #    openid
-#    cas_auth
+    cas_auth
 # Cas must be last because openid replaces logout with redirect /post_logout
 
 [challengers]
 plugins =
 # Cas must be first challenger (as openid always send challenge to google)
-#    cas_auth
+    cas_auth
 #    openid
 #    appauth;json
     friendlyform;browser
@@ -146,7 +146,7 @@ plugins =
     sqlauth
 #    ldap_auth
     mexauth
-#    cas_auth
+    cas_auth
 #    openid_auth
 
 
