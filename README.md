@@ -86,7 +86,7 @@ docker run -itp 8080:8080 --rm --name bisque bisque-developer-beta:0.7-broccolli
 
 Go to your web browser and navigate to `localhost:8080` and you should see BisQue in all its glory. I have attached a docker run log script as well.
 
-__Step 4. Develop in the Container__
+__Step 5. Develop in the Container__
 
 If you want to start the bisque `virtualenv`, you can activate it by running
 
@@ -94,6 +94,13 @@ If you want to start the bisque `virtualenv`, you can activate it by running
 source /usr/lib/bisque/bin/activate
 ```
 We use TurboGears2 as our stack of choice. All of the `config` files live in `config-defaults`.
+
+If you want to make live changes, ssh into the container by opening a new terminal and running 
+
+```
+docker exec -it bisque bash
+```
+
 
 
 ## Developers
