@@ -23,7 +23,7 @@ bisque05-stretch-run:
 	docker run --rm -p 8181:8080 bisque05-stretch:dev
 
 bisque05-caffe-xenial: source
-	docker build -t amilworks/bisque05-caffe-xenial:flour-v0.6.1 -f Dockerfile.caffe.xenial .
+	docker build -t bisque-developer-beta:0.7-broccolli -f Dockerfile.caffe.xenial .
 	#docker run -u 1000:1000 -w /source -p 8765:8080  bisque05 bootstrap start
 #docker run -u 1000:1000 -w /source -v $(CURDIR)/reports:/source/reports bisque05 bootstrap
 #docker run -u 1000:1000 -w /source -v $(CURDIR)/reports:/source/reports bisque05 bootstrap
