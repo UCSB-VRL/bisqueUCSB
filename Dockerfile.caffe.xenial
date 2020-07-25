@@ -114,7 +114,7 @@ RUN locale
 
 # Set workdir early  as may wipe out contents
 WORKDIR /source
-ADD source /source
+COPY . /source
 COPY run-bisque.sh virtualenv.sh /builder/
 COPY start-bisque.sh /builder/start-scripts.d/R50-start-bisque.sh
 COPY builder/ /builder/build-scripts.d/
@@ -122,6 +122,11 @@ COPY boot/ /builder/boot-scripts.d/
 
 # Install dependencies:
 #RUN pip3 install -r requirements3.txt
+
+# Change Executable Permissions
+RUN find /builder/ -type f -iname "*.sh" -exec chmod +x {} \;
+RUN find /boot/ -type f -iname "*.sh" -exec chmod +x {} \;
+
 
 RUN /builder/virtualenv.sh
 
