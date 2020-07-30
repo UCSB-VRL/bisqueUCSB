@@ -170,10 +170,13 @@ class AuthenticationServer(ServiceController):
     #    log.debug ("login_handler %s" % kw)
     #    return self.login(**kw)
 
-#    @expose ()
-#    def openid_login_handler(self, **kw):
-#        log.debug ("openid_login_handler %s" % kw)
-#        #return self.login(**kw)
+    @expose()
+    def openid_login_handler(self, **kw):
+        log.error("openid_login_handler %s" % kw)
+        redirect(update_url("https://kc.cyverse.org/", dict(redirect_uri="https://flour.ece.ucsb.edu/")))
+       # log.debug ("openid_login_handler %s" % kw)
+       # return self.login(**kw)
+
 
 
     @expose()
