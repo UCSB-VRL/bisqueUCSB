@@ -176,18 +176,18 @@ bisque.login.session_length=60480
 bisque.login.password=hashed
 # list of login providers
 # NOTE: you must also edit config/who.ini to enable these openid, ldap etc
-bisque.login.providers =  local
-#bisque.login.providers =  iplant, local
+#bisque.login.providers =  local
+bisque.login.providers =  iplant, google, local
 
 #bisque.login.iplant.text = iPlant Login
 #bisque.login.iplant.url = /auth_service/cas_login_handler
 #bisque.login.iplant.icon = /core/images/signin/signin_iplant.png
 #bisque.login.iplant.type = cas
 
-#bisque.login.google.text = Google Login
-#bisque.login.google.url = /auth_service/openid_login_handler?openid_provider=https://www.google.com/accounts/o9/id
-#bisque.login.google.icon = /core/images/signin/signin_google.png
-#bisque.login.google.type = openid
+bisque.login.google.text = Google Login
+bisque.login.google.url = /auth_service/openid_login_handler?openid_provider=https://kc.cyverse.org/
+bisque.login.google.icon = /core/images/signin/signin_google.png
+bisque.login.google.type = openid
 
 #bisque.login.yahoo.text = Yahoo Login
 #bisque.login.yahoo.url = /auth_service/openid_login_handler?openid_provider=https://www.yahoo.com/
