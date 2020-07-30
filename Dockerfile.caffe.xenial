@@ -114,7 +114,7 @@ RUN locale
 
 # Set workdir early  as may wipe out contents
 WORKDIR /source
-COPY . /source
+COPY source /source
 COPY run-bisque.sh virtualenv.sh /builder/
 COPY start-bisque.sh /builder/start-scripts.d/R50-start-bisque.sh
 COPY builder/ /builder/build-scripts.d/
