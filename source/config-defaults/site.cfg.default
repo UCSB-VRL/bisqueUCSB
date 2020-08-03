@@ -177,7 +177,7 @@ bisque.login.password=hashed
 # list of login providers
 # NOTE: you must also edit config/who.ini to enable these openid, ldap etc
 #bisque.login.providers =  local
-bisque.login.providers =  iplant, google, local
+bisque.login.providers =  google, local
 
 #bisque.login.iplant.text = iPlant Login
 #bisque.login.iplant.url = /auth_service/cas_login_handler
