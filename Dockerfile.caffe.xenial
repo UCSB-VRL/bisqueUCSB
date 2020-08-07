@@ -86,6 +86,7 @@ RUN apt-get update  -qq \
     build-essential \
     vim  \ 
     sudo \
+    curl \
   && apt-get clean \
   && find  /var/lib/apt/lists/ -type f -delete
 
@@ -101,6 +102,11 @@ RUN apt-get update  -qq \
 # ENV PATH="$VENV_PY3/bin:$PATH"
 
 ############ PYTHON 3   ################
+
+COPY requirements.txt .
+RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python get-pip.py
+RUN pip install -i https://biodev.ece.ucsb.edu/py/bisque/xenial/+simple --extra-index-url https://pypi.org/simple -r requirements.txt
+
 
 
 RUN echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen && locale-gen

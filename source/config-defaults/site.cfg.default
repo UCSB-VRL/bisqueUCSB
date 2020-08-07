@@ -185,7 +185,7 @@ bisque.login.providers =  google, local
 #bisque.login.iplant.type = cas
 
 bisque.login.google.text = Google Login
-bisque.login.google.url = /auth_service/openid_login_handler?openid_provider=https://kc.cyverse.org/
+bisque.login.google.url = /auth_service/openid_login_handler?openid_provider=https://kc.cyverse.org/auth/realms/CyVerse/account
 bisque.login.google.icon = /core/images/signin/signin_google.png
 bisque.login.google.type = openid
 

@@ -14,7 +14,6 @@ if [ ! -d ${reports} ]; then
 fi
 
 
-
 echo "In " $(pwd) "BISQUE in" $BQHOME "Reports in" $reports
 cd $BQHOME
 
@@ -24,7 +23,7 @@ if [ "$CMD" = "build" ] ; then
     let returncode=0
     echo "BUILDING"
     if [ ! -d ${VENV} ] ; then
-        virtualenv ${VENV}
+        virtualenv ${VENV} --system-site-packages
     fi
     source ${VENV}/bin/activate
 
@@ -145,6 +144,6 @@ if [ "$CMD" = "" ] ; then
     #    exit $CODE    # Exit with this code on error from pytest or pylint
     exit 0
 fi
-
+#works test
 echo "executing $CMD $@"
 exec "$CMD" $@
