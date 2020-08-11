@@ -99,7 +99,7 @@ RUN apt-get update  -qq \
 COPY requirements.txt .
 RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python get-pip.py
 # RUN pip install -U setuptools==34.4.1
-RUN pip install --extra-index-url https://biodev.ece.ucsb.edu/py/bisque/dev/+simple  -r requirements.txt
+RUN pip install --extra-index-url https://biodev.ece.ucsb.edu/py/bisque/xenial/+simple  -r requirements.txt
 
 
 RUN echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen && locale-gen
@@ -114,17 +114,15 @@ RUN locale
 # Set workdir early  as may wipe out contents
 WORKDIR /source
 COPY source /source
-
-# removed virtualenv install script
-COPY run-bisque.sh /builder/  
+COPY run-bisque.sh /builder/
 COPY start-bisque.sh /builder/start-scripts.d/R50-start-bisque.sh
-
+COPY builder/ /builder/build-scripts.d/
 COPY boot/ /builder/boot-scripts.d/
 
 
 # Change Executable Permissions
-RUN find /builder/ -type f -iname "*.sh" -exec chmod +x {} \;
-RUN find /boot/ -type f -iname "*.sh" -exec chmod +x {} \;
+# RUN find /builder/ -type f -iname "*.sh" -exec chmod +x {} \;
+# RUN find /boot/ -type f -iname "*.sh" -exec chmod +x {} \;
 
 
 # RUN /builder/virtualenv.sh

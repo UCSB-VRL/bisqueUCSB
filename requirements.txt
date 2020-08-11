@@ -18,6 +18,7 @@ Routes==2.0
 SQLAlchemy==1.2.5
 PySqlite==2.8.3
 tempita==0.5.2
+hgtools==8.1
 ToscaWidgets==0.9.12
 TurboGears2==2.1.5
 TurboMail==3.0.3

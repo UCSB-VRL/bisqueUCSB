@@ -102,10 +102,10 @@ bisque.paths.share  = .       # or /usr/share/bisque
 bisque.paths.run    = .       # or /var/run/bisque
 bisque.paths.public = ./public # or /var/run/bisque/public
 bisque.paths.depot = ./external
-bisque.paths.virtualenv = ./bqenv
+# bisque.paths.virtualenv = ./bqenv
 bisque.paths.default = ./config-defaults
-bisque.paths.bin = ./bqenv/bin
-bisque.paths.packages = ./bqenv/lib/python2.7/site-packages
+bisque.paths.bin = ./usr/bin
+bisque.paths.packages = ./usr/local/lib/python2.7/dist-packages
 bisque.paths.jslocation = ./bqcore
 
 #bisque.logger = http://localhost:8888
