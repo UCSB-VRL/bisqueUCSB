@@ -1,4 +1,4 @@
-![](/bqcore/bq/core/public/images/bqlogo_git.png)
+![](source/bqcore/bq/core/public/images/bqlogo_git.png)
 
 ***
 
