@@ -1,0 +1,8 @@
+[template]
+src = "supervisor-bisque.tmpl"
+dest = "/etc/supervisor/conf.d/bisque.conf"
+owner = "root"
+mode = "0644"
+keys = [
+  "/bisque/user",
+]
