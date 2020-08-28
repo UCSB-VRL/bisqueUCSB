@@ -1,0 +1,23 @@
+// -*- mode: groovy -*-
+node  {
+  def VERSION=params.VERSION
+
+  environment {
+    registry = "amilworks"
+    registryCredential = 'dockerhub-amil'
+  }
+
+  stage ("Build"){
+    def workspace = pwd()
+    def image = docker.build ("biodev.ece.ucsb.edu:5000/bisque05-amil-xenial:${VERSION}", "--build-arg version=${VERSION} -f Dockerfile.stable.caffe.xenial .")
+    stage ("test") {
+        image.inside ("-u root") {
+            sh "/builder/run-bisque.sh bootstrap pylint unit-tests"
+        }
+        warnings canComputeNew: false, canResolveRelativePaths: false, defaultEncoding: '', excludePattern: '', healthy: '', includePattern: '', messagesPattern: '', parserConfigurations: [[parserName: 'PyLint', pattern: 'reports/pylint.log']], unHealthy: ''
+        junit 'reports/pytest-unit.xml'
+
+        image.push()
+    }
+  }
+}
