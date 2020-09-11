@@ -102,10 +102,10 @@ bisque.paths.share  = .       # or /usr/share/bisque
 bisque.paths.run    = .       # or /var/run/bisque
 bisque.paths.public = ./public # or /var/run/bisque/public
 bisque.paths.depot = ./external
-# bisque.paths.virtualenv = ./bqenv
+bisque.paths.virtualenv = ./bqenv
 bisque.paths.default = ./config-defaults
-bisque.paths.bin = ./usr/bin
-bisque.paths.packages = ./usr/local/lib/python2.7/dist-packages
+bisque.paths.bin = ./bqenv/bin
+bisque.paths.packages = ./bqenv/lib/python2.7/site-packages
 bisque.paths.jslocation = ./bqcore
 
 #bisque.logger = http://localhost:8888
@@ -123,9 +123,9 @@ bisque.stores.local.mounturl = file://$datadir/imagedir/$user/
 bisque.stores.local.top = file://$datadir/imagedir/
 
 # Example irods store
-bisque.stores.irods1.mounturl=irods://data.cyverse.org/iplant/home/$user/bisque_data/uploads/$date/$filebase.$filehash$fileext
-bisque.stores.irods1.credentials=amilkhan:password
-bisque.stores.irods1.readonly = true
+#bisque.stores.irods1.mounturl=irods://data.iplantcollaborative.org/iplant/home/$user/bisque_data/uploads/$date/$filebase.$filehash$fileext
+#bisque.stores.irods1.credentials=bisque:<password>
+#bisque.stores.irods1.readonly = true
 # example S3
 #bisque.stores.s3.path=s3://$user/
 #bisque.stores.s3.credentials = <access_key>:<secret_key>
@@ -176,18 +176,18 @@ bisque.login.session_length=60480
 bisque.login.password=hashed
 # list of login providers
 # NOTE: you must also edit config/who.ini to enable these openid, ldap etc
-#bisque.login.providers =  local
-bisque.login.providers =  google, local
+bisque.login.providers =  local
+#bisque.login.providers =  iplant, local
 
 #bisque.login.iplant.text = iPlant Login
 #bisque.login.iplant.url = /auth_service/cas_login_handler
 #bisque.login.iplant.icon = /core/images/signin/signin_iplant.png
 #bisque.login.iplant.type = cas
 
-bisque.login.google.text = Google Login
-bisque.login.google.url = /auth_service/openid_login_handler?openid_provider=https://kc.cyverse.org/
-bisque.login.google.icon = /core/images/signin/signin_google.png
-bisque.login.google.type = openid
+#bisque.login.google.text = Google Login
+#bisque.login.google.url = /auth_service/openid_login_handler?openid_provider=https://www.google.com/accounts/o9/id
+#bisque.login.google.icon = /core/images/signin/signin_google.png
+#bisque.login.google.type = openid
 
 #bisque.login.yahoo.text = Yahoo Login
 #bisque.login.yahoo.url = /auth_service/openid_login_handler?openid_provider=https://www.yahoo.com/

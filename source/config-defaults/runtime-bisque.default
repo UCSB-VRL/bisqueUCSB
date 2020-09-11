@@ -10,7 +10,7 @@ runtime.matlab_home =
 runtime.matlab_launcher = config-defaults/templates/matlab_launcher_SYS.tmpl
 
 [docker]
-docker.enabled = True
+docker.enabled = false
 # A  hub where to push containers to
 docker.hub =
 docker.hub.user =

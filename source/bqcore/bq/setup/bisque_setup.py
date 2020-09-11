@@ -172,7 +172,7 @@ DIRS= dict (
     # These are by set by install
     share  =None,
     run    =None,
-    # virtualenv=None,
+    virtualenv=None,
     # These are derived from those above
     bin    = None,
     config = None,
@@ -2038,7 +2038,7 @@ def setup_uwsgi(params, server_params):
         # put other vars backinto bisque area
         svars.update ( unparse_nested(sv) )
 
-        # uwsgi_vars ['virtualenv'] = DIRS['virtualenv']
+        uwsgi_vars ['virtualenv'] = DIRS['virtualenv']
         uwsgi_vars ['procname-prefix'] = "bisque_%s_" % server
         update_site_cfg(cfg=cfg, bisque_vars=svars)
         update_site_cfg(cfg=cfg, section='uwsgi',bisque_vars = uwsgi_vars )
@@ -3033,14 +3033,14 @@ def update_globals (options, args):
     python_version = sys.version_info[:2]
 
     DIRS['config'] = options.config
-    # DIRS['virtualenv'] = find_virtualenv()
+    DIRS['virtualenv'] = find_virtualenv()
     DIRS['default'] = find_path ('config-defaults', ['.', '/etc/bisque', '/usr/share/bisque'])
-    # if os.name == "nt":
-    #     DIRS['bin'] = os.path.join('Scripts') # windows local
-    #     DIRS['packages'] =  os.path.join( 'Lib', 'dist-packages')
-    # else:
-    DIRS['bin'] = '/usr/local/bin' # Our local bin
-    DIRS['packages'] =  '/usr/local/lib/python2.7/dist-packages'
+    if os.name == "nt":
+        DIRS['bin'] = os.path.join(DIRS['virtualenv'], 'Scripts') # windows local
+        DIRS['packages'] =  os.path.join(DIRS['virtualenv'], 'Lib', 'site-packages')
+    else:
+        DIRS['bin'] = os.path.join(DIRS['virtualenv'], 'bin') # Our local bin
+        DIRS['packages'] = os.path.join(DIRS['virtualenv'], 'lib','python%s.%s'%python_version,'site-packages')
 
     # Figure out installation type
     #
@@ -3064,7 +3064,7 @@ def update_globals (options, args):
         DIRS['share']  = '.'  # Our top installation path
         DIRS['run']    = DIRS['share'] #'.'
         DIRS['config'] = DIRS['config'] or os.path.join(DIRS['share'], "config")
-        DIRS['jslocation'] = DIRS['packages']
+        DIRS['jslocation'] = "bqcore"
 
     DIRS['data']   = os.path.join(DIRS['run'], 'data')
     DIRS['depot']  = os.path.join(DIRS['run'], "external") # Local directory for externals
