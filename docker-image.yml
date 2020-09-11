@@ -1,0 +1,20 @@
+name: BisQue Module Development Docker Image CI
+
+on:
+  push:
+    branches: [ module-development ]
+
+jobs:
+
+  build:
+
+    runs-on: self-hosted
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile.caffe.xenial --tag amilworks/bisque-module-dev:git
+    - name: Run the Container
+      run: docker run -itp 8080:8080 amilworks/bisque-module-dev:git
+    - name: Push the Container
+      run: docker push amilworks/bisque-module-dev:git
