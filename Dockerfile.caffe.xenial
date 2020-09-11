@@ -137,6 +137,7 @@ RUN /builder/run-bisque.sh build
 #    && rm dumb-init*.deb
 #ENTRYPOINT [ "/usr/bin/dumb-init", "/root/run-bisque.sh" ]
 
+# Python 3
 # RUN . /opt/bqpy3/bin/activate && pip install -r requirements3.txt && deactivate
 
 #USER $BISQUE_USER
