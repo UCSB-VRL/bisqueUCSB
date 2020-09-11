@@ -7,7 +7,7 @@ export  PIP_INDEX_URL=$INDEX
 reports=$(pwd)/reports/
 BUILD=/builder/
 BQHOME=${BQHOME:=/source/}
-#VENV=${VENV:=/usr/lib/bisque}
+VENV=${VENV:=/usr/lib/bisque}
 
 if [ ! -d ${reports} ]; then
     mkdir -p ${reports}
@@ -23,10 +23,10 @@ cd $BQHOME
 if [ "$CMD" = "build" ] ; then
     let returncode=0
     echo "BUILDING"
-#    if [ ! -d ${VENV} ] ; then
-#        virtualenv ${VENV}
-#    fi
-#    source ${VENV}/bin/activate
+    if [ ! -d ${VENV} ] ; then
+        virtualenv ${VENV}
+    fi
+    source ${VENV}/bin/activate
 
     ls -l ${BUILD}/build-scripts.d
     for f in ${BUILD}/build-scripts.d/*.sh; do
@@ -44,7 +44,7 @@ if [ "$CMD" = "build" ] ; then
     exit $returncode
 fi
 
-#source ${VENV}/bin/activate
+source ${VENV}/bin/activate
 
 if [ "$CMD" = "bootstrap" ] ; then
     echo "BOOTSTRAPPING"

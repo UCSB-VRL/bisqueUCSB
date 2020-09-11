@@ -137,6 +137,7 @@ RUN /builder/run-bisque.sh build
 #    && rm dumb-init*.deb
 #ENTRYPOINT [ "/usr/bin/dumb-init", "/root/run-bisque.sh" ]
 
+# Remove Python 3 CMD
 
 #USER $BISQUE_USER
 ENTRYPOINT [ "/builder/run-bisque.sh"]
