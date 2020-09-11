@@ -15,6 +15,6 @@ jobs:
     - name: Build the Docker image
       run: docker build . --file Dockerfile.caffe.xenial --tag amilworks/bisque-module-dev:git
     - name: Run the Container
-      run: docker run -dp 8080:8080 amilworks/bisque-module-dev:git
+      run: docker run -idp 8080:8080 -p 27000:27000 -v /var/run/docker.sock:/var/run/docker.sock --ipc=host --net=host amilworks/bisque-module-dev:git
     - name: Push the Container
       run: docker push amilworks/bisque-module-dev:git
