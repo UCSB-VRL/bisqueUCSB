@@ -9,7 +9,7 @@ This developer branch has (hopefully) everything you need to develop BisQue on y
 __Step 1. Clone Developer Repository__
 
 ```
-git clone -b v0.7-Broccoli-beta --single-branch https://github.com/UCSB-VRL/bisqueUCSB.git
+git clone -b module-development --single-branch https://github.com/UCSB-VRL/bisqueUCSB.git
 ```
 
 __Step 2. Start Developing!__
