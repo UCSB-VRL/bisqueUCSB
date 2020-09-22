@@ -4,7 +4,7 @@ from lxml import etree
 import optparse
 import logging
 
-# import from source
+# It is importing from source
 from source import *
 
 logging.basicConfig(filename='PythonScript.log', filemode='a', level=logging.DEBUG) 
