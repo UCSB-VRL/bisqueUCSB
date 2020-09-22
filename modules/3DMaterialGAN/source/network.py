@@ -55,7 +55,7 @@ class EqualLinear(nn.Module):
        return self.linear(input)
 
 
-
+# Constant Input
 class ConstantInput(nn.Module):
     def __init__(self, channel, size=4):
        super().__init__()
