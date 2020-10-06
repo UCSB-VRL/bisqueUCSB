@@ -24,10 +24,11 @@ RUN pip install -i https://biodev.ece.ucsb.edu/py/bisque/prod/+simple bisque-api
 RUN pip install requests==2.10.0
 
 WORKDIR /module
-#COPY PythonScriptWrapper /module/
+COPY PythonScriptWrapper /module/
 COPY PythonScriptWrapper.py /module/
 COPY source  /module/
 #COPY pydist /module/pydist/
+RUN cd source && python setup.py install && cd ..
 ENV PATH /module:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 CMD [ 'PythonScriptWrapper' ]
