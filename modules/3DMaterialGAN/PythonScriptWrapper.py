@@ -88,77 +88,77 @@ class PythonScriptWrapper(object):
 
 
 
-def main(self):
-    parser = optparse.OptionParser()
-    parser.add_option('--mex_url'         , dest="mexURL")
-    parser.add_option('--module_dir'      , dest="modulePath")
-    parser.add_option('--staging_path'    , dest="stagingPath")
-    parser.add_option('--bisque_token'    , dest="token")
-    parser.add_option('--user'            , dest="user")
-    parser.add_option('--pwd'             , dest="pwd")
-    parser.add_option('--root'            , dest="root")
+    def main(self):
+        parser = optparse.OptionParser()
+        parser.add_option('--mex_url'         , dest="mexURL")
+        parser.add_option('--module_dir'      , dest="modulePath")
+        parser.add_option('--staging_path'    , dest="stagingPath")
+        parser.add_option('--bisque_token'    , dest="token")
+        parser.add_option('--user'            , dest="user")
+        parser.add_option('--pwd'             , dest="pwd")
+        parser.add_option('--root'            , dest="root")
+            
+        (options, args) = parser.parse_args()
+
+        fh = logging.FileHandler('scriptrun.log', mode='a')
+        fh.setLevel(logging.DEBUG)
+        formatter = logging.Formatter('[%(asctime)s] %(levelname)8s --- %(message)s ' +
+                                  '(%(filename)s:%(lineno)s)',datefmt='%Y-%m-%d %H:%M:%S')
+        fh.setFormatter(formatter)
+        log.addHandler(fh)
+
+        try: #pull out the mex
+
+            if not options.mexURL:
+                options.mexURL = sys.argv[-2]
+            if not options.token:
+                options.token = sys.argv[-1]
+
+        except IndexError: #no argv were set
+            pass
+
+        if not options.stagingPath:
+            options.stagingPath = ''
+
+        log.info('\n\nPARAMS : %s \n\n Options: %s' % (args, options))
+        self.options = options
+
+        if self.validate_input():
+
+            #initalizes if user and password are provided
+            if (self.options.user and self.options.pwd and self.options.root):
+                self.bqSession = BQSession().init_local( self.options.user, self.options.pwd, bisque_root=self.options.root)
+                self.options.mexURL = self.bqSession.mex.uri
+
+            #initalizes if mex and mex token is provided
+            elif (self.options.mexURL and self.options.token):
+                self.bqSession = BQSession().init_mex(self.options.mexURL, self.options.token)
+
+            else:
+                raise ScriptError('Insufficient options or arguments to start this module')
+
+            try:
+                self.setup()
+            except Exception as e:
+                log.exception("Exception during setup")
+                self.bqSession.fail_mex(msg = "Exception during setup: %s" %  str(e))
+                return
+
+            try:
+                self.run()
+            except (Exception, ScriptError) as e:
+                log.exception("Exception during run")
+                self.bqSession.fail_mex(msg = "Exception during run: %s" % str(e))
+                return
+
+            try:
+                self.teardown()
+            except (Exception, ScriptError) as e:
+                log.exception("Exception during teardown")
+                self.bqSession.fail_mex(msg = "Exception during teardown: %s" %  str(e))
+                return
         
-    (options, args) = parser.parse_args()
-
-    fh = logging.FileHandler('scriptrun.log', mode='a')
-    fh.setLevel(logging.DEBUG)
-    formatter = logging.Formatter('[%(asctime)s] %(levelname)8s --- %(message)s ' +
-                              '(%(filename)s:%(lineno)s)',datefmt='%Y-%m-%d %H:%M:%S')
-    fh.setFormatter(formatter)
-    log.addHandler(fh)
-
-    try: #pull out the mex
-
-        if not options.mexURL:
-            options.mexURL = sys.argv[-2]
-        if not options.token:
-            options.token = sys.argv[-1]
-
-    except IndexError: #no argv were set
-        pass
-
-    if not options.stagingPath:
-        options.stagingPath = ''
-
-    log.info('\n\nPARAMS : %s \n\n Options: %s' % (args, options))
-    self.options = options
-
-    if self.validate_input():
-
-        #initalizes if user and password are provided
-        if (self.options.user and self.options.pwd and self.options.root):
-            self.bqSession = BQSession().init_local( self.options.user, self.options.pwd, bisque_root=self.options.root)
-            self.options.mexURL = self.bqSession.mex.uri
-
-        #initalizes if mex and mex token is provided
-        elif (self.options.mexURL and self.options.token):
-            self.bqSession = BQSession().init_mex(self.options.mexURL, self.options.token)
-
-        else:
-            raise ScriptError('Insufficient options or arguments to start this module')
-
-        try:
-            self.setup()
-        except Exception as e:
-            log.exception("Exception during setup")
-            self.bqSession.fail_mex(msg = "Exception during setup: %s" %  str(e))
-            return
-
-        try:
-            self.run()
-        except (Exception, ScriptError) as e:
-            log.exception("Exception during run")
-            self.bqSession.fail_mex(msg = "Exception during run: %s" % str(e))
-            return
-
-        try:
-            self.teardown()
-        except (Exception, ScriptError) as e:
-            log.exception("Exception during teardown")
-            self.bqSession.fail_mex(msg = "Exception during teardown: %s" %  str(e))
-            return
-    
-        self.bqSession.close()
+            self.bqSession.close()
 
 if __name__=="__main__":
     PythonScriptWrapper().main()
