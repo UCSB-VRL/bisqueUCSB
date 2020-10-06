@@ -13,14 +13,43 @@ log = logging.getLogger('bq.modules')
 from bqapi.comm import BQCommError
 from bqapi.comm import BQSession
 
+class ScriptError(Exception):
+    def __init__(self, message):
+        self.message = "Script error: %s" % message
+    def __str__(self):
+        return self.message
+
 class PythonScriptWrapper(object):
+    
+    def preprocess(self, bq):
+        log.info('Options: %s' % (self.options))
+        """
+        1. Get the resource image
+        """
+        image = bq.load(self.options.resource_url)
+        dt = self.getstrtime()
+        self.img_name = dt+'-'+image.name
+        self.in_file = os.path.join(self.options.stagingPath, IMAGE_PATH, self.img_name)
+        log.info("process image as %s" % (self.in_file))
+        log.info("image meta: %s" % (image))
+        ip = image.pixels() #.format('jpg')
+        with open(self.in_file, 'wb') as f:
+            f.write(ip.fetch())
+        return
+    
     def run(self):
         """
         Run Python script
 
         """
         bq = self.bqSession
-
+        try:
+            bq.update_mex('Pre-process the images')
+            self.preprocess(bq)
+        except (Exception, ScriptError) as e:
+            log.exception("Exception during preprocess")
+            bq.fail_mex(msg = "Exception during pre-process: %s" % str(e))
+            return
         #call script
         outputs = test(bq, log, **self.options.__dict__)
 
@@ -84,7 +113,10 @@ class PythonScriptWrapper(object):
         """
         if (self.options.mexURL and self.options.token): #run module through engine service
             return True
-
+        if (self.options.user and self.options.pwd and self.options.root): #run module locally (note: to test module)
+            return True
+        log.debug('Insufficient options or arguments to start this module')
+        return False
 
 
 
@@ -120,7 +152,7 @@ class PythonScriptWrapper(object):
         if not options.stagingPath:
             options.stagingPath = ''
 
-        log.info('\n\nPARAMS : %s \n\n Options: %s' % (args, options))
+        log.debug('\n\nPARAMS : %s \n\n Options: %s' % (args, options))
         self.options = options
 
         if self.validate_input():
@@ -159,6 +191,7 @@ class PythonScriptWrapper(object):
                 return
         
             self.bqSession.close()
+        log.debug('Session Close')
 
 if __name__=="__main__":
     PythonScriptWrapper().main()
