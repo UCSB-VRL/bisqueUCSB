@@ -3,11 +3,11 @@
 
     <!-- Comments are OK -->
     <tag name="inputs">
-        <tag name="image_url" type="resource">
+        <tag name="resource_url" type="resource">
             <template>
-                <tag name="accepted_type" value="tar file" />
+                <tag name="accepted_type" value="tarfile" />
                 <tag name="label" value="Saved Weights" />
-                <tag name="prohibit_upload" value="true" type="boolean" />
+                <tag name="fail_message" value="Requires .tar file"  />
             </template>
         </tag>
 
@@ -37,6 +37,11 @@
        <tag name="group" value="Examples" />
     </tag>
 
+    <tag name="interface">
+        <tag name="javascript" type="file" value="webapp.js" />
+        <tag name="css" type="file" value="webapp.css" />
+    </tag>
+    
     <tag name="help" type="file" value="public/help.html" />
     <tag name="thumbnail" type="file" value="public/thumbnail.png" />
 
