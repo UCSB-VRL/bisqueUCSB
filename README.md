@@ -12,7 +12,7 @@ This developer branch has (hopefully) everything you need to develop BisQue on y
 __Step 1. Clone Developer Repository__
 
 ```
-git clone -b module-development --single-branch https://github.com/UCSB-VRL/bisqueUCSB.git
+git clone -b tg-upgrade --single-branch https://github.com/UCSB-VRL/bisqueUCSB.git
 ```
 
 __Step 2. Start Developing!__
