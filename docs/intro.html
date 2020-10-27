@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>1 BisQue Cloud Service | Getting Started with BisQue</title>
   <meta name="description" content="BisQue (Bio-Image Semantic Query User Environment) : Store, visualize,organize and analyze images in the cloud." />
-  <meta name="generator" content="bookdown 0.17 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.21 and GitBook 2.6.7" />
 
   <meta property="og:title" content="1 BisQue Cloud Service | Getting Started with BisQue" />
   <meta property="og:type" content="book" />
@@ -31,7 +31,7 @@
   
 <link rel="prev" href="docker-installation.html"/>
 <link rel="next" href="how-to-login-or-create-a-new-user.html"/>
-<script src="libs/header-attrs-2.1/header-attrs.js"></script>
+<script src="libs/header-attrs-2.5/header-attrs.js"></script>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -49,6 +49,8 @@
 
 
 
+<link href="libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0/anchor-sections.js"></script>
 
 
 <style type="text/css">
@@ -131,7 +133,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="#index">Official UCSB BisQue Documentation</a></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Cloud Service | Module Development | Python API</a>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>BisQue Service | Python API</a>
 <ul>
 <li class="chapter" data-level="" data-path="docker-installation.html"><a href="docker-installation.html"><i class="fa fa-check"></i>Docker Installation</a>
 <ul>
@@ -176,7 +178,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="plant-cell-segmentation.html#output"><strong><code>Output</code></strong></a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="2" data-path="module-development.html"><a href="module-development.html"><i class="fa fa-check"></i><b>2</b> Module Development</a>
+<li class="chapter" data-level="2" data-path="module-development.html"><a href="module-development.html"><i class="fa fa-check"></i><b>2</b> MODULE DEVELOPMENT</a>
 <ul>
 <li><a href="module-development.html#how-to-begin-building-modules"><strong>How to Begin Building Modules</strong></a></li>
 <li class="chapter" data-level="2.1" data-path="dockerfile.html"><a href="dockerfile.html"><i class="fa fa-check"></i><b>2.1</b> Dockerfile</a>
@@ -203,6 +205,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="runtime-module-configuration.html#example.-composite-strength-module-1"><em>Example.</em> Composite Strength Module</a></li>
 </ul></li>
 <li class="chapter" data-level="2.6" data-path="python-setup.html"><a href="python-setup.html"><i class="fa fa-check"></i><b>2.6</b> Python Setup</a></li>
+<li><a href="how-to-run-modules-locally.html#how-to-run-modules-locally"><strong>How to Run Modules Locally</strong></a>
+<ul>
+<li><a href="how-to-run-modules-locally.html#step-1.-pull-the-latest-dev-container"><strong>Step 1.</strong> Pull the Latest Dev Container</a></li>
+<li><a href="how-to-run-modules-locally.html#step-2.-run-the-dev-container"><strong>Step 2.</strong> Run the Dev Container</a></li>
+<li><a href="how-to-run-modules-locally.html#step-3.-register-modules"><strong>Step 3.</strong> Register Modules</a></li>
+<li><a href="how-to-run-modules-locally.html#step-4.-run-the-module"><strong>Step 4.</strong> Run the Module</a></li>
+</ul></li>
 </ul></li>
 <li class="chapter" data-level="3" data-path="bqapi.html"><a href="bqapi.html"><i class="fa fa-check"></i><b>3</b> BQAPI</a>
 <ul>
@@ -239,7 +248,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p class="caption"><strong>Homepage of BisQue. </strong> The landing page of BisQue enables users to interact with sample datasets and view the current analysis modules implemented today.</p>
 </div>
 <p><a href="https://bisque.ece.ucsb.edu">BisQue</a> is a web-based platform specifically designed to provide researchers with organizational and quantitative analysis tools for 5D image data. Users can extend Bisque with both data model and analysis extensions in order to adapt the system to local needs. Bisque’s extensibility stems from two core concepts: flexible metadata facility and an open web-based architecture. Together these empower researchers to create, develop and share novel bioimage analyses.</p>
-<p>Bisque is implemented as a scalable and modular web-service architecture. Image Servers store and manipulate images. Data servers provide flexible metadata storage. Execution servers house executable modules. The client-server architecture seamlessly integrates services across storage and processing hardware. Communication between various components is performed in a RESTful manner through HTTP requests carrying XML and JSON. Web clients use dynamic web components built with AJAX. Backends seamlessly provide access to local resources as well as large scalable resources like Amazon S3 or iRODS for data storage or Condor grids for computation.</p> 
+<p>Bisque is implemented as a scalable and modular web-service architecture. Image Servers store and manipulate images. Data servers provide flexible metadata storage. Execution servers house executable modules. The client-server architecture seamlessly integrates services across storage and processing hardware. Communication between various components is performed in a RESTful manner through HTTP requests carrying XML and JSON. Web clients use dynamic web components built with AJAX. Backends seamlessly provide access to local resources as well as large scalable resources like Amazon S3 or iRODS for data storage or Condor grids for computation.</p>
 </div>
             </section>
 
@@ -264,9 +273,9 @@ gitbook.require(["gitbook"], function(gitbook) {
 gitbook.start({
 "sharing": {
 "github": true,
-"facebook": false,
+"facebook": true,
 "twitter": true,
-"linkedin": false,
+"linkedin": true,
 "weibo": false,
 "instapaper": true,
 "vk": false,

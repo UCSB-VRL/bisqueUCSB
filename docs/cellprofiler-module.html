@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>1.6 CellProfiler Module | Getting Started with BisQue</title>
   <meta name="description" content="BisQue (Bio-Image Semantic Query User Environment) : Store, visualize,organize and analyze images in the cloud." />
-  <meta name="generator" content="bookdown 0.17 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.21 and GitBook 2.6.7" />
 
   <meta property="og:title" content="1.6 CellProfiler Module | Getting Started with BisQue" />
   <meta property="og:type" content="book" />
@@ -31,7 +31,7 @@
   
 <link rel="prev" href="imagej-module.html"/>
 <link rel="next" href="plant-cell-segmentation.html"/>
-<script src="libs/header-attrs-2.1/header-attrs.js"></script>
+<script src="libs/header-attrs-2.5/header-attrs.js"></script>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -49,6 +49,8 @@
 
 
 
+<link href="libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0/anchor-sections.js"></script>
 
 
 <style type="text/css">
@@ -131,7 +133,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="#index">Official UCSB BisQue Documentation</a></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Cloud Service | Module Development | Python API</a>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>BisQue Service | Python API</a>
 <ul>
 <li class="chapter" data-level="" data-path="docker-installation.html"><a href="docker-installation.html"><i class="fa fa-check"></i>Docker Installation</a>
 <ul>
@@ -176,7 +178,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="plant-cell-segmentation.html#output"><strong><code>Output</code></strong></a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="2" data-path="module-development.html"><a href="module-development.html"><i class="fa fa-check"></i><b>2</b> Module Development</a>
+<li class="chapter" data-level="2" data-path="module-development.html"><a href="module-development.html"><i class="fa fa-check"></i><b>2</b> MODULE DEVELOPMENT</a>
 <ul>
 <li><a href="module-development.html#how-to-begin-building-modules"><strong>How to Begin Building Modules</strong></a></li>
 <li class="chapter" data-level="2.1" data-path="dockerfile.html"><a href="dockerfile.html"><i class="fa fa-check"></i><b>2.1</b> Dockerfile</a>
@@ -203,6 +205,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="runtime-module-configuration.html#example.-composite-strength-module-1"><em>Example.</em> Composite Strength Module</a></li>
 </ul></li>
 <li class="chapter" data-level="2.6" data-path="python-setup.html"><a href="python-setup.html"><i class="fa fa-check"></i><b>2.6</b> Python Setup</a></li>
+<li><a href="how-to-run-modules-locally.html#how-to-run-modules-locally"><strong>How to Run Modules Locally</strong></a>
+<ul>
+<li><a href="how-to-run-modules-locally.html#step-1.-pull-the-latest-dev-container"><strong>Step 1.</strong> Pull the Latest Dev Container</a></li>
+<li><a href="how-to-run-modules-locally.html#step-2.-run-the-dev-container"><strong>Step 2.</strong> Run the Dev Container</a></li>
+<li><a href="how-to-run-modules-locally.html#step-3.-register-modules"><strong>Step 3.</strong> Register Modules</a></li>
+<li><a href="how-to-run-modules-locally.html#step-4.-run-the-module"><strong>Step 4.</strong> Run the Module</a></li>
+</ul></li>
 </ul></li>
 <li class="chapter" data-level="3" data-path="bqapi.html"><a href="bqapi.html"><i class="fa fa-check"></i><b>3</b> BQAPI</a>
 <ul>
@@ -234,12 +243,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
             <section class="normal" id="section-">
 <div id="cellprofiler-module" class="section level2" number="1.6">
 <h2><span class="header-section-number">1.6</span> CellProfiler Module</h2>
-<div id="overview-2" class="section level3 unnumbered" number="">
+<div id="overview-2" class="section level3 unnumbered">
 <h3>Overview</h3>
 <p>The CellProfiler module allows to execute arbitrary CellProfiler pipelines on single images or datasets of images. Pipeline parameters can be changed and parameter value lists can be provided to experiment with parameter variations. The results are stored back in BisQue as Gobjects, tables, or images.</p>
 <hr />
 </div>
-<div id="uploading-of-cellprofiler-pipelines" class="section level3 unnumbered" number="">
+<div id="uploading-of-cellprofiler-pipelines" class="section level3 unnumbered">
 <h3>Uploading of CellProfiler Pipelines</h3>
 <p>Most CellProfiler pipelines can be uploaded and used directly without modifications. In order to upload a pipeline, click <strong>Upload</strong>, select the pipeline file, and click <strong>Upload</strong>. If the file extension is <code>.cp</code> or <code>.cppipe</code>, the file will automatically be recognized as a CellProfiler pipeline. In order to verify the pipeline, it can be opened by browsing the <code>cellprofiler_pipeline</code> resources and opening the recently uploaded pipeline. It will look like this:</p>
 <div class="figure">
@@ -249,7 +258,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Each box represents one CellProfiler module and the arrows indicate the pipeline flow through the modules. Note that some boxes have different colors. For example, the first box (<code>BisQueLoadImages</code>) is shown in blue to indicate that the original module(s) from the pipeline have been replaced with a BisQue specific component that allows to read images directly from BisQue. These pipeline conversions happen automatically when the pipeline is uploaded into BisQue. The next three steps in the pipeline are shown in transparent color to indicate that they were inactivated. Certain operations (such as <strong>Crop</strong> in this example) are not currently compatible with BisQue and are ignored without affecting the rest of the pipeline. Green boxes indicate regular CellProfiler modules that were kept unchanged. Red boxes indicate incompatible operations that could not be modified and will render the pipeline non-executable. The pipeline can be modified to replace the operations in red with other steps and the pipeline re-uploaded to fix this problem.</p>
 <hr />
 </div>
-<div id="running-a-cellprofiler-pipeline" class="section level3 unnumbered" number="">
+<div id="running-a-cellprofiler-pipeline" class="section level3 unnumbered">
 <h3>Running a CellProfiler Pipeline</h3>
 <p>In order to demonstrate how to run a CellProfiler pipeline, open the <code>ExampleFly.cppipe</code> pipeline that can be found in the public <strong>Fly</strong> dataset inside the <strong>CellProfiler Examples</strong> dataset (please ensure to check <strong>Show public data</strong> in the options menu on the top right; otherwise, you will not see these resources):</p>
 <div class="figure">
@@ -270,7 +279,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Finally, click the <strong>Run</strong> button to start the pipeline execution.</p>
 <hr />
 </div>
-<div id="results" class="section level3 unnumbered" number="">
+<div id="results" class="section level3 unnumbered">
 <h3>Results</h3>
 <p>Once the execution finishes, the pipeline outputs are shown in section 4:</p>
 <div class="figure">
@@ -309,9 +318,9 @@ gitbook.require(["gitbook"], function(gitbook) {
 gitbook.start({
 "sharing": {
 "github": true,
-"facebook": false,
+"facebook": true,
 "twitter": true,
-"linkedin": false,
+"linkedin": true,
 "weibo": false,
 "instapaper": true,
 "vk": false,

@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Download an Array | Getting Started with BisQue</title>
   <meta name="description" content="BisQue (Bio-Image Semantic Query User Environment) : Store, visualize,organize and analyze images in the cloud." />
-  <meta name="generator" content="bookdown 0.17 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.21 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Download an Array | Getting Started with BisQue" />
   <meta property="og:type" content="book" />
@@ -31,7 +31,7 @@
   
 <link rel="prev" href="bqapi.html"/>
 <link rel="next" href="upload-an-image.html"/>
-<script src="libs/header-attrs-2.1/header-attrs.js"></script>
+<script src="libs/header-attrs-2.5/header-attrs.js"></script>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -49,6 +49,8 @@
 
 
 
+<link href="libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0/anchor-sections.js"></script>
 
 
 <style type="text/css">
@@ -131,7 +133,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="#index">Official UCSB BisQue Documentation</a></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Cloud Service | Module Development | Python API</a>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>BisQue Service | Python API</a>
 <ul>
 <li class="chapter" data-level="" data-path="docker-installation.html"><a href="docker-installation.html"><i class="fa fa-check"></i>Docker Installation</a>
 <ul>
@@ -176,7 +178,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="plant-cell-segmentation.html#output"><strong><code>Output</code></strong></a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="2" data-path="module-development.html"><a href="module-development.html"><i class="fa fa-check"></i><b>2</b> Module Development</a>
+<li class="chapter" data-level="2" data-path="module-development.html"><a href="module-development.html"><i class="fa fa-check"></i><b>2</b> MODULE DEVELOPMENT</a>
 <ul>
 <li><a href="module-development.html#how-to-begin-building-modules"><strong>How to Begin Building Modules</strong></a></li>
 <li class="chapter" data-level="2.1" data-path="dockerfile.html"><a href="dockerfile.html"><i class="fa fa-check"></i><b>2.1</b> Dockerfile</a>
@@ -203,6 +205,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="runtime-module-configuration.html#example.-composite-strength-module-1"><em>Example.</em> Composite Strength Module</a></li>
 </ul></li>
 <li class="chapter" data-level="2.6" data-path="python-setup.html"><a href="python-setup.html"><i class="fa fa-check"></i><b>2.6</b> Python Setup</a></li>
+<li><a href="how-to-run-modules-locally.html#how-to-run-modules-locally"><strong>How to Run Modules Locally</strong></a>
+<ul>
+<li><a href="how-to-run-modules-locally.html#step-1.-pull-the-latest-dev-container"><strong>Step 1.</strong> Pull the Latest Dev Container</a></li>
+<li><a href="how-to-run-modules-locally.html#step-2.-run-the-dev-container"><strong>Step 2.</strong> Run the Dev Container</a></li>
+<li><a href="how-to-run-modules-locally.html#step-3.-register-modules"><strong>Step 3.</strong> Register Modules</a></li>
+<li><a href="how-to-run-modules-locally.html#step-4.-run-the-module"><strong>Step 4.</strong> Run the Module</a></li>
+</ul></li>
 </ul></li>
 <li class="chapter" data-level="3" data-path="bqapi.html"><a href="bqapi.html"><i class="fa fa-check"></i><b>3</b> BQAPI</a>
 <ul>
@@ -232,9 +241,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="download-an-array" class="section level2 unnumbered" number="">
+<div id="download-an-array" class="section level2 unnumbered">
 <h2><strong>Download an Array</strong></h2>
-<div id="access-an-hdf5-table-from-bisque" class="section level3 unnumbered" number="">
+<div id="access-an-hdf5-table-from-bisque" class="section level3 unnumbered">
 <h3>Access an HDF5 Table from BisQue</h3>
 <p>In this example, we will show you how to use the BQAPI to download a multidimensional array from within an HDF file and return it as a <code>numpy</code> array in <code>Python</code>.</p>
 <hr />
@@ -248,35 +257,35 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li>Return the array</li>
 </ol>
 <hr />
-<div id="step-0.-import-dependencies" class="section level4 unnumbered" number="">
+<div id="step-0.-import-dependencies" class="section level4 unnumbered">
 <h4>Step 0. Import Dependencies</h4>
 <p>Before we can even attempt anything cool with the API, we need to import the necessary packages. In this case, we need the following packages:</p>
-<div class="sourceCode" id="cb155"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb155-1"><a href="download-an-array.html#cb155-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb155-2"><a href="download-an-array.html#cb155-2"></a><span class="im">import</span> logging</span>
-<span id="cb155-3"><a href="download-an-array.html#cb155-3"></a></span>
-<span id="cb155-4"><a href="download-an-array.html#cb155-4"></a><span class="im">from</span> bqapi.services <span class="im">import</span> tables</span>
-<span id="cb155-5"><a href="download-an-array.html#cb155-5"></a><span class="im">from</span> bqapi <span class="im">import</span> BQSession</span>
-<span id="cb155-6"><a href="download-an-array.html#cb155-6"></a><span class="im">from</span> bqapi.util <span class="im">import</span> fetch_blob</span>
-<span id="cb155-7"><a href="download-an-array.html#cb155-7"></a><span class="im">from</span> bqapi.comm <span class="im">import</span> BQCommError</span>
-<span id="cb155-8"><a href="download-an-array.html#cb155-8"></a><span class="im">from</span> bqapi.comm <span class="im">import</span> BQSession</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a href="download-an-array.html#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb3-2"><a href="download-an-array.html#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> logging</span>
+<span id="cb3-3"><a href="download-an-array.html#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="download-an-array.html#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> bqapi.services <span class="im">import</span> tables</span>
+<span id="cb3-5"><a href="download-an-array.html#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> bqapi <span class="im">import</span> BQSession</span>
+<span id="cb3-6"><a href="download-an-array.html#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> bqapi.util <span class="im">import</span> fetch_blob</span>
+<span id="cb3-7"><a href="download-an-array.html#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> bqapi.comm <span class="im">import</span> BQCommError</span>
+<span id="cb3-8"><a href="download-an-array.html#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> bqapi.comm <span class="im">import</span> BQSession</span></code></pre></div>
 <p>Place these at the top of your Jupyter notebook or <code>Python</code> script to ensure these run first. If you have not installed the BQAPI via pip, then <a href="bqapi.html#pip-install">install the BQAPI here.</a></p>
 </div>
-<div id="step-1.-get-the-logger" class="section level4 unnumbered" number="">
+<div id="step-1.-get-the-logger" class="section level4 unnumbered">
 <h4>STEP 1. Get the Logger</h4>
 <p>The logger service allows us to debug if anything goes wrong during the process of pulling our array. We use this in the BisQue core development as well, so feel free to gain greater insight into our other logger services as well.</p>
 <p>We will define the <code>get_table</code> logger here.</p>
-<div class="sourceCode" id="cb156"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb156-1"><a href="download-an-array.html#cb156-1"></a>log <span class="op">=</span> logging.getLogger(<span class="st">&#39;get_table&#39;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a href="download-an-array.html#cb4-1" aria-hidden="true" tabindex="-1"></a>log <span class="op">=</span> logging.getLogger(<span class="st">&#39;get_table&#39;</span>)</span></code></pre></div>
 </div>
-<div id="step-2.-instantiate-a-bisque-session" class="section level4 unnumbered" number="">
+<div id="step-2.-instantiate-a-bisque-session" class="section level4 unnumbered">
 <h4>STEP 2. Instantiate a BisQue session</h4>
 <p>This instantiation enables the user to effectively communicate with BisQue. Without this, you will not be able to login and interact with the API.</p>
-<div class="sourceCode" id="cb157"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb157-1"><a href="download-an-array.html#cb157-1"></a>bq <span class="op">=</span> BQSession()</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb5-1"><a href="download-an-array.html#cb5-1" aria-hidden="true" tabindex="-1"></a>bq <span class="op">=</span> BQSession()</span></code></pre></div>
 </div>
-<div id="step-3.-login-using-bisque-credentials" class="section level4 unnumbered" number="">
+<div id="step-3.-login-using-bisque-credentials" class="section level4 unnumbered">
 <h4>STEP 3. Login using BisQue Credentials</h4>
 <p>Here is where we will login into our BisQue account to access the data we have uploaded. We show an alternative chained version (line 2) of the commands here to instantiate the BQSession and login at the same time.</p>
-<div class="sourceCode" id="cb158"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb158-1"><a href="download-an-array.html#cb158-1"></a>bq.init_local(user, pwd, bisque_root<span class="op">=</span>root)</span>
-<span id="cb158-2"><a href="download-an-array.html#cb158-2"></a><span class="co"># bq = BQSession().init_local(user, pwd, bisque_root=root)</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb6-1"><a href="download-an-array.html#cb6-1" aria-hidden="true" tabindex="-1"></a>bq.init_local(user, pwd, bisque_root<span class="op">=</span>root)</span>
+<span id="cb6-2"><a href="download-an-array.html#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co"># bq = BQSession().init_local(user, pwd, bisque_root=root)</span></span></code></pre></div>
 <p><strong>Inputs</strong></p>
 <p>If you do not have an account on BisQue, <a href="https://bisque.ece.ucsb.edu/registration//new">make an account here</a>.</p>
 <ul>
@@ -285,18 +294,18 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><code>bisque_root</code> “<a href="https://bisque.ece.ucsb.edu" class="uri">https://bisque.ece.ucsb.edu</a>”</li>
 </ul>
 <p><strong>Example.</strong></p>
-<div class="sourceCode" id="cb159"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb159-1"><a href="download-an-array.html#cb159-1"></a>bq.init_local(user<span class="op">=</span>amil_khan, <span class="cf">pass</span><span class="op">=</span>bisque1234,</span>
-<span id="cb159-2"><a href="download-an-array.html#cb159-2"></a>              bisque_root<span class="op">=</span><span class="st">&quot;https://bisque.ece.ucsb.edu&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb7-1"><a href="download-an-array.html#cb7-1" aria-hidden="true" tabindex="-1"></a>bq.init_local(user<span class="op">=</span>amil_khan, <span class="cf">pass</span><span class="op">=</span>bisque1234,</span>
+<span id="cb7-2"><a href="download-an-array.html#cb7-2" aria-hidden="true" tabindex="-1"></a>              bisque_root<span class="op">=</span><span class="st">&quot;https://bisque.ece.ucsb.edu&quot;</span>)</span></code></pre></div>
 </div>
-<div id="step-4.-instantiate-the-table-service" class="section level4 unnumbered" number="">
+<div id="step-4.-instantiate-the-table-service" class="section level4 unnumbered">
 <h4>STEP 4. Instantiate the <code>table</code> service</h4>
 <p>Now we need to instantiate the table service. To do this, use <em>service</em> to call the table service. Simple, right?</p>
-<div class="sourceCode" id="cb160"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb160-1"><a href="download-an-array.html#cb160-1"></a>table_service <span class="op">=</span> bq.service (<span class="st">&#39;table&#39;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb8-1"><a href="download-an-array.html#cb8-1" aria-hidden="true" tabindex="-1"></a>table_service <span class="op">=</span> bq.service (<span class="st">&#39;table&#39;</span>)</span></code></pre></div>
 </div>
-<div id="step-5.-using-the-table-service" class="section level4 unnumbered" number="">
+<div id="step-5.-using-the-table-service" class="section level4 unnumbered">
 <h4>STEP 5. Using the Table Service</h4>
 <p>In this example, we use the <code>load_array</code> function from the table service to return a <code>numpy</code> array from the respective HDF file on BisQue. What is most important is the input to this function, which is as follows:</p>
-<div class="sourceCode" id="cb161"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb161-1"><a href="download-an-array.html#cb161-1"></a>data_array <span class="op">=</span> table_service.load_array(table_uniq, path, slices<span class="op">=</span>[])</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb9-1"><a href="download-an-array.html#cb9-1" aria-hidden="true" tabindex="-1"></a>data_array <span class="op">=</span> table_service.load_array(table_uniq, path, slices<span class="op">=</span>[])</span></code></pre></div>
 <p><strong>Inputs</strong></p>
 <ul>
 <li><code>table_uniq:</code> BisQue URI (<strong>Required</strong>)</li>
@@ -313,32 +322,32 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><strong>What is the <code>path</code></strong></p>
 <p>Say we have an array stored in a specific path in our HDF file. We can define a variable named <code>table_path</code> and place that after the <code>table_uniq</code> argument.</p>
 <p><strong>Example</strong></p>
-<div class="sourceCode" id="cb164"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb164-1"><a href="download-an-array.html#cb164-1"></a>table_path <span class="op">=</span> <span class="st">&#39;PATH/TO/ARRAY/IN/HDF&#39;</span></span>
-<span id="cb164-2"><a href="download-an-array.html#cb164-2"></a>table_service.load_array(uri, table_path)</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb12-1"><a href="download-an-array.html#cb12-1" aria-hidden="true" tabindex="-1"></a>table_path <span class="op">=</span> <span class="st">&#39;PATH/TO/ARRAY/IN/HDF&#39;</span></span>
+<span id="cb12-2"><a href="download-an-array.html#cb12-2" aria-hidden="true" tabindex="-1"></a>table_service.load_array(uri, table_path)</span></code></pre></div>
 </div>
-<div id="example.-functionalizing-the-boring-stuff-get_table" class="section level4 unnumbered" number="">
+<div id="example.-functionalizing-the-boring-stuff-get_table" class="section level4 unnumbered">
 <h4>Example. Functionalizing the Boring Stuff: <code>get_table</code></h4>
 <p>Here we provide a full working example of how to functionalize the entire process. Overall, the structure is the same as the sum of its pieces, but now we can import many arrays into, say, our Jupyter Notebook for simple data processing tasks. You can also extend this example to upload the table back to BisQue once the data preprocessing is done.</p>
-<div class="sourceCode" id="cb165"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb165-1"><a href="download-an-array.html#cb165-1"></a><span class="kw">def</span> get_table(user,pwd, table_PATH, uri<span class="op">=</span><span class="va">None</span>,root<span class="op">=</span><span class="st">&#39;https://bisque.ece.ucsb.edu&#39;</span>):</span>
-<span id="cb165-2"><a href="download-an-array.html#cb165-2"></a>    </span>
-<span id="cb165-3"><a href="download-an-array.html#cb165-3"></a>    log <span class="op">=</span> logging.getLogger(<span class="st">&#39;get_table&#39;</span>)</span>
-<span id="cb165-4"><a href="download-an-array.html#cb165-4"></a>    <span class="bu">print</span>(<span class="st">&quot;Starting Session...&quot;</span>)</span>
-<span id="cb165-5"><a href="download-an-array.html#cb165-5"></a>    </span>
-<span id="cb165-6"><a href="download-an-array.html#cb165-6"></a>    bq <span class="op">=</span> BQSession().init_local(user, pwd, bisque_root<span class="op">=</span>root)</span>
-<span id="cb165-7"><a href="download-an-array.html#cb165-7"></a>    <span class="bu">print</span>(<span class="st">&quot;BQSession Established. Attempting to fetch data...&quot;</span>)</span>
-<span id="cb165-8"><a href="download-an-array.html#cb165-8"></a>    </span>
-<span id="cb165-9"><a href="download-an-array.html#cb165-9"></a>    table_service <span class="op">=</span> bq.service (<span class="st">&#39;table&#39;</span>)</span>
-<span id="cb165-10"><a href="download-an-array.html#cb165-10"></a>    <span class="bu">print</span>(<span class="st">&quot;Successfully Retrieved Array!&quot;</span>)</span>
-<span id="cb165-11"><a href="download-an-array.html#cb165-11"></a>    logging.basicConfig()</span>
-<span id="cb165-12"><a href="download-an-array.html#cb165-12"></a></span>
-<span id="cb165-13"><a href="download-an-array.html#cb165-13"></a>    </span>
-<span id="cb165-14"><a href="download-an-array.html#cb165-14"></a>    <span class="cf">return</span> table_service.load_array(uri, table_PATH)</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb13-1"><a href="download-an-array.html#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_table(user,pwd, table_PATH, uri<span class="op">=</span><span class="va">None</span>,root<span class="op">=</span><span class="st">&#39;https://bisque.ece.ucsb.edu&#39;</span>):</span>
+<span id="cb13-2"><a href="download-an-array.html#cb13-2" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb13-3"><a href="download-an-array.html#cb13-3" aria-hidden="true" tabindex="-1"></a>    log <span class="op">=</span> logging.getLogger(<span class="st">&#39;get_table&#39;</span>)</span>
+<span id="cb13-4"><a href="download-an-array.html#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">&quot;Starting Session...&quot;</span>)</span>
+<span id="cb13-5"><a href="download-an-array.html#cb13-5" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb13-6"><a href="download-an-array.html#cb13-6" aria-hidden="true" tabindex="-1"></a>    bq <span class="op">=</span> BQSession().init_local(user, pwd, bisque_root<span class="op">=</span>root)</span>
+<span id="cb13-7"><a href="download-an-array.html#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">&quot;BQSession Established. Attempting to fetch data...&quot;</span>)</span>
+<span id="cb13-8"><a href="download-an-array.html#cb13-8" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb13-9"><a href="download-an-array.html#cb13-9" aria-hidden="true" tabindex="-1"></a>    table_service <span class="op">=</span> bq.service (<span class="st">&#39;table&#39;</span>)</span>
+<span id="cb13-10"><a href="download-an-array.html#cb13-10" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">&quot;Successfully Retrieved Array!&quot;</span>)</span>
+<span id="cb13-11"><a href="download-an-array.html#cb13-11" aria-hidden="true" tabindex="-1"></a>    logging.basicConfig()</span>
+<span id="cb13-12"><a href="download-an-array.html#cb13-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-13"><a href="download-an-array.html#cb13-13" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb13-14"><a href="download-an-array.html#cb13-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> table_service.load_array(uri, table_PATH)</span></code></pre></div>
 <p><strong>Let’s run our function!</strong></p>
 <p>In this example, we are using the BQAPI to access an HDF file that contains a two-phase 3D microstructure.</p>
-<div class="sourceCode" id="cb166"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb166-1"><a href="download-an-array.html#cb166-1"></a>ms <span class="op">=</span> get_table(amil_khan, bisque1234, </span>
-<span id="cb166-2"><a href="download-an-array.html#cb166-2"></a>              <span class="st">&#39;DataContainers/ImageDataContainer/CellData/Phases&#39;</span>,</span>
-<span id="cb166-3"><a href="download-an-array.html#cb166-3"></a>              <span class="st">&#39;00-orJQLiXgqh8K955C6qzhyC&#39;</span>)</span>
-<span id="cb166-4"><a href="download-an-array.html#cb166-4"></a><span class="bu">print</span>(<span class="st">&#39;</span><span class="ch">\n</span><span class="st">Shape of table: </span><span class="sc">{}</span><span class="st">&#39;</span>.<span class="bu">format</span>(ms.shape))</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb14-1"><a href="download-an-array.html#cb14-1" aria-hidden="true" tabindex="-1"></a>ms <span class="op">=</span> get_table(amil_khan, bisque1234, </span>
+<span id="cb14-2"><a href="download-an-array.html#cb14-2" aria-hidden="true" tabindex="-1"></a>              <span class="st">&#39;DataContainers/ImageDataContainer/CellData/Phases&#39;</span>,</span>
+<span id="cb14-3"><a href="download-an-array.html#cb14-3" aria-hidden="true" tabindex="-1"></a>              <span class="st">&#39;00-orJQLiXgqh8K955C6qzhyC&#39;</span>)</span>
+<span id="cb14-4"><a href="download-an-array.html#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&#39;</span><span class="ch">\n</span><span class="st">Shape of table: </span><span class="sc">{}</span><span class="st">&#39;</span>.<span class="bu">format</span>(ms.shape))</span></code></pre></div>
 <p><strong><code>Output:</code></strong></p>
 <pre><code>Starting Session...
 BQSession Established. Attempting to fetch data...
@@ -371,9 +380,9 @@ gitbook.require(["gitbook"], function(gitbook) {
 gitbook.start({
 "sharing": {
 "github": true,
-"facebook": false,
+"facebook": true,
 "twitter": true,
-"linkedin": false,
+"linkedin": true,
 "weibo": false,
 "instapaper": true,
 "vk": false,
@@ -404,20 +413,6 @@ gitbook.start({
 });
 </script>
 
-<!-- dynamically load mathjax for compatibility with self-contained -->
-<script>
-  (function () {
-    var script = document.createElement("script");
-    script.type = "text/javascript";
-    var src = "true";
-    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
-    if (location.protocol !== "file:")
-      if (/^https?:/.test(src))
-        src = src.replace(/^https?:/, '');
-    script.src = src;
-    document.getElementsByTagName("head")[0].appendChild(script);
-  })();
-</script>
 </body>
 
 </html>

@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>1.5 ImageJ Module | Getting Started with BisQue</title>
   <meta name="description" content="BisQue (Bio-Image Semantic Query User Environment) : Store, visualize,organize and analyze images in the cloud." />
-  <meta name="generator" content="bookdown 0.17 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.21 and GitBook 2.6.7" />
 
   <meta property="og:title" content="1.5 ImageJ Module | Getting Started with BisQue" />
   <meta property="og:type" content="book" />
@@ -31,7 +31,7 @@
   
 <link rel="prev" href="how-to-run-a-module.html"/>
 <link rel="next" href="cellprofiler-module.html"/>
-<script src="libs/header-attrs-2.1/header-attrs.js"></script>
+<script src="libs/header-attrs-2.5/header-attrs.js"></script>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -49,6 +49,8 @@
 
 
 
+<link href="libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0/anchor-sections.js"></script>
 
 
 <style type="text/css">
@@ -131,7 +133,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="#index">Official UCSB BisQue Documentation</a></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Cloud Service | Module Development | Python API</a>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>BisQue Service | Python API</a>
 <ul>
 <li class="chapter" data-level="" data-path="docker-installation.html"><a href="docker-installation.html"><i class="fa fa-check"></i>Docker Installation</a>
 <ul>
@@ -176,7 +178,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="plant-cell-segmentation.html#output"><strong><code>Output</code></strong></a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="2" data-path="module-development.html"><a href="module-development.html"><i class="fa fa-check"></i><b>2</b> Module Development</a>
+<li class="chapter" data-level="2" data-path="module-development.html"><a href="module-development.html"><i class="fa fa-check"></i><b>2</b> MODULE DEVELOPMENT</a>
 <ul>
 <li><a href="module-development.html#how-to-begin-building-modules"><strong>How to Begin Building Modules</strong></a></li>
 <li class="chapter" data-level="2.1" data-path="dockerfile.html"><a href="dockerfile.html"><i class="fa fa-check"></i><b>2.1</b> Dockerfile</a>
@@ -203,6 +205,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="runtime-module-configuration.html#example.-composite-strength-module-1"><em>Example.</em> Composite Strength Module</a></li>
 </ul></li>
 <li class="chapter" data-level="2.6" data-path="python-setup.html"><a href="python-setup.html"><i class="fa fa-check"></i><b>2.6</b> Python Setup</a></li>
+<li><a href="how-to-run-modules-locally.html#how-to-run-modules-locally"><strong>How to Run Modules Locally</strong></a>
+<ul>
+<li><a href="how-to-run-modules-locally.html#step-1.-pull-the-latest-dev-container"><strong>Step 1.</strong> Pull the Latest Dev Container</a></li>
+<li><a href="how-to-run-modules-locally.html#step-2.-run-the-dev-container"><strong>Step 2.</strong> Run the Dev Container</a></li>
+<li><a href="how-to-run-modules-locally.html#step-3.-register-modules"><strong>Step 3.</strong> Register Modules</a></li>
+<li><a href="how-to-run-modules-locally.html#step-4.-run-the-module"><strong>Step 4.</strong> Run the Module</a></li>
+</ul></li>
 </ul></li>
 <li class="chapter" data-level="3" data-path="bqapi.html"><a href="bqapi.html"><i class="fa fa-check"></i><b>3</b> BQAPI</a>
 <ul>
@@ -234,12 +243,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
             <section class="normal" id="section-">
 <div id="imagej-module" class="section level2" number="1.5">
 <h2><span class="header-section-number">1.5</span> ImageJ Module</h2>
-<div id="overview-1" class="section level3 unnumbered" number="">
+<div id="overview-1" class="section level3 unnumbered">
 <h3>Overview</h3>
 <p>The ImageJ module allows users to execute arbitrary ImageJ macros on single images or datasets of images. Macro parameters can be changed and parameter value lists can be provided to experiment with parameter variations. The results are stored back in BisQue as Gobjects, tables, or images.</p>
 <hr />
 </div>
-<div id="uploading-of-imagej-pipelines" class="section level3 unnumbered" number="">
+<div id="uploading-of-imagej-pipelines" class="section level3 unnumbered">
 <h3>Uploading of ImageJ Pipelines</h3>
 <p>Most ImageJ macros can be uploaded and used directly with minor modifications. In order to upload a macro, click “Upload”, select the macro file, and click “Upload”. If the file extension is “.ijm”, the file will automatically be recognized as a CellProfiler macro.</p>
 <p>As an example, we upload the CometAssay macro developed at the Microscopy Services Laboratory of the University of North Carolina at Chapel Hill, <a href="https://www.med.unc.edu/microscopy/resources/imagej-plugins-and-macros/comet-assay">Comet Assay</a>.</p>
@@ -251,53 +260,53 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <p>Each box represents one ImageJ macro step and the arrows indicate the flow through the steps. Note that some boxes have different colors. For example, the “waitForUser” and “Dialog”-related boxes are shown in red to indicate that they are incompatible with BisQue and will render the macro non-executable. Green boxes indicate regular ImageJ steps that were kept unchanged. Blue boxes are BisQue specific steps (such as “load image from BisQue” or “store table to BisQue”).</p>
 <p>In order to execute the pipeline, we need to fix the red boxes and then re-upload the pipeline. In this example, the first red boxes correspond to the <code>waitForUser</code> steps of the macro:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb12-1"><a href="imagej-module.html#cb12-1"></a><span class="ex">waitForUser</span>(<span class="st">&quot;Draw an oval around the comet head; Click OK&quot;</span>);</span>
-<span id="cb12-2"><a href="imagej-module.html#cb12-2"></a><span class="ex">run</span>(<span class="st">&quot;Measure&quot;</span>);</span>
-<span id="cb12-3"><a href="imagej-module.html#cb12-3"></a><span class="ex">waitForUser</span>(<span class="st">&quot;Draw an oval around the comet tail; Click OK&quot;</span>);</span>
-<span id="cb12-4"><a href="imagej-module.html#cb12-4"></a><span class="ex">run</span>(<span class="st">&quot;Measure&quot;</span>);</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb1-1"><a href="imagej-module.html#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">waitForUser</span>(<span class="st">&quot;Draw an oval around the comet head; Click OK&quot;</span>);</span>
+<span id="cb1-2"><a href="imagej-module.html#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">run</span>(<span class="st">&quot;Measure&quot;</span>);</span>
+<span id="cb1-3"><a href="imagej-module.html#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">waitForUser</span>(<span class="st">&quot;Draw an oval around the comet tail; Click OK&quot;</span>);</span>
+<span id="cb1-4"><a href="imagej-module.html#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">run</span>(<span class="st">&quot;Measure&quot;</span>);</span></code></pre></div>
 <p>Since BisQue modules are currently not interactive, such steps are not allowed. However, since they request user-defined regions for head and tail of the comet to analyze, we can replace them with <code>BisQueLoadPolygon</code> steps:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb13-1"><a href="imagej-module.html#cb13-1"></a><span class="ex">BisQueLoadPolygon</span>(<span class="st">&quot;head&quot;</span>);</span>
-<span id="cb13-2"><a href="imagej-module.html#cb13-2"></a><span class="ex">run</span>(<span class="st">&quot;Measure&quot;</span>);</span>
-<span id="cb13-3"><a href="imagej-module.html#cb13-3"></a><span class="ex">BisQueLoadPolygon</span>(<span class="st">&quot;tail&quot;</span>);</span>
-<span id="cb13-4"><a href="imagej-module.html#cb13-4"></a><span class="ex">run</span>(<span class="st">&quot;Measure&quot;</span>);</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb2-1"><a href="imagej-module.html#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">BisQueLoadPolygon</span>(<span class="st">&quot;head&quot;</span>);</span>
+<span id="cb2-2"><a href="imagej-module.html#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">run</span>(<span class="st">&quot;Measure&quot;</span>);</span>
+<span id="cb2-3"><a href="imagej-module.html#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">BisQueLoadPolygon</span>(<span class="st">&quot;tail&quot;</span>);</span>
+<span id="cb2-4"><a href="imagej-module.html#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="ex">run</span>(<span class="st">&quot;Measure&quot;</span>);</span></code></pre></div>
 <p>Each <code>BisQueLoadPolygon</code> step searches for a polygon Gobject in the current image and returns it as an ImageJ selection.</p>
 <p>The other red boxes correspond to ImageJ “Dialog” functions:</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb14-1"><a href="imagej-module.html#cb14-1"></a><span class="ex">Dialog.create</span>(<span class="st">&quot;Do Another?&quot;</span>);</span>
-<span id="cb14-2"><a href="imagej-module.html#cb14-2"></a><span class="ex">Dialog.addCheckbox</span>(<span class="st">&quot;Yes&quot;</span>, true);</span>
-<span id="cb14-3"><a href="imagej-module.html#cb14-3"></a><span class="ex">Dialog.show</span>();</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb3-1"><a href="imagej-module.html#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Dialog.create</span>(<span class="st">&quot;Do Another?&quot;</span>);</span>
+<span id="cb3-2"><a href="imagej-module.html#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Dialog.addCheckbox</span>(<span class="st">&quot;Yes&quot;</span>, true);</span>
+<span id="cb3-3"><a href="imagej-module.html#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">Dialog.show</span>();</span></code></pre></div>
 <p>Again, since BisQue is not interactive, these are not allowed. In this example, these steps check if the user wants to analyze more comets. For simplicity, we will simply remove these steps and end the analysis after one iteration.</p>
 <p>This addresses all red boxes but before being able to run the macro in BisQue, we need to add two important steps: the input and output. For the input, we can just add a new step at the very beginning:</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb15-1"><a href="imagej-module.html#cb15-1"></a><span class="fu">BisQueLoadImage()</span>;</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb4-1"><a href="imagej-module.html#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">BisQueLoadImage()</span>;</span></code></pre></div>
 <p>This will load the current image of the module execution into ImageJ for analysis. Note that for larger datasets of images, the macro will be executed once for each image.</p>
 <p>For the output, we will store the comet analysis results as a table back into BisQue. This is achieved by adding the following line at the end of the macro:</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb16-1"><a href="imagej-module.html#cb16-1"></a><span class="ex">BisQueSaveResults</span>(<span class="st">&quot;comet stats&quot;</span>);</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb5-1"><a href="imagej-module.html#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">BisQueSaveResults</span>(<span class="st">&quot;comet stats&quot;</span>);</span></code></pre></div>
 <p>This step will read the ImageJ results table and store it in BisQue under the given name. It will be linked in the output section of the current MEX (module execution) document.</p>
 <p>The completed macro is now as follows:</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb17-1"><a href="imagej-module.html#cb17-1"></a><span class="fu">BisQueLoadImage()</span>;</span>
-<span id="cb17-2"><a href="imagej-module.html#cb17-2"></a><span class="ex">run</span>(<span class="st">&quot;Set Measurements...&quot;</span>, <span class="st">&quot;centroid center integrated redirect=None decimal=3&quot;</span>);</span>
-<span id="cb17-3"><a href="imagej-module.html#cb17-3"></a><span class="ex">setFont</span>(<span class="st">&quot;SansSerif&quot;</span>, 18);</span>
-<span id="cb17-4"><a href="imagej-module.html#cb17-4"></a><span class="ex">setColor</span>(255, 255, 255);</span>
-<span id="cb17-5"><a href="imagej-module.html#cb17-5"></a><span class="ex">BisQueLoadPolygon</span>(<span class="st">&quot;head&quot;</span>);</span>
-<span id="cb17-6"><a href="imagej-module.html#cb17-6"></a><span class="ex">run</span>(<span class="st">&quot;Measure&quot;</span>);</span>
-<span id="cb17-7"><a href="imagej-module.html#cb17-7"></a><span class="ex">BisQueLoadPolygon</span>(<span class="st">&quot;tail&quot;</span>);</span>
-<span id="cb17-8"><a href="imagej-module.html#cb17-8"></a><span class="ex">run</span>(<span class="st">&quot;Measure&quot;</span>);</span>
-<span id="cb17-9"><a href="imagej-module.html#cb17-9"></a><span class="ex">i</span> = nResults -1<span class="kw">;</span></span>
-<span id="cb17-10"><a href="imagej-module.html#cb17-10"></a><span class="ex">tailx</span> = getResult(<span class="st">&quot;XM&quot;</span>, i);</span>
-<span id="cb17-11"><a href="imagej-module.html#cb17-11"></a><span class="ex">headx</span> = getResult(<span class="st">&quot;X&quot;</span>, i-1);</span>
-<span id="cb17-12"><a href="imagej-module.html#cb17-12"></a><span class="ex">taily</span> = getResult(<span class="st">&quot;YM&quot;</span>, i);</span>
-<span id="cb17-13"><a href="imagej-module.html#cb17-13"></a><span class="ex">heady</span> = getResult(<span class="st">&quot;Y&quot;</span>, i-1);</span>
-<span id="cb17-14"><a href="imagej-module.html#cb17-14"></a><span class="ex">tailden</span> = getResult(<span class="st">&quot;RawIntDen&quot;</span>,i);</span>
-<span id="cb17-15"><a href="imagej-module.html#cb17-15"></a><span class="ex">headden</span> = getResult(<span class="st">&quot;RawIntDen&quot;</span>,i-1);</span>
-<span id="cb17-16"><a href="imagej-module.html#cb17-16"></a><span class="ex">CometLen</span> = sqrt( ((tailx-headx)<span class="ex">*</span> (tailx-headx)) <span class="ex">+</span> ((taily-heady)<span class="ex">*</span>(taily-heady)) );</span>
-<span id="cb17-17"><a href="imagej-module.html#cb17-17"></a><span class="ex">setResult</span>(<span class="st">&quot;TailLen&quot;</span>,i,(CometLen));</span>
-<span id="cb17-18"><a href="imagej-module.html#cb17-18"></a><span class="ex">setResult</span>(<span class="st">&quot;TailMoment&quot;</span>,i , (CometLen * tailden));</span>
-<span id="cb17-19"><a href="imagej-module.html#cb17-19"></a><span class="ex">setResult</span>(<span class="st">&quot;%TailDNA&quot;</span>,i ,(tailden/(tailden + headden))<span class="ex">*100</span>);</span>
-<span id="cb17-20"><a href="imagej-module.html#cb17-20"></a><span class="fu">updateResults()</span>;</span>
-<span id="cb17-21"><a href="imagej-module.html#cb17-21"></a><span class="ex">BisQueSaveResults</span>(<span class="st">&quot;comet stats&quot;</span>);</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb6-1"><a href="imagej-module.html#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">BisQueLoadImage()</span>;</span>
+<span id="cb6-2"><a href="imagej-module.html#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">run</span>(<span class="st">&quot;Set Measurements...&quot;</span>, <span class="st">&quot;centroid center integrated redirect=None decimal=3&quot;</span>);</span>
+<span id="cb6-3"><a href="imagej-module.html#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ex">setFont</span>(<span class="st">&quot;SansSerif&quot;</span>, 18);</span>
+<span id="cb6-4"><a href="imagej-module.html#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="ex">setColor</span>(255, 255, 255);</span>
+<span id="cb6-5"><a href="imagej-module.html#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="ex">BisQueLoadPolygon</span>(<span class="st">&quot;head&quot;</span>);</span>
+<span id="cb6-6"><a href="imagej-module.html#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="ex">run</span>(<span class="st">&quot;Measure&quot;</span>);</span>
+<span id="cb6-7"><a href="imagej-module.html#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="ex">BisQueLoadPolygon</span>(<span class="st">&quot;tail&quot;</span>);</span>
+<span id="cb6-8"><a href="imagej-module.html#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="ex">run</span>(<span class="st">&quot;Measure&quot;</span>);</span>
+<span id="cb6-9"><a href="imagej-module.html#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="ex">i</span> = nResults -1<span class="kw">;</span></span>
+<span id="cb6-10"><a href="imagej-module.html#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="ex">tailx</span> = getResult(<span class="st">&quot;XM&quot;</span>, i);</span>
+<span id="cb6-11"><a href="imagej-module.html#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="ex">headx</span> = getResult(<span class="st">&quot;X&quot;</span>, i-1);</span>
+<span id="cb6-12"><a href="imagej-module.html#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="ex">taily</span> = getResult(<span class="st">&quot;YM&quot;</span>, i);</span>
+<span id="cb6-13"><a href="imagej-module.html#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="ex">heady</span> = getResult(<span class="st">&quot;Y&quot;</span>, i-1);</span>
+<span id="cb6-14"><a href="imagej-module.html#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="ex">tailden</span> = getResult(<span class="st">&quot;RawIntDen&quot;</span>,i);</span>
+<span id="cb6-15"><a href="imagej-module.html#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="ex">headden</span> = getResult(<span class="st">&quot;RawIntDen&quot;</span>,i-1);</span>
+<span id="cb6-16"><a href="imagej-module.html#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="ex">CometLen</span> = sqrt( ((tailx-headx)<span class="ex">*</span> (tailx-headx)) <span class="ex">+</span> ((taily-heady)<span class="ex">*</span>(taily-heady)) );</span>
+<span id="cb6-17"><a href="imagej-module.html#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="ex">setResult</span>(<span class="st">&quot;TailLen&quot;</span>,i,(CometLen));</span>
+<span id="cb6-18"><a href="imagej-module.html#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="ex">setResult</span>(<span class="st">&quot;TailMoment&quot;</span>,i , (CometLen * tailden));</span>
+<span id="cb6-19"><a href="imagej-module.html#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="ex">setResult</span>(<span class="st">&quot;%TailDNA&quot;</span>,i ,(tailden/(tailden + headden))<span class="ex">*100</span>);</span>
+<span id="cb6-20"><a href="imagej-module.html#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="fu">updateResults()</span>;</span>
+<span id="cb6-21"><a href="imagej-module.html#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="ex">BisQueSaveResults</span>(<span class="st">&quot;comet stats&quot;</span>);</span></code></pre></div>
 <p>After uploading this macro again, all boxes are either green or blue, indicating the pipeline is now valid for execution.</p>
 <hr />
 </div>
-<div id="running-an-imagej-macro" class="section level3 unnumbered" number="">
+<div id="running-an-imagej-macro" class="section level3 unnumbered">
 <h3>Running an ImageJ Macro</h3>
 <p>ImageJ macros can be run like any other BisQue module. First, select the macro to run (in this example, we select the CometAssay macro. After viewing the pipeline, click on “Analyze” and then on “ImageJ”.
 The ImageJ module page opens. Click “Select an Image” to choose a single image to run the macro on (alternatively, a dataset of images can be selected to run the macro on multiple images in parallel):</p>
@@ -316,29 +325,29 @@ The ImageJ module page opens. Click “Select an Image” to choose a single ima
 <p>The generated tables can now be processed further in additional BisQue modules or shared with other users.</p>
 <hr />
 </div>
-<div id="special-bisque-extensions-for-imagej" class="section level3 unnumbered" number="">
+<div id="special-bisque-extensions-for-imagej" class="section level3 unnumbered">
 <h3>Special BisQue extensions for ImageJ</h3>
 <p>There are several BisQue-specific extensions to ImageJ to allow ImageJ macros to interact with the BisQue system. Each one is described in the following.</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb18-1"><a href="imagej-module.html#cb18-1"></a><span class="fu">BisQueLoadImage()</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb7-1"><a href="imagej-module.html#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">BisQueLoadImage()</span></span></code></pre></div>
 <p>This function corresponds to the <code>open()</code> function of ImageJ. Instead of opening an image from a file, however, it obtains the image from the BisQue module executor. The opened image is one of the images from the module input section.</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb19-1"><a href="imagej-module.html#cb19-1"></a><span class="ex">BisQueLoadPolygon</span>(<span class="st">&quot;gobject type&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb8-1"><a href="imagej-module.html#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">BisQueLoadPolygon</span>(<span class="st">&quot;gobject type&quot;</span>)</span></code></pre></div>
 <p>This function loads a polygon Gobject from the current image into ImageJ as a selection for further processing in the macro. The “gobject type” parameter is used to select a specific Gobject with the semantic type “gobject type”.
 In other words, the current image has to have a Gobject as follows:</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb20-1"><a href="imagej-module.html#cb20-1"></a><span class="op">&lt;</span><span class="ex">gobject</span> type=<span class="st">&quot;gobject type&quot;</span><span class="op">&gt;</span></span>
-<span id="cb20-2"><a href="imagej-module.html#cb20-2"></a>  <span class="op">&lt;</span><span class="ex">polygon</span><span class="op">&gt;</span></span>
-<span id="cb20-3"><a href="imagej-module.html#cb20-3"></a>    <span class="op">&lt;</span><span class="ex">vertex</span> index=<span class="st">&quot;0&quot;</span> t=<span class="st">&quot;0.0&quot;</span> x=<span class="st">&quot;735.0&quot;</span> y=<span class="st">&quot;617.0&quot;</span> z=<span class="st">&quot;0.0&quot;</span>/<span class="op">&gt;</span></span>
-<span id="cb20-4"><a href="imagej-module.html#cb20-4"></a>    <span class="ex">...</span></span>
-<span id="cb20-5"><a href="imagej-module.html#cb20-5"></a>    <span class="op">&lt;</span><span class="ex">vertex</span> index=<span class="st">&quot;10&quot;</span> t=<span class="st">&quot;0.0&quot;</span> x=<span class="st">&quot;727.0&quot;</span> y=<span class="st">&quot;624.0&quot;</span> z=<span class="st">&quot;0.0&quot;</span>/<span class="op">&gt;</span></span>
-<span id="cb20-6"><a href="imagej-module.html#cb20-6"></a>  <span class="op">&lt;</span>/<span class="ex">polygon</span><span class="op">&gt;</span></span>
-<span id="cb20-7"><a href="imagej-module.html#cb20-7"></a><span class="op">&lt;</span>/<span class="ex">gobject</span><span class="op">&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb9-1"><a href="imagej-module.html#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="op">&lt;</span><span class="ex">gobject</span> type=<span class="st">&quot;gobject type&quot;</span><span class="op">&gt;</span></span>
+<span id="cb9-2"><a href="imagej-module.html#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="op">&lt;</span><span class="ex">polygon</span><span class="op">&gt;</span></span>
+<span id="cb9-3"><a href="imagej-module.html#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">&lt;</span><span class="ex">vertex</span> index=<span class="st">&quot;0&quot;</span> t=<span class="st">&quot;0.0&quot;</span> x=<span class="st">&quot;735.0&quot;</span> y=<span class="st">&quot;617.0&quot;</span> z=<span class="st">&quot;0.0&quot;</span>/<span class="op">&gt;</span></span>
+<span id="cb9-4"><a href="imagej-module.html#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="ex">...</span></span>
+<span id="cb9-5"><a href="imagej-module.html#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">&lt;</span><span class="ex">vertex</span> index=<span class="st">&quot;10&quot;</span> t=<span class="st">&quot;0.0&quot;</span> x=<span class="st">&quot;727.0&quot;</span> y=<span class="st">&quot;624.0&quot;</span> z=<span class="st">&quot;0.0&quot;</span>/<span class="op">&gt;</span></span>
+<span id="cb9-6"><a href="imagej-module.html#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="op">&lt;</span>/<span class="ex">polygon</span><span class="op">&gt;</span></span>
+<span id="cb9-7"><a href="imagej-module.html#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="op">&lt;</span>/<span class="ex">gobject</span><span class="op">&gt;</span></span></code></pre></div>
 <p>This can be generated for example via the graphical annotations tool in the BisQue image viewer.</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb21-1"><a href="imagej-module.html#cb21-1"></a><span class="ex">BisQueSaveImage</span>(<span class="st">&quot;image name&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb10-1"><a href="imagej-module.html#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">BisQueSaveImage</span>(<span class="st">&quot;image name&quot;</span>)</span></code></pre></div>
 <p>This function corresponds to the <code>saveAs("Tiff", ...)</code> function of ImageJ. Instead of saving the image to a file, however, it stores the image back into BisQue as a new image resource. The created image is then referenced in the MEX (module execution) document’s output section.</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb22-1"><a href="imagej-module.html#cb22-1"></a><span class="ex">BisQueSaveROIs</span>(<span class="st">&quot;polygon&quot;</span>, <span class="st">&quot;label&quot;</span>, <span class="st">&quot;color&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb11-1"><a href="imagej-module.html#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">BisQueSaveROIs</span>(<span class="st">&quot;polygon&quot;</span>, <span class="st">&quot;label&quot;</span>, <span class="st">&quot;color&quot;</span>)</span></code></pre></div>
 <p>This function stores the current ImageJ ROIs as polygon Gobjects in the output section of the current MEX (module execution) document. Each polygon is assigned the provided label and color.</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb23-1"><a href="imagej-module.html#cb23-1"></a><span class="ex">BisQueAddTag</span>(<span class="st">&quot;tag_name&quot;</span>, <span class="st">&quot;tag_value&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb12-1"><a href="imagej-module.html#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">BisQueAddTag</span>(<span class="st">&quot;tag_name&quot;</span>, <span class="st">&quot;tag_value&quot;</span>)</span></code></pre></div>
 <p>This function adds a tag/value pair to the output section of the current MEX (module execution) document.</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb24-1"><a href="imagej-module.html#cb24-1"></a><span class="fu">BisQueSaveResults()</span></span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb13-1"><a href="imagej-module.html#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">BisQueSaveResults()</span></span></code></pre></div>
 <p>This function stores the current ImageJ result table as a table resource in BisQue. The created table is then referenced in the MEX (module execution) document’s output section.</p>
 </div>
 </div>
@@ -365,9 +374,9 @@ gitbook.require(["gitbook"], function(gitbook) {
 gitbook.start({
 "sharing": {
 "github": true,
-"facebook": false,
+"facebook": true,
 "twitter": true,
-"linkedin": false,
+"linkedin": true,
 "weibo": false,
 "instapaper": true,
 "vk": false,
