@@ -91,28 +91,13 @@ RUN apt-get update  -qq \
 
 
 
-############ PYTHON 3   ################
-
-# RUN apt-get update && apt-get install \
-#   -y --no-install-recommends python3 python3-virtualenv
-
-# ENV VENV_PY3=/opt/bqpy3
-# RUN python3 -m virtualenv --python=/usr/bin/python3 /opt/bqpy3
-# ENV PATH="$VENV_PY3/bin:$PATH"
-
-############ PYTHON 3   ################
-
-
+# Do some shit
 RUN echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen && locale-gen
 ENV LANG en_US.UTF-8
 RUN locale
 
-#ENV BISQUE_UID 1000
-#ENV BISQUE_USER bisque
-#RUN adduser --uid $BISQUE_UID --disabled-login --gecos "Bisque" --home /run/bisque --shell /bin/bash $BISQUE_USER \
-#    &&  echo "$BISQUE_USER ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-# Set workdir early  as may wipe out contents
+# Set workdir early since might otherwise wipe out contents
 WORKDIR /source
 ADD source /source
 COPY run-bisque.sh virtualenv.sh /builder/
@@ -120,27 +105,18 @@ COPY start-bisque.sh /builder/start-scripts.d/R50-start-bisque.sh
 COPY builder/ /builder/build-scripts.d/
 COPY boot/ /builder/boot-scripts.d/
 
+# Install Virtual Environment
+# To activate venv, source /usr/lib/bisque/bin/activate
 RUN /builder/virtualenv.sh
 
-# The following is very slow
-#ADD https://biodev.ece.ucsb.edu/hg/bisque/archive/tip.tar.gz /source
-#RUN tar xzf tip.tar.gz
-
+# Install packages from our biodev repo
 ENV PY_INDEX=https://biodev.ece.ucsb.edu/py/bisque/xenial/+simple
 RUN /builder/run-bisque.sh build
 
-
+# Not Necessary for source code development, comment out if needed
 COPY modules /source/modules
 
 
-#RUN wget https://github.com/Yelp/dumb-init/releases/download/v1.1.3/dumb-init_1.1.3_amd64.deb \
-#    && dpkg -i dumb-init_*.deb \
-#    && rm dumb-init*.deb
-#ENTRYPOINT [ "/usr/bin/dumb-init", "/root/run-bisque.sh" ]
-
-# Python 3
-# RUN . /opt/bqpy3/bin/activate && pip install -r requirements3.txt && deactivate
-
-#USER $BISQUE_USER
+# Setup and Run BisQue
 ENTRYPOINT [ "/builder/run-bisque.sh"]
 CMD [ "bootstrap","start"]
