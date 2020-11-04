@@ -1,0 +1,172 @@
+.x-panel-body {
+    background-color: #ffffff;
+} 
+
+.webapp h1, .heading-2 {
+    text-shadow: #ffffff 0px 0px 0px;
+}
+
+.webapp .box {
+    background-color: rgba(6, 0, 0, 0.05);
+    border-color: #ffffff;
+    border-style: solid;
+    border-width: 0px;
+    padding: 11px 11px 12px 15px;
+    margin-bottom: 40px;
+    border-radius: 25px;
+    -moz-border-radius: 5px;
+}
+
+.help .help-container p {
+    text-align: left;
+    font-size: 15px;
+}
+
+.help {
+    background-color: transparent;
+}
+
+.help .help-container {
+    background-color: #00000000;
+    border: #ffffff
+}
+
+
+.webapp ::-webkit-scrollbar-track {
+    background-color: black;
+}
+
+
+
+.content {
+    padding: 20px;
+    font-size: 18px;
+}
+
+element.style {
+    width: 12px;
+    height: 932px;
+    margin: 0px;
+    right: auto;
+    left: 670px;
+    top: 44px;
+}
+
+.x-splitter {
+    background-color: #ffffff38;
+}
+.x-panel-body-default {
+
+    color: black;
+    font-size: 12px;
+    font-size: normal;
+
+}
+.lblHeading1 {
+    color: black;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif, Georgia, serif;
+}
+.x-panel-header-default {
+    background-image: none;
+    background-color: #ffffff;
+    background-image: -webkit-gradient(linear,50% 0,50% 100%,color-stop(0%,#f0f0f0),color-stop(100%,#d7d7d7));
+    background-image: -webkit-linear-gradient(top,#171e2800,#ffffff00);
+    background-image: -moz-linear-gradient(top,#f0f0f0,#d7d7d7);
+    background-image: -o-linear-gradient(top,#f0f0f0,#d7d7d7);
+    background-image: linear-gradient(top,#f0f0f0,#d7d7d7);
+}
+
+.heading-2 {
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif, Georgia, serif;
+    font-weight: 200;
+    font-size: 35px;
+    clear: left;
+    margin: 0.5em 0px;
+}
+
+.x-grid-cell {
+    color: null;
+    font: normal 15px/17px -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: #ffffff;
+}
+
+h1 {
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: bolder;
+    font-size: 50px;
+    font-size: 4em;
+    margin: 0.67em 0px;
+}
+.x-body {
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.x-tree-node-text {
+    font-size: 20px;
+    line-height: 30px;
+    padding-left: 5px;
+}
+
+
+h3 {
+    font-family: -apple-system, BlinkMacSystemFont, serif;
+    font-weight: normal;
+    font-size: 22px;
+}
+
+
+.help {
+    background-color: #ffffff;
+}
+
+
+.icon-tag {
+    background-image: none;
+}
+
+.x-column-header {
+    border-right: 1px solid #c5c5c5;
+    color: black;
+    font: normal 15px/17px -apple-system, BlinkMacSystemFont, serif;
+    background-image: none;
+    background-color: #ffffff;
+    }
+
+.x-toolbar-default {
+    border-color: black;
+    border-width: 1px;
+    background-image: none;
+    background-color: #f2f2f2;
+}
+
+.x-grid-row-selected .x-grid-td {
+    background-color: rgba(6, 0, 0, 0.05);
+}
+
+a:visited {
+    text-decoration: none;
+    color: green;
+}
+
+
+
+
+.x-btn-default-toolbar-large .x-btn-inner {
+
+    color: black;
+
+}
+
+
+.renderer label {
+    font-size: 20px;
+    font-family: -apple-system, BlinkMacSystemFont, serif;
+    font-weight: bold;
+}
+
+
+
+.webapp h3 {
+    font-size: 25px;
+    font-weight: bold;
+}
