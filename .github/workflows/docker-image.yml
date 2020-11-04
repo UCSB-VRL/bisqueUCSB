@@ -2,7 +2,7 @@ name: BisQue Module Development Docker Image CI
 
 on:
   push:
-    branches: [ module-development ]
+    branches: [ tg-upgrade ]
 
 jobs:
 
