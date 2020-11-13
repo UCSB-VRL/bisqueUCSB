@@ -17,7 +17,7 @@ The official documentation covers the [BisQue cloud service](https://bisque.ece.
 * Latypov, M.I., Khan, A., Lang, C.A. et al. Integr Mater Manuf Innov (2019) 8: 52. https://doi.org/10.1007/s40192-019-00128-5
 * Polonsky, A.T., Lang, C.A., Kvilekval, K.G. et al. Integr Mater Manuf Innov (2019) 8: 37. https://doi.org/10.1007/s40192-019-00126-7
 
-## Developers
+## Active Developers
 
 * Amil Khan  (BisQue Team)
 * Satish Kumar  (BisQue Team)
@@ -36,6 +36,8 @@ The official documentation covers the [BisQue cloud service](https://bisque.ece.
 * SQLAlchemy (backend)
 
 ### Acknowledgments
+
+[__License__](https://github.com/UCSB-VRL/bisqueUCSB/blob/master/source/LICENSE)
 
 * Kristian Kvilekval, Dmitry Fedorov, Christian Lang 
 * NSF SI2-SSI No.1664172, NSF MCB Grant No. 1715544
