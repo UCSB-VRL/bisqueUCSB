@@ -1,4 +1,5 @@
 ##--index-url https://biodev.ece.ucsb.edu/py/bisque/dev/+simple
+#modified
 Babel==1.3
 Beaker==1.6.4
 #Cython==0.25.2
@@ -6,7 +7,7 @@ FormEncode==1.3.1
 Genshi==0.7
 Mako==0.9.1
 MarkupSafe==0.21
-Minimatic==1.0.4
+Minimatic==1.0
 Paste==1.7.5.2
 PasteDeploy==1.3.4
 PasteScript==1.7.3
@@ -20,7 +21,7 @@ PySqlite==2.8.3
 tempita==0.5.2
 ToscaWidgets==0.9.12
 # First Upgrade to TG2
-TurboGears2==2.2
+TurboGears2==2.3.0
 TurboMail==3.0.3
 WebError==0.10.3
 WebFlash==0.1a9
@@ -49,7 +50,7 @@ future==0.16.0
 funcsigs==1.0.2
 filechunkio==1.6
 gdata==2.0.18
-httplib2==0.7.1-1
+httplib2==0.7.3
 importlib==1.0.3
 lxml==3.7.3
 nose==1.3.1
@@ -106,7 +107,7 @@ zope.sqlalchemy==0.7.7
 ##profiler
 linesman==0.3.2
 pygraphviz==1.3.1
-networkx==1.8
+networkx==1.7
 olefile==0.44
 
 # KML export
@@ -114,7 +115,7 @@ pyproj==1.9.3
 geojson==1.0.9
 
 # DICOM
-pydicom==0.9.8
+#pydicom==0.9.8
 
 # table service
 #json== #standard python package
@@ -129,7 +130,7 @@ mahotas==1.4.3
 libtiff==0.4.0
 
 # Databases
-psycopg2==2.6.1
+psycopg2-binary
 
 #DEVELOPER REQS
 pylint==1.9.2
