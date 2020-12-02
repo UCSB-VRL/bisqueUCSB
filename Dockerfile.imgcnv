@@ -1,0 +1,124 @@
+
+FROM biodev.ece.ucsb.edu:5000/caffe-runtime:xenial 
+
+ENV DEBIAN_FRONTEND noninteractive
+ENV IMGCNV=imgcnv_ubuntu16_2.4.3
+RUN apt-get update -qq && apt-get install -qq -y apt-transport-https wget
+RUN wget -q -O - https://biodev.ece.ucsb.edu/debian/cbi_repository_key.asc | apt-key add -
+
+#RUN echo "deb  http://biodev.ece.ucsb.edu/debian/archive unstable/" > /etc/apt/sources.list.d/bisque.list \
+#    && echo "deb http://www.deb-multimedia.org jessie main non-free" >> /etc/apt/sources.list.d/bisque.list
+
+RUN  echo "deb http://ftp.ucsb.edu/pub/mirrors/linux/ubuntu-archive xenial main restricted universe" >> /etc/apt/sources.list.d/bisque.list
+
+
+RUN wget -q https://bitbucket.org/dimin/bioimageconvert/downloads/$IMGCNV.tar.gz \
+    && tar xf $IMGCNV.tar.gz \
+    && mv $IMGCNV/imgcnv /usr/bin \
+    && mv $IMGCNV/libimgcnv.so* /usr/lib/x86_64-linux-gnu/ \
+    && rm -rf  $IMGCNV \
+    && apt-get install -y --no-install-recommends \
+    libswscale-ffmpeg3 libfftw3-3 libgdcm2.6 libavcodec-ffmpeg56 libavformat-ffmpeg56 libavutil-ffmpeg54 libhdf5-cpp-11
+
+#    && (cd /usr/lib/x86_64-linux-gnu/; ln -s libimgcnv.so.2 libimgcnv.so ) \
+
+
+#    && apt-get install -y  deb-multimedia-keyring --allow-unauthenticated \
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
