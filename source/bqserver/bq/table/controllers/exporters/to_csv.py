@@ -69,7 +69,7 @@ try:
 except ImportError:
     log.info('Pandas was not found but required for table service!')
 
-from pylons.controllers.util import abort
+from tg import abort
 from bq.table.controllers.table_exporter import TableExporter
 
 #---------------------------------------------------------------------------------------

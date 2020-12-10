@@ -4,7 +4,6 @@
 import os
 import logging
 import pkg_resources
-from pylons.i18n import ugettext as _, lazy_ugettext as l_
 from tg import expose, flash, cache
 from repoze.what import predicates
 from bq.core.service import ServiceController
@@ -30,7 +29,7 @@ class usageController(ServiceController):
     @expose('bq.usage.templates.index')
     def index(self, **kw):
         """Add your first page here.. """
-        return dict(msg=_('Hello from usage'))
+        return dict(msg='Hello from usage')
 
 
     @expose(content_type="text/xml")

@@ -70,9 +70,7 @@ __copyright__ = "Center for BioImage Informatics, University California, Santa B
 import os
 import logging
 import pkg_resources
-#from pylons.i18n import ugettext as _, lazy_ugettext as l_
-from pylons.controllers.util import abort
-import  tg
+import tg
 from repoze.what import predicates
 from bq.core.service import ServiceController
 
@@ -95,7 +93,7 @@ from lxml import etree
 from datetime import datetime
 #from itertools import groupby
 
-from tg import require, expose
+from tg import require, expose, abort
 from repoze.what import predicates
 
 import bq

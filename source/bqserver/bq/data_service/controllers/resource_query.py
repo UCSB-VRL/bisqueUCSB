@@ -59,7 +59,6 @@ from datetime import datetime
 #from sqlalchemy import Integer, String, DateTime, Unicode, Float, Boolean
 from sqlalchemy.sql import select, func, exists, and_, or_, not_, asc, desc, operators, cast
 from sqlalchemy.orm import Query, aliased
-#from pylons.controllers.util import abort
 from tg import config, url, request
 
 

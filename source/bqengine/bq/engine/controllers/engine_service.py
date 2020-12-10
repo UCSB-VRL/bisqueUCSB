@@ -62,8 +62,10 @@ from datetime import datetime
 import pkg_resources
 import tg
 #from tg import require
-from tg import config,  expose,  override_template
-from pylons.controllers.util import abort, forward
+from tg import config,  expose,  override_template, abort
+from pylons.controllers.util import forward
+
+
 from paste.fileapp import FileApp
 #from repoze.what.predicates import not_anonymous
 #from repoze.what import predicates

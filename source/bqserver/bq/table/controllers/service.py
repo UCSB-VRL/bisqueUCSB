@@ -165,11 +165,7 @@ import urllib
 
 from lxml import etree
 import pkg_resources
-#from pylons.i18n import ugettext as _, lazy_ugettext as l_
-from tg import expose, request#, response, require
-#from repoze.what import predicates
-from pylons.controllers.util import abort
-
+from tg import expose, request, abort #, response, require
 
 #import numpy as np
 #import pandas as pd

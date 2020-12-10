@@ -52,7 +52,7 @@ import os
 import logging
 import pkg_resources
 import tempfile
-from pylons.controllers.util import abort
+from tg import abort
 
 from bq import blob_service
 from bq.pipeline.controllers.pipeline_base import PipelineBase

@@ -55,10 +55,10 @@ import logging
 import urllib
 
 import sqlalchemy
-from pylons.controllers.util import abort
 
 import tg
-from tg import  redirect, expose,  request
+from tg import  redirect, expose,  request, abort
+
 from lxml import etree
 from furl import furl
 
@@ -305,11 +305,6 @@ class BisquikResource(resource.Resource):
         format = kw.pop('format', None)
         user   = kw.pop('user', None)
         log.info ("NEW: %s ... %s" ,request.url, xml.tag)
-
-        # Create a DB object from the document.
-        #if  not identity.not_anonymous():
-        #    pylons.response.status_int = 401
-        #    return '<response status="FAIL">Permission denied</response>'
 
         parent = self.load_parent()
         log.debug ("NEW: parent %s " , str( parent))

@@ -64,10 +64,9 @@ from urlparse import urlparse
 from datetime import datetime
 from time import gmtime, strptime
 
-from pylons.controllers.util import abort
 
 import tg
-from tg import  expose
+from tg import  expose, abort
 from tg.util import Bunch
 from tg.configuration import  config
 #from tg.controllers import CUSTOM_CONTENT_TYPE
@@ -770,7 +769,6 @@ class Resource(ServiceController):
         #resource = self.server_cache.force_load(resource)
         self.check_cache_header(http_method, resource)
         method = getattr(self, method_name)
-        #pylons.response.headers['Content-Type'] = 'text/xml'
         log.debug ("Dispatch for %s", method_name)
         try:
             if http_method in ('post', 'put'):

@@ -4,7 +4,6 @@
 
 import numpy as np
 from mahotas.features import haralick,lbp,pftas,tas,zernike_moments
-from pylons.controllers.util import abort
 from bq.features.controllers import Feature
 from bq.features.controllers.utils import image2numpy, except_image_only
 from bq.features.controllers.exceptions import FeatureExtractionError

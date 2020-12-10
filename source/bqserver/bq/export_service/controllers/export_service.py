@@ -69,7 +69,6 @@ __copyright__ = "Center for BioImage Informatics, University California, Santa B
 import os
 import logging
 import pkg_resources
-from pylons.i18n import ugettext as _, lazy_ugettext as l_
 from tg import expose, flash
 from repoze.what import predicates
 
@@ -152,7 +151,7 @@ class export_serviceController(ServiceController):
     @expose('bq.export_service.templates.index')
     def index(self, **kw):
         """Add your first page here.. """
-        return dict(msg=_('Hello from export_service'))
+        return dict(msg='Hello from export_service')
 
     def check_access(self, ident):
         resource = data_service.resource_load (uniq = ident)

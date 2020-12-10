@@ -2,7 +2,7 @@
 # Table Operations: Aggregation
 #---------------------------------------------------------------------------------------
 
-from pylons.controllers.util import abort
+from tg import abort
 
 from bq.table.controllers.table_operation import TableOperation
 from bq.table.controllers.table_base import TableQueryParser, ParseError

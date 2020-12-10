@@ -12,8 +12,6 @@ from hashlib import md5
 from lxml import etree
 import random
 
-from pylons.controllers.util import etag_cache
-from pylons.i18n import ugettext as _, lazy_ugettext as l_
 from tg import expose, flash, config, abort
 from repoze.what import predicates
 from bq.core.service import ServiceController

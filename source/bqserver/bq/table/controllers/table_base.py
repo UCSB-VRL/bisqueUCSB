@@ -56,7 +56,7 @@ import os
 import logging
 import pkg_resources
 import itertools
-from pylons.controllers.util import abort
+from tg import abort
 from collections import namedtuple, OrderedDict
 import re
 import types

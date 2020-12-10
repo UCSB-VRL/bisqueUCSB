@@ -57,10 +57,9 @@ from collections import namedtuple
 from collections import OrderedDict
 from datetime import datetime
 from lxml import etree
-from tg import expose, controllers, flash, url, response, request
+from tg import expose, controllers, flash, url, response, request, abort
 from repoze.what.predicates import is_user, in_group, Any, not_anonymous
 from bq.data_service.controllers.resource_query import RESOURCE_READ, RESOURCE_EDIT
-from pylons.controllers.util import abort
 
 import bq
 from bq import data_service

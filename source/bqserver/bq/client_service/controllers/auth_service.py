@@ -65,7 +65,6 @@ import tg
 from tg import request, session, flash, require, response
 from tg import  expose, redirect, url
 from tg import config
-from pylons.i18n import ugettext as  _
 from repoze.what import predicates
 
 from bq.core.service import ServiceController
@@ -153,7 +152,7 @@ class AuthenticationServer(ServiceController):
         """Start the user login."""
         login_counter = int (request.environ.get ('repoze.who.logins', 0))
         if login_counter > 0:
-            flash(_('Wrong credentials'), 'warning')
+            flash('Wrong credentials', 'warning')
 
         # Check if we have only 1 provider that is not local and just redirect there.
         login_urls = self.login_map()
@@ -188,7 +187,7 @@ class AuthenticationServer(ServiceController):
             login_counter = int (request.environ.get('repoze.who.logins',0)) + 1
             redirect(url('/auth_service/login',params=dict(came_from=came_from, __logins=login_counter)))
         userid = request.identity['repoze.who.userid']
-        flash(_('Welcome back, %s!') % userid)
+        flash('Welcome back, %s!' % userid)
         self._begin_mex_session()
         timeout = int (config.get ('bisque.login.timeout', '0').split('#')[0].strip())
         length = int (config.get ('bisque.login.session_length', '0').split('#')[0].strip())

@@ -89,15 +89,15 @@ __copyright__ = "Center for BioImage Informatics, University California, Santa B
 import os
 import logging
 import pkg_resources
-from pylons.i18n import ugettext as _, lazy_ugettext as l_
-from tg import expose, flash, response
+from tg import expose, flash, response, abort
+
 from repoze.what import predicates 
 from bq.core.service import ServiceController
 #from bq.stats import model
 
 log = logging.getLogger("bq.stats")
 
-from pylons.controllers.util import abort
+
 
 # imports for stats server
 from lxml import etree

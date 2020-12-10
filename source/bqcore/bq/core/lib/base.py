@@ -6,7 +6,6 @@ from tg import TGController, tmpl_context
 from tg.controllers import RestController
 from tg.render import render
 from tg import request
-from pylons.i18n import ugettext as _, ungettext, N_
 #from  bq.core.model import  *
 
 #from bq.data_service.model import *

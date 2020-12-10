@@ -90,8 +90,8 @@ from collections import OrderedDict
 import tg
 import transaction
 from paste.proxy import make_proxy
-from pylons.controllers.util import abort
-from tg import controllers, expose, config, request, override_template
+#from pylons.controllers.util import abort
+from tg import controllers, expose, config, request, override_template, abort
 from tg import require
 # pylint: disable=E0611,F0401
 from repoze.what.predicates import not_anonymous

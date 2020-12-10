@@ -57,9 +57,7 @@ import os
 import logging
 import shutil
 import tg
-from pylons.controllers.util import abort
-from tg import expose, redirect, response
-from tg import config
+from tg import expose, redirect, response, config, abort
 from lxml import etree
 from urllib import urlencode
 from repoze.what import predicates
