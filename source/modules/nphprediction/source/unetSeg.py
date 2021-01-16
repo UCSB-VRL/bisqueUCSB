@@ -72,12 +72,13 @@ def unetPredict(BASE, gpu=False):
 
 #[s for s in os.listdir(Scan_Folder) if (s.endswith('nii.gz') and not 'MNI152' in s)]
 
-	N = 128
+	N1 = 128
+	N  = 256
 	batch_size = 1
 
 	def NPH_data_gen():
 		N_pred = len(scans_all)
-		X = np.empty([batch_size,1,N,N,N])
+		X = np.empty([batch_size,1,N,N,N1])
 		while True:
 			inds = range(len(scans_all))
 			i=0
@@ -88,7 +89,7 @@ def unetPredict(BASE, gpu=False):
 					img = img_nib.get_data()
 					img_info = (img.shape, img_nib.affine)
 					img[np.where(img<-1000)] = -1000
-					temp_img = resize(img, output_shape=[N,N,N], preserve_range=True,mode='constant',order=1,anti_aliasing=True)
+					temp_img = resize(img, output_shape=[N,N,N1], preserve_range=True,mode='constant',order=1,anti_aliasing=True)
 					X[j,0] = temp_img
 				i+=1
 				X -= 100
@@ -239,9 +240,9 @@ def unetPredict(BASE, gpu=False):
 		output = lsoftmax(output)
 		output = output.argmax(dim=1)
 		if n == 1:
-			output = output.view(N,N,N)
+			output = output.view(N,N,N1)
 		else:
-			output = output.view(n,N,N,N)
+			output = output.view(n,N,N,N1)
 		output = output.cpu().detach().numpy()
 		output = resize(output, info[0], preserve_range=True, mode='constant', order=0, anti_aliasing=None)
 		out_img = nib.Nifti1Image(output, info[1])
