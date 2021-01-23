@@ -199,14 +199,15 @@ def unetPredict(BASE, gpu=False):
 	
 	import copy
 	net = copy.deepcopy(unet)
+	num_classes = 7
 	net.convd1.conv1 = ConvD(1,16,0.5,'gn',first=True)
 	net.convd1.conv1.weight = nn.Parameter(unet.convd1.conv1.weight[:,1,:,:,:].unsqueeze(1))
-	net.seg3 = nn.Conv3d(128, 3, kernel_size=(1,1,1), stride=(1,1,1))
-	net.seg2 = nn.Conv3d(64, 3, kernel_size=(1,1,1), stride=(1,1,1))
-	net.seg1 = nn.Conv3d(32, 3, kernel_size=(1,1,1), stride=(1,1,1))
-	net.seg3.weight = nn.Parameter(unet.seg3.weight[0:3,:,:,:,:])
-	net.seg2.weight = nn.Parameter(unet.seg2.weight[0:3,:,:,:,:])
-	net.seg1.weight = nn.Parameter(unet.seg1.weight[0:3,:,:,:,:])
+	net.seg3 = nn.Conv3d(128, num_classes, kernel_size=(1,1,1), stride=(1,1,1))
+	net.seg2 = nn.Conv3d(64, num_classes, kernel_size=(1,1,1), stride=(1,1,1))
+	net.seg1 = nn.Conv3d(32, num_classes, kernel_size=(1,1,1), stride=(1,1,1))
+	net.seg3.weight = nn.Parameter(unet.seg3)
+	net.seg2.weight = nn.Parameter(unet.seg2)
+	net.seg1.weight = nn.Parameter(unet.seg1)
 
 	net.cpu()
 	if gpu:
@@ -221,32 +222,33 @@ def unetPredict(BASE, gpu=False):
 	output_path = os.path.join(BASE, 'UNet_Outputs')
 	if not os.path.exists(output_path):
 		os.mkdir(output_path)
-
-	''' Predict '''
-	for k in range(len(scans_all)):
-		name, info, inputs = next(data_gen)
-		print(name)
-		save_name = os.path.join(output_path, name[:name.find('.nii.gz')] + '.segmented.nii.gz')
-		if os.path.exists(save_name):
-			continue
-		inputs_np = inputs.cpu().detach().numpy()
-		in_mean = np.mean(inputs_np)
-		in_std = np.std(inputs_np)
-		output = net(inputs)
-		n,c = output.shape[:2]
-		N = output.shape[3]
-		output = output.view(n,c,-1)
-		lsoftmax = nn.LogSoftmax(dim=1)
-		output = lsoftmax(output)
-		output = output.argmax(dim=1)
-		if n == 1:
-			output = output.view(N,N,N1)
-		else:
-			output = output.view(n,N,N,N1)
-		output = output.cpu().detach().numpy()
-		output = resize(output, info[0], preserve_range=True, mode='constant', order=0, anti_aliasing=None)
-		out_img = nib.Nifti1Image(output, info[1])
-		nib.save(out_img, save_name)
+	net.eval()
+	with torch.no_grad():
+		''' Predict '''
+		for k in range(len(scans_all)):
+			name, info, inputs = next(data_gen)
+			print(name)
+			save_name = os.path.join(output_path, name[:name.find('.nii.gz')] + '.segmented.nii.gz')
+			if os.path.exists(save_name):
+				continue
+			inputs_np = inputs.cpu().detach().numpy()
+			in_mean = np.mean(inputs_np)
+			in_std = np.std(inputs_np)
+			output = net(inputs)
+			n,c = output.shape[:2]
+			N = output.shape[3]
+			output = output.view(n,c,-1)
+			lsoftmax = nn.LogSoftmax(dim=1)
+			output = lsoftmax(output)
+			output = output.argmax(dim=1)
+			if n == 1:
+				output = output.view(N,N,N1)
+			else:
+				output = output.view(n,N,N,N1)
+			output = output.cpu().detach().numpy()
+			output = resize(output, info[0], preserve_range=True, mode='constant', order=0, anti_aliasing=None)
+			out_img = nib.Nifti1Image(output, info[1])
+			nib.save(out_img, save_name)
 
 
 
