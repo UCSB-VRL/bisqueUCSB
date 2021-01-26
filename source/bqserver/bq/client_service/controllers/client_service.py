@@ -63,13 +63,10 @@ import pkg_resources
 from urllib import urlencode
 from lxml import etree
 
-from pylons import app_globals
-from pylons.i18n import ugettext as _, lazy_ugettext as l_, N_
-from pylons.controllers.util import abort
 from webob import Request
 
 import tg
-from tg import expose, flash, redirect, require, request
+from tg import expose, flash, redirect, require, request, abort
 from tg import config, tmpl_context as c, session
 from repoze.what import predicates
 

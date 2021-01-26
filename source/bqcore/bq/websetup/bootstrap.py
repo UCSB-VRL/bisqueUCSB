@@ -19,12 +19,15 @@ log = logging.getLogger('bq.boostrap')
 def bootstrap(command, conf, vars):
     """Place any commands to setup bq here"""
 
+    log.info("THE REQUEST OBJECT HAS BEEN CALLED =========#######=========\n\n\n\n\n========")
+
     # <websetup.bootstrap.before.auth
     from sqlalchemy.exc import IntegrityError
     from  bq.data_service.model import Taggable, Tag, BQUser, ModuleExecution
 
     registry = Registry()
     registry.prepare()
+    log.info("THE REQUEST OBJECT HAS BEEN CALLED =========#######=========\n\n\n\n\n========")
     registry.register(session, SessionObject({}))
     registry.register(request, Request.blank('/bootstrap'))
     request.identity = {}

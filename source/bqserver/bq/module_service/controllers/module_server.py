@@ -634,6 +634,7 @@ def POST_error (mex_url, username, resp, content):
                       value="Problem in dispatch:%s:%s" % (resp['status'], getattr(resp,'reason','Unavailable')))
     log.debug ("MexError: %s " , etree.tostring(mextree))
     # Need to setup current user who is running mex/
+    log.info('HELLO WORLD =====================\n\n\n================')
     registry = Registry()
     registry.prepare()
     registry.register(session, SessionObject({}))

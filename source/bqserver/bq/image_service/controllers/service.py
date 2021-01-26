@@ -12,11 +12,12 @@ from hashlib import md5
 from lxml import etree
 import random
 
-from tg import expose, flash, config, abort
+from tg import expose, flash, config, abort, use_wsgi_app
 from repoze.what import predicates
 from bq.core.service import ServiceController
 from paste.fileapp import FileApp
-from pylons.controllers.util import forward
+
+
 
 from bq.core import permission, identity
 from bq.util.paths import data_path
@@ -259,14 +260,24 @@ class ImageServiceController(ServiceController):
         request = tg.request
         response = tg.response
 
+        log.info("ckpt 1, " + str(tg.request))
+        log.info("ckpt 2, " + str(tg.response))
+
+
         #url = request.path+'?'+request.query_string if len(request.query_string)>0 else request.path
         url = request.url
+        log.info("ckpt 3, " + str(url))
+
         resource_id, subpath, query = getOperations(url, self.srv.base_url)
+        log.info("ckpt 4, " + str(query))
+        
         ident = resource_id or ident
+
         log.info ("STARTING (%s): %s", datetime.now().isoformat(), url)
 
         # patch for incorrect /auth requests for image service
         if '/auth' in url:
+            log.info("ckpt 5")
             tg.response.headers['Content-Type'] = 'text/xml'
             log.info ("FINISHED DEPRECATED (%s): %s", datetime.now().isoformat(), url)
             return '<resource />'
@@ -293,7 +304,9 @@ class ImageServiceController(ServiceController):
 
         # check for access permission
         resource = self.check_access(ident, view='image_meta')
+        log.info("ckpt 6, ", str(resource))
         user_name = self.get_user_name(resource.get('owner'))
+        log.info("ckpt 7, " + str(user_name))
 
         # extract requested timeout: BQ-Operation-Timeout: 30
         timeout = request.headers.get('BQ-Operation-Timeout', None)
@@ -382,11 +395,11 @@ class ImageServiceController(ServiceController):
             # fix for the cherrypy error 10055 "No buffer space available" on windows
             # by streaming the contents of the files as opposite to sendall the whole thing
             log.info ("FINISHED (%s): %s", datetime.now().isoformat(), url)
-            #log.info ("%s: returning %s with mime %s"%(ident, token.data, token.contentType ))
-            return forward(FileApp(token.data,
-                                   content_type=token.contentType,
-                                   content_disposition=disposition,
-                                   ).cache_control (max_age=60*60*24*7*6)) # 6 weeks
+
+            return use_wsgi_app(FileApp(token.data,
+                content_type=token.contentType,
+                content_disposition=disposition
+                ))
 
         log.info ("FINISHED with ERROR (%s): %s", datetime.now().isoformat(), url)
         tg.response.status_int = 404
@@ -402,7 +415,14 @@ def initialize(uri):
     return service
 
 def get_static_dirs():
-    """Return the static directories for this server"""
+    """Return the static directories for thistr(fpath))
+            log.info(str(fname))
+            log.info(str(token.data))
+
+            log.info(str(token.contentType))
+            log.info(str(disposition))
+
+            #wsgi_app  server"""
     package = pkg_resources.Requirement.parse ("bqserver")
     package_path = pkg_resources.resource_filename(package,'bq')
     return [(package_path, os.path.join(package_path, 'image_service', 'public'))]

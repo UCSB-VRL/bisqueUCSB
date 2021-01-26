@@ -32,6 +32,8 @@ def setup_schema(command, conf, vars):
             else:
                 model.metadata.create_all(bind=config['pylons.app_globals'].sa_engine, checkfirst=True)
 
+    log.info("Finished iter")
+
     #model.metadata.create_all(bind=config['pylons.app_globals'].sa_engine)
     # <websetup.websetup.schema.after.metadata.create_all>
 
@@ -39,8 +41,24 @@ def setup_schema(command, conf, vars):
     # version table, "stamping" it with the most recent rev:
     from alembic.config import Config
     from alembic import command
+    log.info("ckpt1")
     alembic_cfg = Config(config_path ("alembic.ini"))
     #alembic_cfg = Config(config['global_conf']['__file__'])
-    command.stamp(alembic_cfg, "head")
+    log.info("ckpt2")
+    log.info(str(command))
+    log.info(str(alembic_cfg))
+
+    try:
+        log.info("\n\n\n++++\n\n")
+        command.stamp(alembic_cfg, "head")
+        log.info("ckpt4\n\n\n====\n\n")
+    except:
+        log.info("hjkl\n\n\njkl")
+        log.info(str(e))
+    
+    log.info("ckpt3")
     transaction.commit()
+
+    log.info("schema done")
+
 
