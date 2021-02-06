@@ -22,10 +22,11 @@ BisQue is a web-based platform specifically designed to provide researchers with
 
 The official documentation covers the [BisQue cloud service](https://bisque.ece.ucsb.edu) running live at UCSB, module development for the platform, and the BQAPI. If you have any questions, feel free to reach out. We will be continuously updating the documentation so check back often for updates!
 
-## Recent Papers using BisQue
+## Papers using BisQue
 
 * Latypov, M.I., Khan, A., Lang, C.A. et al. Integr Mater Manuf Innov (2019) 8: 52. https://doi.org/10.1007/s40192-019-00128-5
 * Polonsky, A.T., Lang, C.A., Kvilekval, K.G. et al. Integr Mater Manuf Innov (2019) 8: 37. https://doi.org/10.1007/s40192-019-00126-7
+* Kvilekval K, Fedorov D, Obara B, Singh A, Manjunath BS. Bisque: a platform for bioimage analysis and management. Bioinformatics. 2010 Feb 15;26(4):544-52. doi: 10.1093/bioinformatics/btp699. Epub 2009 Dec 22. PMID: 20031971.
 
 ## Active Developers
 
