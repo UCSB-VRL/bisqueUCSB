@@ -32,7 +32,6 @@ The official documentation covers the [BisQue cloud service](https://bisque.ece.
 
 * Amil Khan  (BisQue Team)
 * Satish Kumar  (BisQue Team)
-* Griffin Danninger
 * Mike Goebel
 
 ### Built With
