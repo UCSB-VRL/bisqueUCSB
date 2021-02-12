@@ -4,24 +4,25 @@ import argparse
 import numpy as np
 import matplotlib.pyplot as plt
 
+import tifffile, json
 from scipy import ndimage as ndi
 from skimage.io import imread
+from skimage.color import rgb2gray
 from skimage.transform import resize
 from skimage.feature import peak_local_max
 from skimage.measure import label, regionprops
-from skimage.segmentation import find_boundaries
-from skimage.morphology import h_minima, watershed, remove_small_objects
+from skimage.segmentation import find_boundaries, watershed
+from skimage.morphology import h_minima, remove_small_objects
 
-
-#logging.basicConfig(filename='PythonScript.log',filemode='a',level=logging.DEBUG)
-#log = logging.getLogger('bq.modules')
+# logging.basicConfig(filename='PythonScript.log',filemode='a',level=logging.DEBUG)
+# log = logging.getLogger('bq.modules')
 
 
 def checkDir(dirPath):
     if not os.path.exists(dirPath):
         os.makedirs(dirPath)
 
-#Adapted from https://stackoverflow.com/questions/17190649/how-to-obtain-a-gaussian-filter-in-python
+# Adapted from https://stackoverflow.com/questions/17190649/how-to-obtain-a-gaussian-filter-in-python
 def gauss2D(shape=(10,10),sigma=0.5):
     """
     2D gaussian mask - should give the same result as MATLAB's
@@ -62,36 +63,61 @@ def getOptThreshold(thresholdMetrics):
 
     return optThresh
     
-def main(input_dir,output_dir,area_thresh,plot_segment):
+def main(input_tiff, output_dir, area_thresh=500, plot_segment=False):
     checkDir(output_dir)
 
     ## DEFAULT VALUES ##
     img_gray = True
     thresh_jump = 0.005
-    threshRange = np.arange(0.02,0.08+thresh_jump,thresh_jump)
-    imgList = sorted(os.listdir(input_dir))
-    
-    outputFiles = []
+    threshRange = np.arange(0.02, 0.08+thresh_jump,thresh_jump)
+    # imgList = sorted(os.listdir(input_dir))
 
-    for idx,imgPath in enumerate(imgList):
-        threshMatrix = np.zeros((len(threshRange),5))
+    ## Read metadata ##
+    with tifffile.TiffFile(input_tiff) as tiff:
+        imMeta = {}
+        page = tiff.pages[0]
+        tags = page.tags
+        for tag in tags:
+            imMeta[tag] = tags[tag].value
+        imMeta = json.dumps(imMeta)
 
-        img = imread(os.path.join(input_dir,imgPath),img_gray)
-        gBlurImg = ndi.convolve(img.astype(float),gauss2D(shape=(10,10),sigma=15),mode='nearest')    
-    
+
+    ## Read stack ##
+    imgList = tifffile.imread(input_tiff)
+
+    num_slices = imgList.shape[0]
+    # outputFiles = []
+    masks = []
+    for idx, img_idx in enumerate(range(num_slices)):
+        threshMatrix = np.zeros((len(threshRange), 5))
+        print(idx)
+        # img = imread(os.path.join(input_dir,imgPath),img_gray)
+
+        img = resize(rgb2gray(imgList[img_idx].astype('uint8')), (512, 512))
+
+        gBlurImg = ndi.convolve(img.astype(float), gauss2D(shape=(10, 10), sigma=15), mode='nearest')
    
         for idx_t, threshold in enumerate(threshRange):        
-            labels, labels_bd = getWatershed(gBlurImg,threshold,area_thresh=500)
+            labels, labels_bd = getWatershed(gBlurImg, threshold, area_thresh=500)
             regions = regionprops(labels)
             area = [region.area for region in regions]
-            area_max_idx = np.argmax(area)
-            area[np.argmax(area)] =0
-            threshMatrix[idx_t,:] = [threshold, len(area), np.mean(area), np.std(area), area_max_idx]
-        
+            try:
+                area_max_idx = np.argmax(area)
+                area[np.argmax(area)] = 0
+            except:
+                area_max_idx = -1
+                print("[INFO] No max area found")
+                continue
+            threshMatrix[idx_t, :] = [threshold, len(area), np.mean(area), np.std(area), area_max_idx]
         
         optThresh = getOptThreshold(threshMatrix)
-        labels, labels_bd = getWatershed(gBlurImg,optThresh,area_thresh=500)
-    
+        try:
+            labels, labels_bd = getWatershed(gBlurImg, optThresh, area_thresh=500)
+        except:
+            print("[INFO] Unable to segment slice #{}. Generating empty mask.".format(idx))
+            labels_bd = np.zeros_like(gBlurImg)
+
+        masks.append(labels_bd)
         if plot_segment == True:
             fig, axes = plt.subplots(ncols=3, figsize=(9, 3), sharex=True, sharey=True)
             ax = axes.ravel()
@@ -110,10 +136,19 @@ def main(input_dir,output_dir,area_thresh,plot_segment):
             output_file_path = os.path.join(output_dir,f_name +'_seg' + f_ext)
             plt.savefig(output_file_path)
             output_file = imread(output_file_path)
-            #plt.show()
-        #print('Optimal Threshold = {}'.format(optThresh))
-        outputFiles.append(output_file)  
-    return outputFiles   
+            # plt.show()
+        # print('Optimal Threshold = {}'.format(optThresh))
+        # outputFiles.append(output_file)
+
+
+    filename = input_tiff.split('/')[-1]
+    outputFile = os.path.join(output_dir, filename + '_seg.tif')
+
+    with tifffile.TiffWriter(outputFile) as tif:
+        for i in range(len(masks)):
+
+            tif.save(masks[i].astype(float), extratags=[(270, 's', 1, imMeta)])
+    return outputFile
             
 
 if __name__ == '__main__':
@@ -128,10 +163,10 @@ if __name__ == '__main__':
 
     input_dir = args.input_dir
     output_dir = args.output_dir
-    plot_segment = True #args.plot_segment
+    plot_segment = args.plot_segment
     area_thresh = args.area_thresh
 
-    outputFiles = main(input_dir,output_dir,area_thresh,plot_segment)
+    outputFiles = main(input_dir, output_dir, area_thresh, plot_segment)
     #print(np.array(outputFiles).shape)
 
 

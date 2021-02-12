@@ -15,16 +15,11 @@
     </tag>
 
     <tag name="outputs">
-         <tag name="Segmented Image" type="image">
+         <tag name="Segmentation" type="image">
             <template>
                 <tag name="label" value="Segmented Image." />                
             </template>
          </tag>
-		<tag name="Metadata">
-            <template>
-                <tag name="label" value="Metadata" />
-            </template>
-        </tag>
     </tag>
 
 
