@@ -7,6 +7,7 @@ RUN apt-get -y update                                            && \
 RUN apt-get -y install python-lxml python-numpy
 RUN apt-get -y install python-pip
 RUN apt-get -y install python-scipy python-configparser python-h5py
+RUN pip install tqdm
 RUN pip install pymks
 RUN pip install tables scipy
 RUN pip install --user --install-option="--prefix=" -U scikit-learn==0.19.1

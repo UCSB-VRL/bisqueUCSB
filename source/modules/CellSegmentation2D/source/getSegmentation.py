@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 import tifffile, json
+from tqdm import tqdm
 from scipy import ndimage as ndi
 from skimage.io import imread
 from skimage.color import rgb2gray
@@ -77,9 +78,10 @@ def main(input_tiff, output_dir, area_thresh=500, plot_segment=False):
         imMeta = {}
         page = tiff.pages[0]
         tags = page.tags
+        # import pdb; pdb.set_trace()
         for tag in tags:
-            imMeta[tag] = tags[tag].value
-        imMeta = json.dumps(imMeta)
+            imMeta[tag.name] = tag.value
+        # imMeta = json.dumps(imMeta)
 
 
     ## Read stack ##
@@ -88,9 +90,9 @@ def main(input_tiff, output_dir, area_thresh=500, plot_segment=False):
     num_slices = imgList.shape[0]
     # outputFiles = []
     masks = []
-    for idx, img_idx in enumerate(range(num_slices)):
+    for idx, img_idx in enumerate(tqdm(range(num_slices), desc="Segmenting Slices")):
         threshMatrix = np.zeros((len(threshRange), 5))
-        print(idx)
+        # print(idx)
         # img = imread(os.path.join(input_dir,imgPath),img_gray)
 
         img = resize(rgb2gray(imgList[img_idx].astype('uint8')), (512, 512))
@@ -135,19 +137,17 @@ def main(input_tiff, output_dir, area_thresh=500, plot_segment=False):
             f_name, f_ext = os.path.splitext(os.path.basename(imgPath))
             output_file_path = os.path.join(output_dir,f_name +'_seg' + f_ext)
             plt.savefig(output_file_path)
-            output_file = imread(output_file_path)
+            # output_file = imread(output_file_path)
             # plt.show()
         # print('Optimal Threshold = {}'.format(optThresh))
         # outputFiles.append(output_file)
 
 
-    filename = input_tiff.split('/')[-1]
+    filename = input_tiff.split('/')[-1].split('.')[0]
     outputFile = os.path.join(output_dir, filename + '_seg.tif')
+    masks = np.expand_dims(np.array(masks).astype(np.uint16),0)
+    tifffile.imsave(outputFile, masks, metadata=imMeta)
 
-    with tifffile.TiffWriter(outputFile) as tif:
-        for i in range(len(masks)):
-
-            tif.save(masks[i].astype(float), extratags=[(270, 's', 1, imMeta)])
     return outputFile
             
 
