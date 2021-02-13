@@ -143,7 +143,7 @@ class PythonScriptWrapper(object):
 
         out_imgxml="""<tag name="Enhanced" type="image" value="%s">
                 <template>
-                      <tag name="label" value="Output image" />
+                      <tag name="label" value="stack" />
                 </template>
               </tag>""" %(str(self.resimage.get('value')))
 

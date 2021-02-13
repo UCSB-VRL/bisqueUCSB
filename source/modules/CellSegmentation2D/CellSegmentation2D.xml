@@ -17,7 +17,7 @@
     <tag name="outputs">
          <tag name="Segmentation" type="image">
             <template>
-                <tag name="label" value="Segmented Image." />                
+                <tag name="label" value="Segmented Image" />
             </template>
          </tag>
     </tag>

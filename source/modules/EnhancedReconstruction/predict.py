@@ -50,8 +50,8 @@ def main(data_path, output_dir, jump, pretrained_path, force):
         page = tiff.pages[0]
         tags = page.tags
         for tag in tags:
-            imMeta[tag] = tags[tag].value
-        imMeta = json.dumps(imMeta)
+            imMeta[tag.name] = tag.value
+        # imMeta = json.dumps(imMeta)
 
     data = tifffile.imread(data_path)
     num_slices, h, w = data.shape
@@ -86,16 +86,15 @@ def main(data_path, output_dir, jump, pretrained_path, force):
 
         outputFile = os.path.join(output_dir, filename.split('.')[0] + '_enhanced.tif')
         print("Output Stored at:", outputFile)
-        with tifffile.TiffWriter(outputFile) as tif:
-            for i in range(len(enhanced_data)):
-                tif.save(enhanced_data[i].astype('uint8'), extratags=[(270, 's', 1, imMeta)])
+        enhanced_data = np.expand_dims(enhanced_data[:,0,...],0)
+        tifffile.imsave(outputFile, enhanced_data.astype(np.uint16), metadata=imMeta)
         return outputFile
 
 
 def invTransform(img, transform_out):
     img = img.squeeze().detach().cpu()
     img = transform_out(img)
-    img = ImageEnhance.Sharpness(img).enhance(5)
+    img = ImageEnhance.Sharpness(img).enhance(10)
     img = ImageEnhance.Contrast(img).enhance(0.95)
     # img = np.array(img)
     return img

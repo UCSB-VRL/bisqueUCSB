@@ -132,7 +132,7 @@ class PythonScriptWrapper(object):
 
         out_imgxml="""<tag name="Segmentation" type="image" value="%s">
                 <template>
-                      <tag name="label" value="Output image" />
+                      <tag name="label" value="Segmented Image" />
                 </template>
               </tag>""" %(str(self.resimage.get('value')))
 

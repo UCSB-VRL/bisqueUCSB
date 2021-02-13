@@ -34,9 +34,9 @@
     </tag>
 
     <tag name="outputs">
-         <tag name="output_image" type="image">
+         <tag name="Enhanced" type="image">
             <template>
-                <tag name="label" value="Reconstructed Stack" />                
+                <tag name="label" value="stack" />
             </template>
          </tag>
 		<tag name="Metadata">
