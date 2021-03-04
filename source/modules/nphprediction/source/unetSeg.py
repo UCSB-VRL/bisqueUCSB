@@ -205,9 +205,9 @@ def unetPredict(BASE, gpu=False):
 	net.seg3 = nn.Conv3d(128, num_classes, kernel_size=(1,1,1), stride=(1,1,1))
 	net.seg2 = nn.Conv3d(64, num_classes, kernel_size=(1,1,1), stride=(1,1,1))
 	net.seg1 = nn.Conv3d(32, num_classes, kernel_size=(1,1,1), stride=(1,1,1))
-	net.seg3.weight = nn.Parameter(unet.seg3.weight)
-	net.seg2.weight = nn.Parameter(unet.seg2.weight)
-	net.seg1.weight = nn.Parameter(unet.seg1.weight)
+	net.seg3.weight = nn.Parameter(net.seg3.weight)
+	net.seg2.weight = nn.Parameter(net.seg2.weight)
+	net.seg1.weight = nn.Parameter(net.seg1.weight)
 
 	net.cpu()
 	if gpu:
