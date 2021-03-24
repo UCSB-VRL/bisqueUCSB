@@ -6,6 +6,9 @@
 
 BisQue is a web-based platform specifically designed to provide researchers with organizational and quantitative analysis tools for up to 5D image data. Users can extend BisQue by creating their own modules that take advantage of cutting edge machine learning algorithms. BisQue’s extensibility stems from two core concepts: flexible metadata facility and an open web-based architecture. Together these empower researchers to create, develop and share novel multimodal data analyses.
 
+
+![](docs/images/bisqueviewer2.gif)
+
 ### Features
 - Bisque is free and open-source
 - Flexible textual and graphical annotations
