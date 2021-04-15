@@ -121,9 +121,8 @@ class ServiceRegistryController (ServiceController):
     """Access to the nodes services"""
     service_type = "services"
 
-    @expose("etree:resource", content_type="text/xml")
+    @expose(content_type='text/xml')
     def index(self):
-        #response.content_type = "application/xml"
         resource = etree.Element ('resource')
         for ty, e in  service_registry.get_services().items():
             for i in e.instances :
@@ -131,7 +130,7 @@ class ServiceRegistryController (ServiceController):
                                             name='service',
                                             type=ty,
                                             value=i.url)
-        return dict (resource = resource)
+        return etree.tostring(resource)
 
 
     @expose ()

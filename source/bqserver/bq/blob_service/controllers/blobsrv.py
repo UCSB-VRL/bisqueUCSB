@@ -61,11 +61,10 @@ from sqlalchemy.exc import IntegrityError
 #import smokesignal
 
 import tg
-from tg import expose, config, require, abort
+from tg import expose, config, require, abort, use_wsgi_app
 from tg.controllers import RestController, TGController
 #from paste.fileapp import FileApp
 from bq.util.fileapp import BQFileApp
-from pylons.controllers.util import forward
 from paste.deploy.converters import asbool
 #from paste.deploy.converters import asbool
 from repoze.what import predicates
@@ -361,7 +360,8 @@ class BlobServer(RestController, ServiceMixin):
                 disposition = '%sfilename="%s"; filename*="%s"'%(disposition, filename.encode('utf8'), filename.encode('utf8'))
 
             content_type = self.guess_mime(filename)
-            return forward(BQFileApp(localpath,
+            #return forward(BQFileApp(localpath,
+            return use_wsgi_app(BQFileApp(localpath,                         
                                      content_type=content_type,
                                      content_disposition=disposition,).cache_control(max_age=60*60*24*7*6)) # 6 weeks
         except IllegalOperation:

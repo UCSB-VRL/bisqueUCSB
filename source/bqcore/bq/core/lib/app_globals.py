@@ -5,11 +5,15 @@
 __all__ = ['Globals']
 
 import logging
-try:
-    from turbomail.adapters import tm_pylons
-    has_turbomail = True
-except ImportError:
-    has_turbomail = False
+
+#try:
+#    from turbomail.adapters import tm_pylons
+#    has_turbomail = True
+#except ImportError:
+#    has_turbomail = False
+
+
+has_turbomail = False
 
 
 from bq.util.thread_pool import ThreadPool
@@ -25,6 +29,6 @@ class Globals(object):
     def __init__(self):
         """Do nothing, by default."""
         self.services = '';
-        if has_turbomail:
-            tm_pylons.start_extension()
+        #if has_turbomail:
+        #    tm_pylons.start_extension()
         self.pool = ThreadPool(8)

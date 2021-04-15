@@ -541,7 +541,8 @@ def check_mex(mex):
 from tg import  session, request
 from paste.registry import Registry
 from beaker.session import Session, SessionObject
-from pylons.controllers.util import Request
+#from pylons.controllers.util import Request
+from webob import Request
 
 # pylint: disable=W0102
 def async_dbaction (func, args=[], params={}):

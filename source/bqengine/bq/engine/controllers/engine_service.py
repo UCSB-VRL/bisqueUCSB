@@ -62,8 +62,7 @@ from datetime import datetime
 import pkg_resources
 import tg
 #from tg import require
-from tg import config,  expose,  override_template, abort
-from pylons.controllers.util import forward
+from tg import config,  expose,  override_template, abort, use_wsgi_app
 
 
 from paste.fileapp import FileApp
@@ -361,7 +360,8 @@ class EngineModuleResource(BaseController):
                 path = self.filepath(node.get('value'))
                 log.debug('Serving file: %s', path)
                 if os.path.exists(path):
-                    return forward(FileApp(path).cache_control (max_age=60*60*24*7*6))
+                    return use_wsgi_app(FileApp(path).cache_control (max_age=60*60*24*7*6))
+                    #return forward(FileApp(path).cache_control (max_age=60*60*24*7*6))
 
             else:
                 text = node.get ('value', None)
@@ -536,7 +536,8 @@ class EngineModuleResource(BaseController):
 
         static_path = os.path.join (self.path, 'public', *path)
         if os.path.exists(static_path):
-            return forward(FileApp(static_path).cache_control (max_age=60*60*24*7*6))
+            return use_wsgi_app(FileApp(static_path).cache_control (max_age=60*60*24*7*6))
+            #return forward(FileApp(static_path).cache_control (max_age=60*60*24*7*6))
 
         raise abort(404)
 

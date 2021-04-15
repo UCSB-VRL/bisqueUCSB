@@ -5,7 +5,8 @@ import os
 from tg import config, session, request
 from paste.registry import Registry
 from beaker.session import  SessionObject
-from pylons.controllers.util import Request
+#from pylons.controllers.util import Request
+from webob import Request
 from bq.release import __VERSION__
 from bq.core import model
 from bq.util.paths import config_path, defaults_path
@@ -19,7 +20,6 @@ log = logging.getLogger('bq.boostrap')
 def bootstrap(command, conf, vars):
     """Place any commands to setup bq here"""
 
-    log.info("THE REQUEST OBJECT HAS BEEN CALLED =========#######=========\n\n\n\n\n========")
 
     # <websetup.bootstrap.before.auth
     from sqlalchemy.exc import IntegrityError
@@ -27,7 +27,6 @@ def bootstrap(command, conf, vars):
 
     registry = Registry()
     registry.prepare()
-    log.info("THE REQUEST OBJECT HAS BEEN CALLED =========#######=========\n\n\n\n\n========")
     registry.register(session, SessionObject({}))
     registry.register(request, Request.blank('/bootstrap'))
     request.identity = {}

@@ -6,6 +6,11 @@ from tg import request, expose
 __all__ = ['ErrorController']
 
 
+import logging
+
+log = logging.getLogger('bq.admin')
+
+
 class ErrorController(object):
     """
     Generates error documents as and when they are required.
@@ -21,6 +26,7 @@ class ErrorController(object):
     @expose('bq.core.templates.error')
     def document(self, *args, **kwargs):
         """Render the error document"""
+        log.info("Error COntroller is run here ++++++=========== \n\n\n\n======\n\n\n")
         resp = request.environ.get('pylons.original_response')
         default_message = ("<p>We're sorry but we weren't able to process "
                            " this request.</p>")
