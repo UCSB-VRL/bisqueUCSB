@@ -6,12 +6,12 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>1 BisQue Cloud Service | Getting Started with BisQue</title>
   <meta name="description" content="BisQue (Bio-Image Semantic Query User Environment) : Store, visualize,organize and analyze images in the cloud." />
-  <meta name="generator" content="bookdown 0.21 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.22 and GitBook 2.6.7" />
 
   <meta property="og:title" content="1 BisQue Cloud Service | Getting Started with BisQue" />
   <meta property="og:type" content="book" />
   
-  <meta property="og:image" content="images/cover.png" />
+  <meta property="og:image" content="/images/cover.png" />
   <meta property="og:description" content="BisQue (Bio-Image Semantic Query User Environment) : Store, visualize,organize and analyze images in the cloud." />
   
 
@@ -19,7 +19,7 @@
   <meta name="twitter:title" content="1 BisQue Cloud Service | Getting Started with BisQue" />
   
   <meta name="twitter:description" content="BisQue (Bio-Image Semantic Query User Environment) : Store, visualize,organize and analyze images in the cloud." />
-  <meta name="twitter:image" content="images/cover.png" />
+  <meta name="twitter:image" content="/images/cover.png" />
 
 
 
@@ -31,7 +31,7 @@
   
 <link rel="prev" href="docker-installation.html"/>
 <link rel="next" href="how-to-login-or-create-a-new-user.html"/>
-<script src="libs/header-attrs-2.5/header-attrs.js"></script>
+<script src="libs/header-attrs-2.8/header-attrs.js"></script>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -49,8 +49,8 @@
 
 
 
-<link href="libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
-<script src="libs/anchor-sections-1.0/anchor-sections.js"></script>
+<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
 
 
 <style type="text/css">
@@ -117,6 +117,7 @@ code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
+
 <link rel="stylesheet" href="style.css" type="text/css" />
 </head>
 
@@ -176,6 +177,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="" data-path="plant-cell-segmentation.html"><a href="plant-cell-segmentation.html#hyperparameters"><i class="fa fa-check"></i>Hyperparameters</a></li>
 <li class="chapter" data-level="" data-path="plant-cell-segmentation.html"><a href="plant-cell-segmentation.html#cell-features"><i class="fa fa-check"></i>Cell Features</a></li>
 <li><a href="plant-cell-segmentation.html#output"><strong><code>Output</code></strong></a></li>
+</ul></li>
+<li class="chapter" data-level="1.8" data-path="nph-prediction.html"><a href="nph-prediction.html"><i class="fa fa-check"></i><b>1.8</b> NPH Prediction</a>
+<ul>
+<li class="chapter" data-level="" data-path="nph-prediction.html"><a href="nph-prediction.html#overview-4"><i class="fa fa-check"></i>Overview</a></li>
+<li class="chapter" data-level="" data-path="nph-prediction.html"><a href="nph-prediction.html#step-1.-login-1"><i class="fa fa-check"></i>STEP 1. Login</a></li>
+<li class="chapter" data-level="" data-path="nph-prediction.html"><a href="nph-prediction.html#step-2.-upload-images"><i class="fa fa-check"></i>STEP 2. Upload Image(s)</a></li>
+<li class="chapter" data-level="" data-path="nph-prediction.html"><a href="nph-prediction.html#step-3.-go-to-nph-prediction-module-homepage"><i class="fa fa-check"></i>STEP 3. Go To NPH Prediction Module Homepage</a></li>
+<li class="chapter" data-level="" data-path="nph-prediction.html"><a href="nph-prediction.html#step-4.-run-nph-prediction-module"><i class="fa fa-check"></i>STEP 4. Run NPH Prediction Module</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="2" data-path="module-development.html"><a href="module-development.html"><i class="fa fa-check"></i><b>2</b> MODULE DEVELOPMENT</a>
@@ -273,12 +282,13 @@ gitbook.require(["gitbook"], function(gitbook) {
 gitbook.start({
 "sharing": {
 "github": true,
-"facebook": true,
-"twitter": true,
-"linkedin": true,
+"facebook": false,
+"twitter": false,
+"linkedin": false,
 "weibo": false,
-"instapaper": true,
+"instapaper": false,
 "vk": false,
+"whatsapp": false,
 "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
 },
 "fontsettings": {
