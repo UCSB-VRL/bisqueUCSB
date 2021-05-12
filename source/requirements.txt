@@ -41,7 +41,7 @@ docutils==0.13.1
 cssutils==1.0
 #cuisine==0.6.5
 decorator==3.4.0
-ecdsa==0.11
+ecdsa==0.13.3
 furl==0.3.7
 futures==3.0.5
 future==0.16.0
