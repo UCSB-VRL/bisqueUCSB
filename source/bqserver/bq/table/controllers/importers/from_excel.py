@@ -55,7 +55,7 @@ import os
 import sys
 import logging
 import pkg_resources
-from pylons.controllers.util import abort
+from tg import abort
 
 from bq import blob_service
 

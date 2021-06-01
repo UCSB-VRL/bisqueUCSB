@@ -53,7 +53,8 @@ import logging
 import json
 import pkg_resources
 import tempfile
-from pylons.controllers.util import abort
+from tg import abort
+
 from collections import OrderedDict
 
 from bq import blob_service

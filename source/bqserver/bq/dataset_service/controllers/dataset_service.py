@@ -2,7 +2,6 @@ import os
 import logging
 import pkg_resources
 from lxml import etree
-from pylons.i18n import ugettext as _, lazy_ugettext as l_
 from tg import expose, flash, require, request
 from repoze.what import predicates
 from bq.core.service import ServiceController

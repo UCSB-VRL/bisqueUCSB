@@ -61,7 +61,6 @@ import tg
 # pylint: disable=E0611
 # pylint: disable=E1103
 
-from pylons.i18n import ugettext as _, lazy_ugettext as l_
 from lxml import etree
 from tg import expose, flash, config
 from repoze.what import predicates

@@ -90,8 +90,8 @@ from collections import OrderedDict
 import tg
 import transaction
 from paste.proxy import make_proxy
-from pylons.controllers.util import abort
-from tg import controllers, expose, config, request, override_template
+#from pylons.controllers.util import abort
+from tg import controllers, expose, config, request, override_template, abort
 from tg import require
 # pylint: disable=E0611,F0401
 from repoze.what.predicates import not_anonymous
@@ -541,7 +541,8 @@ def check_mex(mex):
 from tg import  session, request
 from paste.registry import Registry
 from beaker.session import Session, SessionObject
-from pylons.controllers.util import Request
+#from pylons.controllers.util import Request
+from webob import Request
 
 # pylint: disable=W0102
 def async_dbaction (func, args=[], params={}):
@@ -634,6 +635,7 @@ def POST_error (mex_url, username, resp, content):
                       value="Problem in dispatch:%s:%s" % (resp['status'], getattr(resp,'reason','Unavailable')))
     log.debug ("MexError: %s " , etree.tostring(mextree))
     # Need to setup current user who is running mex/
+    log.info('HELLO WORLD =====================\n\n\n================')
     registry = Registry()
     registry.prepare()
     registry.register(session, SessionObject({}))

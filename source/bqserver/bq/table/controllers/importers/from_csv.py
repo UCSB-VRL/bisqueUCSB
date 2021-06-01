@@ -57,7 +57,7 @@ import sys
 import logging
 import csv
 
-from pylons.controllers.util import abort
+from tg import abort
 import pandas as pd
 
 

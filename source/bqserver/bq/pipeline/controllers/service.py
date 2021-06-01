@@ -5,10 +5,9 @@ from datetime import datetime
 import logging
 
 #import pkg_resources
-from tg import expose, request
+from tg import expose, request, abort
+
 #from repoze.what import predicates
-from pylons.i18n import ugettext as _, lazy_ugettext as l_
-from pylons.controllers.util import abort
 
 # imports for pipeline server
 from lxml import etree

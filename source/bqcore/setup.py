@@ -26,9 +26,9 @@ setup(
     #url='',
     install_requires=[
         "Pylons==1.0",
-        "WebOb==1.0.8", # WebOb==1.0.8bisque1
+        "WebOb>=1.0.8", # WebOb==1.0.8bisque1
         "decorator>=3.3",
-        "TurboGears2==2.1.5", #TurboGears2==2.1.5bisque
+        "TurboGears2>=2.1.5", #TurboGears2==2.1.5bisque
         "Genshi",
         "zope.sqlalchemy >= 0.4",
         "repoze.tm2 >= 1.0a5",

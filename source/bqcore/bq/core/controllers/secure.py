@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """Sample controller with all its actions protected."""
 from tg import expose, flash
-from pylons.i18n import ugettext as _, lazy_ugettext as l_
 from repoze.what.predicates import has_permission
 #from dbsprockets.dbmechanic.frameworks.tg2 import DBMechanic
 #from dbsprockets.saprovider import SAProvider
@@ -17,12 +16,12 @@ class SecureController(BaseController):
 
     # The predicate that must be met for all the actions in this controller:
     allow_only = has_permission('manage',
-                                msg=l_('Only for people with the "manage" permission'))
+                                msg='Only for people with the "manage" permission')
 
     @expose('bq.core.templates.index')
     def index(self):
         """Let the user know that's visiting a protected controller."""
-        flash(_("Secure Controller here"))
+        flash("Secure Controller here")
         return dict(page='index')
 
     @expose('bq.core.templates.index')

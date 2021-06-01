@@ -65,11 +65,10 @@ from urllib import  unquote
 
 import transaction
 from lxml import etree
-from pylons.controllers.util import abort, redirect
 from repoze.what.predicates import Any, in_group
 #from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError, InvalidRequestError
-from tg import (config,  expose,   request, response)
+from tg import abort, config, expose, redirect, request, response
 
 from bq import data_service
 from bq.client_service.controllers import notify_service
@@ -82,15 +81,10 @@ from bq.data_service.controllers.formats import find_inputer, find_formatter
 from bq.util.paths import data_path
 from bq.util import urlutil
 
-#from bq.image_service.model import  FileAcl
 
 
 log = logging.getLogger('bq.admin')
 
-#from tgext.admin import AdminController
-#class BisqueAdminController(AdminController):
-#    'admin controller'
-#    allow_only = Any (in_group("admin"), in_group('admins'))
 
 # reading log file
 
@@ -280,6 +274,8 @@ class AdminController(ServiceController):
         # TODO dima: add timestamp based read
 
         #log.info ("STARTING table (%s): %s", datetime.now().isoformat(), request.url)
+        
+        log.info("STARTING LOGS........")
         path = request.path_qs.split('/')
         path = [unquote(p) for p in path if len(p)>0]
         operation = path[2] if len(path)>2 else ''
@@ -298,6 +294,7 @@ class AdminController(ServiceController):
         elif operation == 'read':
             # dima, this will only work for local logger
             if log_url is not None:
+                log.info('REDIRECT CALLED')
                 redirect(log_url)
             try:
                 fn = logging.getLoggerClass().root.handlers[0].stream.filename
@@ -592,9 +589,7 @@ class AdminController(ServiceController):
 
         abort(400)
 
-
     def deleteimage(self, imageid=None, **kw):
-        log.debug("image: %s " , str(imageid) )
         image = DBSession.query(Image).filter(Image.id == imageid).first()
         DBSession.delete(image)
         transaction.commit()
@@ -607,6 +602,7 @@ class AdminController(ServiceController):
         # Remove the user from the system for most purposes, but
         # leave the id for statistics purposes.
         user = DBSession.query(User).filter (User.user_name == username).first()
+        log.info("User" + str(user))
         log.debug ("Renaming internal user %s" , str( user))
         if user:
             DBSession.delete(user)
@@ -618,6 +614,7 @@ class AdminController(ServiceController):
         log.debug("ADMIN: Deleting user: %s",  str(user) )
         # delete the access permission
         for p in DBSession.query(TaggableAcl).filter_by(user_id=user.id):
+            log.info("hello world 123")
             log.debug ("KILL ACL %s" , str( p))
             DBSession.delete(p)
         #DBSession.flush()

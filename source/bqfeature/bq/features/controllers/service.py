@@ -22,10 +22,7 @@ from lxml import etree
 import traceback
 from collections import namedtuple
 from paste.fileapp import FileApp
-from pylons.controllers.util import forward
-from pylons.i18n import ugettext as _, lazy_ugettext as l_
-from pylons.controllers.util import abort
-from tg import expose, flash, config, response, request
+from tg import expose, flash, config, response, request, use_wsgi_app
 from bq.core.service import ServiceController
 from bq.util.locks import Locks
 from bq.util.mkdir import _mkdir
@@ -811,7 +808,8 @@ class Hdf(Format):
         with Locks(table.path):
             pass
 
-        return forward(FileApp(table.path, allowed_methods=('GET','POST'), content_type=self.content_type, content_disposition=disposition))
+        return use_wsgi_app(FileApp(table.path, allowed_methods=('GET','POST'), content_type=self.content_type, content_disposition=disposition))
+        #return forward(FileApp(table.path, allowed_methods=('GET','POST'), content_type=self.content_type, content_disposition=disposition))
 
 
 #-------------------------------------------------------------

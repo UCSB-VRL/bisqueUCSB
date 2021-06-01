@@ -6,7 +6,6 @@ import logging
 import pkg_resources
 
 from tempfile import NamedTemporaryFile
-from pylons.i18n import ugettext as _, lazy_ugettext as l_
 from tg import expose, flash, controllers, request
 from repoze.what import predicates
 
@@ -45,7 +44,7 @@ def image_ingest (blob):
     info = image_service.uri(blob_uri).info().get()
     if info==None:
         image=None
-        raise IngestException(_('unable to create image file'))
+        raise IngestException('unable to create image file')
     log.debug ('imageservice=%s' % info)
     #image = data_service.new_image (**info)
     tags = etree.Element('request')
@@ -72,7 +71,7 @@ class ingestController(controllers.RestController, ServiceMixin):
         """Add your first page here.. """
 
         log.info("INGEST /")
-        return dict(msg=_('Hello from ingest'))
+        return dict(msg='Hello from ingest')
 
     @expose(content_type="text/xml")
     def post(self, *path, **kw):

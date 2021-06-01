@@ -60,11 +60,10 @@ import random
 import sqlalchemy
 from sqlalchemy.orm import Query
 
-from pylons.controllers.util import abort
 from paste.deploy.converters import asbool
 
 import tg
-from tg import  expose,  request
+from tg import  expose,  request, abort
 from lxml import etree
 
 from bq.util.hash import is_uniq_code

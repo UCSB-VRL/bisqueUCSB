@@ -27,7 +27,7 @@ function redirect_login (url) {
 
 <div id="loginform" class="login">
 
-<form action="${tg.url('/auth_service/login_handler', came_from = came_from.encode('utf-8'), __logins = login_counter.encode('utf-8'))}" method="POST" id='login_form' class="loginfields">
+<form action="${tg.url('/auth_service/login_handler', params={'came_from':came_from.encode('utf-8'),'__logins':login_counter.encode('utf-8')})}" method="POST" id='login_form' class="loginfields">
 
     <h2>Welcome Back to BisQue!</h2>
 
