@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module name="covidresnet" type="runtime">
+
+    <!-- Comments are OK -->
+    <tag name="inputs">
+        <tag name="resource_url" type="resource">
+            <template>
+		<tag name="label" value="Select CT scan" />
+	            <tag name="accepted_type" value="image" />
+	            <tag name="accepted_type" value="dataset" />
+	            <tag name="prohibit_upload" value="true" />
+            </template>
+        </tag>
+
+        <tag name="mex_url"  type="system-input" />
+        <tag name="bisque_token"  type="system-input" />
+    </tag>
+
+    <tag name="outputs">
+        <template>
+            <tag name="label" value='Metedata' />
+        </template>
+    </tag>
+
+    <tag name="execute_options">
+        <tag name="iterable" value="image_url" type="dataset" />
+        <!-- Example for a blocked iteration -->
+        <tag name="blocked_iter" value="true" />
+    </tag>
+
+    <tag name="module_options" >
+        <tag name="version" value="1" />
+    </tag>
+
+    <tag name="display_options" >
+       <tag name="group" value="Examples" />
+    </tag>
+
+    <tag name="interface">
+        <tag name="javascript" type="file" value="webapp.js" />
+        <tag name="css" type="file" value="webapp.css" />
+    </tag>
+   
+
+    <tag name="title" type="string" value="covidresnet" />
+    <tag name="authors" type="string" value="Shailja, Fei" />
+    <tag name="description" type="string" value="This module provides slicewise prediction for Covid, nonCovid Pnuemonia or Normal." />
+</module>

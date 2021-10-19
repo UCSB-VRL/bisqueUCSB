@@ -1,0 +1,13 @@
+numpy
+torch==1.6.0
+torchvision==0.7.0
+nibabel
+lxml
+pillow
+SimpleITK
+git+https://github.com/JoHof/lungmask
+opencv-python
+scikit-learn
+tables
+requests-toolbelt
+requests==2.10.0
