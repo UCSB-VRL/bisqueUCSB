@@ -31,7 +31,7 @@ The official documentation covers the [BisQue cloud service](https://bisque.ece.
 * Polonsky, A.T., Lang, C.A., Kvilekval, K.G. et al. Integr Mater Manuf Innov (2019) 8: 37. https://doi.org/10.1007/s40192-019-00126-7
 * Kvilekval K, Fedorov D, Obara B, Singh A, Manjunath BS. Bisque: a platform for bioimage analysis and management. Bioinformatics. 2010 Feb 15;26(4):544-52. doi: 10.1093/bioinformatics/btp699. Epub 2009 Dec 22. PMID: 20031971.
 
-## Active Developers
+## Team
 
 * Amil Khan  (BisQue Team)
 * Satish Kumar  (BisQue Team)
@@ -50,8 +50,6 @@ The official documentation covers the [BisQue cloud service](https://bisque.ece.
 
 ### Acknowledgments
 
-[__License__](https://github.com/UCSB-VRL/bisqueUCSB/blob/master/source/LICENSE)
-
-* Kristian Kvilekval, Dmitry Fedorov, Christian Lang 
 * NSF SI2-SSI No.1664172, NSF MCB Grant No. 1715544
-* Cyverse at University of Arizona
+
+[__License__](https://github.com/UCSB-VRL/bisqueUCSB/blob/master/source/LICENSE)
