@@ -62,31 +62,44 @@ class PythonScriptWrapper(object):
         self.bqSession.update_mex( 'Returning results')
 
         log.info('Total number of slices:{}.\nNumber of slices predicted as Covid:{}.\nNumber of slices predicted as PNA: {}\nNumber of slices predicted as Normal:{}'.format(z, covid, pna, normal))
-        self.output_resources.append([self.image_name, z, covid, pna, normal])
+        out_xml = """<tag name="Metadata">
+                    <tag name="Filename" type="string" value="%s"/>
+                    <tag name="Depth" type="string" value="%s"/>
+                    <tag name="Prediction" type="string" value="%s"/>
+                        </tag>""" % (self.image_name, str(z), str(covid) )
+        
+        self.output_resources.append(out_xml)
 
-
+        
+        
     def setup(self):
         """
         Pre-run initialization
-
         """
-
         self.bqSession.update_mex('Initializing...')
         self.mex_parameter_parser(self.bqSession.mex.xmltree)
         self.output_resources = []
 
-
     def teardown(self):
-##        """
-##        Post the results to the mex xml
-##        """
-        self.bqSession.update_mex( 'Returning results')
-        
-        outputTag = etree.Element('tag', name ='outputs')
-        outputTag.set('filemname',self.output_resources[0][0])
-        outputTag.set('depth',str(self.output_resources[0][1]))
-        print(etree.tostring(outputTag))
-        log.debug('Output Mex results: %s'%(outputTag))
+        """
+        Post the results to the mex xml
+        """
+        self.bqSession.update_mex('Returning results')
+        outputTag = etree.Element('tag', name='outputs')
+        for r_xml in self.output_resources:
+            if isinstance(r_xml, str):
+                r_xml = etree.fromstring(r_xml)
+            res_type = r_xml.get('type', None) or r_xml.get(
+                'resource_type', None) or r_xml.tag
+            # append reference to output
+            if res_type in ['table', 'image']:
+                outputTag.append(r_xml)
+                #etree.SubElement(outputTag, 'tag', name='output_table' if res_type=='table' else 'output_image', type=res_type, value=r_xml.get('uri',''))
+            else:
+                outputTag.append(r_xml)
+                #etree.SubElement(outputTag, r_xml.tag, name=r_xml.get('name', '_'), type=r_xml.get('type', 'string'), value=r_xml.get('value', ''))
+        log.debug('Output Mex results: %s' %
+                  (etree.tostring(outputTag, pretty_print=True)))
         self.bqSession.finish_mex(tags=[outputTag])
     
 
