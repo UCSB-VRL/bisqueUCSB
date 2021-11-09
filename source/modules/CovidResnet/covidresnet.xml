@@ -16,9 +16,9 @@
         <tag name="bisque_token"  type="system-input" />
     </tag>
 
-    <tag name="outputs">
+    <tag name="Metadata">
         <template>
-            <tag name="label" value='Metedata' />
+            <tag name="label" value='Metadata' />
         </template>
     </tag>
 
