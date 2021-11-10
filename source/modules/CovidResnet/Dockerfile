@@ -56,7 +56,6 @@ COPY predict.py /module/
 COPY predict_nomask.py /module/
 
 COPY epoch30_ResNet152.pt /module/
-COPY resnet152-b121ed2d.pth /module/
 
 ENV PATH /module:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
