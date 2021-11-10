@@ -56,20 +56,35 @@ class PythonScriptWrapper(object):
             bq.fail_mex(msg = "Exception during pre-process: %s" % str(e))
 
             return
-        #call script
+
         z, covid, pna, normal= predict_label(log, self.image_name)
 
         self.bqSession.update_mex( 'Returning results')
 
-        log.info('Total number of slices:{}.\nNumber of slices predicted as Covid:{}.\nNumber of slices predicted as PNA: {}\nNumber of slices predicted as Normal:{}'.format(z, covid, pna, normal))
+#         log.info('Total number of slices:{}.\nNumber of slices predicted as Covid:{}.\nNumber of slices predicted as PNA: {}\nNumber of slices predicted as Normal:{}'.format(z, covid, pna, normal))
+        
+#         self.output_resources.append(out_xml)
+        out_imgxml = """<tag name="Segmentation" type="image" value="%s">
+                        <template>
+                          <tag name="label" value="Segmented Image" />
+                        </template>
+                      </tag>""" % (str(self.options.resourceURL))
+
+        # format timestamp
+        # outputs = predict( bq, log, **self.options.__dict__ )
+        #outtable_xml = table_service.store_array(maxMisorient, name='maxMisorientData')
+        
         out_xml = """<tag name="Metadata">
                     <tag name="Filename" type="string" value="%s"/>
                     <tag name="Depth" type="string" value="%s"/>
                     <tag name="Prediction" type="string" value="%s"/>
                         </tag>""" % (self.image_name, str(z), str(covid) )
         
-        self.output_resources.append(out_xml)
-
+        outputs = [out_imgxml, out_xml]
+        log.debug(outputs)
+        # save output back to BisQue
+        for output in outputs:
+            self.output_resources.append(output)
         
         
     def setup(self):

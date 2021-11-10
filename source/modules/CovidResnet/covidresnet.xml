@@ -17,14 +17,21 @@
     </tag>
 
     <tag name="outputs">
-        <template>
-            <tag name="label" value='Metedata' />
-        </template>
+	<tag name="Segmentation" type="image">
+            <template>
+                <tag name="label" value="Segmentation image" />
+            </template>
+    	</tag> 
+  
+	<tag name="Metadata">
+	    <template>
+                <tag name="label" value='Metadata' />
+            </template>
+    	</tag> 
     </tag>
 
     <tag name="execute_options">
         <tag name="iterable" value="image_url" type="dataset" />
-        <!-- Example for a blocked iteration -->
         <tag name="blocked_iter" value="true" />
     </tag>
 
@@ -33,7 +40,7 @@
     </tag>
 
     <tag name="display_options" >
-       <tag name="group" value="Examples" />
+       <tag name="group" value="Segmentation" />
     </tag>
 
     <tag name="interface">
