@@ -78,7 +78,7 @@ class PythonScriptWrapper(object):
                     <tag name="Filename" type="string" value="%s"/>
                     <tag name="Depth" type="string" value="%s"/>
                     <tag name="Prediction" type="string" value="%s"/>
-                        </tag>""" % (self.image_name, str(z), str(covid) )
+                        </tag>""" % (str(self.image_name), str(z), str(covid) )
         
         outputs = [out_imgxml, out_xml]
         log.debug(outputs)
