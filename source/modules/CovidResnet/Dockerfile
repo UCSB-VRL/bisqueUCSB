@@ -53,7 +53,6 @@ COPY PythonScriptWrapper.py /module/
 # COPY pydist /module/pydist/
 # RUN python setup.py install && cd ..
 COPY predict.py /module/
-COPY predict_nomask.py /module/
 
 COPY epoch30_ResNet152.pt /module/
 

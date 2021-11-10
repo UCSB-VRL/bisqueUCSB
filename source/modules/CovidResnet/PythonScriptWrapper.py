@@ -13,7 +13,7 @@ from bqapi.comm import BQCommError
 from bqapi.comm import BQSession
 from bqapi.util import fetch_blob
 
-from predict import predict_label_fake as predict_label
+from predict import predict_label
 
 
 class ScriptError(Exception):
@@ -77,8 +77,10 @@ class PythonScriptWrapper(object):
         out_xml = """<tag name="Metadata">
                     <tag name="Filename" type="string" value="%s"/>
                     <tag name="Depth" type="string" value="%s"/>
-                    <tag name="Prediction" type="string" value="%s"/>
-                        </tag>""" % (str(self.image_name), str(z), str(covid) )
+                     <tag name="Prediction" type="string" value="%s"/>   
+                     </tag>""" % (self.image_name, str(z), str(covid))
+#                    <tag name="Depth" type="string" value="%s"/>
+#                     <tag name="Prediction" type="string" value="%s"/>
         
         outputs = [out_imgxml, out_xml]
         log.debug(outputs)

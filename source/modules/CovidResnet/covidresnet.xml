@@ -32,6 +32,7 @@
 
     <tag name="execute_options">
         <tag name="iterable" value="image_url" type="dataset" />
+        <!-- Example for a blocked iteration -->
         <tag name="blocked_iter" value="true" />
     </tag>
 
@@ -40,7 +41,7 @@
     </tag>
 
     <tag name="display_options" >
-       <tag name="group" value="Segmentation" />
+       <tag name="group" value="Metadata" />
     </tag>
 
     <tag name="interface">
