@@ -32,6 +32,7 @@ RUN pip install SimpleITK
 RUN pip install git+https://github.com/JoHof/lungmask
 RUN pip install opencv-python
 RUN pip install -U scikit-learn
+RUN pip install torchsummary
 RUN pip install tables
 # RUN pip install -i https://biodev.ece.ucsb.edu/py/bisque/prod/+simple bisque-api==0.5.9
 # RUN pip install -i https://biodev.ece.ucsb.edu/py/bisque/prod/+simple

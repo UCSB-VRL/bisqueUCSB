@@ -4,6 +4,8 @@ from lxml import etree
 import optparse
 import logging
 import os
+import nibabel as nib
+import numpy as np
 # It is importing from source
 
 logging.basicConfig(filename='PythonScript.log', filemode='a', level=logging.DEBUG) 
@@ -57,10 +59,21 @@ class PythonScriptWrapper(object):
 
             return
 
-        z, covid, pna, normal= predict_label(log, self.image_name)
+        input_image, heatmap, covid, pna, normal= predict_label(log, self.image_name)
+        heatmap=np.transpose(heatmap, (1, 2, 0))
+        input_image=np.transpose(input_image, (1, 2, 0))
+        
+        img = nib.Nifti1Image(input_image*heatmap, np.eye(4))  # Save axis for data (just identity)
 
+        img.header.get_xyzt_units()
+        self.outfiles=self.image_name+'heatmap.nii'
+        img.to_filename(self.outfiles)  # Save as NiBabel file
+
+        z=input_image.shape[2]
         self.bqSession.update_mex( 'Returning results')
 
+        bq.update_mex('Uploading Mask result')
+        self.resimage = self.uploadimgservice(bq, self.outfiles)
 #         log.info('Total number of slices:{}.\nNumber of slices predicted as Covid:{}.\nNumber of slices predicted as PNA: {}\nNumber of slices predicted as Normal:{}'.format(z, covid, pna, normal))
         
 #         self.output_resources.append(out_xml)
@@ -68,19 +81,16 @@ class PythonScriptWrapper(object):
                         <template>
                           <tag name="label" value="Segmented Image" />
                         </template>
-                      </tag>""" % (str(self.options.resourceURL))
+                      </tag>""" % (str(self.resimage.get('value')))
 
-        # format timestamp
-        # outputs = predict( bq, log, **self.options.__dict__ )
-        #outtable_xml = table_service.store_array(maxMisorient, name='maxMisorientData')
         
         out_xml = """<tag name="Metadata">
                     <tag name="Filename" type="string" value="%s"/>
                     <tag name="Depth" type="string" value="%s"/>
-                     <tag name="Prediction" type="string" value="%s"/>   
-                     </tag>""" % (self.image_name, str(z), str(covid))
-#                    <tag name="Depth" type="string" value="%s"/>
-#                     <tag name="Prediction" type="string" value="%s"/>
+                     <tag name="Covid" type="string" value="%s"/>   
+                     <tag name="Pneumonia" type="string" value="%s"/>
+                     <tag name="normal" type="string" value="%s"/>
+                     </tag>""" % (self.image_name, str(z), str(covid), str(pna), str(normal))
         
         outputs = [out_imgxml, out_xml]
         log.debug(outputs)
@@ -137,6 +147,37 @@ class PythonScriptWrapper(object):
         else:
             log.debug('No Inputs Found on MEX!')
 
+    def uploadimgservice(self, bq, filename):
+        """
+        Upload mask to image_service upon post process
+        """
+        mex_id = bq.mex.uri.split('/')[-1]
+
+        log.info('Up Mex: %s' % (mex_id))
+        log.info('Up File: %s' % (filename))
+        resource = etree.Element(
+            'image', name='ModuleExecutions/covidresnet/'+filename)
+        t = etree.SubElement(resource, 'tag', name="datetime", value='time')
+        log.info('Creating upload xml data: %s ' %
+                 str(etree.tostring(resource, pretty_print=True)))
+        # os.path.join("ModuleExecutions","CellSegment3D", filename)
+        filepath = filename
+        # use import service to /import/transfer activating import service
+        r = etree.XML(bq.postblob(filepath, xml=resource)).find('./')
+        if r is None or r.get('uri') is None:
+            bq.fail_mex(msg="Exception during upload results")
+        else:
+            log.info('Uploaded ID: %s, URL: %s' %
+                     (r.get('resource_uniq'), r.get('uri')))
+            bq.update_mex('Uploaded ID: %s, URL: %s' %
+                          (r.get('resource_uniq'), r.get('uri')))
+            self.furl = r.get('uri')
+            self.fname = r.get('name')
+            resource.set('value', self.furl)
+
+        return resource            
+            
+            
     def validate_input(self):
         """
             Check to see if a mex with token or user with password was provided.
