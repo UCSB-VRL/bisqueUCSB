@@ -59,17 +59,17 @@ class PythonScriptWrapper(object):
 
             return
 
-        input_image, heatmap, covid, pna, normal= predict_label(log, self.image_name)
-        heatmap=np.transpose(heatmap, (1, 2, 0))
-        input_image=np.transpose(input_image, (1, 2, 0))
+        heatmap, covid, pna, normal= predict_label(log, self.image_name)
+#        heatmap=np.transpose(heatmap, (1, 2, 0))
+#        input_image=np.transpose(input_image, (1, 2, 0))
         
-        img = nib.Nifti1Image(input_image*heatmap, np.eye(4))  # Save axis for data (just identity)
+        img = nib.Nifti1Image(input_image, np.eye(4))  # Save axis for data (just identity)
 
         img.header.get_xyzt_units()
         self.outfiles=self.image_name+'heatmap.nii'
         img.to_filename(self.outfiles)  # Save as NiBabel file
 
-        z=input_image.shape[2]
+        z=input_image.shape[0]
         self.bqSession.update_mex( 'Returning results')
 
         bq.update_mex('Uploading Mask result')

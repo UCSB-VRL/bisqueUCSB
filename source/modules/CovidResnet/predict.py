@@ -126,6 +126,11 @@ def generateHeatmap(input_image, activation):
     for i in range(len(activation)):
         heatmap[i,:,:]=skimage.transform.resize(activation[i][0], heatmap.shape[1:])    
     return heatmap
+
+def generateMasked(input_image):
+    return np.transpose(input_iamge, (1,2,0))
+
+
 def get_activation(name):
     def hook(model, input, output):
         activation[name] = output.detach()
@@ -175,11 +180,11 @@ def predict_label(log, image_name):
         
         
 
-        features.append(getCAM(activated_features.features, weight_softmax, class_idx))
-        
+#        features.append(getCAM(activated_features.features, weight_softmax, class_idx))
+#     heatmap=generateMasked(input_image)     
     heatmap=generateHeatmap(input_image, features)
-    
-    return  input_image, heatmap, covid, pna, normal
+ 
+    return  heatmap, covid, pna, normal
 
 def predict_label_fake(log, image_name):
     return 100, 100, 0, 0
