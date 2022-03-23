@@ -1,14 +1,14 @@
 ![](docs/images/bq-github-banner.svg)
 
 
-## Overview 
+## 🔭 Overview 
 
 BisQue is a web-based platform specifically designed to provide researchers with organizational and quantitative analysis tools for up to 5D image data. Users can extend BisQue by creating their own modules that take advantage of cutting edge machine learning algorithms. BisQue’s extensibility stems from two core concepts: flexible metadata facility and an open web-based architecture. Together these empower researchers to create, develop and share novel multimodal data analyses.
 
 
 ![](docs/images/bisqueviewer.gif)
 
-### Features
+### 💡 Features
 - Bisque is free and open-source
 - Flexible textual and graphical annotations
 - Cloud scalability: PBs of images, millions of annotations
@@ -18,7 +18,7 @@ BisQue is a web-based platform specifically designed to provide researchers with
 - 100+ biological image formats 
 - Very large 5D images (100+ GB)
 
-## Getting Started
+## ✅ Getting Started
 
 ### Docker Installation  
 
@@ -140,7 +140,7 @@ docker stop {YOUR_CONTAINER_NAME} #  <--- If you named the container
 
 
 
-## Documentation
+## 💾 Documentation
 
 [__BisQue Documentation__](https://ucsb-vrl.github.io/bisqueUCSB/)
 
