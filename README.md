@@ -148,9 +148,11 @@ The official documentation covers the [BisQue cloud service](https://bisque.ece.
 
 ## Papers using BisQue
 
-* Latypov, M.I., Khan, A., Lang, C.A. et al. Integr Mater Manuf Innov (2019) 8: 52. https://doi.org/10.1007/s40192-019-00128-5
-* Polonsky, A.T., Lang, C.A., Kvilekval, K.G. et al. Integr Mater Manuf Innov (2019) 8: 37. https://doi.org/10.1007/s40192-019-00126-7
-* Kvilekval K, Fedorov D, Obara B, Singh A, Manjunath BS. Bisque: a platform for bioimage analysis and management. Bioinformatics. 2010 Feb 15;26(4):544-52. doi: 10.1093/bioinformatics/btp699. Epub 2009 Dec 22. PMID: 20031971.
+* 
+  Zhang, Angela, Amil Khan, Saisidharth Majeti, Judy Pham, Christopher Nguyen, Peter Tran, Vikram Iyer, Ashutosh Shelat, Jefferson Chen, and B S Manjunath. __“Automated Segmentation and Connectivity Analysis for Normal Pressure Hydrocephalus.”__ BME Frontiers 2022 (2022): 1–13.
+* Latypov, Marat I., Amil Khan, Christian A. Lang, Kris Kvilekval, Andrew T. Polonsky, McLean P. Echlin, Irene J. Beyerlein, B. S. Manjunath, and Tresa M. Pollock. __"BisQue for 3D materials science in the cloud: microstructure–property linkages."__ Integrating Materials and Manufacturing Innovation 8, no. 1 (2019): 52-65.
+* Polonsky, Andrew T., Christian A. Lang, Kristian G. Kvilekval, Marat I. Latypov, McLean P. Echlin, B. S. Manjunath, and Tresa M. Pollock. __"Three-dimensional analysis and reconstruction of additively manufactured materials in the cloud-based BisQue infrastructure."__ Integrating Materials and Manufacturing Innovation 8, no. 1 (2019): 37-51.
+* Kvilekval K, Fedorov D, Obara B, Singh A, Manjunath BS. __Bisque: a platform for bioimage analysis and management__. Bioinformatics. 2010 Feb 15;26(4):544-52. doi: 10.1093/bioinformatics/btp699. Epub 2009 Dec 22. PMID: 20031971.
 
 ## Team
 
