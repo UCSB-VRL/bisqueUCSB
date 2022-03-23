@@ -1,4 +1,4 @@
-![](source/bqcore/bq/core/public/images/bqlogo_git.png)
+![](docs/images/bq-github-banner.svg)
 
 ***
 
