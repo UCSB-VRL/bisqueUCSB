@@ -8,7 +8,7 @@ BisQue is a web-based platform specifically designed to provide researchers with
 
 ![](docs/images/bisqueviewer.gif)
 
-### 💡 Features
+## 💡 Features
 - Bisque is free and open-source
 - Flexible textual and graphical annotations
 - Cloud scalability: PBs of images, millions of annotations
