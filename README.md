@@ -110,7 +110,7 @@ docker exec -it amilworks/bisque-module-dev:git bash
 ```
 The `-it` flag enables you to run interactively inside the container. There are numerous other flags you can take advantage of as shown here:
 
-```sh
+```bash
 --detach ,      -d    Detached mode: run command in the background
 --detach-keys         Override the key sequence for detaching a container
 --env ,         -e    Set environment variables
