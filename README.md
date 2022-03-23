@@ -20,11 +20,10 @@ BisQue is a web-based platform specifically designed to provide researchers with
 
 ## Getting Started
 
-### Docker Installation  {-}
+### Docker Installation  
 
----
 
-#### Download {-}
+#### Download 
 
 Ensure you have the latest release by first running the following pull command:
 
@@ -32,9 +31,9 @@ Ensure you have the latest release by first running the following pull command:
   docker pull amilworks/bisque-module-dev:git
 ```
 
-### __Intro: BisQue Docker Container__ {-}
+### __Intro: BisQue Docker Container__ 
 
-#### Run the BisQue Docker Container {-}
+#### Run the BisQue Docker Container 
 
  To run the docker version of BisQue locally, start a bisque server on the host port 8080:
 
@@ -45,7 +44,7 @@ docker run --name bisque --rm -p 8080:8080 amilworks/bisque-module-dev:git
 and point your browser at `http://localhost:8080`. You should see a BisQue homepage similar to the one on [bisque.ece.ucsb.edu](https://bisque.ece.ucsb.edu/client_service/). If you do __not__ see the homepage, check to make sure that port 8080 is not being used by another container or application _and_ that you have correctly mapped the ports using `-p 8080:8080`, where `-p` is short for port.
 
 
-#### Registering Modules {-}
+#### Registering Modules 
 
 To register all the modules to your local server:
    * Login to your BisQue server using admin:admin
@@ -55,7 +54,7 @@ To register all the modules to your local server:
    * Drag and Drop __MetaData__ to the left panel---or whatever module you would like---and the module will now be registered and available for use. You can make the module Public by hitting __Set Public__ in the left panel, which basically means the module is Published and ready for public use. 
 
 
-#### Custom Modules, Copying Folders out of the Container {-}
+#### Custom Modules, Copying Folders out of the Container 
 
 If you would like to build and test your own module locally, using host mounted modules will make life easier to build, test, debug, and deploy locally. 
 
@@ -75,7 +74,7 @@ If you would like to build and test your own module locally, using host mounted 
    
 > __Pushing your Module to Production.__ If you feel that your module is ready to be added to the production version of BisQue, please feel free to contact us and we will gladly begin the process.
 
-#### Data Storage {-}
+#### Data Storage 
 
 Use an external data directory so you don't lose data when the service stops
     - Uploaded image and workdirs are store in `/source/data`.  You can change this to be a host mounted directory with
@@ -88,7 +87,7 @@ docker run --name bisque --rm -p 8080:8080 -v $(pwd)/container-data:/source/data
   - The uploaded images are stored inside the container at `/source/data/imagedir`
   
   
-#### View Downloaded Images, Running Containers  {-}
+#### View Downloaded Images, Running Containers  
 
 List all the docker __images__ on your system:
 
@@ -102,7 +101,7 @@ List all running __containers__ on your system:
 docker ps
 ```
 
-#### SSH into the Container {-}
+#### SSH into the Container 
 
 If you would like to see everything inside the container, you can use the following command _while the container is running_:
 
@@ -130,7 +129,7 @@ docker run -it amilworks/bisque-module-dev:git bash
 
 If you want to __exit__, simply type `exit` and you will be taken back outside of the container. 
 
-#### Stop the Container  {-}
+#### Stop the Container  
 
 Say you are done playing with your container for today, you can stop the container by using the following command:
 
