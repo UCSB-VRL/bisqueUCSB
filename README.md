@@ -1,6 +1,5 @@
 ![](docs/images/bq-github-banner.svg)
 
-***
 
 ## Overview 
 
