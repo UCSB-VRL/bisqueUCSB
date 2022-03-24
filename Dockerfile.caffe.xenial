@@ -1,30 +1,12 @@
 
-FROM biodev.ece.ucsb.edu:5000/caffe-runtime:xenial
+FROM amilworks/bisque05-base-xenial
 
-ENV DEBIAN_FRONTEND noninteractive
-ENV IMGCNV=imgcnv_ubuntu16_2.4.3
-RUN apt-get update -qq && apt-get install -qq -y apt-transport-https wget
-RUN wget -q -O - https://biodev.ece.ucsb.edu/debian/cbi_repository_key.asc | apt-key add -
+LABEL maintainer="amil@ucsb.edu"
+LABEL build_date="2022-03-24"
 
-#RUN echo "deb  http://biodev.ece.ucsb.edu/debian/archive unstable/" > /etc/apt/sources.list.d/bisque.list \
-#    && echo "deb http://www.deb-multimedia.org jessie main non-free" >> /etc/apt/sources.list.d/bisque.list
-
-RUN  echo "deb http://ftp.ucsb.edu/pub/mirrors/linux/ubuntu-archive xenial main restricted universe" >> /etc/apt/sources.list.d/bisque.list
-
-
-RUN wget -q https://bitbucket.org/dimin/bioimageconvert/downloads/$IMGCNV.tar.gz \
-    && tar xf $IMGCNV.tar.gz \
-    && mv $IMGCNV/imgcnv /usr/bin \
-    && mv $IMGCNV/libimgcnv.so* /usr/lib/x86_64-linux-gnu/ \
-    && rm -rf  $IMGCNV \
-    && apt-get install -y --no-install-recommends \
-    libswscale-ffmpeg3 libfftw3-3 libgdcm2.6 libavcodec-ffmpeg56 libavformat-ffmpeg56 libavutil-ffmpeg54 libhdf5-cpp-11
-
-#    && (cd /usr/lib/x86_64-linux-gnu/; ln -s libimgcnv.so.2 libimgcnv.so ) \
-
-
-#    && apt-get install -y  deb-multimedia-keyring --allow-unauthenticated \
-
+########################################################################################
+# Linux System Package Installs for BisQue
+########################################################################################
 RUN apt-get update  -qq \
     && apt-get install -y --no-install-recommends --allow-unauthenticated \
     git \
@@ -86,42 +68,78 @@ RUN apt-get update  -qq \
     build-essential \
     vim  \ 
     sudo \
+    curl \
   && apt-get clean \
   && find  /var/lib/apt/lists/ -type f -delete
+########################################################################################
+
+
 
 
 RUN echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen && locale-gen
 ENV LANG en_US.UTF-8
 RUN locale
 
-#ENV BISQUE_UID 1000
-#ENV BISQUE_USER bisque
-#RUN adduser --uid $BISQUE_UID --disabled-login --gecos "Bisque" --home /run/bisque --shell /bin/bash $BISQUE_USER \
-#    &&  echo "$BISQUE_USER ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-# Set workdir early  as may wipe out contents
+########################################################################################
+# COPY BASH Scripts for BisQue
+#   - Set workdir early  as may wipe out contents
+########################################################################################
+
 WORKDIR /source
-ADD source /source
-COPY run-bisque.sh virtualenv.sh /builder/
+COPY run-bisque.sh bq-admin-setup.sh virtualenv.sh /builder/
 COPY start-bisque.sh /builder/start-scripts.d/R50-start-bisque.sh
 COPY builder/ /builder/build-scripts.d/
 COPY boot/ /builder/boot-scripts.d/
 
+
+
+########################################################################################
+# RUN BASH Scripts for BisQue
+#   - Install virtual ENV
+#   - Set biodev pip index and install pip dependencies
+########################################################################################
+
 RUN /builder/virtualenv.sh
-
-# The following is very slow
-#ADD https://biodev.ece.ucsb.edu/hg/bisque/archive/tip.tar.gz /source
-#RUN tar xzf tip.tar.gz
-
 ENV PY_INDEX=https://biodev.ece.ucsb.edu/py/bisque/xenial/+simple
+
+
+
+
+########################################################################################
+# COPY Source Code
+#   - Install requirements.txt first to install all python deps
+#   - Added at the end for easy updates to source code
+########################################################################################
+COPY source/requirements.txt /source
+
 RUN /builder/run-bisque.sh build
 
-#RUN wget https://github.com/Yelp/dumb-init/releases/download/v1.1.3/dumb-init_1.1.3_amd64.deb \
-#    && dpkg -i dumb-init_*.deb \
-#    && rm dumb-init*.deb
-#ENTRYPOINT [ "/usr/bin/dumb-init", "/root/run-bisque.sh" ]
+ADD source /source
+
+RUN /builder/bq-admin-setup.sh
+
+########################################################################################
+# Install Minio and Argo CLI
+########################################################################################
+
+RUN wget https://dl.min.io/client/mc/release/linux-amd64/mc && chmod +x mc &&  mv mc /usr/bin/mc
+
+# COPY config.json /root/.mc/config.json
+
+# Download the binary
+RUN curl -sLO https://github.com/argoproj/argo-workflows/releases/download/v3.2.8/argo-linux-amd64.gz
+
+# Unzip
+RUN gunzip argo-linux-amd64.gz
+
+# Make binary executable
+RUN chmod +x argo-linux-amd64 && mv ./argo-linux-amd64 /usr/local/bin/argo
+
+########################################################################################
 
 
-#USER $BISQUE_USER
+
+
 ENTRYPOINT [ "/builder/run-bisque.sh"]
 CMD [ "bootstrap","start"]
