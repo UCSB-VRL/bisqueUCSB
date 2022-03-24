@@ -1,4 +1,4 @@
-![](docs/images/bq-github-banner.svg)
+![](docs/images/bq-github-banner2.svg)
 
 
 ## 🔭 Overview 
