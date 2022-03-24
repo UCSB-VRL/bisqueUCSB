@@ -14,20 +14,20 @@ from torch.utils.data import DataLoader
 import torch.backends.cudnn as cudnn
 cudnn.benchmark = True
 from torchvision import transforms,utils
-from model import Modified3DUNet
-from celldataset import cell_training,IndexTracker,IndexTracker2,cell_testing,cell_testing_inter
-from utils import Parser, criterions
+from .model import Modified3DUNet
+from .celldataset import cell_training,IndexTracker,IndexTracker2,cell_testing,cell_testing_inter
+from .utils import Parser, criterions
 #import matplotlib
 #import matplotlib.pyplot as plt
 from skimage.transform import resize
-import losses
+from .losses import *
 from skimage.transform import resize
 
 def readprops(proppath):
     props = dict()
     with open(proppath) as file: # 'model/regression/cfg.txt
         for line in file:
-	    entry = line.strip().split(':', 1)
+            entry = line.strip().split(':', 1)
             props[entry[0].strip()]=entry[1].strip()
     print(props)
     return props
@@ -61,7 +61,8 @@ def main(model_path, cell_hist_datadir, prob_map_datadir):
     checkpoint = torch.load(model_file,
             map_location = lambda storage, loc: storage)
     model.load_state_dict(checkpoint['state_dict'])
-    model = model.cuda()
+    if torch.cuda.is_available():
+        model = model.cuda()
 
     criterion = getattr(criterions, props['criterion'])
     num_gpus = len(props['gpu'].split(','))
@@ -71,8 +72,8 @@ def main(model_path, cell_hist_datadir, prob_map_datadir):
     # create dataloaders
     #Dataset = getattr(datasets, args.dataset)
     dset = cell_testing_inter(cell_hist_datadir)
-    print dset.__len__()
-    test_loader = DataLoader(                                                                  
+    #print dset.__len__()
+    test_loader = DataLoader(
             dset, batch_size=batch_size,
             shuffle=True,
             num_workers=0,
@@ -82,36 +83,36 @@ def main(model_path, cell_hist_datadir, prob_map_datadir):
     inputs = []
     outputs=[]
     ground_truth = []
-    print test_loader
+    #print test_loader
     for i, sample in enumerate(test_loader):
         input1 = sample['data']
         img_size = sample['image_size']
-        print img_size[0]
+        #print img_size[0]
         file_name = sample['name']
-	print file_name
         file_name = os.path.splitext(file_name[0])[0] # str(file_name[0])
         _,_,z,x,y = input1.shape
         seg = np.zeros((z,x,y))
-        for j in range (z/16):
+        for j in range (z//16):
             target = sample['seg']
             #ground_truth.append(target)
             #print file_name[0]
-            input_temp = input1[0,0,j*16:(j+1)*16].float()
+            input_temp = input1[0,0,int(j*16):int((j+1)*16)].float()
             input_temp = input_temp[None,None,...]
-            output_temp = nn.parallel.data_parallel(model, input_temp)
+            # output_temp = nn.parallel.data_parallel(model, input_temp, output_device=torch.device('cpu'))
+            output_temp = model(input_temp)
             output_temp = output_temp.detach().cpu().numpy()
             output_temp = output_temp[0]
             seg_temp = output_temp.argmax(0)
-            seg[j*16:(j+1)*16] = seg_temp    
+            seg[int(j*16):int((j+1)*16)] = seg_temp
         data = input1.detach().numpy()
         #print data.shape
         data = data[0,0,:,:,:]
-        data = (255*data[0:5*img_size[0]]).astype('uint8')
+        data = (255*data[0:int(5*img_size[0])]).astype('uint8')
         #outputs.append(output)
         #output = output[0]
         #print output.shape
         #seg = output.argmax(0)
-        prob_map = (seg[0:5*img_size[0]]*255).astype('uint8')
+        prob_map = (seg[0:int(5*img_size[0])]*255).astype('uint8')
         prob_map = prob_map.astype('float32')
         prob_map = prob_map/255.0
         prob_map = np.multiply(data,prob_map)
@@ -133,5 +134,3 @@ if __name__ == '__main__':
     cell_hist_datadir='hist_match/'
     prob_map_datadir='prob_map/'
     main(model_path, cell_hist_datadir, prob_map_datadir)
-
-

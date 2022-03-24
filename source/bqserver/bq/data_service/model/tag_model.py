@@ -58,6 +58,7 @@ DESCRIPTION
 
 
 """
+import subprocess
 import urlparse
 import sqlalchemy
 from datetime import datetime
@@ -91,7 +92,7 @@ from bq.core.permission import PUBLIC, PRIVATE, perm2code, perm2str
 from bq.util.memoize import memoized
 from bq.util.hash import make_uniq_code
 
-#from bq.MS import module_service
+from irods_user import BisQueIrodsIntegration#from bq.MS import module_service
 #session.mex = None
 
 
@@ -998,9 +999,26 @@ def bquser_callback (tg_user, operation, **kw):
         if u is None:
             u = BQUser(tg_user=tg_user)
             DBSession.add(u)
-            log.info ('created BQUSER %s' , u.name)
+            log.info ('---> created BQUSER', tg_user.user_name, tg_user.email_address)
+            
+            try:
+                irods_integ = BisQueIrodsIntegration()
+                irods_integ.load_from_env()
+                irods_integ.create_user(str(tg_user.user_name), str(tg_user.password))
+                log.info ('created an iRODS user %s for BQUSER %s' , (tg_user.user_name, u.name))
+            except Exception as e:
+                log.exception ("An exception occured during iRODS account creation: %s" , str(e))
+            try:
+                subprocess.call(["mc", "admin", "user", "add", "ucsb", str(tg_user.user_name), str(tg_user.email_address)])
+                subprocess.call(["mc", "admin", "group", "add", "ucsb", 'bisque', str(tg_user.user_name)])
+                subprocess.call(["mc", "mb", "ucsb/{}".format(str(tg_user.user_name))])
+            except Exception as e:
+                log.exception ("An exception occured during MINIO S3 account creation: %s" , str(e))
         return
+
+
     if operation  == 'update':
+        
         u = DBSession.query(BQUser).filter_by(resource_name=tg_user.user_name).first()
         if u is not None:
             u.value = tg_user.email_address
@@ -1008,6 +1026,17 @@ def bquser_callback (tg_user, operation, **kw):
             dn.value = tg_user.display_name
             dn.permission = 'published'
             log.info ('updated BQUSER %s' , u.name)
+
+                        # if password is updated
+            if tg_user.password:
+                # update iRODS Account
+                try:
+                    irods_integ = BisQueIrodsIntegration()
+                    irods_integ.load_from_env()
+                    irods_integ.update_user_password(str(tg_user.user_name), str(tg_user.password))
+                    log.info ('updated the password of the iRODS user %s for BQUSER %s' , (tg_user.user_name, u.name))
+                except Exception as e:
+                    log.exception ("An exception occured during iRODS account update: %s" , str(e))
         return
 
 User.callbacks.append (bquser_callback)

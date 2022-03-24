@@ -1,5 +1,5 @@
 import numpy as np
-from celldataset import cell_training,cell_testing
+from .celldataset import cell_training,cell_testing
 import SimpleITK as sitk
 from skimage.transform import resize
 import pdb
@@ -80,4 +80,3 @@ hist_data_dir	  ='source/hist_match/'
 
 if __name__ == "__main__":
     main(testing_data_dir, hist_data_dir)
-

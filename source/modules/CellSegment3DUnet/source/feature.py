@@ -22,7 +22,7 @@ def compute_cell_adjacent_table(seg_img):
     #seg_img[seg_img==17]=15
     Adjacent_table={}
     all_labels = np.unique(seg_img)
-    print all_labels
+    #print all_labels
     #all_labels = np.delete(all_labels,all_labels==0)
     for i in all_labels:
         if i != 0:
@@ -33,7 +33,7 @@ def compute_cell_adjacent_table(seg_img):
                     if i!=j:
                         draw_board[seg_img==i]=1
                         draw_board[seg_img==j]=1
-                        draw_board = ndimage.binary_dilation(draw_board).astype(draw_board.dtype) 
+                        draw_board = ndimage.binary_dilation(draw_board).astype(draw_board.dtype)
                         _,num = measurements.label(draw_board)
                         if num==1:
                             index_list.append(j)
@@ -78,7 +78,7 @@ def compute_contact_points(seg_img,Adj_matrix):
                 bound_len = np.zeros(slices)
                 for kk in range(slices):
                     bound_len[kk] =draw_board[kk,:,:].sum()
-                print bound_len
+                #print bound_len
                 for kk in range(slices-1,0,-1):
                     if kk < slices-1:
                         if bound_len[kk]>bound_len[kk+1] and bound_len[kk]>bound_len[kk-1]:
@@ -93,7 +93,7 @@ def compute_contact_points(seg_img,Adj_matrix):
     return wall
 
 def compute_conjunction_points(seg_img,Adj_list):
-    print "compute conjunction points"
+    #print "compute conjunction points"
     #seg_img[seg_img==17]=15
     [slices,x,y] = seg_img.shape
     n = len(Adj_list)
@@ -166,16 +166,16 @@ def main(path):
         #plt.show()
         #pdb.set_trace()
         num_cells = len(np.unique(seg))-1
-        print num_cells
+        #print num_cells
         #for label in np.unique(seg):
         adj_table = compute_cell_adjacent_table(seg)
-        print adj_table
+        #print adj_table
         df = pd.DataFrame(adj_table)
         df.to_csv("result/adj_table.csv")
         points = compute_conjunction_points(seg,adj_table)
-        print points
+        #print points
         np.savetxt("result/points.csv", points, delimiter=",")
-        print cell_volumn(seg)
+        #print cell_volumn(seg)
         df1 = pd.DataFrame(cell_volumn)
         df1.to_csv("result/cell_volumn.csv")
         #draw_board = np.zeros((512,512))

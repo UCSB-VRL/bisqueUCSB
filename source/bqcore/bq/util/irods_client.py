@@ -43,8 +43,8 @@ class IrodsConnection(object):
         env = PARSE_NET.match(irods_url.netloc).groupdict()
         args = dict(
             user = user or env['user'], #or irods_env.getRodsUserName()
-            host  = host or env['host'], #or irods_env.getRodsHost()
-            port  = port or env['port'] or 1247, #or irods_env.getRodsPort() or 1247
+            host  = 'data.cyverse.org' or env['host'], #or irods_env.getRodsHost()
+            port  =  port or env['port'] or 1247, #or irods_env.getRodsPort() or 1247
             zone = zone or 'iplant',
             password = password or env['password'])
 

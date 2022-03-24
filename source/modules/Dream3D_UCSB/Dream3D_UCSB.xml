@@ -71,7 +71,7 @@
     <tag name="title" value="Dream3D_UCSB" />
     <tag name="authors" value="UCSB" />
     <tag name="help"      type="file" value="public/help.html" />
-    <tag name="thumbnail" type="file" value="public/thumbnail.png" />
+    <tag name="thumbnail" type="file" value="public/thumbnail.svg" />
     <tag name="description" type="string" value="This app runs Dream3D (UCSB branch) on an input HDF resource and a pipeline and creates an output HDF resource." />
 	<tag name="asynchronous" value="True"/>
 </module>

@@ -200,7 +200,7 @@ g div span
     text-shadow: 1px 1px 1px #CCC;
     font-size: 11px;
     font-weight: bold;
-    font-family: tahoma, arial, verdana, sans-serif;
+    font-family: Inter, arial, verdana, sans-serif;
     padding-left: 1px;
     padding-right: 1px;
 }
@@ -210,7 +210,7 @@ g div span
     color: #07AD0C !important;
     text-shadow: 0px 1px 1px #DDD;
     font-size: 9px;
-    font-family: tahoma, arial, verdana, sans-serif !important;
+    font-family: Inter, arial, verdana, sans-serif !important;
 
     padding-left: 1px;
     padding-right: 1px;
@@ -219,7 +219,7 @@ g div span
 .bq-graph-panel .date {
     color: #444;
     font-size: 9px;
-    font-family: tahoma, arial, verdana, sans-serif !important;
+    font-family: Inter, arial, verdana, sans-serif !important;
 
     padding-left: 1px;
     padding-right: 1px;

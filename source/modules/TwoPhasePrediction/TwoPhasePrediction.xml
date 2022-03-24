@@ -3,6 +3,8 @@
 
     <!-- Comments are OK -->
     <tag name="inputs">
+        <tag name="mex_url"  type="system-input" />
+        <tag name="bisque_token"  type="system-input" />
         <tag name="table_url" type="resource">
             <template>
                 <tag name="accepted_type" value="table" />
@@ -62,7 +64,7 @@
     </tag>
 
     <tag name="display_options" >
-       <tag name="group" value="Materials analysis" />
+       <tag name="group" value="Medical analysis" />
     </tag>
     <tag name="interface">
         <tag name="javascript" type="file" value="webapp.js" />

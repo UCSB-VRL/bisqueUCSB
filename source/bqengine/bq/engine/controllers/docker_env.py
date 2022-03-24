@@ -15,23 +15,13 @@ from .attrdict import AttrDict
 DOCKER_RUN="""#!/bin/bash
 set -x
 
-#mkdir -p ./output_files
-${DOCKER_LOGIN}
-${DOCKER_PULL}
-CONTAINER=$$(docker create ${DOCKER_IMAGE}  $@)
-${DOCKER_INPUTS}
-docker start $CONTAINER
-MODULE_RETURN=$$(docker wait  $CONTAINER)
-docker logs $CONTAINER
-${DOCKER_OUTPUTS}
-# docker will not copy to existing directory .. so create a new one and copy from that
-docker cp $CONTAINER:/module/ output_files
-mv -fuv ./output_files/* .
-#rsync -av ./output_files/ .
-rm -rf ./output_files/*/
-docker rm $CONTAINER
-exit $MODULE_RETURN
+mex=$(echo "$MEX_ID" | tr '[:upper:]' '[:lower:]')
+
+echo "image: ${DOCKER_IMAGE}" | tee params.yaml
+echo "args: ${@}" | tee -a params.yaml
+argo submit --log --from workflowtemplate/bqflow-module-template --parameter-file params.yaml --generate-name ${mex}- 
 """
+
 
 class DockerEnvironment(BaseEnvironment):
     '''Docker Environment

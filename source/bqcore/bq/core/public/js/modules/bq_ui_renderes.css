@@ -158,7 +158,7 @@ file renderer
     vertical-align: middle;
     text-align: right;
     margin: 0px 5px 0px 5px;
-    font: normal 12px/14px tahoma,arial,verdana,sans-serif;
+    font: normal 12px/14px Inter,arial,verdana,sans-serif;
     color: black;
 
 }
@@ -166,7 +166,7 @@ file renderer
 .selector .v_heading {
     text-align: left;
     margin: 8px 5px 0px 12px;
-    font: normal 12px/14px tahoma,arial,verdana,sans-serif;
+    font: normal 12px/14px Inter,arial,verdana,sans-serif;
     color: black;
 }
 

@@ -33,19 +33,19 @@ a.black { color: #000000; font-weight:normal; }
 }
 
 h1 {
-  font-family: 'Red Hat Display', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-weight: normal;
   font-size: 40px;
 }
 
 h2 {
-  font-family:'Red Hat Display', sans-serif;
+  font-family:'Inter', sans-serif;
   font-weight: normal;
   font-size: 28px;
 }
 
 h3 {
-  font-family: 'Red Hat Display', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-weight: normal;
   font-size: 22px;
 }

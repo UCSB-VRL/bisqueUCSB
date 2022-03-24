@@ -11,6 +11,7 @@
                 <tag name="label" value="Dataset for Segmentation" />
                 <tag name="prohibit_upload" value="true" type="boolean" />
             </template>
+        </tag>
         <tag name="reducer_url"  type="resource">
             <template>
                 <tag name="label" value="Select a PyTorch Model" />
@@ -20,7 +21,6 @@
                  <tag name="example_query" value="default_reducer:true" />
                  <tag name="example_type" value="file" />
             </template>
-        </tag>
         </tag>
 
 	<tag name="mex_url" type="system-input" />

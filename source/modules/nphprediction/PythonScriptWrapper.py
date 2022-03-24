@@ -60,7 +60,7 @@ class PythonScriptWrapper(object):
         #predictor_path = bq.fetch(url=predictor_url, path=predictor_path)
         reducer_uniq = self.options.reducer_url.split('/')[-1]
         reducer_url = bq.service_url('blob_service', path=reducer_uniq)
-        reducer_path = os.path.join(kw.get('stagingPath', ''), 'unet_model.pt')
+        reducer_path = os.path.join(kw.get('stagingPath', 'source/'), 'unet_model.pt')
         reducer_path = bq.fetchblob(reducer_url, path=reducer_path)
 
         

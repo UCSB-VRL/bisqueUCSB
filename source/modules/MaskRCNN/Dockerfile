@@ -74,8 +74,8 @@ RUN APT_INSTALL="apt-get install -y --no-install-recommends" && \
         && \
 
     $PIP3_INSTALL \
-        tensorflow==1.3.0 \
-        keras==2.0.8 \
+        tensorflow>=1.3.0 \
+        keras>=2.0.8 \
         && \
 # ==================================================================
 # Additional packages
@@ -109,7 +109,7 @@ COPY ./bqapi /module/bqapi
 
 COPY PythonScriptWrapper /module/
 COPY PythonScriptWrapper.py /module/
-#COPY pydist /module/pydist/
+COPY pydist /module/pydist/
 COPY masker.py /module/
 RUN cd source && python setup.py install && cd ..
 ENV PATH /module:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin

@@ -18,9 +18,6 @@ IRODS_CACHE = data_path('irods_cache')
 # The above statement uploads a file, authenticated as me.
 # irodsHost=data.iplantc.org irodsPort=1247 irodsZone=iplant irodsUserName=tedgin irodsAuthFileName='/home/bisque/.irods/tedgin-auth iinit <(echo password)
 # The above statement creates a session authenticated as me.
-
-# So for us at UCSB it would be,
-# irodsHost=data.cyverse.org irodsPort=1247 irodsZone=iplant irodsUserName=amilkhan irodsAuthFileName='/home/bisque/.irods/amilkhan-auth iinit
 # Here's a list of all the environment variables that can control the icommands environment.  https://wiki.irods.org/index.php/User_Environment_Variables
 
 try:

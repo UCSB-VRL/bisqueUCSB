@@ -128,7 +128,7 @@
 <script py:if="not tg.identity" type="text/javascript" >
 
     Ext.onReady( function() {
-        this.recentsExplorer.setTitle('Explore published data');
+        this.recentsExplorer.setTitle('Explore Published Data');
 
         var moduleBrowser = new Bisque.ResourceBrowser.Browser({
             title: 'Applications',
@@ -152,7 +152,7 @@
 
         var s = '<img src="';
         s += '${tg.url('/core/images/browse_80.png')}';
-        s += '" alt="Browse public images" />';
+        s += '" alt="Browse Public Images" />';
         s += '<h3>Browse</h3>';
 
         var imagesbtn = BQApp.getToolbar().queryById('menu_images');
@@ -220,7 +220,7 @@
 
 <script py:if="tg.identity" type="text/javascript" >
     Ext.onReady( function() {
-        this.recentsExplorer.setTitle('My recent stuff');
+        this.recentsExplorer.setTitle('My Recent Data');
 
         var mexBrowser = new Bisque.ResourceBrowser.Browser({
           //layout: Bisque.ResourceBrowser.LayoutFactory.LAYOUT_KEYS.Grid,

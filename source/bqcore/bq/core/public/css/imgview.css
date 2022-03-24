@@ -241,7 +241,7 @@
   padding: 0px 0px 0px 0px;
   font-size: 120%;
   /*font-weight: bold;*/
-  font-family: 'Red Hat Display', Arial, Helvetica, sans-serif;
+  font-family: 'Inter', Arial, Helvetica, sans-serif;
 }
 
 .imgview_opdiv label {
@@ -280,7 +280,7 @@
     font-size: 1em;
     margin: 0px 0px 0px 0px;
     padding: 0px 0px 0px 0px;
-    font-family: 'Red Hat Display', Arial, Helvetica, sans-serif;
+    font-family: 'Inter', Arial, Helvetica, sans-serif;
     background-repeat: repeat-x;
     /*background-color:*/
 }

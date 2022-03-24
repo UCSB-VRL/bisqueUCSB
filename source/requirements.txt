@@ -1,4 +1,4 @@
-##--index-url https://biodev.ece.ucsb.edu/py/bisque/dev/+simple
+###--index-url https://biodev.ece.ucsb.edu/py/bisque/dev/+simple
 Babel==1.3
 Beaker==1.6.4
 #Cython==0.25.2
@@ -62,7 +62,7 @@ pkginfo==1.2b1
 ply==3.4
 poster==0.8.1
 psutil==4.3.0
-python_irodsclient==0.6.0
+python_irodsclient
 python_multipart==0.0.4
 pycrypto==2.6.1
 python-dateutil==2.7.3
@@ -80,6 +80,7 @@ repoze.who==1.0.19
 repoze.who-friendlyform==1.0.8
 repoze.who-testutil==1.0.1
 repoze.who.plugins.sa==1.0.1
+repoze.who.plugins.openid
 requests==2.18.4
 requests_toolbelt==0.6.2
 s3transfer==0.1.10
@@ -100,6 +101,7 @@ wsgiref==0.1.2
 xmlrunner==1.7.7
 zope.interface==4.1.0
 zope.sqlalchemy==0.7.7
+hgtools
 
 ### debug tools ###
 ##profiler

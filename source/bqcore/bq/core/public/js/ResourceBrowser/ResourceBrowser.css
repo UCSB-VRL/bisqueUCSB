@@ -110,7 +110,7 @@
 .bq_resource .title {
     color: #555;
     font-size: 14px;
-    font-family: tahoma, arial, verdana, sans-serif !important;
+    font-family: Inter, arial, verdana, sans-serif !important;
     padding: 5px;
     white-space: nowrap;
     overflow: hidden;
@@ -383,7 +383,7 @@
 .lblModuleName {
     color: #555;
     font-size: 14px;
-    font-family: 'Red Hat Display', arial, verdana, sans-serif !important;
+    font-family: 'Inter', arial, verdana, sans-serif !important;
     padding: 5px;
     white-space: nowrap;
     overflow: hidden;
@@ -399,14 +399,14 @@
     text-shadow: none;
     font-weight: normal;
     font-size: 18px;
-    font-family: 'Red Hat Display', tahoma, arial, verdana, sans-serif !important;
+    font-family: 'Inter', tahoma, arial, verdana, sans-serif !important;
 }
 
 .lblModuleOwner {
     color: #4B85BF;
     text-shadow: 0px 1px 1px #DDD;
     font-size: 11px;
-    font-family: tahoma, arial, verdana, sans-serif !important;
+    font-family: Inter, arial, verdana, sans-serif !important;
     padding: 5px;
 }
 
@@ -422,18 +422,18 @@
     color: #07AD0C !important;
     text-shadow: 0px 1px 1px #DDD;
     font-size: 11px;
-    font-family: 'Red Hat Display', arial, verdana, sans-serif !important;
+    font-family: 'Inter', arial, verdana, sans-serif !important;
 }
 
 .lblModuleOwnerFail {
     color: #BF1B1B !important;
     text-shadow: 0px 1px 1px #DDD;
     font-size: 11px;
-    font-family: 'Red Hat Display', arial, verdana, sans-serif !important;
+    font-family: 'Inter', arial, verdana, sans-serif !important;
 }
 
 .rbFontFamily .lblModuleName .lblModuleOwner {
-    font-family: 'Red Hat Display', arial, verdana, sans-serif !important;
+    font-family: 'Inter', arial, verdana, sans-serif !important;
 }
 
 .lblModuleDate {
@@ -446,7 +446,7 @@
 .lblBig {
     color: #BABABA;
     font-size: 36px;
-    font-family: 'Red Hat Display', arial, verdana, sans-serif !important;
+    font-family: 'Inter', arial, verdana, sans-serif !important;
 }
 
 .compact .lblModuleDate {
@@ -455,7 +455,7 @@
 
 .list .lblModuleDate {
     padding: 0px 0px 0px 8px;
-    font-family: 'Red Hat Display', arial, verdana, sans-serif !important;
+    font-family: 'Inter', arial, verdana, sans-serif !important;
 }
 
 .lblHeading1 {
@@ -463,7 +463,7 @@
     background: #f4f4f4;
     text-shadow: 1px 1px 1px #CCC;
     font-weight: bold;
-    font-family: 'Red Hat Display', arial, verdana, sans-serif !important;
+    font-family: 'Inter', arial, verdana, sans-serif !important;
     word-wrap: break-word;
     padding: 3px;
 }
@@ -472,7 +472,7 @@
     color: #07AD0C;
     background: #f4f4f4;
     text-shadow: 1px 1px 1px #CCC;
-    font-family: 'Red Hat Display', arial, verdana, sans-serif !important;
+    font-family: 'Inter', arial, verdana, sans-serif !important;
     word-wrap: break-word;
     padding: 3px;
 }

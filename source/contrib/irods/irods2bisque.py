@@ -14,7 +14,7 @@ from optparse import OptionParser
 from urllib import  urlencode
 from bq.util import irods_handler
 
-DEFAULT_URL = "irods://irods.iplantcollaborative.org"
+DEFAULT_URL = "irods://data.cyverse.org"
 BISQUE_ADD_IMAGE = "/import/insert"
 
 http = httplib2.Http(disable_ssl_certificate_validation=True)

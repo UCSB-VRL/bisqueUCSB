@@ -93,7 +93,7 @@
     <tag name="title" value="CalcMaxMisorientation" />
     <tag name="authors" value="&lt;a href=&quot;mailto:polonsky@ucsb.edu&quot;&gt;Andrew Polonsky (UCSB)" />
     <tag name="help"      type="file" value="public/help.html" />
-    <tag name="thumbnail" type="file" value="public/thumbnail.png" />
+    <tag name="thumbnail" type="file" value="public/thumbnail.svg" />
     <tag name="description" type="string" value="Find maximum reference misorientation for each feature in Dream.3D output." />
 
 </module>

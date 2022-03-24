@@ -61,20 +61,22 @@ RUN APT_INSTALL="apt-get install -y --no-install-recommends" && \
         future \
         numpy \
         protobuf \
+        lxml    \
         enum34 \
         pyyaml \
         typing \
-    	torchvision_nightly \
+        torch  \
+    	torchvision \
         && \
-    $PIP3_INSTALL \
-        torch_nightly -f \
-        https://download.pytorch.org/whl/nightly/cu90/torch_nightly.html \
-        && \
+    # $PIP3_INSTALL \
+    #     torch_nightly -f \
+    #     https://download.pytorch.org/whl/nightly/cu90/torch_nightly.html \
+    #     && \
 # ==================================================================
 # Additional packages
 # ------------------------------------------------------------------
     $PIP3_INSTALL \
-        SimpleITK  scikit-image morphsnakes \
+        SimpleITK  scikit-image==0.14.3 morphsnakes \
         && \
     $PIP3_INSTALL -i https://biodev.ece.ucsb.edu/py/bisque/prod/+simple \
         bisque-api==0.5.9 \
@@ -96,11 +98,14 @@ RUN APT_INSTALL="apt-get install -y --no-install-recommends" && \
 RUN mkdir /module
 RUN mkdir /module/source
 WORKDIR /module
-#COPY ./source /module/source
+RUN pip install h5py tables
+COPY ./source /module/source
+COPY ./public /module
+COPY ./bqapi /module/bqapi
 
 COPY PythonScriptWrapper /module/
 COPY PythonScriptWrapper.py /module/
-COPY pydist /module/pydist/
+# COPY pydist /module/pydist/
 ENV PATH /module:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 #CMD [ 'python' '/predict_strength.py' ]
 CMD [ 'PythonScriptWrapper' ]

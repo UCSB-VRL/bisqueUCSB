@@ -20,7 +20,7 @@
   /*font-stretch: condensed;
   font-family: 'Varela Round', sans-serif;*/
   /*font-family: tahoma,arial,verdana,sans-serif;*/
-  font-family: 'Red Hat Display', tahoma, arial, verdana, sans-serif;
+  font-family: 'Inter', tahoma, arial, verdana, sans-serif;
 }
 
 .toolbar-main a {
@@ -34,7 +34,7 @@
 .x-menu-body .menu-heading {
     padding: 5px 5px 3px 5px;
     font-size: 16px;
-    font-family: 'Red Hat Display', tahoma, arial, verdana, sans-serif;
+    font-family: 'Inter', tahoma, arial, verdana, sans-serif;
 }
 
 .toolbar-main .x-box-menu-right {
@@ -43,7 +43,7 @@
 
 .toolbar-main .x-btn-default-toolbar-large .x-btn-inner {
     font-size: 16px;
-    font-family: 'Red Hat Display', tahoma, arial, verdana, sans-serif;
+    font-family: 'Inter', tahoma, arial, verdana, sans-serif;
 }
 
 /*******************************************************************/
