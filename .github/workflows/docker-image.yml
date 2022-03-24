@@ -15,4 +15,4 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build the Docker image
-      run: docker build . --file Dockerfile.caffe.xenial --tag ghcr.io/ucsb-vrl/bisqueucsb/bisque-caffe-xenial:$(date +%s)
+      run: docker build . --file Dockerfile --tag ghcr.io/ucsb-vrl/bisqueucsb/bisque-caffe-xenial:$(date +%s)
