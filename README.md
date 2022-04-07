@@ -1,7 +1,7 @@
 ![](docs/images/bq-github-banner2.svg)
 
-![example workflow](https://github.com/UCSB-VRL/bisqueUCSB/actions/workflows/docker-image.yml/badge.svg)
-
+![workflow](https://github.com/UCSB-VRL/bisqueUCSB/actions/workflows/docker-image.yml/badge.svg)
+![](https://img.shields.io/badge/BisQue%20Stable%20Release-v1.0.0-brightgreen)
 
 ## 🔭 Overview 
 
