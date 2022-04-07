@@ -1,5 +1,7 @@
 ![](docs/images/bq-github-banner2.svg)
 
+![example workflow](https://github.com/UCSB-VRL/bisqueUCSB/actions/workflows/docker-image.yml/badge.svg)
+
 
 ## 🔭 Overview 
 
