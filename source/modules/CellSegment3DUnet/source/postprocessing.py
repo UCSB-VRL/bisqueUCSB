@@ -38,6 +38,13 @@ import os
 import pandas as pd
 
 
+# Computes the unique pairs of neighbors in an arrray, where the step between
+# a point and its neighbor is given by "deltas". For example, the input of
+# img = [0, 1, 2
+#        3, 4, 5]
+# deltas = (0,1)
+#
+# Should give: [[0, 1], [1, 2], [3, 4], [4, 5]]
 def adj_list_to_matrix(adj_list):
     n = len(adj_list)
     adj_matrix = np.zeros((n, n))
@@ -48,7 +55,39 @@ def adj_list_to_matrix(adj_list):
     return adj_matrix
 
 
+def get_unique_pairs(img, deltas):
+    slices1 = tuple(slice(max(0,d), (d if d<0 else None)) for d in deltas)
+    slices2 = tuple(slice(max(0,-d), (-d if d>0 else None)) for d in deltas)
+    row1 = img[slices1].reshape(-1)
+    row2 = img[slices2].reshape(-1)
+    mask = ((row1 != 0) * (row2 != 0) * (row1 != row2)).astype(bool)
+    if np.all(~mask):
+        return np.empty((0,2))
+    pairs = np.stack((row1[mask], row2[mask])).T
+    unique_pairs = np.unique(pairs, axis=0)
+    return unique_pairs
+
+
 def compute_cell_adjacent_table(seg_img):
+    adj_mask = np.zeros((7,)*3)
+    adj_mask[3,3,3] = 1
+    adj_mask = ndi.binary_dilation(adj_mask, iterations=2).astype(int)
+    pairs_list = list()
+    # Iterates over all possible steps within an L1 distance of 3
+    for inds in zip(*np.nonzero(adj_mask)):
+        inds = tuple((i-2) for i in inds)
+        pairs_list.append(get_unique_pairs(seg_img, inds))
+    pairs = np.unique(np.vstack(pairs_list), axis=0).astype(int)
+    pairs_dict = {i:list() for i in np.unique(seg_img)}
+    for row in pairs:
+        pairs_dict[row[0]].append(row[1])
+    pairs_dict.pop(0)
+    return pairs_dict
+
+
+
+
+def compute_cell_adjacent_table_old(seg_img):
     # seg_img[seg_img==17]=15
     Adjacent_table = {}
     all_labels = np.unique(seg_img)
@@ -208,12 +247,10 @@ def slice_det(img):
     return slice_ind
 
 
+
 def relabel(seg_img):
-    new_label = 0
-    for old_label in np.unique(seg_img):
-        seg_img[seg_img == old_label] = new_label
-        new_label = new_label + 1
-    return seg_img
+    return np.unique(seg_img.reshape(-1), return_inverse=True).reshape(seg_img.shape)
+
 
 
 ######################################################################
