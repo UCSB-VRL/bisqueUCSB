@@ -38,13 +38,6 @@ import os
 import pandas as pd
 
 
-# Computes the unique pairs of neighbors in an arrray, where the step between
-# a point and its neighbor is given by "deltas". For example, the input of
-# img = [0, 1, 2
-#        3, 4, 5]
-# deltas = (0,1)
-#
-# Should give: [[0, 1], [1, 2], [3, 4], [4, 5]]
 def adj_list_to_matrix(adj_list):
     n = len(adj_list)
     adj_matrix = np.zeros((n, n))
@@ -55,6 +48,13 @@ def adj_list_to_matrix(adj_list):
     return adj_matrix
 
 
+# Computes the unique pairs of neighbors in an arrray, where the step between
+# a point and its neighbor is given by "deltas". For example, the input of
+# img = [0, 1, 2
+#        3, 4, 5]
+# deltas = (0,1)
+#
+# Should give: [[0, 1], [1, 2], [3, 4], [4, 5]]
 def get_unique_pairs(img, deltas):
     slices1 = tuple(slice(max(0,d), (d if d<0 else None)) for d in deltas)
     slices2 = tuple(slice(max(0,-d), (-d if d>0 else None)) for d in deltas)
