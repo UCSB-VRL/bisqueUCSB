@@ -521,6 +521,10 @@ def main(bq, prob_map_dir, outdir, testing_data_dir, min_distance, label_thresho
         # df.to_csv("result/adj_table.csv")
         center = cell_center(masks)
         points = compute_conjunction_points(masks, adj_table)
+        
+        #### NEDS TO BE DONE
+        # segments = compute_contact_points(masks, adj_table)
+        
         points_done = tuple([(k, [x for xs in v for x in xs]) for k, v in points.items()])
         # np.savetxt("result/points.csv", points, delimiter=",")
 
