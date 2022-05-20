@@ -165,44 +165,30 @@ def compute_contact_points(seg_img, Adj_matrix):
 
 
 def compute_segments(seg_img, Adj_list):
-    Adj_matrix = adj_list_to_matrix(Adj_list)
-    n = len(Adj_matrix)
     [slices, x, y] = seg_img.shape
     final_dict = {}
-    for i in range(n):
-        for j in range(n):
-            if Adj_matrix[i, j] == 1:
-                #draw_board = np.zeros([slices, x, y])
-                k = int(slices/2)+1
-                draw_contact = np.zeros([x, y])
-                #for k in range(slices - 1, -1, -1):
-                # fig = plt.figure()
-                draw_board1 = np.zeros([x, y])
-                draw_board2 = np.zeros([x, y])
-                draw_board1[seg_img[k] == i + 1] = 1
-                draw_board1 = ndimage.binary_dilation(draw_board1).astype(draw_board1.dtype)
-                draw_board2[seg_img[k] == j + 1] = 1
-                # fig.add_subplot(3,1,1)
-                # plt.imshow(draw_board1,cmap='gray')
-                # fig.add_subplot(3,1,2)
-                # plt.imshow(draw_board2,cmap='gray')
-                draw_board2 = ndimage.binary_dilation(draw_board2).astype(draw_board2.dtype)
-                draw_contact = np.logical_and(draw_board1 == 1, draw_board2 == 1)
-                draw_contact= draw_contact * 1
-                '''
-                bound_len = np.zeros(slices)
-                for kk in range(slices):
-                    bound_len[kk] = draw_board[kk, :, :].sum()
-                print
-                bound_len
-                '''
-                point = np.nonzero(draw_contact)
-                if len(point[0])>0:
-                    final_dict["{} {}".format(i,j)] = point
+    plane = seg_img[int(len(seg_img) / 2 + 1)]
+    for i in Adj_list.keys():
+        A = i
+        A_neighbors = Adj_list[A]
+        for j in range(len(A_neighbors)):
+            B = A_neighbors[j]
+            #draw_board = np.zeros([slices, x, y])
+            draw_contact = np.zeros([x, y])
+            #for k in range(slices - 1, -1, -1):
+            # fig = plt.figure()
+            draw_board1 = np.zeros([x, y])
+            draw_board2 = np.zeros([x, y])
+            draw_board1[plane== A] = 1
+            draw_board1 = ndimage.binary_dilation(draw_board1).astype(draw_board1.dtype)
+            draw_board2[plane == B] = 1
+            draw_board2 = ndimage.binary_dilation(draw_board2).astype(draw_board2.dtype)
+            draw_contact = np.logical_and(draw_board1 == 1, draw_board2 == 1)
+            draw_contact= draw_contact * 1
+            point = np.nonzero(draw_contact)
+            if len(point[0])>0:
+                final_dict["{} {}".format(A,B)] = point
     return final_dict
-
-
-
 
 def compute_conjunction_points(seg_img, Adj_list):
     #     print "compute conjunction points"
