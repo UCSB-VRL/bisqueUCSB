@@ -95,12 +95,12 @@ class PythonScriptWrapper(object):
         min_distance    = float(self.options.min_dist)
         label_threshold = float(self.options.label_threshd)
 	    #log.info('MINIMUM DISTANCE : %f, LABELS THRESHOLD: %f, BLACK THRESHOLD: %f' %(min_distance, label_threshold, black_threshold))
-        output_files, adj_table, points, cell_vol, coordinates, center = postprocessing.main(bq, prob_map_datadir, results_outdir, testing_data_dir,min_distance, label_threshold, black_threshold)
+        output_files, adj_table, points, cell_vol, coordinates, center, segments = postprocessing.main(bq, prob_map_datadir, results_outdir, testing_data_dir,min_distance, label_threshold, black_threshold)
         #outtable_xml_adj_table = table_service.store_array(adj_table, name='adj_table')
         #outtable_xml_points = table_service.store_array(points, name='points')
         #outtable_xml_cell_vol = table_service.store_array(cell_vol, name='cell_vol')
         log.info('Output files: %s' % str(output_files))
-        return output_files, adj_table, points, cell_vol, coordinates, center
+        return output_files, adj_table, points, cell_vol, coordinates, center, segments
 
 
     def getstrtime(self):
@@ -183,7 +183,7 @@ class PythonScriptWrapper(object):
                 return
         try:
             bq.update_mex('Post process the images')
-            self.outfiles, self.outtable_xml_adj_table, self.outtable_xml_points, self.outtable_xml_cell_vol, self.outtable_xml_coordinates, self.outtable_xml_center = self.postprocess(bq)
+            self.outfiles, self.outtable_xml_adj_table, self.outtable_xml_points, self.outtable_xml_cell_vol, self.outtable_xml_coordinates, self.outtable_xml_center, self.segments_xml = self.postprocess(bq)
         except (Exception, ScriptError) as e:
             log.exception("Exception during post-process")
             bq.fail_mex(msg = "Exception during post-process: %s" % str(e))
@@ -210,13 +210,14 @@ class PythonScriptWrapper(object):
             # outputs = predict( bq, log, **self.options.__dict__ )
         #outtable_xml = table_service.store_array(maxMisorient, name='maxMisorientData')
         out_xml ="""<tag name="Metadata">
+		 <tag name="Segments" type="string" value="%s"/>
                 <tag name="Adjacency Table" type="string" value="%s"/>
                             <tag name="Three-way Conjuction Points" type="string" value="%s"/>
                             <tag name="Cell Volume" type="string" value="%s"/>
                             <tag name="Surface Coordinates" type="string" value="%s"/>
                             <tag name="Cell Center" type="string" value="%s"/>
                             <tag name="Output Table" type="resource" value="%s"/>
-                        </tag>""" %( str(self.outtable_xml_adj_table),  str(self.outtable_xml_points), str(self.outtable_xml_cell_vol), str(self.outtable_xml_coordinates), str(self.outtable_xml_center), self.restable.get('value'))
+                        </tag>""" %( str(self.segments_xml), str(self.outtable_xml_adj_table),  str(self.outtable_xml_points), str(self.outtable_xml_cell_vol), str(self.outtable_xml_coordinates), str(self.outtable_xml_center), self.restable.get('value'))
         outputs = [out_imgxml, out_xml]
         log.debug(outputs)
         # save output back to BisQue
