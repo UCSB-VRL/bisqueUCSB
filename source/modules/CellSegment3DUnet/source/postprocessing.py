@@ -186,8 +186,12 @@ def compute_segments(seg_img, Adj_list):
             draw_contact = np.logical_and(draw_board1 == 1, draw_board2 == 1)
             draw_contact= draw_contact * 1
             point = np.nonzero(draw_contact)
-            if len(point[0])>0:
-                final_dict["{} {}".format(A,B)] = point
+           if len(point[0])>0:
+                point_list = []
+                for ii in range(len(point[0])):
+                    point_list.append([point[0][ii],point[1][ii]])
+                point_list = np.asarray(point_list)
+                final_dict["{} {}".format(A,B)] = point_list
     return final_dict
 
 def compute_conjunction_points(seg_img, Adj_list):
