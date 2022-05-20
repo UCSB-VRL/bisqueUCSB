@@ -603,7 +603,7 @@ def main(bq, prob_map_dir, outdir, testing_data_dir, min_distance, label_thresho
         # outtable_xml_points = table_service.store_array(points_done, name='points')
         # outtable_xml_cell_vol = table_service.store_array(cell_vol_done, name='cell_vol')
     # print(output_files)
-    return output_files, adj_table, points, cell_vol, coordinates, center
+    return output_files, adj_table, points, cell_vol, coordinates, center, segments
 
 
 if __name__ == "__main__":
