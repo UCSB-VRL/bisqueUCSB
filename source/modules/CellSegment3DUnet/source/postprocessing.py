@@ -163,6 +163,47 @@ def compute_contact_points(seg_img, Adj_matrix):
     return wall
 
 
+
+def compute_segments(seg_img, Adj_list):
+    Adj_matrix = adj_list_to_matrix(Adj_list)
+    n = len(Adj_matrix)
+    [slices, x, y] = seg_img.shape
+    final_dict = {}
+    for i in range(n):
+        for j in range(n):
+            if Adj_matrix[i, j] == 1:
+                #draw_board = np.zeros([slices, x, y])
+                k = int(slices/2)+1
+                draw_contact = np.zeros([x, y])
+                #for k in range(slices - 1, -1, -1):
+                # fig = plt.figure()
+                draw_board1 = np.zeros([x, y])
+                draw_board2 = np.zeros([x, y])
+                draw_board1[seg_img[k] == i + 1] = 1
+                draw_board1 = ndimage.binary_dilation(draw_board1).astype(draw_board1.dtype)
+                draw_board2[seg_img[k] == j + 1] = 1
+                # fig.add_subplot(3,1,1)
+                # plt.imshow(draw_board1,cmap='gray')
+                # fig.add_subplot(3,1,2)
+                # plt.imshow(draw_board2,cmap='gray')
+                draw_board2 = ndimage.binary_dilation(draw_board2).astype(draw_board2.dtype)
+                draw_contact = np.logical_and(draw_board1 == 1, draw_board2 == 1)
+                draw_contact= draw_contact * 1
+                '''
+                bound_len = np.zeros(slices)
+                for kk in range(slices):
+                    bound_len[kk] = draw_board[kk, :, :].sum()
+                print
+                bound_len
+                '''
+                point = np.nonzero(draw_contact)
+                if len(point[0])>0:
+                    final_dict["{} {}".format(i,j)] = point
+    return final_dict
+
+
+
+
 def compute_conjunction_points(seg_img, Adj_list):
     #     print "compute conjunction points"
     # seg_img[seg_img==17]=15
@@ -521,6 +562,10 @@ def main(bq, prob_map_dir, outdir, testing_data_dir, min_distance, label_thresho
         # df.to_csv("result/adj_table.csv")
         center = cell_center(masks)
         points = compute_conjunction_points(masks, adj_table)
+        
+        #### NEDS TO BE DONE
+        segments = compute_segments(masks, adj_table)
+        
         points_done = tuple([(k, [x for xs in v for x in xs]) for k, v in points.items()])
         # np.savetxt("result/points.csv", points, delimiter=",")
 
@@ -541,10 +586,14 @@ def main(bq, prob_map_dir, outdir, testing_data_dir, min_distance, label_thresho
             grp3 = hf.create_group("Cell Volume")
             grp4 = hf.create_group("Adjacency Table")
             grp5 = hf.create_group("Segmented Image")
+            grp6 = hf.create_group("Segments")
+#             grp7 = hf.create_group("Three Way Junctions")
             grp2.create_dataset("Cell Center", data=(np.array(list((center.values())))))
             grp3.create_dataset("Cell Volume", data=(np.array(list((cell_vol.values())))))
             grp4.create_dataset("Adjacency Table", data=b)
             grp0.create_dataset("Cell Labels", data=np.array(list((center.keys()))))
+            grp6.create_dataset("Segments", data=(np.array(list((segments.values())))))
+#             grp7.create_dataset("Three Way Junction Points", data=(np.array(list((segments.values())))))
             grp5.create_dataset("Segmented Image", data=masks, compression='gzip', compression_opts=9)
             for ix in range(num_cells):
                 grp1.create_dataset("Cell Label: {}".format(ix), compression='gzip', compression_opts=9,
@@ -554,7 +603,7 @@ def main(bq, prob_map_dir, outdir, testing_data_dir, min_distance, label_thresho
         # outtable_xml_points = table_service.store_array(points_done, name='points')
         # outtable_xml_cell_vol = table_service.store_array(cell_vol_done, name='cell_vol')
     # print(output_files)
-    return output_files, adj_table, points, cell_vol, coordinates, center
+    return output_files, adj_table, points, cell_vol, coordinates, center, segments
 
 
 if __name__ == "__main__":
