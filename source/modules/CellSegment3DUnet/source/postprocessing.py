@@ -186,12 +186,13 @@ def compute_segments(seg_img, Adj_list):
             draw_contact = np.logical_and(draw_board1 == 1, draw_board2 == 1)
             draw_contact= draw_contact * 1
             point = np.nonzero(draw_contact)
-           if len(point[0])>0:
-                point_list = []
-                for ii in range(len(point[0])):
-                    point_list.append([point[0][ii],point[1][ii]])
-                point_list = np.asarray(point_list)
-                final_dict["{} {}".format(A,B)] = point_list
+            if len(point[0])>0:
+                 point_list = []
+                 for ii in range(len(point[0])):
+                     point_list.append([point[0][ii],point[1][ii]])
+                 point_list = np.asarray(point_list)
+                 final_dict["{} {}".format(A,B)] = point_list
+
     return final_dict
 
 def compute_conjunction_points(seg_img, Adj_list):
@@ -554,7 +555,9 @@ def main(bq, prob_map_dir, outdir, testing_data_dir, min_distance, label_thresho
         points = compute_conjunction_points(masks, adj_table)
         
         #### NEDS TO BE DONE
+        #segments = compute_segments(masks, adj_table)
         segments = compute_segments(masks, adj_table)
+        print(segments)
         
         points_done = tuple([(k, [x for xs in v for x in xs]) for k, v in points.items()])
         # np.savetxt("result/points.csv", points, delimiter=",")
@@ -577,18 +580,23 @@ def main(bq, prob_map_dir, outdir, testing_data_dir, min_distance, label_thresho
             grp4 = hf.create_group("Adjacency Table")
             grp5 = hf.create_group("Segmented Image")
             grp6 = hf.create_group("Segments")
-#             grp7 = hf.create_group("Three Way Junctions")
+            grp7 = hf.create_group("Three Way Junctions")
             grp2.create_dataset("Cell Center", data=(np.array(list((center.values())))))
             grp3.create_dataset("Cell Volume", data=(np.array(list((cell_vol.values())))))
             grp4.create_dataset("Adjacency Table", data=b)
             grp0.create_dataset("Cell Labels", data=np.array(list((center.keys()))))
-            grp6.create_dataset("Segments", data=(np.array(list((segments.values())))))
+#            grp6.create_dataset("Segments", data=(np.array(list((segments.values())))))
 #             grp7.create_dataset("Three Way Junction Points", data=(np.array(list((segments.values())))))
             grp5.create_dataset("Segmented Image", data=masks, compression='gzip', compression_opts=9)
             for ix in range(num_cells):
                 grp1.create_dataset("Cell Label: {}".format(ix), compression='gzip', compression_opts=9,
                                     data=(np.array(list((coordinates.values()))))[ix])
-
+            for key in segments.keys():
+                grp6.create_dataset("Cell Labels: {}".format(str(key)), compression='gzip', compression_opts=9,
+                                    data=(np.array((segments[key]))))
+            for key in points.keys():
+                grp7.create_dataset("Cell Labels: {}".format(str(key)), compression='gzip', compression_opts=9,
+                                    data=(np.array([points[key][0], points[key][1]])))
         # outtable_xml_adj_table = table_service.store_array(adj_table_done, name='adj_table')
         # outtable_xml_points = table_service.store_array(points_done, name='points')
         # outtable_xml_cell_vol = table_service.store_array(cell_vol_done, name='cell_vol')
