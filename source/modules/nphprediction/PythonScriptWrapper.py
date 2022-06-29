@@ -178,6 +178,8 @@ class PythonScriptWrapper(object):
             bq.update_mex('Uploading Table result')
             self.voltable = self.uploadtableservice(
                 bq, 'source/volumes_unet.csv')
+            self.volconvtable = self.uploadtableservice(
+                bq, 'source/volumes_conv_unet.csv')
             self.predtable = self.uploadtableservice(
                 bq, 'source/predictions.csv')
         except (Exception, ScriptError) as e:
@@ -196,6 +198,7 @@ class PythonScriptWrapper(object):
         ts = time.gmtime()
         ts_str = time.strftime("%Y-%m-%d %H:%M:%S", ts)
         vols = pd.read_csv('source/volumes_unet.csv')
+        volsConv = pd.read_csv('source/volumes_conv_unet.csv')
         preds = pd.read_csv('source/predictions.csv')
         # outputs = predict( bq, log, **self.options.__dict__ )
         #outtable_xml = table_service.store_array(maxMisorient, name='maxMisorientData')
@@ -205,8 +208,9 @@ class PythonScriptWrapper(object):
 		<tag name="Subcortical" type="string" value="%s"/>
 		<tag name="White Matter" type="string" value="%s"/>
 		<tag name="Volumes Table" type="resource" value="%s"/>
+        <tag name="Volumes Converted Table" type="resource" value="%s"/>
 		<tag name="Prediction" type="string" value="%s"/>
-                    </tag>""" % (str(vols.Scan[0]), str(vols.Vent[0]), str(vols.Sub[0]), str(vols.White[0]), self.voltable.get('value'), str(preds.columns[-1]))
+                    </tag>""" % (str(vols.Scan[0]), str(vols.Vent[0]), str(vols.Sub[0]), str(vols.White[0]), self.voltable.get('value'), self.volconvtable.get('value'), str(preds.columns[-1]))
         outputs = [out_imgxml, out_xml]
         log.debug(outputs)
         # save output back to BisQue

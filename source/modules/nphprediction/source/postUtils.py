@@ -59,16 +59,22 @@ def get_volumes(BASE, seg_model='unet', save_last=False):
 	imnames.sort()
 	if seg_model == 'mcv':
 		volume_csv = os.path.join(BASE, 'volumes_mcv.csv')
+		volume_conv_csv = os.path.join(BASE, 'volumes_conv_mcv.csv')
 	elif seg_model == 'unet':
 		volume_csv = os.path.join(BASE, 'volumes_unet.csv')
+		volume_conv_csv = os.path.join(BASE, 'volumes_conv_unet.csv')
 	csv_exists = os.path.exists(volume_csv)
 	if save_last:
 		f = open(volume_csv, 'a')
+		fConv = open(volume_conv_csv, 'a')
 	else:
 		f = open(volume_csv, 'w')
+		fConv = open(volume_conv_csv, 'w')
 	writer = csv.writer(f)
+	writerConv = csv.writer(fConv)
 	if not csv_exists or not save_last:
 		writer.writerow(['Scan', 'Vent', 'Sub', 'White'])
+		writerConv.writerow(['Scan', 'Vent', 'Sub', 'White'])
 	ventricle_volumes = []
 	sub_volumes = []
 	white_volumes = []
@@ -113,6 +119,7 @@ def get_volumes(BASE, seg_model='unet', save_last=False):
 
 		whole_brain = float(ventricle+subarachnoid+white_matter)
 		writer.writerow([imname_short, str(ventricle), str(subarachnoid), str(white_matter)])
+		writerConv.writerow([imname_short, str(ventricle/vol_per_vox), str(subarachnoid/vol_per_vox), str(white_matter/vol_per_vox)])
 	f.close()
 
 
@@ -162,5 +169,4 @@ def clean_up(BASE):
 		if os.path.exists(name):
 			os.remove(name)
 	
-
 
