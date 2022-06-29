@@ -62,7 +62,7 @@ def get_volumes(BASE, seg_model='unet', save_last=False):
 		volume_conv_csv = os.path.join(BASE, 'volumes_conv_mcv.csv')
 	elif seg_model == 'unet':
 		volume_csv = os.path.join(BASE, 'volumes_unet.csv')
-		volume_conv_csv = os.path.join(BASE, 'volumes__conv_unet.csv')
+		volume_conv_csv = os.path.join(BASE, 'volumes_conv_unet.csv')
 	csv_exists = os.path.exists(volume_csv)
 	if save_last:
 		f = open(volume_csv, 'a')
