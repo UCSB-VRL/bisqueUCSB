@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module name="SeamCarvingDetection" type="runtime">
+             
+     <tag name="inputs">
+              
+          <tag name="Input Image" type="resource">
+               <template>
+                    <tag name="label" value="Input Image"/>
+                    <tag name="accepted_type" value="image"/>
+                    <tag name="prohibit_upload" value="True"/>
+               </template>
+          </tag>
+          <tag name="mex_url" type="system-input_resource"/>
+          <tag name="bisque_token" type="system-input_resource"/>
+     </tag>
+         
+     <tag name="outputs">
+                  
+          <tag name="NonImage">
+                           
+               <template>
+                                    
+                    <tag name="label" value="Outputs"/>
+                                
+               </template>
+                       
+          </tag>
+              
+          <tag name="Output Image" type="image">
+               <template>
+                    <tag name="label" value="Output Image"/>
+               </template>
+          </tag>
+     </tag>
+         
+     <tag name="execute_options">
+                  
+          <tag name="iterable" value="image_url" type="dataset"/>
+              
+     </tag>
+         
+     <tag name="module_options">
+                  
+          <tag name="version" value="1"/>
+              
+     </tag>
+         
+     <tag name="display_options">
+                 
+          <tag name="group" value="Media Forensics"/>
+              
+     </tag>
+         
+     <tag name="interface">
+                  
+          <tag name="javascript" type="file" value="webapp.js"/>
+                  
+          <tag name="css" type="file" value="webapp.css"/>
+              
+     </tag>
+         
+     <tag name="help" type="file" value="public/help.html"/>
+         
+     <tag name="thumbnail" type="file" value="public/thumbnail.jpg"/>
+            
+     <tag name="title" type="string" value="SeamCarvingDetection"/>
+         
+     <tag name="authors" type="string" value="Chandrakanth Gudavalli"/>
+         
+     <tag name="description" type="string" value="Module to flag seam carved images"/>
+</module>
