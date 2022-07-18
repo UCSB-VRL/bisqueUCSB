@@ -43,7 +43,7 @@ Ensure you have the latest release by first running the following pull command:
 docker run --name bisque --rm -p 8080:8080 amilworks/bisque-module-dev:git
 ```
 
-and point your browser at `http://localhost:8080`. You should see a BisQue homepage similar to the one on [bisque.ece.ucsb.edu](https://bisque.ece.ucsb.edu/client_service/). If you do __not__ see the homepage, check to make sure that port 8080 is not being used by another container or application _and_ that you have correctly mapped the ports using `-p 8080:8080`, where `-p` is short for port.
+and point your browser at `http://localhost:8080`. You should see a BisQue homepage similar to the one on [bisque2.ece.ucsb.edu](https://bisque2.ece.ucsb.edu/client_service/). If you do __not__ see the homepage, check to make sure that port 8080 is not being used by another container or application _and_ that you have correctly mapped the ports using `-p 8080:8080`, where `-p` is short for port.
 
 
 #### Registering Modules 
