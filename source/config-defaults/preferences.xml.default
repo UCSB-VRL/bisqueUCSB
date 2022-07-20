@@ -9,8 +9,8 @@
             <tag name="message" value="" />
         </tag>
         <tag name="Toolbar">
-            <tag name="registration" value="/auth_service/login" /> <!-- /registration -->
-            <tag name="password_recovery" value="/auth_service/login" /> <!-- /registration/lost_password -->
+            <tag name="registration" value="/registration/" /> <!-- /auth_service/login -->
+            <tag name="password_recovery" value="/registration/lost_password" /> <!-- /auth_service/login -->
             <tag name="user_profile" value="/registration/edit_user" />
 
             <tag name="about" value="/client_service/about" />
