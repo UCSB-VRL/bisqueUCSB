@@ -27,6 +27,14 @@ function redirect_login (url) {
 
 <div id="loginform" class="login">
 
+<script src="https://www.google.com/recaptcha/api.js"></script>
+
+<script>
+    function onSubmit(token) {
+        document.getElementById("login_form").submit();
+    }
+</script>
+
 <form action="${tg.url('/auth_service/login_handler', came_from = came_from.encode('utf-8'), __logins = login_counter.encode('utf-8'))}" method="POST" id='login_form' class="loginfields">
 
     <h2>Welcome Back to BisQue!</h2>
@@ -35,7 +43,12 @@ function redirect_login (url) {
         <h2>Login</h2>
         <label for="loginusername">Username:<input type="text" id="loginusername" name="login" value="$username" class="text"></input></label>
         <label for="loginpassword">Password:<input type="password" id="loginpassword" name="password" class="text"></input></label>
-        <button type="submit" id="submit" class="sigin_button" value="Sign-in with Bisque"><img src="/core/images/signin/signin.svg" /></button>
+        <button class="g-recaptcha sigin_button" 
+                data-sitekey="6Ld4yQchAAAAAIiYv_AT8eXvtuxGg7hwci4IU_pO"
+                data-callback='onSubmit'
+                data-action='submit'
+                value="Sign-in with Bisque"><img src="/core/images/signin/signin.svg" />
+        </button>
 
         <div class="registration">
             <p><a href="/registration/">Register New User</a></p>
