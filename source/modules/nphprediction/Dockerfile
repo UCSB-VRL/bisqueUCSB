@@ -65,6 +65,7 @@ RUN APT_INSTALL="apt-get install -y --no-install-recommends" && \
 	six==1.13.0 \
 	torch==1.2.0 \
 	torchvision==0.4.0 \
+	nipype==1.8.2 \
         && \
     $PIP3_INSTALL -i https://biodev.ece.ucsb.edu/py/bisque/prod/+simple \
         requests==2.18.4 \

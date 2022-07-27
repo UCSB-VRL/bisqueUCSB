@@ -38,35 +38,11 @@
 ## official policies, either expressed or implied, of <copyright holder>.    ##
 ###############################################################################
 
-import sys
-import argparse
-import os
-#from source  import imUtils, segUtils, postUtils, unetSeg
-from convUtils import *
-from imUtils import *
-from segUtils import *
-from postUtils import *
-from unetSeg import *
-
-
-
-
-
-def main(base='source/', parallel=False):
-	convert_dcm_to_niigz('Scans')	
-	threshold(base, 'Scans', parallel)
-	unetPredict(base)
-	subarachnoid_seg(base, parallel)
-	get_volumes(base)
-	make_prediction(base)
-	clean_up(base)
-	
-  
-if __name__== "__main__":
-	parser = argparse.ArgumentParser()
-	parser.add_argument('--directory', default='')
-	parser.add_argument('--parallel', action='store_true', default=False)
-	args = parser.parse_args()
-	main(args.directory, args.parallel)
-
-
+def convert_dcm_to_niigz(dir):
+    from nipype.interfaces.dcm2nii import Dcm2niix
+    converter = Dcm2niix()
+    converter.inputs.source_dir = dir
+    converter.inputs.out_filename = '%b'
+    converter.inputs.output_dir = dir
+    converter.cmdline
+    converter.run()
