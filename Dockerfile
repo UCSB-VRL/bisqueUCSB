@@ -123,7 +123,7 @@ RUN /builder/bq-admin-setup.sh
 # Install Minio and Argo CLI
 ########################################################################################
 
-RUN wget https://dl.min.io/client/mc/release/linux-amd64/mc && chmod +x mc &&  mv mc /usr/bin/mc
+# RUN wget https://dl.min.io/client/mc/release/linux-amd64/mc && chmod +x mc &&  mv mc /usr/bin/mc
 
 # COPY config.json /root/.mc/config.json
 
