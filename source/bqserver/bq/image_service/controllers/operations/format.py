@@ -35,6 +35,8 @@ from bq.image_service.controllers.operation_base import BaseOperation
 from bq.image_service.controllers.process_token import ProcessToken
 from bq.image_service.controllers.converters.converter_imgcnv import ConverterImgcnv
 from bq.image_service.controllers.defaults import default_format
+from bq.image_service.controllers.converters.converter_ffmpeg import supported_formats as ffmpeg_formats
+
 
 log = logging.getLogger("bq.image_service.operations.format")
 
@@ -82,6 +84,7 @@ class FormatOperation(BaseOperation):
             token.outFileName = filename
         else:
             token.setImage(fname=ofile, fmt=fmt)
+        log.debug('RETURNING FROM DRYRUN...')
         return token
 
     def action(self, token, arg):
@@ -126,11 +129,31 @@ class FormatOperation(BaseOperation):
 
             # first try first converter that supports this output format
             c = self.server.writable_formats[fmt]
+            #log.info('\n\n WRITABLE FORMAT %s \n\n', c)
             first_name = c.name
-            # if there are any operations to be run on the output
-            if c.name == ConverterImgcnv.name or queue_size < 1:
-                r = c.convert(token, ofile, fmt, extra=extra)
 
+            fmt_in = token.dims['format'].lower()
+            fmt_in_lst = list(fmt_in.split(','))
+            ffmpeg_formats_set = set(i[0].lower() for i in ffmpeg_formats)
+            #log.info('\n\n FORMAT LIST %s \n\n', fmt_in_lst)
+            #if there are any operations to be run on the outputw
+            for single_fmt in fmt_in_lst:
+                if single_fmt in ffmpeg_formats_set:
+                    #log.info('\n\n FORMAT INSIDE OF FFMPEG %s \n\n', fmt)
+                    r = c.convert(token, ofile, single_fmt, extra=extra)
+                    break
+
+                elif c.name == ConverterImgcnv.name or queue_size < 1:
+                    #log.info('\n\n FORMAT OUTSIDE OF FFMPEG %s \n\n', fmt_in)
+                    r = c.convert(token, ofile, single_fmt, extra=extra)
+                    break
+
+            # if c.name == ConverterImgcnv.name or queue_size < 1:
+            #     log.info('\n\n FORMAT OUTSIDE OF FFMPEG %s \n\n', fmt_in)
+            #     r = c.convert(token, ofile, fmt, extra=extra)
+
+            #log.info('\n\n NONE %s \n\n', fmt_in)
+            #log.info('\n\n r %s \n\n', r)
             # try using other converters directly
             if r is None:
                 log.debug('%s could not convert [%s] to [%s] format'%(first_name, ifile, fmt))
@@ -170,10 +193,7 @@ class FormatOperation(BaseOperation):
         #             if 'image_num_t' in token.dims: info['image_num_t'] = token.dims['image_num_t']
         #         token.dims = info
         #     except Exception:
-        #         pass
-
-        #log.debug('Token: %s', str(token))
-
+        #         pass 
         if (ofile != ifile):
             info = {
                 'format': fmt,
@@ -191,7 +211,6 @@ class FormatOperation(BaseOperation):
                     'image_num_t': dims.get('image_num_t', ''),
                 })
             token.dims.update(info)
-
         return token
 
 

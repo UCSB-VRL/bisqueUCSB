@@ -9,6 +9,7 @@ LABEL build_date="2022-03-24"
 ########################################################################################
 RUN apt-get update  -qq \
     && apt-get install -y --no-install-recommends --allow-unauthenticated \
+    ffmpeg \
     git \
     locales \
     less \
@@ -116,9 +117,7 @@ COPY source/requirements.txt /source
 RUN /builder/run-bisque.sh build
 
 ADD source /source
-
 RUN /builder/bq-admin-setup.sh
-
 ########################################################################################
 # Install Minio and Argo CLI
 ########################################################################################
@@ -139,7 +138,6 @@ RUN chmod +x argo-linux-amd64 && mv ./argo-linux-amd64 /usr/local/bin/argo
 ########################################################################################
 
 
-
-
 ENTRYPOINT [ "/builder/run-bisque.sh"]
+
 CMD [ "bootstrap","start"]

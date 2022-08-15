@@ -48,7 +48,7 @@ Ext.define('BQ.viewer.Movie', {
                 },
                 error: {
                     element: 'el', //bind to the underlying el property on the panel
-                    fn: this.onerror, //function() { BQ.ui.message('error'); },
+                    //fn: this.onerror, //function() { BQ.ui.message('error'); },
                 },
             },
         }, {
@@ -108,7 +108,7 @@ Ext.define('BQ.viewer.Movie', {
                 uri: this.resource,
                 uri_params: {view: 'short'},
                 cb: callback(this, this.onImage),
-                errorcb: callback(this, this.onerror),
+                //errorcb: callback(this, this.onerror),
             });
         } else if (this.resource instanceof BQImage) {
             this.onImage(this.resource);
@@ -252,7 +252,7 @@ Ext.define('BQ.viewer.Movie', {
     },
 
     onerror : function(error) {
-        error = error.message_short ? error : { message: 'Error loading movie', message_short: 'Error loading movie', };
+        error = error.message_short ? error : { message: 'Video Still Loading', message_short: 'Video Still Loading', };
         this.setLoading(false);
         if (this.hasListeners.error)
             this.fireEvent( 'error', error );

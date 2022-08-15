@@ -52,6 +52,10 @@ from .converters.converter_imgcnv import ConverterImgcnv
 from .converters.converter_imaris import ConverterImaris
 from .converters.converter_bioformats import ConverterBioformats
 from .converters.converter_openslide import ConverterOpenSlide
+from .converters.converter_ffmpeg import ConverterFfmpeg
+
+from bq.image_service.controllers.converters.converter_ffmpeg import supported_formats as ffmpeg_formats
+
 
 log = logging.getLogger('bq.image_service.server')
 
@@ -139,6 +143,7 @@ def getOperations(url, base):
 class ImageServer(object):
 
     converters = ConverterDict([
+        (ConverterFfmpeg.name, ConverterFfmpeg()),
         (ConverterOpenSlide.name,   ConverterOpenSlide()),
         (ConverterImgcnv.name,      ConverterImgcnv()),
         (ConverterImaris.name,      ConverterImaris()),
@@ -164,7 +169,7 @@ class ImageServer(object):
             cls.converters.pop(m)
 
 
-        log.info('Available converters: %s', str(cls.converters))
+        log.debug('Available converters: %s', str(cls.converters))
         if ConverterImgcnv.name not in cls.converters:
             log.warn('imgcnv was not found, it is required for most of image service operations! Make sure to install it!')
 
@@ -200,7 +205,8 @@ class ImageServer(object):
 
         # self.writable_formats = self.converters.converters(readable=False, writable=True, multipage=False)
 
-        img_threads = config.get ('bisque.image_service.imgcnv.omp_num_threads', None)
+        #img_threads = config.get ('bisque.image_service.imgcnv.omp_num_threads', None)
+        img_threads = 2
         if img_threads is not None:
             log.info ("Setting OMP_NUM_THREADS = %s", img_threads)
             os.environ['OMP_NUM_THREADS'] = "%s" % img_threads
@@ -288,7 +294,7 @@ class ImageServer(object):
         if token.isFile() and len(token.queue)>0 and not os.path.exists(ofile):
             ifile = token.first_input_file()
             command = token.drainQueue()
-            log.debug('Executing enqueued commands %s: %s to %s with %s', token.resource_id, ifile, ofile, command)
+            log.info('Executing enqueued commands %s: %s to %s with %s', token.resource_id, ifile, ofile, command)
             self.imageconvert(token, ifile, ofile, fmt=token.format, extra=command)
             token.input = ofile
         if token.isFile() and len(token.queue)<1 and not os.path.exists(ofile):
@@ -310,6 +316,7 @@ class ImageServer(object):
         return token
 
     def imageconvert(self, token, ifnm, ofnm, fmt=None, extra=None, dims=None, **kw):
+    
         if not token.isFile():
             raise ImageServiceException(responses.BAD_REQUEST, 'Convert: input is not an image...' )
         fmt = fmt or token.format or default_format
@@ -406,13 +413,12 @@ class ImageServer(object):
         '''Apply an image request'''
         if method not in self.operations.plugins:
             raise ImageServiceException(responses.BAD_REQUEST, 'Requested operation does not exist: %s'%method)
-        return self.operations.plugins[method].action (token, arguments)
+        return self.operations.plugins[method].action(token, arguments)
         # try:
         #     return self.operations.plugins[method].action (token, arguments)
         # except Exception:
         #     log.exception('Exception running: %s', method)
         #     return token
-
     def process(self, url, ident, resource=None, **kw):
         resource_id, subpath, query = getOperations(url, self.base_url)
         log.debug ('STARTING %s: %s', ident, query)
@@ -443,12 +449,12 @@ class ImageServer(object):
                             #    continue
                             # if the service has a dryrun function, some actions are same as dryrun
                             if callable( getattr(service, "dryrun", None) ):
-                                #log.debug ('DRY run: %s calling dryrun', action)
+                                log.debug('DRY run: %s calling dryrun: %s', action, token.dims['image_num_t'])
                                 token = service.dryrun(token, args)
                             else:
-                                #log.debug ('DRY run: %s calling action', action)
+                                log.debug('DRY run: %s calling action: %s', action, token.dims['image_num_t'])
                                 token = service.action(token, args)
-                            log.debug ('DRY run: %s producing: %s', action, token.data)
+                            log.debug('DRY run: %s producing: %s', action, token.data)
                         except Exception:
                             log.exception('Exception during dryrun')
                             pass
@@ -457,13 +463,13 @@ class ImageServer(object):
                     localpath = os.path.join(os.path.realpath(self.workdir), token.data)
                     log.debug('Dryrun test %s: [%s] [%s]', ident, localpath, str(token))
                     if token.isFile() and os.path.exists(localpath):
-                        log.debug('FINISHED %s: returning pre-cached result %s', ident, token.data)
                         with Locks(token.data, failonread=(not block_reads)) as l:
                             if l.locked is False: # dima: never wait, respond immediately
-                                raise ImageServiceFuture((1,10))
+                                raise ImageServiceException(420, 'Hello Ck...')
+                                
                         return token
 
-            log.debug('STARTING full processing %s: with %s', ident, token)
+            log.info('STARTING full processing %s: with %s', ident, token)
 
             # dima - randomly raise exceptions for requested resources for testing of the UI
             # this will imitate overloading the server with processing requests
@@ -493,7 +499,6 @@ class ImageServer(object):
 
         #process all the requested operations
         for action,args in query:
-            log.debug ('ACTION %s: %s', ident, action)
             token = self.request(action, token, args)
             if token.isHttpError():
                 break

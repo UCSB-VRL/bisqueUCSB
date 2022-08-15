@@ -44,6 +44,7 @@ Ext.define('Bisque.Resource.Image', {
         try {
             this.resource.t = parseInt(BQ.util.xpath_nodes(xmlDoc, "//tag[@name='image_num_t']/@value")[0].value);
             this.resource.z = parseInt(BQ.util.xpath_nodes(xmlDoc, "//tag[@name='image_num_z']/@value")[0].value);
+            this.resource.converter = BQ.util.xpath_nodes(xmlDoc, "//tag[@name='converter']/@value")[0].value;
         } catch (e) {
             this.resource.t = 1;
             this.resource.z = 1;
@@ -78,11 +79,18 @@ Ext.define('Bisque.Resource.Image', {
     },
 
     updateThumbnail : function(pos, o) {
-        var sliceX = Math.max(1, Math.ceil((pos.x - this.mmData.x) * this.resource.t / o.w));
-        var sliceY = Math.max(1, Math.ceil((pos.y - this.mmData.y) * this.resource.z / o.h));
+        if (this.resource.converter === "ffmpeg") {
+            var n_thumbnails = 4;
+            var sliceX = Math.max(1, Math.ceil(Math.round(n_thumbnails*(pos.x - this.mmData.x)/o.w)/n_thumbnails * this.resource.t));
+            var sliceY = Math.max(1, Math.ceil(Math.round(n_thumbnails*(pos.y - this.mmData.y)/o.h)/n_thumbnails * this.resource.z));
+        }
+        else {
+            var sliceX = Math.max(1, Math.ceil((pos.x - this.mmData.x) * this.resource.t / o.w));
+            var sliceY = Math.max(1, Math.ceil((pos.y - this.mmData.y) * this.resource.z / o.h));
+        }
+
         sliceX = Math.min(sliceX, this.resource.t);
         sliceY = Math.min(sliceY, this.resource.z);
-
         var imgLoader = new Image();
         imgLoader.style.height = this.layoutMgr.layoutEl.imageHeight;
         imgLoader.style.width = this.layoutMgr.layoutEl.imageWidth;
@@ -615,6 +623,8 @@ Ext.define('Bisque.Resource.Image.Page', {
         if (this.resource && this.resource.uri)
             this.root = this.resource.uri.replace(/\/data_service\/.*$/i, '');
 
+        this.fetchMeta();
+
         this.viewerContainer = Ext.create('BQ.viewer.Image', {
             region : 'center',
             itemId: 'main_view_2d',
@@ -1042,6 +1052,39 @@ Ext.define('Bisque.Resource.Image.Page', {
         this.setLoading(false);
     },
 
+    fetchMeta : function() {
+        Ext.Ajax.request({
+            url : this.resource.src + '?meta',
+            callback : function(opts, success, response) {
+                if (response.status >= 400)
+                    console.log(response.responseText);
+                else
+                    this.onMetaLoaded(response.responseXML);
+            },
+            scope : this,
+            disableCaching : false,
+        });
+    },
+
+    onMetaLoaded : function(xmlDoc) {
+        if (!xmlDoc)
+            return;
+        this.resource.converter = BQ.util.xpath_nodes(xmlDoc, "//tag[@name='converter']/@value")[0].value;
+    },
+
+    addProvenanceViewer : function() {
+        // If resource is tagged as video by ffmpeg, default to video player
+        this.callParent();
+        if (this.viewerContainer.viewer.imagephys) {
+            if (this.resource.converter === "ffmpeg") {
+                var selected = BQ.image_viewers.available[2];
+                this.toolbar.queryById('menu_view_movie').toggle(true);
+                selected.container = selected.creator.call(this);
+                selected.container.setVisible(true);
+            }
+        }
+    },
+
     downloadOriginal : function() {
         if (this.resource.src) {
             window.open(this.resource.src);
@@ -1266,6 +1309,13 @@ Ext.define('Bisque.Resource.Image.Page', {
             BQ.ui.error('WebGL is not available in your browser, sorry...');
             return;
         }
+
+        // If image is tagged as video, do not allow 3D viewer
+        if (this.resource.converter === "ffmpeg") {
+            BQ.ui.notification('3D viewer is not supported for videos');
+            return;
+        }
+
 
         var cnt = this.queryById('main_container');
         var view3d = cnt.add({
