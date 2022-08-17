@@ -88,7 +88,7 @@ RUN mkdir /module
 RUN mkdir /module/source
 WORKDIR /module
 COPY ./source /module/source
-COPY ./bqapi /module/bqapi
+# COPY ./bqapi /module/bqapi
 COPY ./public /module
 
 COPY PythonScriptWrapper /module/
