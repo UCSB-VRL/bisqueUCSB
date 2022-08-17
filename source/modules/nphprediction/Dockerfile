@@ -39,7 +39,7 @@ RUN APT_INSTALL="apt-get install -y --no-install-recommends" && \
         libsm6 libxext6 libxrender1 libfontconfig1 \
 	&& \
     wget -O ~/get-pip.py \
-        https://bootstrap.pypa.io/get-pip.py && \
+        https://bootstrap.pypa.io/pip/3.6/get-pip.py && \
     python3 ~/get-pip.py && \
     ln -s /usr/bin/python3 /usr/local/bin/python3 && \
     ln -s /usr/bin/python3 /usr/local/bin/python && \
