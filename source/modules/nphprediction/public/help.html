@@ -1,0 +1,31 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<h2>
+    <title>Volumetric Segmentation of Brain CT Scans</title>
+</h2>
+
+<body>
+
+    <h3>About:</h3>
+    <a href="public/workflow.png" target="_blank"> <img src="public/workflow.png" /></a>
+    <p>
+		This module is for segmenting a CT scan of a brain into 3 parts: lateral ventricles, cerebral matter, and subarachnoid space using a  3D UNet. A Support Vector Machine is then used to determine if the subject has possible Normal Pressure Hydrocephalus (NPH).
+    </p>
+
+    <p>
+        <a href="https://arxiv.org/abs/1901.09088" target="_blank">Paper: Automated Segmentation of CT Scans for Normal Pressure Hydrocephalus</a>.
+    </p>
+
+    <h3>Input</h3>
+    <p> The input should be a single image or a folder of images in nifti format (ending in .nii.gz).</p>
+    <h3>Outputs</h3>
+    <ul>
+        <li><b>Info:</b> CSV file of volumetric measurements and NPH prediction.</li>
+        <li><b>Segmentation Mask:</b>A segmentation mask in nifti format. If folder of images is used, a folder of segmentation masks are returned.</li>
+      </ul>
+
+
+</body>
+
+</html>
