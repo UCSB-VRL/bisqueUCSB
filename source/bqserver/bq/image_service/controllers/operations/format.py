@@ -145,7 +145,7 @@ class FormatOperation(BaseOperation):
 
                 elif c.name == ConverterImgcnv.name or queue_size < 1:
                     #log.info('\n\n FORMAT OUTSIDE OF FFMPEG %s \n\n', fmt_in)
-                    r = c.convert(token, ofile, single_fmt, extra=extra)
+                    r = c.convert(token, ofile, fmt, extra=extra)
                     break
 
             # if c.name == ConverterImgcnv.name or queue_size < 1:
