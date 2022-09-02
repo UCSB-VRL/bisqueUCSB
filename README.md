@@ -24,6 +24,13 @@ BisQue is a web-based platform specifically designed to provide researchers with
 
 Start using BisQue now by [__Requesting an account!__](https://docs.google.com/forms/d/e/1FAIpQLSfUCwOdl8Gd1KErPXbLWSPvF74ApT7M142sYQVdwluDUJXMAg/viewform)
 
+
+## 🤖 Machine Learning Workflows 
+
+![](tutorials/edited-nph-720.mov)
+
+
+
 ## ✅ Getting Started
 
 ### Docker Installation  
