@@ -138,6 +138,12 @@ RUN chmod +x argo-linux-amd64 && mv ./argo-linux-amd64 /usr/local/bin/argo
 ########################################################################################
 
 
-ENTRYPOINT [ "/builder/run-bisque.sh"]
+ENTRYPOINT ["/builder/run-bisque.sh"]
 
 CMD [ "bootstrap","start"]
+RUN . /usr/lib/bisque/bin/activate && \
+    cd /source && \
+    bq-admin server stop && \
+    cd bqcore && python setup.py install && \
+    cd ../bqserver && python setup.py install && cd .. && \
+    bq-admin deploy && bq-admin server start
