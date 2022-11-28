@@ -135,25 +135,17 @@ class FormatOperation(BaseOperation):
             fmt_in = token.dims['format'].lower()
             fmt_in_lst = list(fmt_in.split(','))
             ffmpeg_formats_set = set(i[0].lower() for i in ffmpeg_formats)
-            #log.info('\n\n FORMAT LIST %s \n\n', fmt_in_lst)
+
             #if there are any operations to be run on the outputw
             for single_fmt in fmt_in_lst:
                 if single_fmt in ffmpeg_formats_set:
-                    #log.info('\n\n FORMAT INSIDE OF FFMPEG %s \n\n', fmt)
                     r = c.convert(token, ofile, single_fmt, extra=extra)
                     break
 
                 elif c.name == ConverterImgcnv.name or queue_size < 1:
-                    #log.info('\n\n FORMAT OUTSIDE OF FFMPEG %s \n\n', fmt_in)
                     r = c.convert(token, ofile, fmt, extra=extra)
                     break
 
-            # if c.name == ConverterImgcnv.name or queue_size < 1:
-            #     log.info('\n\n FORMAT OUTSIDE OF FFMPEG %s \n\n', fmt_in)
-            #     r = c.convert(token, ofile, fmt, extra=extra)
-
-            #log.info('\n\n NONE %s \n\n', fmt_in)
-            #log.info('\n\n r %s \n\n', r)
             # try using other converters directly
             if r is None:
                 log.debug('%s could not convert [%s] to [%s] format'%(first_name, ifile, fmt))

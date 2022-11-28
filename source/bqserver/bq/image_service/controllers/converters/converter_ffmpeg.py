@@ -129,10 +129,10 @@ class ConverterFfmpeg(ConverterBase):
                 if resize:
                     w_out, h_out = compute_new_size(imw, imh, width, height,
                         keep_aspect_ratio=True, no_upsample=True)
-                    cmd = ['ffmpeg', '-y', '-hide_banner', '-threads', '8', '-loglevel', 'error', '-i', ifnm, '-vf',
+                    cmd = ['ffmpeg', '-y', '-hide_banner', '-threads', '4', '-loglevel', 'error', '-i', ifnm, '-vf',
                             'scale=' + str(w_out) + ':' + str(h_out), ofnm]
                 else:
-                    cmd = ['ffmpeg', '-y', '-hide_banner', '-threads', '8', '-loglevel', 'error', '-i', ifnm, ofnm]
+                    cmd = ['ffmpeg', '-y', '-hide_banner', '-threads', '4', '-loglevel', 'error', '-i', ifnm, ofnm]
                 
                 process = subprocess.Popen(cmd, stdout=subprocess.PIPE)
                 output, error = process.communicate()
@@ -209,7 +209,7 @@ class ConverterFfmpeg(ConverterBase):
             if l.locked is False:
                 raise ImageServiceFuture((1,15))
 
-            cmd = ['ffprobe', '-hide_banner', '-threads', '8', '-loglevel', 'quiet', '-print_format',
+            cmd = ['ffprobe', '-hide_banner', '-threads', '4', '-loglevel', 'quiet', '-print_format',
                     'json', '-show_format', '-show_streams', '-i',
                     ifnm]
 
