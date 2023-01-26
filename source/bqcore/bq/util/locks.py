@@ -58,17 +58,28 @@ class Locks (object):
         self.failonexist = failonexist
         self.failonread = failonread
 
+        if self.ifnm:
+            if not os.path.isabs(self.ifnm):
+                self.ifnm = os.path.abspath(ifnm)
+
+        if self.ofnm:
+            if not os.path.isabs(self.ofnm):
+                self.ofnm = os.path.abspath(ofnm)
+
     def acquire (self, ifnm=None, ofnm=None):
         if ifnm:
             self.debug ("acquire thread-r")
+            ##self.log.info("acquire thread-r %s", ifnm)
             rtimeout = None if self.failonread is False else TIMEOUT
             try:
                 rw.acquire_read(ifnm, timeout=rtimeout)
             except Exception:
                 self.debug ("Failed to acquire READ lock and asked to bail...")
+                #self.log.info("Failed to acquire READ lock and asked to bail...")
                 return
             self.thread_r = True
-        self.debug ("acquired thread-r")
+        self.debug("yes acquired thread-r")
+        #self.log.info("yes acquired thread-r %s", ifnm)
 
         if ifnm and os.name != "nt":
             self.debug ("->RL")
@@ -92,16 +103,19 @@ class Locks (object):
 
         if ofnm:
             self.debug ("acquire thread-w")
+            #self.log.info("acquire thread-w %s", ofnm)
             wtimeout = None if self.failonexist is False else TIMEOUT
             try:
                 rw.acquire_write(ofnm, timeout=wtimeout)
             except Exception:
                 self.debug ("Failed to acquire WRITE lock and asked to bail...")
+                #self.log.info("Failed to acquire WRITE lock and asked to bail...")
                 self.release()
                 return
             self.thread_w = True
             if self.failonexist and os.path.exists (ofnm):
                 self.debug ("out file exists: bailing")
+                #self.log.info("out file exists: bailing")
                 self.release()
                 return
 
@@ -112,8 +126,10 @@ class Locks (object):
             try:
                 self.wf.lock(XFile.LOCK_EX|XFile.LOCK_NB)
                 self.debug ("GOT WL")
+                #self.log.info("GOT WL %s", ofnm)
             except XFile.LockError:
                 self.debug ("WL failed")
+                #self.log.info("WL failed")
                 self.wf.close()
                 self.wf = None
                 self.release()
@@ -125,6 +141,7 @@ class Locks (object):
     def release(self):
         if self.wf:
             self.debug ("RELEASE WF")
+            ##self.log.info("RELEASE WF, %s", self.ofnm)
             self.wf.unlock()
             self.wf.close()
             try:
@@ -138,11 +155,13 @@ class Locks (object):
 
         if self.ofnm and self.thread_w:
             self.debug ("release thread-w")
+            #self.log.info("release thread-w %s", self.ofnm)
             rw.release_write(self.ofnm)
             self.thread_w = False
 
         if self.rf:
             self.debug ("RELEASE RF")
+            #self.log.info("RELEASE RF")
             try:
                 self.rf.unlock()
             except XFile.LockError:
@@ -153,6 +172,7 @@ class Locks (object):
 
         if self.ifnm and self.thread_r:
             self.debug ("release thread-r")
+            #self.log.info("release thread-r, %s", self.ifnm)
             rw.release_read(self.ifnm)
             self.thread_r = False
 

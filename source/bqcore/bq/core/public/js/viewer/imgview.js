@@ -547,6 +547,11 @@ ImgViewer.prototype.doUpdateImage = function () {
     // Plugins use current view to calculate actual src url.
     this.update_needed = null;
     this.updateView();
+
+    // If the image is tagged as video, skip creation of image pyramid
+    if (this.image.converter === "ffmpeg") {
+        return;
+    }
     for (var i=0; i<this.plugins.length; i++) {
         plugin = this.plugins[i];
         plugin.updateImage ();
