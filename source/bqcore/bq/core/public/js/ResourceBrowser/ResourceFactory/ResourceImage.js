@@ -1047,12 +1047,6 @@ Ext.define('Bisque.Resource.Image.Page', {
         this.toolbar.insert(5, ['-']);
         this.toolbar.insert(5, viewer_menu_items);
         this.toolbar.doLayout();
-        var uri = this.resource.uri.split('/').pop()
-        var btn = [Ext.create('Ext.Button', {
-            text: "CVAT",
-            handler: function () { window.location.href = '/cvat-helper/' + uri}
-        })];
-        //this.toolbar.insert(5, btn);
         this.setLoading(false);
     },
 
@@ -1076,12 +1070,6 @@ Ext.define('Bisque.Resource.Image.Page', {
         this.resource.converter = BQ.util.xpath_nodes(xmlDoc, "//tag[@name='converter']/@value")[0].value;
     },
 
-    // getCVAT : function(uri) {
-    //     Ext.Ajax.request({
-    //         url : "http://128.111.185.33:8000/" + uri
-    //     });
-    // },
-    //getCVAT : function (uri) { window.location.href = 'http://128.111.185.33:8000/' + uri},
 
     addProvenanceViewer : function() {
         // If resource is tagged as video by ffmpeg, default to video player
