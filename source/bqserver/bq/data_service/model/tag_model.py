@@ -93,7 +93,6 @@ from bq.util.memoize import memoized
 from bq.util.hash import make_uniq_code
 
 from irods_user import BisQueIrodsIntegration#from bq.MS import module_service
-from cvat_user import CVATSession
 #session.mex = None
 
 
@@ -1016,14 +1015,6 @@ def bquser_callback (tg_user, operation, **kw):
                 subprocess.call(["mc", "mb", "ucsb/{}".format(str(tg_user.user_name))])
             except Exception as e:
                 log.exception ("An exception occured during MINIO S3 account creation: %s" , str(e))
-
-            try:
-                with CVATSession(True) as sess:
-                    #log.info ('created a CVAT user %s' , str(tg_user.password))
-                    sess.create_user(str(tg_user.user_name), 'An053092')
-                    log.info ('created a CVAT user %s' , (tg_user.user_name))
-            except Exception as e:
-                log.exception ("An exception occured during CVAT account creation" )
         return
 
 
