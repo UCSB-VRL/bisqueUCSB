@@ -56,6 +56,7 @@ def generate_css_files(root=None, public=None):
 #        {'file' : '/export_service/public/css/BQ.Export.css', 'path' : root + 'bqserver/bq'},
         '/export/css/BQ.Export.css',
         '/core/css/bisquik_extjs_fix.css',
+	    '/core/js/drawing/drawing.css',
 
         # -- modules
         '/core/js/modules/bq_ui_renderes.css',
@@ -120,6 +121,7 @@ def generate_js_files(root=None, public=None):
         '/core/js/bq_ui_misc.js',
         '/core/js/date.js',
         '/core/js/encoder.js',
+	    '/core/js/drawing/drawing.js',
 
         # -- ResourceBrowser code --
         '/core/js/ResourceBrowser/Browser.js',

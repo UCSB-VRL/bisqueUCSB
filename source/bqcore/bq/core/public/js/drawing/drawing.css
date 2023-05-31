@@ -1,0 +1,51 @@
+
+/* take up the whole page and match bisque image viewer background color */
+#drawing_canvas_background {
+  width: 100%;
+  height: 100%;
+  background-color: #434343;
+}
+
+/* Circular cursor that follows mouse.
+   Make it a circle with radius matching brush diameter */
+#drawing_cursor1, #drawing_cursor2 {
+  position: fixed;
+  border-radius: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  background-color: transparent;
+  height: 30px;
+  width: 30px;
+  left: 0px;
+  top: 0px;
+  pointer-events: none;
+}
+
+/* One cursor layer is a dotted circle with color matching label color */
+#drawing_cursor1 {
+  border: 5px dotted;
+}
+
+/* The other cursor layer is a negative of what is below it. This will always
+   be visible. */
+#drawing_cursor2 {
+  border: 2px #f7f8fa solid;
+  mix-blend-mode: difference;
+}
+
+/* Set origin for all images and canvas as the center of the image (-50%).
+   image-rendering: pixelated uses nearest neighbor interpolation, instead
+   of bilinear. This is important for pixel-level mask editing, so no blurring
+   occurs when rendering */
+#drawing_img_seg, #drawing_img_orig, #drawing_canvas {
+  image-rendering: pixelated;
+  transform: translate(-50%, -50%);
+  position: absolute;
+}
+
+/* Prevents clicking on an image from having any action. Pointer events
+   are captured in JS code for drawing. */
+#drawing_img_orig {
+  pointer-events: none;
+}
+
+ 
