@@ -1210,7 +1210,7 @@ def resource_auth (resource, action=RESOURCE_READ, newauth=None, notify=True, in
     return []
 
 
-def resource_delete(resource, user_id=None, check_acl=True, check_blob=True, check_references=True):
+def resource_delete(resource, user_id=None, check_acl=True, check_blob=True, check_references=True, delete_blob=True):
     """Delete the given resource:
     1. if owner delete the resource
     2. else remove ACL permissions
@@ -1269,7 +1269,7 @@ def resource_delete(resource, user_id=None, check_acl=True, check_blob=True, che
     ts = datetime.now()
     resource.document.ts = ts
     # We can delete the resource .. check it has an associated blob
-    if check_blob and resource_uniq is not None:
+    if check_blob and resource_uniq is not None and delete_blob:
         try:
             from bq import blob_service
             blob_service.delete_blob (resource_uniq)
