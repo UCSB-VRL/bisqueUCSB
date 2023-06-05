@@ -1044,6 +1044,18 @@ Ext.define('Bisque.Resource.Image.Page', {
             });
         }
 
+        
+        this.setLoading(false);
+        viewer_menu_items.push({
+            xtype: 'button',
+            itemId: 'mask_editor',
+            text: 'Mask Editor',
+            handler: function() {
+                var my_box = Ext.create('BQ.viewer.Drawing', {resource: this.resource})
+                my_box.show()
+            },
+	    })
+        
         this.toolbar.insert(5, ['-']);
         this.toolbar.insert(5, viewer_menu_items);
         this.toolbar.doLayout();
@@ -1084,7 +1096,7 @@ Ext.define('Bisque.Resource.Image.Page', {
             }
         }
     },
-    
+
     downloadOriginal : function() {
         if (this.resource.src) {
             window.open(this.resource.src);
