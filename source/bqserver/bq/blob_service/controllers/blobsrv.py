@@ -240,7 +240,6 @@ class PathService (TGController):
 
         resource = data_service.query("file|image", resource_value = path, wpublic='1', cache=False)
         for child in resource:
-            i+=1
             data_service.del_resource (child, delete_blob=delete_blob)
         return etree.tostring(resource)
 
