@@ -293,7 +293,7 @@ class DataServerController(ServiceController):
             resource_delete(resource, **kw)
             #self.cache_invalidate(uri)
         else:
-            log.warn ("Could not load uri %s ", uri)
+            log.info("Could not load uri %s ", uri)
         self.flushchanges()
         self.cache_invalidate_resource(resource)
 
