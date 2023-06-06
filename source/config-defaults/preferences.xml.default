@@ -235,10 +235,10 @@
             </tag>
 
             <tag name="Projections">
-                <tag name="visible_plane_tolerance_z" value="2.5" type="number">
+                <tag name="visible_plane_tolerance_z" value="1.0" type="number">
                     <template>
                         <tag name="Type" value="number"/>
-                        <tag name="defaultValue" value="2.5"/>
+                        <tag name="defaultValue" value="1.0"/>
                         <tag name="allowBlank" value="false" type="boolean"/>
                         <tag name="Editable" value="true" type="boolean"/>
                         <tag name="minValue" value="1" type="number" />

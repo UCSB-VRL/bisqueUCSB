@@ -234,10 +234,14 @@ class PathService (TGController):
         if user is not None and identity.is_admin():
             identity.current.set_current_user( user )
 
+        #convert delete_blob to a bool
+        if delete_blob.lower() in ["false", "f"]:
+            delete_blob = False
+
         resource = data_service.query("file|image", resource_value = path, wpublic='1', cache=False)
         for child in resource:
+            i+=1
             data_service.del_resource (child, delete_blob=delete_blob)
-
         return etree.tostring(resource)
 
 

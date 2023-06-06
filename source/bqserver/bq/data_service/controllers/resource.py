@@ -259,6 +259,9 @@ class ResponseCache(BaseCache):
 
     def save(self, url, headers, value, user):
         cachename = os.path.join(self.cachepath, self._cache_name(url, user))
+	if ",value" in cachename:
+	    log.debug (u'NO NO NOcache write %s to %s', url, cachename)
+	    return
         headers = dict ([ (k,v) for k,v in headers.items() if k in self.known_headers])
         log.debug (u'cache write %s to %s', url, cachename )
         clen = headers.get ('Content-Length', None)

@@ -1,3 +1,4 @@
+
 FROM amilworks/bisque05-base-xenial
 
 LABEL maintainer="amil@ucsb.edu"
@@ -111,11 +112,11 @@ ENV PY_INDEX=https://biodev.ece.ucsb.edu/py/bisque/xenial/+simple
 #   - Install requirements.txt first to install all python deps
 #   - Added at the end for easy updates to source code
 ########################################################################################
-COPY  $BISQUE_UID source/requirements.txt /source
+COPY source/requirements.txt /source
 
 RUN /builder/run-bisque.sh build
 
-ADD  $BISQUE_UID source /source
+ADD source /source
 RUN /builder/bq-admin-setup.sh
 ########################################################################################
 # Install Minio and Argo CLI

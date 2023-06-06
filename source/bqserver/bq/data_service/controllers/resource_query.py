@@ -1218,7 +1218,9 @@ def resource_delete(resource, user_id=None, check_acl=True, check_blob=True, che
 
     @param resource: a database resource
     """
-
+    log.info("WE ARE HERE in resource_delete")
+    log.info("DELETE BLOB: %s",delete_blob)
+    log.info("DELETE BLOB TYPE %s", type(delete_blob))
     if hasattr (resource, 'indx'):
         log.debug ("resource_delete: indx")
         resource_uniq = resource.indx
@@ -1231,7 +1233,7 @@ def resource_delete(resource, user_id=None, check_acl=True, check_blob=True, che
         return
 
     resource_uniq  = resource.resource_uniq
-    log.debug('resource_delete %s: start' , resource_uniq)
+    log.info('resource_delete %s: start' , resource_uniq)
     if  user_id is None:
         user_id = get_user_id()
     if  check_acl \
@@ -1279,6 +1281,7 @@ def resource_delete(resource, user_id=None, check_acl=True, check_blob=True, che
     if resource.resource_parent_id:
         resource.parent.children.remove(resource)
 
+    log.info("DBSESSION DELETE")
     DBSession.delete(resource)
     #DBSession.flush()
 
