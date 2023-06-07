@@ -12,6 +12,13 @@
                 <tag name="prohibit_upload" value="true" type="boolean" />
             </template>
         </tag>
+        <tag name="target_name" type="string">
+            <template>
+                <tag name="accepted_type" value="string" />
+                <tag name="label" value="Name of DICOM file (leave blank if none or if already set to 'Default')" />
+                <tag name="prohibit_upload" value="true" type="boolean" />
+            </template>
+        </tag>
         <tag name="reducer_url"  type="resource">
             <template>
                 <tag name="label" value="Select a PyTorch Model" />
