@@ -39,32 +39,10 @@
 ###############################################################################
 
 def convert_dcm_to_niigz(dir):
-    # case 1: there is an input folder name
-    # case 2: there is no input folder, but a default
-    # case 3: there is no input folder, and no default
-    # case 4: there are no dicom files
-    import os
-    try:
-        from lxml import etree
-    except ImportError:
-        import xml.etree.ElementTree as etree
-    # finding target directory
-    tree = etree.parse('nphprediction.xml')
-    targetDir = tree.find("[@name='target_name]")
-    print(targetDir)
-
-   
-    #targetDir = input("Target Directory name (hit enter if already named to Default or none to convert): ")
-    if not targetDir:
-        targetDir = "Default"
-    targetDir = dir + "/" + targetDir
-    try: #
-        from nipype.interfaces.dcm2nii import Dcm2niix
-        converter = Dcm2niix()
-        converter.inputs.source_dir = targetDir
-        converter.inputs.out_filename = '%b'
-        converter.inputs.output_dir = dir
-        converter.cmdline
-        converter.run()
-    except:
-        print("no DICOMs to convert")
+    from nipype.interfaces.dcm2nii import Dcm2niix
+    converter = Dcm2niix()
+    converter.inputs.source_dir = targetDir
+    converter.inputs.out_filename = '%b'
+    converter.inputs.output_dir = dir
+    converter.cmdline
+    converter.run()
