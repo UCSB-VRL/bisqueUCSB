@@ -22,7 +22,7 @@ mex=$(echo "$MEX_ID" | tr '[:upper:]' '[:lower:]')
 
 echo "image: ${DOCKER_IMAGE}" | tee params.yaml
 echo "args: ${@}" | tee -a params.yaml
-argo submit --log --from workflowtemplate/bqflow-module-template --parameter-file params.yaml --generate-name ${mex}- 
+argo submit --log --from workflowtemplate/bqflow-module-template --parameter-file params.yaml --token $ARGO_TOKEN --generate-name ${mex}- 
 """
 
 DOCKER_RUN_GPU="""#!/bin/bash 
@@ -32,7 +32,7 @@ mex=$(echo "$MEX_ID" | tr '[:upper:]' '[:lower:]')
  
 echo "image: ${DOCKER_IMAGE}" | tee params.yaml 
 echo "args: ${@}" | tee -a params.yaml 
-argo submit --log --from workflowtemplate/bqflow-module-gpu-template --parameter-file params.yaml --generate-name ${mex}-  
+argo submit --log --from workflowtemplate/bqflow-module-gpu-template --parameter-file params.yaml --token $ARGO_TOKEN --generate-name ${mex}-  
 """
 
 class DockerEnvironment(BaseEnvironment):
