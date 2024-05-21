@@ -30,11 +30,11 @@ from bq.image_service.controllers.process_token import ProcessToken
 from bq.image_service.controllers.converter_base import ConverterBase, Format
 from .converter_imgcnv import ConverterImgcnv
 
-#try:
-#    import openslide
-#    from openslide import deepzoom
-#except (ImportError, OSError):
-#    pass
+try:
+   import openslide
+   from openslide import deepzoom
+except (ImportError, OSError):
+   pass
 
 import logging
 log = logging.getLogger('bq.image_service.converter_openslide')
@@ -122,7 +122,7 @@ class ConverterOpenSlide(ConverterBase):
         '''return True if the input file format is supported'''
         if not cls.installed:
             return False
-        return False #!!! TODO: re-enable
+        #return False #!!! TODO: re-enable
         ifnm = token.first_input_file()
         log.debug('Supported for: %s', ifnm )
         #if token.is_multifile_series() is True:
