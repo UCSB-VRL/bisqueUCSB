@@ -101,30 +101,39 @@ RUN apt-get update  -qq \
     vim  \ 
     sudo \
     curl \
-  && apt-get clean \
-  && find  /var/lib/apt/lists/ -type f -delete
+    ca-certificates \
+    && update-ca-certificates \
+    && apt-get clean \
+    && find  /var/lib/apt/lists/ -type f -delete
 ########################################################################################
-
-
-
 
 RUN echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen && locale-gen
 ENV LANG en_US.UTF-8
 RUN locale
-
 
 ########################################################################################
 # COPY BASH Scripts for BisQue
 #   - Set workdir early  as may wipe out contents
 ########################################################################################
 
+WORKDIR /var/opt
+
+# Image Convert
+RUN wget https://biodev.ece.ucsb.edu/binaries/depot/imgcnv_ubuntu16_2.4.3.tar.gz
+RUN tar -xvzf imgcnv_ubuntu16_2.4.3.tar.gz
+RUN cp imgcnv_ubuntu16_2.4.3/imgcnv /usr/local/bin/
+RUN cp imgcnv_ubuntu16_2.4.3/libimgcnv.so.2.4.3 /usr/local/lib/
+RUN ln -s /usr/local/lib/libimgcnv.so.2.4.3 /usr/local/lib/libimgcnv.so.2.4
+RUN ln -s /usr/local/lib/libimgcnv.so.2.4 /usr/local/lib/libimgcnv.so.2
+RUN ln -s /usr/local/lib/libimgcnv.so.2 /usr/local/lib/libimgcnv.so
+RUN ldconfig
+
+
 WORKDIR /source
 COPY run-bisque.sh bq-admin-setup.sh virtualenv.sh /builder/
 COPY start-bisque.sh /builder/start-scripts.d/R50-start-bisque.sh
 COPY builder/ /builder/build-scripts.d/
 COPY boot/ /builder/boot-scripts.d/
-
-
 
 ########################################################################################
 # RUN BASH Scripts for BisQue
@@ -154,18 +163,6 @@ trusted-host = biodev.ece.ucsb.edu\n" > /root/.pip/pip.conf
 COPY  source/requirements.txt /source
 
 
-# RUN mkdir -p ./public/image_service && \
-#     cp -r bqserver/bq/image_service/public/* ./public/image_service/
-
-# RUN mkdir -p ./public/dataset_service && \
-#     cp -r bqserver/bq/dataset_service/public/* ./public/dataset_service/
-
-# RUN mkdir -p ./public/import && \
-#     cp -r bqserver/bq/import_service/public/* ./public/import/
-
-# RUN mkdir -p ./public/export && \
-#     cp -r bqserver/bq/export_service/public/* ./public/export/
-
 RUN /builder/run-bisque.sh build
 ADD  source /source
 
@@ -194,9 +191,4 @@ RUN chmod +x argo-linux-amd64 && mv ./argo-linux-amd64 /usr/local/bin/argo
 ENTRYPOINT ["/builder/run-bisque.sh"]
 
 CMD [ "bootstrap","start"]
-# RUN . /usr/lib/bisque/bin/activate && \
-#     cd /source && \
-#     bq-admin server stop && \
-#     cd bqcore && python setup.py install && \
-#     cd ../bqserver && python setup.py install && cd .. && \
-#     bq-admin server start
+
