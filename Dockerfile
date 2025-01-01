@@ -1,7 +1,39 @@
-FROM amilworks/bisque05-base-xenial
+# FROM amilworks/bisque05-base-xenial
+FROM ubuntu:16.04
 
 LABEL maintainer="amil@ucsb.edu"
 LABEL build_date="2022-03-24"
+
+RUN echo "Install Bisque System"
+
+RUN apt-get update -qq && apt-get install -y --no-install-recommends \
+    software-properties-common \
+    && apt-add-repository multiverse \
+    && apt-get update -qq && apt-get install -y --no-install-recommends \
+    xvfb \
+    firefox \
+    wget \
+    tightvncserver \
+    x11vnc \
+    xfonts-base \
+    python-pip \
+    python-virtualenv \
+    python-numpy \
+    python-scipy \
+    libhdf5-dev \
+    cmake \
+    libmysqlclient-dev \
+    postgresql \
+    postgresql-client \
+    python-paver \
+    graphviz \
+    libgraphviz-dev \
+    pkg-config \
+    openslide-tools \
+    python-openslide \
+    libfftw3-dev \
+    libgdcm2.6 \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 ########################################################################################
 # Linux System Package Installs for BisQue
@@ -101,10 +133,18 @@ COPY boot/ /builder/boot-scripts.d/
 ########################################################################################
 
 RUN /builder/virtualenv.sh
+# ENV PY_INDEX=https://biodev.ece.ucsb.edu/py/bisque/xenial/+simple
+
+# Set custom Python package index and configure pip
 ENV PY_INDEX=https://biodev.ece.ucsb.edu/py/bisque/xenial/+simple
+RUN mkdir -p /root/.pip && echo "\
+[global]\n\
+index-url = $PY_INDEX\n\
+trusted-host = biodev.ece.ucsb.edu\n" > /root/.pip/pip.conf
 
-
-
+# # Install certifi for updated CA certificates
+# RUN pip install certif
+# ENV SSL_CERT_FILE=$(python -c "import certifi; print(certifi.where())")
 
 ########################################################################################
 # COPY Source Code
@@ -113,9 +153,22 @@ ENV PY_INDEX=https://biodev.ece.ucsb.edu/py/bisque/xenial/+simple
 ########################################################################################
 COPY  source/requirements.txt /source
 
-RUN /builder/run-bisque.sh build
 
+# RUN mkdir -p ./public/image_service && \
+#     cp -r bqserver/bq/image_service/public/* ./public/image_service/
+
+# RUN mkdir -p ./public/dataset_service && \
+#     cp -r bqserver/bq/dataset_service/public/* ./public/dataset_service/
+
+# RUN mkdir -p ./public/import && \
+#     cp -r bqserver/bq/import_service/public/* ./public/import/
+
+# RUN mkdir -p ./public/export && \
+#     cp -r bqserver/bq/export_service/public/* ./public/export/
+
+RUN /builder/run-bisque.sh build
 ADD  source /source
+
 RUN /builder/bq-admin-setup.sh
 ########################################################################################
 # Install Minio and Argo CLI
@@ -136,13 +189,14 @@ RUN chmod +x argo-linux-amd64 && mv ./argo-linux-amd64 /usr/local/bin/argo
 
 ########################################################################################
 
+# ENTRYPOINT [ "/bin/bash" ]
 
 ENTRYPOINT ["/builder/run-bisque.sh"]
 
 CMD [ "bootstrap","start"]
-RUN . /usr/lib/bisque/bin/activate && \
-    cd /source && \
-    bq-admin server stop && \
-    cd bqcore && python setup.py install && \
-    cd ../bqserver && python setup.py install && cd .. && \
-    bq-admin deploy && bq-admin server start
+# RUN . /usr/lib/bisque/bin/activate && \
+#     cd /source && \
+#     bq-admin server stop && \
+#     cd bqcore && python setup.py install && \
+#     cd ../bqserver && python setup.py install && cd .. && \
+#     bq-admin server start
