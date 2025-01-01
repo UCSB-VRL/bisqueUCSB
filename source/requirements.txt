@@ -62,7 +62,7 @@ pkginfo==1.2b1
 ply==3.4
 poster==0.8.1
 psutil==4.3.0
-python_irodsclient
+python_irodsclient==1.1.7
 python_multipart==0.0.4
 pycrypto==2.6.1
 python-dateutil==2.7.3
