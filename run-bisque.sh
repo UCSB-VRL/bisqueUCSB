@@ -5,7 +5,7 @@ INDEX=${PY_INDEX:=https://biodev.ece.ucsb.edu/py/bisque/d8/+simple}
 CONFIG=./config/site.cfg
 export  PIP_INDEX_URL=$INDEX
 reports=$(pwd)/reports/
-BUILD=/builder/
+BUILD=/builder
 BQHOME=${BQHOME:=/source/}
 VENV=${VENV:=/usr/lib/bisque}
 
@@ -52,9 +52,9 @@ if [ "$CMD" = "bootstrap" ] ; then
     #/usr/share/python/bisque/bin/pip install -r extras.txt
     umask 0002
     ls -l
-    if [ -d ${BUILD}boot-scripts.d ]; then
-        ls -l ${BUILD}boot-scripts.d
-        for f in ${BUILD}boot-scripts.d/B*.sh; do
+    if [ -d ${BUILD}/boot-scripts.d ]; then
+        ls -l ${BUILD}/boot-scripts.d
+        for f in ${BUILD}/boot-scripts.d/B*.sh; do
             echo "Executing **BOOT $f **"
             [ -f "$f" ] && bash  "$f"
         done
@@ -127,9 +127,9 @@ if [ "$CMD" = "start" ] ; then
         echo "Please run bootstrap first i.e. bootstrap start"
         exit 1
     fi
-    if [ -d ${BUILD}start-scripts.d ]; then
-        ls -l ${BUILD}start-scripts.d
-        for f in ${BUILD}start-scripts.d/R*.sh; do
+    if [ -d ${BUILD}/start-scripts.d ]; then
+        ls -l ${BUILD}/start-scripts.d
+        for f in ${BUILD}/start-scripts.d/R*.sh; do
             echo "Executing ** START $f **"
             [ -f "$f" ] && bash  "$f"
         done
