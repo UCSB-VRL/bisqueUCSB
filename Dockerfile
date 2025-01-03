@@ -1,10 +1,13 @@
-# FROM amilworks/bisque05-base-xenial
 FROM ubuntu:16.04
 
 LABEL maintainer="amil@ucsb.edu"
-LABEL build_date="2022-03-24"
+LABEL build_date="2025-03-01"
 
 RUN echo "Install Bisque System"
+
+########################################################################################
+# Linux System Package Installs for BisQue
+########################################################################################
 
 RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     software-properties-common \
@@ -35,9 +38,6 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     libgdcm2.6 \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-########################################################################################
-# Linux System Package Installs for BisQue
-########################################################################################
 RUN apt-get update  -qq \
     && apt-get install -y --no-install-recommends --allow-unauthenticated \
     ffmpeg \
@@ -112,8 +112,7 @@ ENV LANG en_US.UTF-8
 RUN locale
 
 ########################################################################################
-# COPY BASH Scripts for BisQue
-#   - Set workdir early  as may wipe out contents
+# Install Image Converter for BisQue
 ########################################################################################
 
 WORKDIR /var/opt
@@ -128,6 +127,10 @@ RUN ln -s /usr/local/lib/libimgcnv.so.2.4 /usr/local/lib/libimgcnv.so.2
 RUN ln -s /usr/local/lib/libimgcnv.so.2 /usr/local/lib/libimgcnv.so
 RUN ldconfig
 
+########################################################################################
+# COPY BASH Scripts for BisQue
+#   - Set workdir early  as may wipe out contents
+########################################################################################
 
 WORKDIR /source
 COPY run-bisque.sh bq-admin-setup.sh virtualenv.sh /builder/
