@@ -105,6 +105,19 @@ RUN apt-get update  -qq \
     && update-ca-certificates \
     && apt-get clean \
     && find  /var/lib/apt/lists/ -type f -delete
+
+
+########################################################################################
+# Install Docker
+########################################################################################
+
+RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - && \
+    add-apt-repository \
+    "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" && \
+    apt-get update -qq && \
+    apt-get install -y --no-install-recommends docker-ce && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
 ########################################################################################
 
 RUN echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen && locale-gen
@@ -188,8 +201,6 @@ RUN gunzip argo-linux-amd64.gz
 RUN chmod +x argo-linux-amd64 && mv ./argo-linux-amd64 /usr/local/bin/argo
 
 ########################################################################################
-
-# ENTRYPOINT [ "/bin/bash" ]
 
 ENTRYPOINT ["/builder/run-bisque.sh"]
 
