@@ -58,7 +58,7 @@ and point your browser at `http://localhost:8080`. You should see a BisQue homep
 
 Clone the repository 
 ```
-git clone git@github.com:charvi-077/bisqueUCSB.git
+git clone https://github.com/UCSB-VRL/bisqueUCSB.git
 cd bisqueUCSB 
 ```
 Build the BisQue locally using dockerfile 
