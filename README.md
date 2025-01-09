@@ -10,9 +10,6 @@
 
 BisQue is a web-based platform specifically designed to provide researchers with organizational and quantitative analysis tools for up to 5D image data. Users can extend BisQue by creating their own modules that take advantage of cutting edge machine learning algorithms. BisQue’s extensibility stems from two core concepts: flexible metadata facility and an open web-based architecture. Together these empower researchers to create, develop and share novel multimodal data analyses.
 
-
-
-
 ![](docs/images/bisqueviewer.gif)
 
 ## 💡 Features
@@ -31,7 +28,11 @@ Start using BisQue now by [__Requesting an account!__](https://docs.google.com/f
 
 ## ✅ Getting Started
 
-### Docker Installation  
+Prebuilt docker image is the easiest way to start using BisQue locally. It is available on Docker Hub, follow the below steps :
+
+#### Method 1 : Using Prebuilt Image
+
+#### Docker Installation  
 
 [![asciicast](https://asciinema.org/a/dFXOoLJ01Hcclr5ooWzLfV3i6.svg)](https://asciinema.org/a/dFXOoLJ01Hcclr5ooWzLfV3i6)
 
@@ -43,8 +44,6 @@ Ensure you have the latest release by first running the following pull command:
   docker pull amilworks/bisque-module-dev:git
 ```
 
-### __Intro: BisQue Docker Container__ 
-
 #### Run the BisQue Docker Container 
 
  To run the docker version of BisQue locally, start a bisque server on the host port 8080:
@@ -55,8 +54,27 @@ docker run --name bisque --rm -p 8080:8080 amilworks/bisque-module-dev:git
 
 and point your browser at `http://localhost:8080`. You should see a BisQue homepage similar to the one on [bisque2.ece.ucsb.edu](https://bisque2.ece.ucsb.edu/client_service/). If you do __not__ see the homepage, check to make sure that port 8080 is not being used by another container or application _and_ that you have correctly mapped the ports using `-p 8080:8080`, where `-p` is short for port.
 
+#### Method 2 : Build the image locally 
 
-#### Registering Modules 
+Clone the repository 
+```
+git clone https://github.com/UCSB-VRL/bisqueUCSB.git
+cd bisqueUCSB 
+```
+Build the BisQue locally using dockerfile 
+
+```
+docker build  --tag bisqueUCSB .
+```
+
+Run the Docker container from built image, same as we did in previous method
+```
+docker run --name bisque --rm -p 8080:8080 bisqueUCSB
+```
+
+and point your browser at `http://localhost:8080`, you should see a BisQue homepage
+
+### Registering Modules 
 
 To register all the modules to your local server:
    * Login to your BisQue server using admin:admin
