@@ -1,14 +1,34 @@
-![](docs/images/bq-github-banner2.svg)
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/80ad874f-b146-4e6a-8026-afae596d51b1" alt="bisque-logo">
+</p>
 
-![workflow](https://github.com/UCSB-VRL/bisqueUCSB/actions/workflows/docker-image.yml/badge.svg)
-![](https://img.shields.io/badge/BisQue%20Stable%20Release-v1.0.0-brightgreen)
+**BisQue** is a web-based platform specifically designed to provide researchers with organizational and quantitative analysis tools for up to 5D image data. Users can extend BisQue by creating their own modules that take advantage of cutting edge machine learning algorithms. BisQue’s extensibility stems from two core concepts: flexible metadata facility and an open web-based architecture. Together these empower researchers to create, develop and share novel multimodal data analyses.
+
+#### 🌟 User Feedback and Supported Environments
+We are excited to share that BisQue is actively enabling cutting-edge research across a wide range of disciplines. Thanks to valuable feedback from our users, BisQue continues to support advancements in the following fields:
+
+* **Biomedical Sciences:** Driving discoveries in health, disease mechanisms, and medical imaging.
+* **Neuroscience:** Unlocking insights into brain function and neural networks.
+* **Wildlife Conservation:** Enhancing the understanding of ecosystems and species monitoring.
+* **Marine Science Research:** Supporting studies on ocean biodiversity and environmental changes.
+* **Materials Science:** Facilitating breakthroughs in material characterization and development.
+
+We've received feedback from users and have BisQue operating in the following environments with :
+
+Neuroscience
+WildLife Conservation
+Marine Science
+Research
+
+
+[__`DOCUMENTATION`__](https://bisque.gitbook.io/docs/)
+
 
 
 ## 🔭 Overview 
 
-[__`DOCUMENTATION`__](https://bisque.gitbook.io/docs/)
-
-BisQue is a web-based platform specifically designed to provide researchers with organizational and quantitative analysis tools for up to 5D image data. Users can extend BisQue by creating their own modules that take advantage of cutting edge machine learning algorithms. BisQue’s extensibility stems from two core concepts: flexible metadata facility and an open web-based architecture. Together these empower researchers to create, develop and share novel multimodal data analyses.
+![workflow](https://github.com/UCSB-VRL/bisqueUCSB/actions/workflows/docker-image.yml/badge.svg)
+![](https://img.shields.io/badge/BisQue%20Stable%20Release-v1.0.0-brightgreen)
 
 ![](docs/images/bisqueviewer.gif)
 
@@ -19,8 +39,8 @@ BisQue is a web-based platform specifically designed to provide researchers with
 - Distributed storage: local, iRODS, S3
 - Integrated image analysis, high-throughput with Condor
 - Analysis in MATLAB, Python, Java+ImageJ
-- 100+ biological image formats 
-- Very large 5D images (100+ GB)
+- It supports 100+ biological image formats 
+- Process very large 5D images (100+ GB)
 
 Start using BisQue now by [__Requesting an account!__](https://docs.google.com/forms/d/e/1FAIpQLSfUCwOdl8Gd1KErPXbLWSPvF74ApT7M142sYQVdwluDUJXMAg/viewform)
 
@@ -176,7 +196,7 @@ docker stop {YOUR_CONTAINER_NAME} #  <--- If you named the container
 
 The official documentation covers the [BisQue cloud service](https://bisque.ece.ucsb.edu) running live at UCSB, module development for the platform, and the BQAPI. If you have any questions, feel free to reach out. We will be continuously updating the documentation so check back often for updates!
 
-## Papers using BisQue
+## Publications Featuring BisQue
 
 * Jangid, Devendra K., Neal R. Brodnik, Amil Khan, Michael G. Goebel, McLean P. Echlin, Tresa M. Pollock, Samantha H. Daly, and B. S. Manjunath. __"3D Grain Shape Generation in Polycrystals Using Generative Adversarial Networks."__ Integrating Materials and Manufacturing Innovation (2022): 1-14.
 *  Zhang, Angela, Amil Khan, Saisidharth Majeti, Judy Pham, Christopher Nguyen, Peter Tran, Vikram Iyer, Ashutosh Shelat, Jefferson Chen, and B S Manjunath. __“Automated Segmentation and Connectivity Analysis for Normal Pressure Hydrocephalus.”__ BME Frontiers 2022 (2022): 1–13.
@@ -184,18 +204,7 @@ The official documentation covers the [BisQue cloud service](https://bisque.ece.
 * Polonsky, Andrew T., Christian A. Lang, Kristian G. Kvilekval, Marat I. Latypov, McLean P. Echlin, B. S. Manjunath, and Tresa M. Pollock. __"Three-dimensional analysis and reconstruction of additively manufactured materials in the cloud-based BisQue infrastructure."__ Integrating Materials and Manufacturing Innovation 8, no. 1 (2019): 37-51.
 * Kvilekval K, Fedorov D, Obara B, Singh A, Manjunath BS. __Bisque: a platform for bioimage analysis and management__. Bioinformatics. 2010 Feb 15;26(4):544-52. doi: 10.1093/bioinformatics/btp699. Epub 2009 Dec 22. PMID: 20031971.
 
-## Team
-
-* Amil Khan  (Project Lead)
-* Satish Kumar 
-* Mike Goebel
-* Connor Levenson
-* Chandrakanth Gudavalli
-* Tom Jiang
-
-
 ### Acknowledgments
-
-* NSF SI2-SSI No.1664172, NSF MCB Grant No. 1715544
+We acknowledge support from the NSF SI2-SSI Award No. 1664172, which supports the core BisQue software development infrastructure for sharing data and analysis modules, as well as NSF MCB Grant No. 1715544.
 
 [__License__](https://github.com/UCSB-VRL/bisqueUCSB/blob/master/source/LICENSE)
