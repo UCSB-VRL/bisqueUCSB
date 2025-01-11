@@ -4,6 +4,17 @@
 
 **BisQue** is a web-based platform specifically designed to provide researchers with organizational and quantitative analysis tools for up to 5D image data. Users can extend BisQue by creating their own modules that take advantage of cutting edge machine learning algorithms. BisQue’s extensibility stems from two core concepts: flexible metadata facility and an open web-based architecture. Together these empower researchers to create, develop and share novel multimodal data analyses.
 
+
+|**Code**                    | ![](https://img.shields.io/badge/BisQue%20Stable%20Release-v1.0.0-brightgreen) |
+|----------------------------|-------------------------------------------------------------------------------------------------------------------------------|
+| **Continuous Integration** | [![Build Status](https://github.com/UCSB-VRL/bisqueUCSB/actions/workflows/docker-image.yml/badge.svg)](https://github.com/UCSB-VRL/bisqueUCSB/actions/workflows/docker-image.yml/badge.svg) |
+| **Documentation**          | [![Docs](https://img.shields.io/badge/docs-website-brightgreen?style=flat)](https://bisque.gitbook.io/docs/) [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/geomstats/geomstats/main?filepath=notebooks) [![Tutorial](https://img.shields.io/youtube/views/Ju-Wsd84uG0?label=watch&style=social)](https://www.youtube.com/watch?v=Ju-Wsd84uG0) |
+| **Community**              | [![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://geomstats.github.io/contributing.html) [![Slack](https://img.shields.io/badge/Slack-Join-yellow)](https://join.slack.com/t/geomstats/shared_invite/zt-15t8k0q7r-Duxt6j6aA3rDOIms2Vd~RQ) [![Twitter Follow](https://img.shields.io/twitter/follow/geomstats?label=Follow%20%40geomstats%20%20%20%20&style=social)](https://twitter.com/geomstats) |
+
+
+
+Keep in touch with the community by joining us on our `discourse channel <https://join.slack.com/t/geomstats/shared_invite/zt-15t8k0q7r-Duxt6j6aA3rDOIms2Vd~RQ>`__!
+
 #### 🌟 User Feedback and Supported Environments
 We are excited to share that BisQue is actively enabling cutting-edge research across a wide range of disciplines. Thanks to valuable feedback from our users, BisQue continues to support advancements in the following fields:
 
@@ -13,12 +24,6 @@ We are excited to share that BisQue is actively enabling cutting-edge research a
 * **Marine Science Research:** Supporting studies on ocean biodiversity and environmental changes.
 * **Materials Science:** Facilitating breakthroughs in material characterization and development.
 
-We've received feedback from users and have BisQue operating in the following environments with :
-
-Neuroscience
-WildLife Conservation
-Marine Science
-Research
 
 
 [__`DOCUMENTATION`__](https://bisque.gitbook.io/docs/)
