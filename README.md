@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/80ad874f-b146-4e6a-8026-afae596d51b1" alt="bisque-logo">
+  <img src="docs/images/bq-github-banner2.svg" alt="bisque-logo" width="600">
 </p>
 
 **BisQue** is a web-based platform specifically designed to provide researchers with organizational and quantitative analysis tools for up to 5D image data. Users can extend BisQue by creating their own modules that take advantage of cutting edge machine learning algorithms. BisQue’s extensibility stems from two core concepts: flexible metadata facility and an open web-based architecture. Together these empower researchers to create, develop and share novel multimodal data analyses.
@@ -81,23 +81,8 @@ Start using **BisQue** locally with Docker by following these simple steps:
    ```
 Open your browser and go to http://localhost:8080.
 
-## 📖 Cite Us
-
-If you find **BisQue** helpful in your research or work, please consider citing us:  
-
-AuthorName. (2006). BisQue. GitHub. https://github.com/UCSB-VRL/bisqueUCSB.git
-
-### BibTeX (for LaTeX users)
-
-```bibtex
-@misc{AuthorName_Repository_Title,
-  author       = {AuthorName},
-  title        = {Repository Title},
-  year         = {Year},
-  howpublished = {\url{https://github.com/username/repository-name}},
-  note         = {Accessed: YYYY-MM-DD}
-}
-```
+## 💬 Need Help?
+To further develop modules with BisQue or for queries, reach out to us on [Discourse](https://community.bisque2.ece.ucsb.edu/).
 
 ## 📰 Publications Featuring BisQue
 
@@ -108,6 +93,7 @@ AuthorName. (2006). BisQue. GitHub. https://github.com/UCSB-VRL/bisqueUCSB.git
 * Kvilekval K, Fedorov D, Obara B, Singh A, Manjunath BS. __Bisque: a platform for bioimage analysis and management__. Bioinformatics. 2010 Feb 15;26(4):544-52. doi: 10.1093/bioinformatics/btp699. Epub 2009 Dec 22. PMID: 20031971.
 
 ## 🌟 Acknowledgments
-We acknowledge support from the NSF SI2-SSI Award No. 1664172, which supports the core BisQue software development infrastructure for sharing data and analysis modules, as well as NSF MCB Grant No. 1715544.
+- Supported by NSF SI2-SSI Award No. 1664172, which funds the core BisQue software development infrastructure for sharing data and analysis modules.
+- Supported by NSF MCB Grant No. 1715544.
 
 [__License__](https://github.com/UCSB-VRL/bisqueUCSB/blob/master/source/LICENSE)
