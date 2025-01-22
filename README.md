@@ -73,11 +73,11 @@ Start using **BisQue** locally with Docker by following these simple steps:
 
 2. **Build the Docker Image**
    ```bash
-   docker build --tag bisqueUCSB .
+   docker build --tag bisque-ucsb .
    ```
 3. **Run the Docker Container**
    ```bash
-   docker run --name bisque --rm -p 8080:8080 bisqueUCSB
+   docker run --name bisque --rm -p 8080:8080 bisque-ucsb
    ```
 Open your browser and go to http://localhost:8080.
 
