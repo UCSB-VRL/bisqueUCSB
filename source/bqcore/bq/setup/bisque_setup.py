@@ -184,7 +184,7 @@ RUNTIME_CFG = None
 
 
 PYTHON=sys.executable
-EXT_SERVER = "http://biodev.ece.ucsb.edu/binaries/depot/" # EXTERNAL host server DIRS['depot']
+EXT_SERVER = "https://vat.ece.ucsb.edu/binaries/depot/" # EXTERNAL host server DIRS['depot']
 
 
 #HOSTNAME = socket.getfqdn()
