@@ -101,5 +101,5 @@ class PluginManager(object):
             except Exception:
                 log.exception('Could not load: %s'%module_name)
 
-        log.info('Available %s plugins: %s', self.name, ','.join(self.plugins.keys()))
+        log.info('Available %s plugins: %s', self.name, ','.join(list(self.plugins.keys())))
 

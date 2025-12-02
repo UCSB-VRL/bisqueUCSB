@@ -20,6 +20,8 @@ class BQCommError(BQException):
         #print 'Status: %s'%status
         #print 'Headers: %s'%headers
         self.response = response
+        # Add status attribute for compatibility with existing tests
+        self.status = response.status_code
 
 
     def __str__(self):

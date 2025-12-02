@@ -10,7 +10,7 @@ import logging
 import os.path
 import shutil
 import re
-import StringIO
+import io
 from lxml import etree
 import datetime
 import math
@@ -36,23 +36,23 @@ class ConverterDict(OrderedDict):
 #         OrderedDict.__setitem__(self, key, value)
 
     def __str__(self):
-        return ', '.join(['%s (%s)'%(n, c.version['full']) for n,c in self.iteritems()])
+        return ', '.join(['%s (%s)'%(n, c.version['full']) for n,c in self.items()])
 
     def defaultExtension(self, formatName):
         formatName = formatName.lower()
-        for c in self.itervalues():
+        for c in self.values():
             if formatName in c.formats():
                 return c.formats()[formatName].ext[0]
 
     def extensions(self, name=None):
         exts = []
         if name is None:
-            for c in self.itervalues():
-                for f in c.formats().itervalues():
+            for c in self.values():
+                for f in c.formats().values():
                     exts.extend(f.ext)
         else:
             c = self[name]
-            for f in c.formats().itervalues():
+            for f in c.formats().values():
                 exts.extend(f.ext)
         return exts
 
@@ -60,7 +60,7 @@ class ConverterDict(OrderedDict):
 
         token = ProcessToken(ifnm=filename)
         if name is None:
-            for n,c in self.iteritems():
+            for n,c in self.items():
                 info = c.info(token)
                 if info is not None and len(info)>0:
                     info['converter'] = n
@@ -75,16 +75,16 @@ class ConverterDict(OrderedDict):
 
     def canWriteMultipage(self, formatName):
         formats = []
-        for c in self.itervalues():
-            for n,f in c.formats().iteritems():
+        for c in self.values():
+            for n,f in c.formats().items():
                 if f.multipage is True:
                     formats.append(n)
         return formatName.lower() in formats
 
     def converters(self, readable=True, writable=True, multipage=False):
         fs = {}
-        for c in self.itervalues():
-            for n,f in c.formats().iteritems():
+        for c in self.values():
+            for n,f in c.formats().items():
                 ok = True
                 if readable is True and f.reading is not True:
                     ok = False

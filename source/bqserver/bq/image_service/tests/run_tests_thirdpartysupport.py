@@ -21,7 +21,7 @@ else:
     import unittest
 
 import os
-import ConfigParser
+import configparser
 import time
 from bqapi import BQSession
 
@@ -49,7 +49,7 @@ class ImageServiceTestsThirdParty(ImageServiceTestBase):
 
     @classmethod
     def setUpClass(self):
-        config = ConfigParser.ConfigParser()
+        config = configparser.ConfigParser()
         config.read('config.cfg')
 
         self.root = config.get('Host', 'root') or 'localhost:8080'

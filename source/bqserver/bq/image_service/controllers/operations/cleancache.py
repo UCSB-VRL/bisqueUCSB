@@ -14,6 +14,8 @@ import pkg_resources
 from lxml import etree
 import shutil
 
+from bq.core import identity
+
 __all__ = [ 'CacheCleanOperation' ]
 
 from bq.image_service.controllers.exceptions import ImageServiceException
@@ -45,5 +47,12 @@ class CacheCleanOperation(BaseOperation):
                 if name.startswith(fname):
                     #os.removedirs(os.path.join(root, name))
                     shutil.rmtree(os.path.join(root, name))
+        
+        # Clear ResourceCache for this resource
+        user = identity.get_user_id()
+        if user in self.server.cache.d and token.resource_id in self.server.cache.d[user]:
+            del self.server.cache.d[user][token.resource_id]
+            log.debug('Cleared ResourceCache for %s', token.resource_id)
+        
         return token.setHtml( 'Clean' )
 

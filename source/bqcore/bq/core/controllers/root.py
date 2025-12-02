@@ -58,9 +58,9 @@ import os
 import sys
 import logging
 import time
-import urlparse
+import urllib.parse
 import pkg_resources
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from paste.httpexceptions import HTTPNotFound
 
 #from turbogears import controllers, expose, config
@@ -69,7 +69,7 @@ from paste.httpexceptions import HTTPNotFound
 import simplejson as json
 from lxml import etree
 from tg import expose,  request, redirect, config, response, abort, session
-from tg.controllers import CUSTOM_CONTENT_TYPE
+# from tg.controllers import CUSTOM_CONTENT_TYPE #!!! not accessed and deprecated
 from tg.controllers import WSGIAppController
 #from tgext.admin import AdminController
 
@@ -110,7 +110,7 @@ def session_update():
     timeout = session.get ('timeout', 0)
     length = session.get ('length', 0)
     if timeout and length:
-        newexpire =  datetime.utcnow() + timedelta(seconds=length)
+        newexpire =  datetime.now(timezone.utc) + timedelta(seconds=length)
         log.debug ("SESSION EXPIRE %s", session['expires'])
         if newexpire >= session['expires'] + timedelta (seconds=timeout):
             session['expires']  = newexpire
@@ -121,17 +121,20 @@ class ServiceRegistryController (ServiceController):
     """Access to the nodes services"""
     service_type = "services"
 
-    @expose("etree:resource", content_type="text/xml")
+    # @expose("etree:resource", content_type="text/xml") # !!! deprecated approach
+    @expose(content_type="text/xml")
     def index(self):
         #response.content_type = "application/xml"
         resource = etree.Element ('resource')
-        for ty, e in  service_registry.get_services().items():
+        for ty, e in  list(service_registry.get_services().items()):
             for i in e.instances :
                 service = etree.SubElement (resource, 'tag',
                                             name='service',
                                             type=ty,
                                             value=i.url)
-        return dict (resource = resource)
+        # return dict (resource = resource) #!!! deprecated approach
+        return etree.tostring(resource, pretty_print=True, xml_declaration=True,
+                              encoding="UTF-8")
 
 
     @expose ()
@@ -150,7 +153,7 @@ class ServiceRegistryController (ServiceController):
         by this instance.  Include only services locally mounted.
         """
         resource = etree.Element ('resource')
-        return etree.tostring(resource)
+        return etree.tostring(resource, encoding='unicode')
 
 
 class ProxyCache(object):
@@ -159,7 +162,7 @@ class ProxyCache(object):
         self.proxies = {}
     @expose()
     def index(self, **kw):
-        return str (self.proxies.keys())
+        return str (list(self.proxies.keys()))
     @expose()
     def _lookup (self, host_addr, *rest):
         log.debug ("Proxy for %s", host_addr)
@@ -194,8 +197,8 @@ class RootController(BaseController):
         for name, service in mount_services (root, wanted, unwanted):
             # This will circumvent the use of lookup below by
             # directly mount the services on the root class controller
-            #setattr(cls, name, service)
-            pass
+            setattr(cls, name, service)
+            log.debug("Mounted service '%s' at /%s", name, name)
 
 
 
@@ -222,7 +225,7 @@ class RootController(BaseController):
             newreq = request.path_qs[1:].replace (service_type,  oldnames[service_type])
             log.warn ('found oldname( %s ) -> newreq %s' , service_type, newreq)
 
-            redirect(urlparse.urljoin(request.application_url, newreq))
+            redirect(urllib.parse.urljoin(request.application_url, newreq))
 
 
         #log.debug ("find controller for %s  " % (str(service_type) ))
@@ -238,7 +241,7 @@ class RootController(BaseController):
         if is_uniq_code(service_type):
             log.debug ("uniq code %s", request.path_qs)
             # Skip 1st /
-            redirect(urlparse.urljoin(request.application_url, '/data_service/%s' % request.path_qs[1:]))
+            redirect(urllib.parse.urljoin(request.application_url, '/data_service/%s' % request.path_qs[1:]))
 
         log.warn ('no service found %s with %s', service_type, rest)
         abort(404)
@@ -253,7 +256,7 @@ class RootController(BaseController):
 
     @expose()
     def check(self, **kw):
-        return "OK"
+        return "not ok"
 
 #def register_proxy_services (proxy):
 #    '''Registers all local services with the requested
@@ -277,7 +280,7 @@ def update_remote_proxies (proxy):
     while True:
         try:
             header, content = http_client.request (proxy + "/services")
-        except Exception, e:
+        except Exception as e:
             log.debug ("failed connect to %s with %s" , proxy, e)
             time.sleep (2)
             count += 1
@@ -353,7 +356,7 @@ def startup():
     #  Startup any local services that need it.
     config['pylons.app_globals'].services = \
           json.dumps (dict( (ty , [ i.url for i in e.instances ] )
-                            for ty,e in service_registry.get_services().items()))
+                            for ty,e in list(service_registry.get_services().items())))
     #
     # Encoding issues
     import locale

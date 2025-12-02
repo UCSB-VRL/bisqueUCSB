@@ -1,6 +1,6 @@
 # Store services
 #
-from __future__ import print_function
+
 import os
 import logging
 
@@ -42,12 +42,12 @@ def load_default_drivers():
     for store in store_list:
         # pull out store related params from config
         params = dict ( (x[0].replace('bisque.stores.%s.' % store, ''), x[1])
-                        for x in  config.items() if x[0].startswith('bisque.stores.%s.' % store))
+                        for x in  list(config.items()) if x[0].startswith('bisque.stores.%s.' % store))
         if 'mounturl' not in params:
             if 'path' in params:
                 path = params.pop ('path')
                 params['mounturl'] = string.Template(path).safe_substitute(OLDPARMS)
-                log.warn ("Use of deprecated path (%s) in  %s driver . Please change to mounturl and remove any from %s", path, store, OLDPARMS.keys())
+                log.warn ("Use of deprecated path (%s) in  %s driver . Please change to mounturl and remove any from %s", path, store, list(OLDPARMS.keys()))
             else:
                 log.error ('cannot configure %s without the mounturl parameter' , store)
                 continue
@@ -100,15 +100,15 @@ def _create_default_mounts(drivers, root=None):
     if root is None:
         update  = True
         root = etree.Element('store', name="(root)", resource_unid="(root)")
-        etree.SubElement(root, 'tag', name='order', value = ','.join (drivers.keys()))
-        for store_name,driver in drivers.items():
+        etree.SubElement(root, 'tag', name='order', value = ','.join (list(drivers.keys())))
+        for store_name,driver in list(drivers.items()):
             mount_path = string.Template(driver['mounturl']).safe_substitute(datadir = data_url_path(), user = user_name)
             etree.SubElement(root, 'store', name = store_name, resource_unid=store_name, value=config2url(mount_path))
     else:
         storeorder = get_tag(root, 'order')
         if storeorder is None:
             log.warn ("order tag missing from root store adding")
-            storeorder = etree.SubElement(root, 'tag', name='order', value = ','.join (drivers.keys()))
+            storeorder = etree.SubElement(root, 'tag', name='order', value = ','.join (list(drivers.keys())))
             update = True
         elif len(storeorder) == 1:
             storeorder = storeorder[0]
@@ -117,7 +117,7 @@ def _create_default_mounts(drivers, root=None):
 
         # Check for store not already initialized
         user_stores   = dict ((x.get ('name'), x)  for x in root.xpath('store'))
-        for store_name, driver in drivers.items():
+        for store_name, driver in list(drivers.items()):
             if store_name not in user_stores:
                 store = etree.SubElement (root, 'store', name = store_name, resource_unid = store_name)
                 # If there is a new store defined, better just to reset it to the default
@@ -126,7 +126,7 @@ def _create_default_mounts(drivers, root=None):
                 #if store_name not in ordervalue:
                 #    ordervalue.append(store_name)
                 #    storeorder.set ('value', ','.join(ordervalue))
-                storeorder.set ('value', ','.join (drivers.keys()))
+                storeorder.set ('value', ','.join (list(drivers.keys())))
             else:
                 store = user_stores[store_name]
 
@@ -153,7 +153,7 @@ def list_stores(username = None):
 
     drivers = load_default_drivers()
     print ("\n\nDrivers:\n")
-    for n,d in drivers.iteritems():
+    for n,d in drivers.items():
         print ("%s: %s"%(n, d))
 
     # print ("\nStores:")
@@ -203,16 +203,16 @@ def _update_mounts(drivers):
     storeorder = get_tag(user_root, 'order')
     if storeorder is None:
         log.warn ("order tag missing from root store adding")
-        storeorder = etree.SubElement(user_root, 'tag', name='order', value = ','.join (drivers.keys()))
+        storeorder = etree.SubElement(user_root, 'tag', name='order', value = ','.join (list(drivers.keys())))
         update = True
     elif len(storeorder) == 1:
         storeorder = storeorder[0]
-        storelist = ','.join (drivers.keys())
+        storelist = ','.join (list(drivers.keys()))
         if storeorder.get('value') != storelist:
             storeorder.set ('value', storelist)
             update = True
 
-    for store_name, driver in drivers.items():
+    for store_name, driver in list(drivers.items()):
         if store_name not in user_stores:
             print ("Need to create new store : %s" % store_name)
             mount_path = string.Template(driver['mounturl']).safe_substitute(datadir = data_url_path(), user = user_name)

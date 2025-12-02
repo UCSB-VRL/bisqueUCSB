@@ -51,7 +51,7 @@ def upgrade():
             resource.resource_uniq =  uid
         else:
             resource.resource_uniq = "00-%s" % resource.resource_uniq
-        print "updating %s -> %s" % (resource.id, resource.resource_uniq)
+        print("updating %s -> %s" % (resource.id, resource.resource_uniq))
     DBSession.commit()
     DBSession.close()
 

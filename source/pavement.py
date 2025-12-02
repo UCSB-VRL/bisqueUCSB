@@ -74,13 +74,13 @@ def getanswer(question, default, help=None):
     if "\n" in question:
         question = textwrap.dedent (question)
     while 1:
-        ans =  raw_input ("%s [%s]? " % (question, default))
+        ans =  input ("%s [%s]? " % (question, default))
 
         if ans=='?':
             if help is not None:
-                print textwrap.dedent(help)
+                print(textwrap.dedent(help))
             else:
-                print "Sorry no help available currently."
+                print("Sorry no help available currently.")
             continue
         y_n = ['Y', 'y', 'N', 'n']
         if default in y_n and ans in y_n:
@@ -109,7 +109,7 @@ engine will provide just enough components to run a module engine,
 all will install everything including the feature service""")
 
     if installing not in ('engine', 'server', 'features', 'all'):
-        print "Must choose 'engine', 'server', or 'features'"
+        print("Must choose 'engine', 'server', or 'features'")
         sys.exit(1)
 
     preinstalls = PREINSTALLS.get (installing, [])
@@ -122,7 +122,7 @@ all will install everything including the feature service""")
                      server = server_subdirs,
                      features = feature_subdirs,
                      all = all_packages) [ installing]
-    print "installing all components from  %s" % subdirs
+    print("installing all components from  %s" % subdirs)
     options.subdirs = subdirs
     options.installing = installing
 
@@ -148,7 +148,7 @@ def setup(options):
     install_prereqs(options)
     setup_developer(options)
     #install_postreqs(options)
-    print '\nNow run:\nbq-admin setup %s' % ( 'engine' if options.installing =='engine' else '' )
+    print('\nNow run:\nbq-admin setup %s' % ( 'engine' if options.installing =='engine' else '' ))
 
 
 
@@ -241,10 +241,10 @@ def pastershell():
 @consume_args
 def pylint(options):
     import pkgutil
-    import ConfigParser
+    import configparser
     from bq.util.paths import site_cfg_path
     import bq
-    site_cfg = ConfigParser.ConfigParser ()
+    site_cfg = configparser.ConfigParser ()
     site_cfg.read (site_cfg_path())
     share_path = site_cfg.get ('app:main', 'bisque.paths.share')
     #args = 'bqcore/bq bqserver/bq bqengine/bq bqfeature/bq'

@@ -75,7 +75,7 @@ log = logging.getLogger("bq.pipeline.import.imagej")
 def _get_parameters(step, param_name):
     res = []
     for param in step['Parameters']:
-        if param.keys()[0] == param_name:
+        if list(param.keys())[0] == param_name:
             res.append(param[param_name].strip())
     return res
     
@@ -117,7 +117,7 @@ def upload_imagej_pipeline(uf, intags):
             new_pipeline[str(new_step_id)]['__Meta__']['module_num'] = str(new_step_id+1)
             new_parameters = []            
             for param in new_pipeline[str(new_step_id)]['Parameters']:
-                param_key, param_val = param.items()[0]
+                param_key, param_val = list(param.items())[0]
                 if converted_cnt < 10 and any([phrase in param_key.lower() for phrase in ['threshold', 'size', 'diameter', 'distance', 'smoothing', 'bound', 'difference', 'intensity']]):
                     try:
                         float(str(param_val))    # is this a number?

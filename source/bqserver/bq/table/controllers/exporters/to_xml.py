@@ -98,7 +98,8 @@ class ExporterXML (TableExporter):
     mime_type = 'text/xml'
 
     def info(self, table):
-        super(ExporterXML, self).info(table)
+        # super(ExporterXML, self).info(table)
+        super().info(table)
         xml = etree.Element ('resource', uri=table.url)
         if table.headers:
             # has headers => this is a leaf object (table or matrix)
@@ -119,10 +120,10 @@ class ExporterXML (TableExporter):
                 etree.SubElement (el, 'tag', name=tab['path'], type=tab['type'])
 
         if table.meta is not None and len(table.meta)>0:
-            for n,v in table.meta.iteritems():
+            for n,v in table.meta.items():
                 etree.SubElement (xml, 'tag', name='%s'%n, value='%s'%v)
 
-        return etree.tostring(xml)
+        return etree.tostring(xml, encoding='unicode')
 
     def format(self, table):
         """ converts table to XML """
@@ -142,5 +143,5 @@ class ExporterXML (TableExporter):
         el = etree.SubElement (doc, 'tag', name='types', value=','.join([str(t) for t in table.types]))
         if table.sizes is not None:
             el = etree.SubElement (doc, 'tag', name='sizes', value=','.join([str(i) for i in table.sizes]))
-        return etree.tostring(xml)
+        return etree.tostring(xml, encoding='unicode')
 

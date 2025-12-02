@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module name="Default" type="runtime">
+
+    <!-- Comments are OK -->
+    <tag name="inputs">
+
+    </tag>
+
+    <tag name="outputs">
+
+        <tag name="NonImage">
+            <template>
+                <tag name="label" value="Outputs"/>
+            </template>
+        </tag>
+
+    </tag>
+
+    <tag name="execute_options">
+        <tag name="iterable" value="image_url" type="dataset" />
+    </tag>
+
+    <tag name="module_options" >
+        <tag name="version" value="1" />
+    </tag>
+
+    <tag name="display_options" >
+       <tag name="group" value="Metadata" />
+    </tag>
+
+    <tag name="interface">
+        <tag name="javascript" type="file" value="webapp.js" />
+        <tag name="css" type="file" value="webapp.css" />
+    </tag>
+
+    <tag name="help" type="file" value="public/help.html" />
+    <tag name="thumbnail" type="file" value="public/thumbnail.jpg" />   
+
+    <tag name="title" type="string" value="Default" />
+    <tag name="authors" type="string" value="Default" />
+    <tag name="description" type="string" value="Default" />
+</module>

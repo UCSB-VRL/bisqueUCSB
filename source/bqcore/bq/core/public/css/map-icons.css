@@ -1,0 +1,44 @@
+/* Map Provider Icons for BQ.map.Map */
+
+.map-google-icon {
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTggMUMxMi40MTggMSAxNiA0LjU4MiAxNiA5QzE2IDEzLjQxOCAxMi40MTggMTcgOCAxN0MzLjU4MiAxNyAwIDEzLjQxOCAwIDlDMCA0LjU4MiAzLjU4MiAxIDggMVoiIGZpbGw9IiM0Mjg1RjQiLz4KPHBhdGggZD0iTTggNUMxMC4yMDkgNSAxMiA2Ljc5MSAxMiA5QzEyIDExLjIwOSAxMC4yMDkgMTMgOCAxM0M1Ljc5MSAxMyA0IDExLjIwOSA0IDlDNCA2Ljc5MSA1Ljc5MSA1IDggNVoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik04IDdDOS4xMDUgNyAxMCA3Ljg5NSAxMCA5QzEwIDEwLjEwNSA5LjEwNSAxMSA4IDFMN0M2Ljg5NSAxMSA2IDEwLjEwNSA2IDlDNiA3Ljg5NSA2Ljg5NSA3IDggN1oiIGZpbGw9IiM0Mjg1RjQiLz4KPC9zdmc+Cg==') !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+}
+
+.map-osm-icon {
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTggMUMxMi40MTggMSAxNiA0LjU4MiAxNiA5QzE2IDEzLjQxOCAxMi40MTggMTcgOCAxN0MzLjU4MiAxNyAwIDEzLjQxOCAwIDlDMCA0LjU4MiAzLjU4MiAxIDggMVoiIGZpbGw9IiM3RUJDODkiLz4KPHBhdGggZD0iTTQgNEg2VjZINFY0WiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTYgNkg4VjhINlY2WiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTggOEgxMFYxMEg4VjhaIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNMTAgNkgxMlY4SDEwVjZaIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNNiAxMEg4VjEySDZWMTBaIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNNCAxMEg2VjEySDRWMTBaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K') !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+}
+
+/* Toolbar button styling */
+.x-toolbar .x-btn-icon-small-left .x-btn-icon {
+    background-size: 16px 16px;
+}
+
+/* Map container styles */
+.bq-map-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+/* Loading overlay */
+.bq-map-loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.bq-map-loading-text {
+    font-size: 14px;
+    color: #666;
+}

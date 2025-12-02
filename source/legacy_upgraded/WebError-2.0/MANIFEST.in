@@ -1,0 +1,7 @@
+include README.rst CHANGELOG LICENSE
+recursive-include weberror/eval-media *
+recursive-include weberror *.html
+recursive-exclude weberror *.pyc
+recursive-include tests *
+recursive-exclude tests *.pyc
+recursive-exclude tests *.log

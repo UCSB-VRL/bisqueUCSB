@@ -1,4 +1,5 @@
 """ BioFormats command line converter
+Updated By: Wahid Sadique Koly
 """
 
 __author__    = "Dmitry Fedorov"
@@ -216,15 +217,28 @@ class ConverterBioformats(ConverterBase):
         # bioformats defines UTF-8 encoding, but it may be something else, try to recover
         ########################################
         try:
-            mee = etree.fromstring(omexml)
-        except etree.XMLSyntaxError:
+            # Handle both string and bytes inputs properly
+            if isinstance(omexml, str):
+                # If it's a string, encode to bytes first to handle encoding declarations
+                omexml_bytes = omexml.encode('utf-8')
+                mee = etree.fromstring(omexml_bytes)
+            else:
+                # If it's already bytes, use directly
+                mee = etree.fromstring(omexml)
+        except (etree.XMLSyntaxError, ValueError) as e:
+            log.debug('Initial XML parsing failed: %s' % str(e))
             try:
-                mee = etree.fromstring(omexml, parser=etree.XMLParser(encoding='iso-8859-1'))
-            except (etree.XMLSyntaxError, LookupError):
+                # Ensure we have bytes for encoding experiments
+                if isinstance(omexml, str):
+                    omexml_bytes = omexml.encode('utf-8')
+                else:
+                    omexml_bytes = omexml
+                mee = etree.fromstring(omexml_bytes, parser=etree.XMLParser(encoding='iso-8859-1'))
+            except (etree.XMLSyntaxError, LookupError, ValueError):
                 try:
-                    mee = etree.fromstring(omexml, parser=etree.XMLParser(encoding='cp1252'))
-                except (etree.XMLSyntaxError, LookupError):
-                    mee = etree.fromstring(omexml, parser=etree.XMLParser(recover=True))
+                    mee = etree.fromstring(omexml_bytes, parser=etree.XMLParser(encoding='cp1252'))
+                except (etree.XMLSyntaxError, LookupError, ValueError):
+                    mee = etree.fromstring(omexml_bytes, parser=etree.XMLParser(recover=True))
 
         imagenodepath = 'ome:Image[@ID="Image:%s"]'%(series)
         namespaces = {
@@ -278,12 +292,12 @@ class ConverterBioformats(ConverterBase):
 
         # channel info
         channels = mee.xpath('%s/ome:Pixels/ome:Channel'%imagenodepath, namespaces=namespaces)
-        for c,i in zip(channels, range(len(channels))):
+        for c,i in zip(channels, list(range(len(channels)))):
             bfReadAndSet(c, 'Name',   rd, 'channel_%s_name'%i, defval='ch_%s'%i)
             bfReadAndSet(c, 'Color',  rd, 'channel_color_%s'%i, f=bfColorToString)
 
         # new format
-        for c,i in zip(channels, range(len(channels))):
+        for c,i in zip(channels, list(range(len(channels)))):
             path    = 'channels/channel_%.5d'%i
 
             bfReadAndSet(c, 'Name',   rd, '%s/name'%path, defval='ch_%s'%i)
@@ -367,7 +381,7 @@ class ConverterBioformats(ConverterBase):
                  'pixel_resolution_unit_x', 'pixel_resolution_unit_y', 'pixel_resolution_unit_z' ]
 
         #return {k:v for k,v in rd.iteritems() if k in core}
-        return dict( (k,v)  for k,v in rd.iteritems() if k in core )
+        return dict( (k,v)  for k,v in rd.items() if k in core )
 
 
     #######################################
@@ -427,8 +441,13 @@ class ConverterBioformats(ConverterBase):
         #if original is not None:
         #    command = ['-map', ifnm, original, ofnm]
         command.extend(['-bigtiff', '-compression', 'LZW'])
-        if series>=0:
-            command.extend(['-series', '%s'%series])
+        # Convert series to int for comparison, default to 0 if conversion fails
+        try:
+            series_int = int(series) if series is not None else 0
+        except (ValueError, TypeError):
+            series_int = 0
+        if series_int >= 0:
+            command.extend(['-series', '%s'%series_int])
         if extra is not None:
             command.extend(extra)
         return cls.run(ifnm, ofnm, command, **kw )

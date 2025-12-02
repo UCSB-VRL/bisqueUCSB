@@ -2,16 +2,18 @@ import logging
 from paste.httpheaders import AUTHORIZATION #pylint: disable=no-name-in-module
 from paste.deploy.converters import asbool
 from repoze.who.interfaces import IIdentifier
-from zope.interface import implements
+# from zope.interface import implements # !!! deprecated
+from zope.interface import implementer
 from tg import config
 
 from bq.core.model import DBSession
 
 log = logging.getLogger("bq.mex_auth")
 
+@implementer(IIdentifier)
 class MexAuthenticatePlugin(object):
 
-    implements(IIdentifier)
+    # implements(IIdentifier) # !!! deprecated
 
     def identify(self, environ):
         """Lookup the owner """

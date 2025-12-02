@@ -21,7 +21,7 @@ else:
     import unittest
 
 import os
-import ConfigParser
+import configparser
 import time
 from bqapi import BQSession
 from lxml import etree
@@ -41,14 +41,14 @@ class ImageServiceTestsTiles(ImageServiceTestBase):
 
     @classmethod
     def setUpClass(self):
-        config = ConfigParser.ConfigParser()
+        config = configparser.ConfigParser()
         config.read('config.cfg')
         self.root = config.get('Host', 'root') or 'localhost:8080'
         self.user = config.get('Host', 'user') or 'test'
         self.pswd = config.get('Host', 'password') or 'test'
         self.session = BQSession().init_local(self.user, self.pswd,  bisque_root=self.root, create_mex=False)
 
-        print '\nUploading images\n'
+        print('\nUploading images\n')
 
         self.resources_plane = []
         self.resources_plane.append( self.ensure_bisque_file(image_planar) )
@@ -107,7 +107,7 @@ class ImageServiceTestsTiles(ImageServiceTestBase):
                 t2 = time.time()
                 times.append(t2-t1)
         #print 'Times: %s'%times
-        print '\nTile retreival in seconds, avg: %s max: %s min: %s, std: %s'%(numpy.array(times).mean(), max(times), min(times), numpy.array(times).std())
+        print('\nTile retreival in seconds, avg: %s max: %s min: %s, std: %s'%(numpy.array(times).mean(), max(times), min(times), numpy.array(times).std()))
 
     def test_speed_planar_tiles_1_uncached(self):
         self.forresources(self.resources_plane, self.fetch_tile)

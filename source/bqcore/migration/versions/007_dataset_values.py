@@ -98,7 +98,7 @@ def upgrade(migrate_engine):
     maptables(meta)
     DBSession.configure(bind=migrate_engine)
 
-    print "Mapping dataset members to values"
+    print("Mapping dataset members to values")
 
     for ds in DBSession.query(Taggable).filter(Taggable.resource_type == 'dataset'):
         values = []
@@ -119,7 +119,7 @@ def upgrade(migrate_engine):
         members = ds.findtag('members')
         if members:
             ds.children.remove(members)
-            print "removed tags"
+            print("removed tags")
     transaction.commit()
 
 def downgrade(migrate_engine):

@@ -19,10 +19,10 @@ else:
     import unittest
 import os
 import posixpath
-import urlparse
+import urllib.parse
 import time
 from lxml import etree
-import ConfigParser
+import configparser
 from bqapi import BQSession, BQCommError
 from bqapi.util import save_blob, localpath2url
 
@@ -86,7 +86,7 @@ def create_resource(path, name, r, c, field):
 ##################################################################
 
 
-config = ConfigParser.ConfigParser()
+config = configparser.ConfigParser()
 config.read('config.cfg')
 
 root = config.get('Host', 'root') or 'localhost:8080'
@@ -102,9 +102,9 @@ r = R[1]
 c = C[0]
 field = FIELD[0]
 resource = create_resource(path, name, r, c, field)
-print etree.tostring(resource)
+print(etree.tostring(resource))
 r = session.postxml(url, resource, method='POST')
-print r.get('uri')
+print(r.get('uri'))
 
 #r = save_blob(session, resource=request)
 #if r is None or r.get('uri') is None:

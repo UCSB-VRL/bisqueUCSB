@@ -2,7 +2,7 @@
 # SCD,HTD2,EHD2,DCD,CSD,CLD,RSD
 import tables
 import numpy as np
-from pyMPEG7FlexLib import extractCSD,extractSCD,extractCLD,extractDCD,extractHTD,extractEHD,extractRSD
+from .pyMPEG7FlexLib import extractCSD,extractSCD,extractCLD,extractDCD,extractHTD,extractEHD,extractRSD
 from bq.features.controllers.utils import image2numpy, gobject2mask, except_image_only , calculation_lock
 from bq.features.controllers import Feature
 from bq.features.controllers.exceptions import FeatureExtractionError
@@ -150,7 +150,8 @@ class DCD(MaskedMPEG7):
         im = image2numpy(image_uri, remap='display')
         im = np.uint8(im)
 
-        if mask_uri is '' and gobject_uri is '':
+        # if mask_uri is '' and gobject_uri is '':
+        if mask_uri == '' and gobject_uri == '': # !!! modern approach
             #calculating descriptor
             DCD = extractDCD(im)
 
@@ -224,7 +225,8 @@ class CSD(MaskedMPEG7):
         im = image2numpy(image_uri, remap='display')
         im = np.uint8(im)
 
-        if mask_uri is '' and gobject_uri is '':
+        # if mask_uri is '' and gobject_uri is '':
+        if mask_uri == '' and gobject_uri == '':
             #calculating descriptor
             CSD = extractCSD(im)
 
@@ -279,7 +281,8 @@ class CLD(MaskedMPEG7):
         im = image2numpy(image_uri, remap='display')
         im = np.uint8(im)
 
-        if mask_uri is '' and gobject_uri is '':
+        # if mask_uri is '' and gobject_uri is '':
+        if mask_uri == '' and gobject_uri == '': # !!! modern approach
             #calculating descriptor
             CLD = extractCLD(im, numYCoef=64, numCCoef=28)
 
@@ -331,7 +334,8 @@ class RSD(MaskedMPEG7):
         im = image2numpy(image_uri, remap='display')
         im = np.uint8(im)
 
-        if mask_uri is '' and gobject_uri is '':
+        # if mask_uri is '' and gobject_uri is '':
+        if mask_uri == '' and gobject_uri == '': # !!! modern approach
             #calculating descriptor
             RSD = extractRSD(im)
 

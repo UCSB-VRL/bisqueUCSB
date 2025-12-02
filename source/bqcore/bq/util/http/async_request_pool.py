@@ -146,13 +146,13 @@ if __name__ == "__main__":
 
     def mycallback(request, result):
         headers, content = result
-        print request, " ==> " , headers, len(content)
+        print(request, " ==> " , headers, len(content))
     sites = [ 'http://cnn.com', 'http://yahoo.com', 'http://news.google.com']
 
 
     for url in sites:
         request(url, callback = mycallback, client = client)
-        print url
+        print(url)
 
     stop_pool_handler()
 

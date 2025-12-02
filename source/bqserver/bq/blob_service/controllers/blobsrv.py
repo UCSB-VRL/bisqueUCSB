@@ -61,14 +61,15 @@ from sqlalchemy.exc import IntegrityError
 #import smokesignal
 
 import tg
-from tg import expose, config, require, abort
+from tg import expose, config, require, abort, use_wsgi_app
 from tg.controllers import RestController, TGController
 #from paste.fileapp import FileApp
 from bq.util.fileapp import BQFileApp
 from pylons.controllers.util import forward
 from paste.deploy.converters import asbool
 #from paste.deploy.converters import asbool
-from repoze.what import predicates
+# from repoze.what import predicates # !!! deprecated following is the alternative
+from tg import predicates
 
 #from sqlalchemy.exc import IntegrityError
 
@@ -105,7 +106,7 @@ def transfer_msg(flocal, transfer_t):
         return "NO FILE to measure %s" % flocal
     fsize = os.path.getsize (flocal)
     name  = os.path.basename(flocal)
-    if isinstance(name, unicode):
+    if isinstance(name, str):
         name  = name.encode('utf-8')
     if transfer_t == 0:
         return "transferred %s in 0 sec!" % fsize
@@ -152,7 +153,7 @@ class PathService (TGController):
         etree.SubElement (resource,'method', name='insert?path=store_url', value="Insert resources at the path")
         etree.SubElement (resource,'method', name='move?path=store_url&destination=store_url', value="Move a resources at the path to a new path")
         etree.SubElement (resource,'method', name='delete?path=store_url', value="Delete resources at the path")
-        return etree.tostring (resource)
+        return etree.tostring (resource, encoding='unicode')
 
     @expose(content_type='text/xml')
     @require(predicates.not_anonymous())
@@ -160,7 +161,7 @@ class PathService (TGController):
         'Find a resource identified by a path'
         log.info("list( %s )" ,  path)
         resource = data_service.query('image|file', resource_value = path, wpublic='1', cache=False)
-        return etree.tostring(resource)
+        return etree.tostring(resource, encoding='unicode')
 
     @expose(content_type='text/xml')
     @require(predicates.not_anonymous())
@@ -185,10 +186,10 @@ class PathService (TGController):
 
         if resource.get ('name') is None:
             resource.set ('name',  path.replace(driver.mount_url, ''))
-        log.debug ("insert %s %s %s", path, driver.mount_url, etree.tostring (resource))
+        log.debug ("insert %s %s %s", path, driver.mount_url, etree.tostring (resource, encoding='unicode'))
 
         resource = self.blobsrv.store_blob(resource)
-        return etree.tostring(resource)
+        return etree.tostring(resource, encoding='unicode')
 
     @expose(content_type='text/xml')
     @require(predicates.not_anonymous())
@@ -224,7 +225,7 @@ class PathService (TGController):
             partial_path = destination.replace(driver.mount_url,'')
             self.mounts.insert_mount_path(store, partial_path, resource)
 
-        return etree.tostring(resource)
+        return etree.tostring(resource, encoding='unicode')
 
     @expose(content_type='text/xml')
     @require(predicates.not_anonymous())
@@ -241,7 +242,7 @@ class PathService (TGController):
         resource = data_service.query("file|image", resource_value = path, wpublic='1', cache=False)
         for child in resource:
             data_service.del_resource (child, delete_blob=delete_blob)
-        return etree.tostring(resource)
+        return etree.tostring(resource, encoding='unicode')
 
 
     def _check_post_body (self):
@@ -280,13 +281,24 @@ class BlobServer(RestController, ServiceMixin):
         #self.__class__.store = store_resource.StoreServer(self.drive_man.drivers)
         paths = self.__class__.paths  = PathService(self)
         mounts = self.__class__.mounts = mount_service.MountServer(url)
+        # log.info(f"--------- BlobServer {url} mounts={mounts} paths={paths}")
         self.__class__.store = mounts
         paths.mounts = mounts
 
         self.subtransactions = asbool(config.get ('bisque.blob_service.subtransaction', True))
 
         path_root = config.get('bisque.paths.public', '')
-        path_plugins = os.path.join(path_root, 'core', 'plugins')
+        # path_plugins = os.path.join(path_root, 'core', 'plugins')
+        # !!! fallback
+        if not path_root:
+            # Default to the bqcore public plugins directory
+            import bq.core
+            bq_core_path = os.path.dirname(bq.core.__file__)
+            path_plugins = os.path.join(bq_core_path, 'public', 'plugins')
+        else:
+            path_plugins = os.path.join(path_root, 'core', 'plugins')
+        
+        log.info("Loading resource plugins from: %s", path_plugins)       
         self.plugin_manager = ResourcePluginManager(path_plugins)
 
 
@@ -332,9 +344,10 @@ class BlobServer(RestController, ServiceMixin):
 
 
 
-    @expose()
+    @expose(content_type='text/xml')
     def get_all(self):
-        return "Method Not supported"
+        """Return service information as XML"""
+        return '<resource><service name="blob_service" version="1.0"><description>Blob storage service for managing binary data</description></service></resource>'
 
     @expose()
     def get_one(self, ident, **kw):
@@ -356,7 +369,7 @@ class BlobServer(RestController, ServiceMixin):
             if 'localpath' in kw:
                 tg.response.headers['Content-Type']  = 'text/xml'
                 resource = etree.Element ('resource', name=filename, value=localpath)
-                return etree.tostring (resource)
+                return etree.tostring (resource, encoding='unicode')
 
             disposition = '' if 'noattach' in kw else 'attachment; '
             try:
@@ -365,9 +378,19 @@ class BlobServer(RestController, ServiceMixin):
                 disposition = '%sfilename="%s"; filename*="%s"'%(disposition, filename.encode('utf8'), filename.encode('utf8'))
 
             content_type = self.guess_mime(filename)
-            return forward(BQFileApp(localpath,
-                                     content_type=content_type,
-                                     content_disposition=disposition,).cache_control(max_age=60*60*24*7*6)) # 6 weeks
+            from tg import config
+            max_age = config.get('bisque.blob_service.cache_max_age', 60*60*24*7*6)  # default 6 weeks
+            
+            # Fix: Ensure max_age is an integer, not string or float
+            try:
+                max_age = int(max_age)
+            except (ValueError, TypeError):
+                max_age = 60*60*24*7*6  # fallback to 6 weeks
+            
+            # Wrap with use_wsgi_app() for TurboGears 2.4+ compatibility
+            return use_wsgi_app(BQFileApp(localpath,
+                                          content_type=content_type,
+                                          content_disposition=disposition,).cache_control(max_age=max_age))
         except IllegalOperation:
             abort(404, "Error occurent fetching blob")
 
@@ -387,7 +410,7 @@ class BlobServer(RestController, ServiceMixin):
                 if hasattr(resource, 'file'):
                     log.warn("XML Resource has file tag")
                     resource = resource.file.read()
-                if isinstance(resource, basestring):
+                if isinstance(resource, str):
                     log.debug ("reading XML %s" , resource)
                     try:
                         resource = etree.fromstring(resource)
@@ -396,7 +419,7 @@ class BlobServer(RestController, ServiceMixin):
                         resource = None
             return resource
 
-        for k,f in dict(transfers).items():
+        for k,f in list(dict(transfers).items()):
             if k.endswith ('_resource') or k.endswith('_tags'): continue
             if hasattr(f, 'file'):
                 resource = find_upload_resource(transfers, k)
@@ -450,7 +473,7 @@ class BlobServer(RestController, ServiceMixin):
 
         if resource.get('resource_uniq') is None:
             resource.set('resource_uniq', data_service.resource_uniq() )
-        log.info ("INSERTING NEW RESOURCE <= %s" , etree.tostring(resource))
+        log.info ("INSERTING NEW RESOURCE <= %s" , etree.tostring(resource, encoding='unicode'))
         new_resource = data_service.new_resource(resource = resource, flush=False)
         return new_resource
         #if asbool(config.get ('bisque.blob_service.store_paths', True)):

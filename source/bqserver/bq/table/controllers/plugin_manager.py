@@ -93,12 +93,30 @@ class PluginManager(object):
             try:
                 o = imp.load_source(module_name, f)
                 for n,item in inspect.getmembers(o):
-                    if inspect.isclass(item) and issubclass(item, NeededClass):
-                        if item.name != '':
+#                     if inspect.isclass(item) and issubclass(item, NeededClass):
+# -                        if item.name != '':
+                    if inspect.isclass(item):
+                        # Check inheritance using MRO to handle module loading issues
+                        is_subclass = False
+                        try:
+                            # First try direct issubclass check
+                            is_subclass = issubclass(item, NeededClass)
+                        except TypeError:
+                            pass
+                        
+                        if not is_subclass:
+                            # Check by class name in MRO if direct check fails
+                            needed_class_name = NeededClass.__name__
+                            for base in item.__mro__:
+                                if base.__name__ == needed_class_name:
+                                    is_subclass = True
+                                    break
+                        
+                        if is_subclass and hasattr(item, 'name') and item.name != '':
                             log.debug('Adding plugin: %s'%item.name)
                             self.plugins[item.name] = item
             except Exception:
                 log.exception('Could not load: %s'%module_name)
 
-        log.info('Available %s plugins: %s', self.name, ','.join(self.plugins.keys()))
+        log.info('Available %s plugins: %s', self.name, ','.join(list(self.plugins.keys())))
 

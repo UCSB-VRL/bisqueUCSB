@@ -54,7 +54,7 @@ import os
 import sys
 import logging
 import traceback
-import urlparse
+import urllib.parse
 #import Queue
 #import multiprocessing
 from datetime import datetime
@@ -62,7 +62,7 @@ from datetime import datetime
 import pkg_resources
 import tg
 #from tg import require
-from tg import config,  expose,  override_template
+from tg import config,  expose,  override_template, use_wsgi_app
 from pylons.controllers.util import abort, forward
 from paste.fileapp import FileApp
 #from repoze.what.predicates import not_anonymous
@@ -248,7 +248,7 @@ class EngineServer(ServiceController):
             #log.debug('sys.argv: %s', sys.argv)
             python_ent_env = os.path.join(os.path.dirname(sys.argv[0]), 'python.exe')
             sys.argv = [python_ent_env, 'bqengine\\bq\\engine\\controllers\\execone.py']
-            import execone
+            from . import execone
             sys.modules['__main__'] = execone
             from multiprocessing.forking import set_executable
             set_executable( python_ent_env )
@@ -280,7 +280,7 @@ class EngineServer(ServiceController):
     def index(self, refresh='false'):
         """Return the list of available modules urls"""
         #server = urlparse.urljoin(config.get('bisque.server'), self.service_type)
-        server = urlparse.urljoin (tg.request.host_url, self.service_type)
+        server = urllib.parse.urljoin (tg.request.host_url, self.service_type)
 
         if asbool (refresh):
             self.refresh()
@@ -292,9 +292,9 @@ class EngineServer(ServiceController):
     def _services(self, *path, **kw):
         resource = etree.Element('resource')
         for m in self.modules:
-            module_uri = urlparse.urljoin (tg.request.host_url, "/".join ([self.service_type, m.get('name')]))
+            module_uri = urllib.parse.urljoin (tg.request.host_url, "/".join ([self.service_type, m.get('name')]))
             etree.SubElement(resource, 'service', name=m.get('name'), value=module_uri)
-        return etree.tostring(resource)
+        return etree.tostring(resource, encoding='unicode')
 
     @expose(content_type="text/xml")
     def _default(self, *path, **kw):
@@ -359,7 +359,8 @@ class EngineModuleResource(BaseController):
                 path = self.filepath(node.get('value'))
                 log.debug('Serving file: %s', path)
                 if os.path.exists(path):
-                    return forward(FileApp(path).cache_control (max_age=60*60*24*7*6))
+                    # Wrap with use_wsgi_app() for TurboGears 2.4+ compatibility
+                    return use_wsgi_app(FileApp(path).cache_control(max_age=60*60*24*7*6))
 
             else:
                 text = node.get ('value', None)
@@ -454,7 +455,7 @@ class EngineModuleResource(BaseController):
 
     def module_uri (self):
         'generate valid uri for module'
-        return urlparse.urljoin (tg.request.host_url, "/".join ([EngineServer.service_type, self.name]))
+        return urllib.parse.urljoin (tg.request.host_url, "/".join ([EngineServer.service_type, self.name]))
 
 
 
@@ -473,7 +474,7 @@ class EngineModuleResource(BaseController):
             return dict (module_uri  = self.module_uri(),
                          module_name = self.name,
                          module_def  = self.definition_as_dict(),
-                         module_xml  = etree.tostring(self.module_xml),
+                         module_xml  = etree.tostring(self.module_xml, encoding='unicode'),
 
                          inputs  = self.inputs,
                          outputs = self.outputs,
@@ -492,7 +493,7 @@ class EngineModuleResource(BaseController):
             return dict (module_uri  = self.module_uri(),
                          module_name = self.name,
                          module_def  = self.definition_as_dict(),
-                         module_xml  = etree.tostring(self.module_xml),
+                         module_xml  = etree.tostring(self.module_xml, encoding='unicode'),
 
                          inputs  = self.inputs,
                          outputs = self.outputs,
@@ -521,7 +522,7 @@ class EngineModuleResource(BaseController):
     def definition(self, **kw):
         # rewrite stuff here for actual entry points
         self.module_xml.set('value', self.module_uri())
-        return etree.tostring(self.module_xml)
+        return etree.tostring(self.module_xml, encoding='unicode')
 
     @expose()
     def status (self):
@@ -534,7 +535,8 @@ class EngineModuleResource(BaseController):
 
         static_path = os.path.join (self.path, 'public', *path)
         if os.path.exists(static_path):
-            return forward(FileApp(static_path).cache_control (max_age=60*60*24*7*6))
+            # Wrap with use_wsgi_app() for TurboGears 2.4+ compatibility
+            return use_wsgi_app(FileApp(static_path).cache_control(max_age=60*60*24*7*6))
 
         raise abort(404)
 
@@ -569,7 +571,7 @@ class EngineModuleResource(BaseController):
         if mex is not None:
             #log.info ("New execution of %s" , mex.get('name'))
             mex = self.start_execution(mex)
-            response =  etree.tostring(mex)
+            response =  etree.tostring(mex, encoding='unicode')
             return response
         else:
             illegal_operation()
@@ -595,7 +597,7 @@ class EngineModuleResource(BaseController):
             #if not mextree.get ('asynchronous'):
             #    mextree.set('status', "FINISHED")
 
-        except EngineError, e:
+        except EngineError as e:
             log.exception ("EngineError")
             mextree.set('value', 'FAILED')
             mextree.append(etree.Element('tag', name='error_message', value=str(e)))
@@ -644,7 +646,7 @@ class EngineModuleResource(BaseController):
             status, output = adapter.build(module)
             build_tree = etree.Element('build', status=status)
             build_tree.text = output
-            response =  etree.tostring(build_tree)
+            response =  etree.tostring(build_tree, encoding='unicode')
             return response
 
         except Exception:

@@ -1,26 +1,29 @@
 
 import sys
 import os
-import StringIO
+import io
 import re
 import transaction
+import pytest
 
 from lxml import etree as ET
-from StringIO import StringIO
-from nose import with_setup
-from nose.tools import assert_true, assert_equal, assert_false
+from io import StringIO
 
 
-def setup():
-    'module test setup '
+def setup_module():
+    """Module test setup"""
+    pass
 
 
-def teardown():
-    'teardown'
+def teardown_module():
+    """Module teardown"""
+    pass
     
-class TestDemo(object):
 
+class TestDemo:
+    """Converted from nose to pytest"""
 
     def test_a(self):
-        'a test'
+        """A test"""
+        assert True  # Basic test to ensure it runs
 

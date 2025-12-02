@@ -1,10 +1,10 @@
-import logging, StringIO
+import logging, io
 
 _log = logging.getLogger('bq.util.xmlrender')
 
 def render_xml(template_name, template_vars, **kwargs):
     # turn vars into an xml string.
-    st = StringIO.StringIO()
+    st = io.StringIO()
 
     def writeElem( obj):
         if isinstance( obj, dict ):
@@ -38,10 +38,10 @@ def render_xml(template_name, template_vars, **kwargs):
     # main part of function
     try:
         st.write("<%s>" % template_name)
-        if template_vars.has_key(template_name):
+        if template_name in template_vars:
             writeElem(template_vars[template_name])
         st.write("</%s>" % template_name)
         _log.debug("render_xml %s", st.getvalue() )
-    except Exception,ex:
+    except Exception as ex:
         _log.exception("")
     return st.getvalue()

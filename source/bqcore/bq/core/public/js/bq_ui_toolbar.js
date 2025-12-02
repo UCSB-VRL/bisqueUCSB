@@ -168,7 +168,7 @@ Ext.define('BQ.Application.Toolbar', {
     tools_user: ['menu_user_name', 'menu_user_profile', 'menu_user_signout', 'menu_user_prefs',
                  'menu_user_signout_sep', 'menu_resource_template', 'menu_resource_create', 'button_create', 'button_upload',
                   'menu_module', 'menu_module_developer','menu_preference', 'menu_user_admin_separator'], //chris's new stuff
-    tools_admin: ['menu_user_admin', 'menu_user_admin_prefs', 'menu_user_manager',
+    tools_admin: ['menu_user_admin', 'menu_user_admin_prefs', 'menu_user_manager', 'menu_domain_management', 'menu_pending_registrations',
                   'menu_system',],
 
     initComponent : function() {
@@ -366,6 +366,16 @@ Ext.define('BQ.Application.Toolbar', {
                 itemId: 'menu_user_manager',
                 hidden: true,
                 handler: this.settingUserPage,
+            }, {
+                text: 'Domain Management',
+                itemId: 'menu_domain_management',
+                hidden: true,
+                handler: Ext.Function.pass(pageAction, BQ.Server.url('/admin/domain_management')),
+            }, {
+                text: 'Pending Registrations',
+                itemId: 'menu_pending_registrations', 
+                hidden: true,
+                handler: Ext.Function.pass(pageAction, BQ.Server.url('/admin/pending_registrations')),
             }, {
                 text: 'Module Manager',
                 itemId: 'menu_module',

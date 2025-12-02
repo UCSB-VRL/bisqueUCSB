@@ -1,9 +1,9 @@
 import os
 import numpy as np
-import urllib
-from util import fetch_file
+import urllib.request, urllib.parse, urllib.error
+from .util import fetch_file
 from lxml import etree
-import ConfigParser
+import configparser
 from datetime import datetime
 
 
@@ -21,7 +21,7 @@ from bqapi.bqfeature import *
 
 
 
-TEST_PATH = 'tests_%s'%urllib.quote(datetime.now().strftime('%Y%m%d%H%M%S%f'))  #set a test dir on the system so not too many repeats occur
+TEST_PATH = 'tests_%s'%urllib.parse.quote(datetime.now().strftime('%Y%m%d%H%M%S%f'))  #set a test dir on the system so not too many repeats occur
 
 pytestmark = pytest.mark.skip("Unported tests")
 #pytestmark = pytest.mark.functional
@@ -35,7 +35,7 @@ def setUp():
     global bqsession
     global FeatureResource
 
-    config = ConfigParser.ConfigParser()
+    config = configparser.ConfigParser()
     config.read('setup.cfg')
     root = config.get('Host', 'root') or 'localhost:8080'
     user = config.get('Host', 'user') or 'test'
@@ -61,7 +61,7 @@ def setup_bqfeature_fetch():
         uploads an image
     """
     global resource_list
-    resource = etree.Element ('resource', name=u'%s/%s'%(TEST_PATH, filename1))
+    resource = etree.Element ('resource', name='%s/%s'%(TEST_PATH, filename1))
     content = bqsession.postblob(file1_location, xml=resource)
     uniq = etree.XML(content)[0].attrib['resource_uniq']
     image_uri = '%s/image_service/image/%s'%(bqsession.bisque_root,uniq)
@@ -96,7 +96,7 @@ def setup_bqfeature_fetchvector():
         uploads an image
     """
     global resource_list
-    resource = etree.Element ('resource', name=u'%s/%s'%(TEST_PATH, filename1))
+    resource = etree.Element ('resource', name='%s/%s'%(TEST_PATH, filename1))
     content = bqsession.postblob(file1_location, xml=resource)
     uniq = etree.XML(content)[0].attrib['resource_uniq']
     image_uri = '%s/image_service/image/%s'%(bqsession.bisque_root,uniq)
@@ -132,8 +132,8 @@ def setup_bqparallelfeature_fetch():
     """
     global resource_list
     resource_list = []
-    for _ in xrange(10):
-        resource = etree.Element ('resource', name=u'%s/%s'%(TEST_PATH, filename1))
+    for _ in range(10):
+        resource = etree.Element ('resource', name='%s/%s'%(TEST_PATH, filename1))
         content = bqsession.postblob(file1_location, xml=resource)
         uniq = etree.XML(content)[0].attrib['resource_uniq']
         resource_list.append(FeatureResource(image='%s/image_service/image/%s'%(bqsession.bisque_root,uniq)))
@@ -174,8 +174,8 @@ def setup_bqparallelfeature_fetchvector():
     """
     global resource_list
     resource_list = []
-    for _ in xrange(10):
-        resource = etree.Element ('resource', name=u'%s/%s'%(TEST_PATH, filename1))
+    for _ in range(10):
+        resource = etree.Element ('resource', name='%s/%s'%(TEST_PATH, filename1))
         content = bqsession.postblob(file1_location, xml=resource)
         uniq = etree.XML(content)[0].attrib['resource_uniq']
         resource_list.append(FeatureResource(image='%s/image_service/image/%s'%(bqsession.bisque_root,uniq)))

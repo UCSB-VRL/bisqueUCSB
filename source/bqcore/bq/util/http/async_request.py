@@ -1,7 +1,7 @@
 from threading import Thread
-from urllib import urlopen
+from urllib.request import urlopen
 from time import time
-import http_client
+from . import http_client
 
 
 

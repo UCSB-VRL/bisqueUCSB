@@ -9,16 +9,16 @@ install_requires = [
 #        "bqcore",
         "ply",
         "gdata",
-        "Turbomail",
+        # "Turbomail", # !!! was in the py2 version
         "genshi",
 #        "TGScheduler",
         "boto",
         "numpy",
         "ordereddict",
         # Installed from http://biodev.ece.ucsb.edu/binaries/depot
-        "tw.recaptcha",
-        "tgext.registration2",
-        "tw.output", #https://bitbucket.org/alexbodn/twoutput/get/af6904c504cf.zip
+        # "tw.recaptcha", # !!! was in the py2 version
+        # "tgext.registration2", # !!! was in the py2 version
+        # "tw.output", #https://bitbucket.org/alexbodn/twoutput/get/af6904c504cf.zip #!!! was in the py2 version
         "furl",
       ]
 

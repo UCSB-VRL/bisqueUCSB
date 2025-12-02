@@ -9,13 +9,13 @@ import os
 import logging
 import pkg_resources
 import tables
-import urllib
-from PytablesMonkeyPatch import pytables_fix
+import urllib.request, urllib.parse, urllib.error
+from .PytablesMonkeyPatch import pytables_fix
 import inspect
 import pkgutil
-import Queue
+import queue
 import importlib
-import urlparse
+import urllib.parse
 import hashlib
 import uuid
 from lxml import etree
@@ -25,7 +25,7 @@ from paste.fileapp import FileApp
 from pylons.controllers.util import forward
 from pylons.i18n import ugettext as _, lazy_ugettext as l_
 from pylons.controllers.util import abort
-from tg import expose, flash, config, response, request
+from tg import expose, flash, config, response, request, use_wsgi_app
 from bq.core.service import ServiceController
 from bq.util.locks import Locks
 from bq.util.mkdir import _mkdir
@@ -35,7 +35,7 @@ from bq.features.controllers.utils import mex_validation
 from bq.features.controllers.TablesInterface import CachedRows, WorkDirRows, CachedTables, WorkDirTable, QueryPlan
 from bq.features.controllers.var import FEATURES_TABLES_FILE_DIR, EXTRACTOR_DIR, FEATURES_WORK_DIR
 
-from exceptions import FeatureServiceError,FeatureExtractionError, FeatureImportError, InvalidResourceError
+from .exceptions import FeatureServiceError,FeatureExtractionError, FeatureImportError, InvalidResourceError
 
 FeatureResource = namedtuple('FeatureResource',['image','mask','gobject'])
 FeatureResource.__new__.__defaults__ = ('', '', '')
@@ -70,16 +70,16 @@ class Feature_Archive(dict):
                         item.library = module #for the list of features
                         self[item.name] = item
 
-            except FeatureImportError, e:
+            except FeatureImportError as e:
                 log.warning('Failed to import: %s reason %s ', module, e)
                 #log.debug('Failed to import: %s\n%s'%(module, traceback.format_exc()))
                 continue
 
-            except StandardError, e:  # need to pick a narrower error band but not quite sure right now
+            except Exception as e:  # need to pick a narrower error band but not quite sure right now
                 log.warning('Failed to import: %s reason %s ', module, e)
                 #log.debug('Failed to import: %s\n%s'%(module, traceback.format_exc()))
                 continue
-        log.debug("Imported Features: %s", self.keys())
+        log.debug("Imported Features: %s", list(self.keys()))
 
 
 FEATURE_ARCHIVE = Feature_Archive()
@@ -234,7 +234,7 @@ def clean_url(url):
         url = url[1:]
         if url.endswith('"'):
             url = url[:-1]
-    url = urllib.unquote(url)
+    url = urllib.parse.unquote(url)
     return url
 
 
@@ -265,9 +265,9 @@ def parse_request(feature_name, format_name='xml', method='GET', **kw):
             uri = feature_node.attrib.get('uri')
             if uri is None: #protect against malformed xml
                 return
-            o = urlparse.urlparse(uri)
+            o = urllib.parse.urlparse(uri)
             path = o.path
-            query = urlparse.parse_qs(o.query)
+            query = urllib.parse.parse_qs(o.query)
             resource = FeatureResource(image=clean_url(query.get('image','')),
                                        mask=clean_url(query.get('mask','')),
                                        gobject=clean_url(query.get('gobject','')))
@@ -561,15 +561,15 @@ class Xml(Format):
             node_two = next(node_gen)
             #there is more than one node
             yield '<resource uri = "%s">'%str(request.url.replace('&','&amp;'))
-            yield etree.tostring(node_one)
-            yield etree.tostring(node_two)
+            yield etree.tostring(node_one, encoding='unicode')
+            yield etree.tostring(node_two, encoding='unicode')
         except StopIteration: #no elements
             #only one node
-            yield etree.tostring(node_one)
+            yield etree.tostring(node_one, encoding='unicode')
         else:
             #yield the rest of the nodes
             for n in node_gen:
-                yield etree.tostring(n)
+                yield etree.tostring(n, encoding='unicode')
             yield '</resource>'
 
     def return_from_workdir(self, table, resource_list):
@@ -595,15 +595,15 @@ class Xml(Format):
             node_two = next(node_gen)
             #there is more than one node
             yield '<resource uri = "%s">'%str(request.url.replace('&','&amp;'))
-            yield etree.tostring(node_one)
-            yield etree.tostring(node_two)
+            yield etree.tostring(node_one, encoding='unicode')
+            yield etree.tostring(node_two, encoding='unicode')
         except StopIteration: #no elements
             #only one node
-            yield etree.tostring(node_one)
+            yield etree.tostring(node_one, encoding='unicode')
         else:
             #yield the rest of the nodes
             for n in node_gen:
-                yield etree.tostring(n)
+                yield etree.tostring(n, encoding='unicode')
             yield '</resource>'
 
 #-------------------------------------------------------------
@@ -782,7 +782,7 @@ class Hdf(Format):
         #writing the output to an uncached table
         workdir_feature_table = WorkDirTable(self.feature).set_path(resource_list.path_in_workdir())
         workdir_rows = WorkDirRows(self.feature)
-        workdir_rows.row_queue['feature'] = Queue.Queue()
+        workdir_rows.row_queue['feature'] = queue.Queue()
         workdir_rows.row_queue['feature'].put((row_list,status_list))
         workdir_feature_table.store(workdir_rows)
         return self.return_from_workdir(workdir_feature_table, resource_list)
@@ -811,7 +811,8 @@ class Hdf(Format):
         with Locks(table.path):
             pass
 
-        return forward(FileApp(table.path, allowed_methods=('GET','POST'), content_type=self.content_type, content_disposition=disposition))
+        # Wrap with use_wsgi_app() for TurboGears 2.4+ compatibility
+        return use_wsgi_app(FileApp(table.path, allowed_methods=('GET','POST'), content_type=self.content_type, content_disposition=disposition))
 
 
 #-------------------------------------------------------------
@@ -899,7 +900,7 @@ class FeatureDoc():
         command  = etree.SubElement(resource, 'command', name='format/FORMAT_NAME', value='Documentation of specific format')
         command  = etree.SubElement(resource, 'command', name='/FEATURE_NAME/FORMAT_NAME?image|mask|gobject=URL[&image|mask|gobject=URL]', value='Returns feature in format specified')
         command  = etree.SubElement(resource, 'attribute', name='resource', value='The name of the resource depends on the requested feature')
-        return etree.tostring(resource)
+        return etree.tostring(resource, encoding='unicode')
 
 
     def feature_list(self):
@@ -909,7 +910,7 @@ class FeatureDoc():
         resource = etree.Element('resource', uri=str(request.url))
         resource.attrib['description'] = 'List of working feature extractors'
         feature_library = {}
-        for featuretype in FEATURE_ARCHIVE.keys():
+        for featuretype in list(FEATURE_ARCHIVE.keys()):
             feature_module = FEATURE_ARCHIVE[featuretype]
 
             if feature_module.library not in feature_library:
@@ -923,7 +924,7 @@ class FeatureDoc():
                                   uri='/features/%s' % featuretype
             )
 
-        return etree.tostring(resource)
+        return etree.tostring(resource, encoding='unicode')
 
 
     def feature(self, feature_name):
@@ -954,12 +955,12 @@ class FeatureDoc():
         resource = etree.Element('resource', uri=str(request.url))
         feature = etree.SubElement(resource, 'feature', name=str(feature_module.name))
 
-        for key, value in xml_attributes.iteritems():
+        for key, value in xml_attributes.items():
             info = etree.SubElement(feature, 'tag', name=key, value=value)
-        return etree.tostring(resource)
+        return etree.tostring(resource, encoding='unicode')
 
 
-        return etree.tostring(resource)
+        # return etree.tostring(resource, encoding='unicode')
 
     def format_list(self):
         """
@@ -967,7 +968,7 @@ class FeatureDoc():
         """
         resource = etree.Element('resource', uri=str(request.url))
         resource.attrib['description'] = 'List of Return Formats'
-        for format_name in FORMAT_DICT.keys():
+        for format_name in list(FORMAT_DICT.keys()):
             format = FORMAT_DICT[format_name]
             feature = etree.SubElement(resource,
                                       'format',
@@ -975,7 +976,7 @@ class FeatureDoc():
                                       permission="Published",
                                       uri='format/%s' % format_name)
         response.headers['Content-Type'] = 'text/xml'
-        return etree.tostring(resource)
+        return etree.tostring(resource, encoding='unicode')
 
     def format(self, format_name):
         """
@@ -996,9 +997,9 @@ class FeatureDoc():
         resource = etree.Element('resource', uri=str(request.url))
         feature = etree.SubElement(resource, 'format', name=str(format.name))
 
-        for key, value in xml_attributes.iteritems():
+        for key, value in xml_attributes.items():
             info = etree.SubElement(feature, 'tag', name=key, value=value)
-        return etree.tostring(resource)
+        return etree.tostring(resource, encoding='unicode')
 
 ###################################################################
 # ## Feature Service Controller

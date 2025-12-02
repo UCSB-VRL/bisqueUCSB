@@ -18,14 +18,14 @@ if sys.version_info  < ( 2, 7 ):
 else:
     import unittest
 
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import os
 import posixpath
-import ConfigParser
+import configparser
 from lxml import etree
 from subprocess import Popen, call, PIPE
 from datetime import datetime
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import shortuuid
 
 from bq.util.mkdir import _mkdir
@@ -48,14 +48,14 @@ resource_image      = 'image'
 
 #TEST_PATH = 'tests_multifile_%s'%shortuuid.uuid()
 #TEST_PATH = 'tests_%s'%urllib.quote(datetime.now().isoformat())
-TEST_PATH = 'tests_%s'%urllib.quote(datetime.now().strftime('%Y%m%d%H%M%S%f'))
+TEST_PATH = 'tests_%s'%urllib.parse.quote(datetime.now().strftime('%Y%m%d%H%M%S%f'))
 
 ###############################################################
 # info comparisons
 ###############################################################
 
 def print_failed(s, f='-'):
-    print 'FAILED %s'%(s)
+    print('FAILED %s'%(s))
 
 class InfoComparator(object):
     '''Compares two info dictionaries'''
@@ -150,7 +150,7 @@ class ImageServiceTestBase(unittest.TestCase):
 
     @classmethod
     def setUpClass(self):
-        config = ConfigParser.ConfigParser()
+        config = configparser.ConfigParser()
         config.read('config.cfg')
 
         self.root = config.get('Host', 'root') or 'localhost:8080'
@@ -177,7 +177,7 @@ class ImageServiceTestBase(unittest.TestCase):
         url = posixpath.join(url_image_store, filename).encode('utf-8')
         path = os.path.join(local_store_images, filename)
         if not os.path.exists(path):
-            urllib.urlretrieve(url, path)
+            urllib.request.urlretrieve(url, path)
         return path
 
     @classmethod
@@ -186,9 +186,9 @@ class ImageServiceTestBase(unittest.TestCase):
         #    print etree.tostring(resource)
         r = save_blob(self.session, path, resource=resource)
         if r is None or r.get('uri') is None:
-            print 'Error uploading: %s'%path.encode('ascii', 'replace')
+            print('Error uploading: %s'%path.encode('ascii', 'replace'))
             return None
-        print 'Uploaded id: %s url: %s'%(r.get('resource_uniq'), r.get('uri'))
+        print('Uploaded id: %s url: %s'%(r.get('resource_uniq'), r.get('uri')))
         return r
 
     @classmethod
@@ -196,7 +196,7 @@ class ImageServiceTestBase(unittest.TestCase):
         if r is None:
             return
         url = r.get('uri')
-        print 'Deleting id: %s url: %s'%(r.get('resource_uniq'), url)
+        print('Deleting id: %s url: %s'%(r.get('resource_uniq'), url))
         self.session.deletexml(url)
 
     @classmethod
@@ -204,19 +204,19 @@ class ImageServiceTestBase(unittest.TestCase):
         if 'dataset' in package:
             # delete dataset
             url = package['dataset']
-            print 'Deleting dataset: %s'%(url)
+            print('Deleting dataset: %s'%(url))
             try:
                 self.session.fetchxml('/dataset_service/delete?duri=%s'%url)
             except BQCommError:
-                print 'Error deleting the dataset'
+                print('Error deleting the dataset')
         elif 'items' in package:
             # delete all items
             for url in package['items']:
-                print 'Deleting item: %s'%(url)
+                print('Deleting item: %s'%(url))
                 try:
                     self.session.deletexml(url)
                 except BQCommError:
-                    print 'Error deleting the item'
+                    print('Error deleting the item')
 
         # # delete dataset
         # if 'dataset' in package:
@@ -240,7 +240,7 @@ class ImageServiceTestBase(unittest.TestCase):
     def ensure_bisque_file(self, filename, metafile=None):
         path = self.fetch_file(filename)
         if metafile is None:
-            filename = u'%s/%s'%(TEST_PATH, filename)
+            filename = '%s/%s'%(TEST_PATH, filename)
             resource = etree.Element ('resource', name=filename)
             return self.upload_file(path, resource=resource)
         else:
@@ -255,7 +255,7 @@ class ImageServiceTestBase(unittest.TestCase):
         package['resource'] = r
         if r is None:
             return None
-        print 'Uploaded id: %s url: %s'%(r.get('resource_uniq'), r.get('uri'))
+        print('Uploaded id: %s url: %s'%(r.get('resource_uniq'), r.get('uri')))
         #print etree.tostring(r)
         if r.tag != 'dataset':
             package['items'] = [r.get('uri')]
@@ -263,9 +263,9 @@ class ImageServiceTestBase(unittest.TestCase):
             package['dataset'] = r.get('uri')
             values = r.xpath('value')
             if len(values) != package['count']:
-                print 'Error: uploaded %s has %s elements but needs %s'%(package['file'], len(values), package['count'])
+                print('Error: uploaded %s has %s elements but needs %s'%(package['file'], len(values), package['count']))
             if r.get('name') != package['name']:
-                print 'Error: uploaded %s name is %s but should be %s'%(package['file'], r.get('name'), package['name'])
+                print('Error: uploaded %s name is %s but should be %s'%(package['file'], r.get('name'), package['name']))
             package['items'] = [x.text for x in values]
 
         package['last'] = self.session.fetchxml(package['items'][-1], view='deep')
@@ -275,7 +275,7 @@ class ImageServiceTestBase(unittest.TestCase):
 
     @classmethod
     def cleanup_tests_dir(self):
-        print 'Cleaning-up %s'%local_store_tests
+        print('Cleaning-up %s'%local_store_tests)
         for root, dirs, files in os.walk(local_store_tests, topdown=False):
             for name in files:
                 os.remove(os.path.join(root, name))

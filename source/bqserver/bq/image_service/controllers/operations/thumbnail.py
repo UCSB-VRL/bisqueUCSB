@@ -159,7 +159,7 @@ class ThumbnailOperation(BaseOperation):
 
             # if desired converter failed, perform exhaustive conversion
             if r is None:
-                for n,c in self.server.converters.iteritems():
+                for n,c in self.server.converters.items():
                     if n in [ConverterImgcnv.name, dims.get('converter')]: continue
                     r = c.thumbnail(token, ofile, size[0], size[1], method=method, intermediate=intermediate, preproc=preproc, fmt=fmt)
                     if r is not None:

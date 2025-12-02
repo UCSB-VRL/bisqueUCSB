@@ -1,22 +1,350 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
-                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:py="http://genshi.edgewall.org/"
       xmlns:xi="http://www.w3.org/2001/XInclude">
 
-  <xi:include href="master.html" />
+<xi:include href="master.html" />
 
 <head>
   <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
-  <title>registration Service </title>
+  <title>User Registration - Bisque</title>
+  <link rel="icon" type="image/png" href="/core/images/bisque_icon.png" />
+  <style type="text/css">
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      margin: 0;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .registration-container {
+      max-width: 600px;
+      margin: 80px 80px 100px 80px;
+      background: #EEEEEE;
+      padding: 10px 40px 40px 15px;
+      border-radius: 25px;
+      -moz-border-radius: 5px;
+    }
+    .registration-form {
+      background: white;
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      border: 1px solid #ddd;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #333;
+    }
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    .required {
+      color: red;
+    }
+    .btn-primary {
+      background-color: #007bff;
+      color: white;
+      padding: 12px 30px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      width: 100%;
+    }
+    .btn-primary:hover {
+      background-color: #0056b3;
+    }
+    .error-message {
+      color: #dc3545;
+      background: #f8d7da;
+      border: 1px solid #f5c6cb;
+      padding: 10px;
+      border-radius: 4px;
+      margin-top: 10px;
+      display: none;
+    }
+    .success-message {
+      color: #155724;
+      background: #d4edda;
+      border: 1px solid #c3e6cb;
+      padding: 10px;
+      border-radius: 4px;
+      margin-top: 10px;
+      display: none;
+    }
+    .help-text {
+      font-size: 12px;
+      color: #666;
+      margin-top: 5px;
+    }
+    h2 {
+      color: #333;
+      margin-bottom: 10px;
+    }
+    .logo-area {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .bisque-logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: #007bff;
+    }
+    .flash-messages {
+      margin-bottom: 20px;
+    }
+    .flash-message {
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+    .flash-message.success {
+      color: #155724;
+      background: #d4edda;
+      border: 1px solid #c3e6cb;
+    }
+    .flash-message.error {
+      color: #721c24;
+      background: #f8d7da;
+      border: 1px solid #f5c6cb;
+    }
+  </style>
 </head>
 
 <body>
-    <h2> Welcome to the registration Service</h2>
-        <p> ${msg} </p>
-  <div class="clearingdiv" />
-  <div class="notice"> Best served with Bisque </div>
+    <div class="registration-container">
+        <div class="logo-area">
+          <div class="bisque-logo">Bisque User Registration</div>
+        </div>
+        <!-- Flash messages section -->
+        <div class="flash-messages" py:if="tg.flash_obj.message">
+            <div class="flash-message success" py:if="tg.flash_obj.status == 'ok' or tg.flash_obj.status == 'success'">
+                ${tg.flash_obj.message}
+            </div>
+            <div class="flash-message error" py:if="tg.flash_obj.status == 'error'">
+                ${tg.flash_obj.message}
+            </div>
+        </div>
+        
+        <h2>Create New Account</h2>
+        <p>Register for a new Bisque account to access our bio-image analysis platform.</p>
+        
+        <!-- Email verification status notice -->
+        <div py:if="email_verification_enabled" class="flash-message success">
+            <strong>Email Verification:</strong> Email verification is enabled. You will receive a verification email after registration.
+        </div>
+        <div py:if="not email_verification_enabled and email_verification_status" class="flash-message" 
+             style="color: #856404; background: #fff3cd; border: 1px solid #ffeaa7;">
+            <strong>Note:</strong> Email verification is currently disabled. 
+            <span py:if="not email_verification_status['smtp_configured']">SMTP email service is not configured.</span>
+            <span py:if="email_verification_status['smtp_configured'] and not email_verification_status['verification_enabled']">Email verification feature is disabled in configuration.</span>
+            Your account will be activated immediately upon registration.
+        </div>
+        
+        <form id="registrationForm" method="post" action="/registration/register_with_redirect">
+            <div class="form-group">
+                <label for="email">Email Address <span class="required">*</span></label>
+                <input type="email" id="email" name="email" required="required" placeholder="your.email@example.edu" />
+                <div class="help-text">This will be your login identifier</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="username">Username <span class="required">*</span></label>
+                <input type="text" id="username" name="username" required="required" placeholder="Choose a unique username" />
+                <div class="help-text">Only letters, numbers, hyphens, and underscores allowed</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="fullname">Full Name <span class="required">*</span></label>
+                <input type="text" id="fullname" name="fullname" required="required" placeholder="Your full name" />
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password <span class="required">*</span></label>
+                <input type="password" id="password" name="password" required="required" placeholder="Choose a secure password" />
+                <div class="help-text">Must be at least 6 characters long</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="confirm_password">Confirm Password <span class="required">*</span></label>
+                <input type="password" id="confirm_password" name="confirm_password" required="required" placeholder="Confirm your password" />
+            </div>
+            
+            <div class="form-group">
+                <label for="research_area">Research Area <span class="required">*</span></label>
+                <select id="research_area" name="research_area" required="required">
+                    <option value="">Select your research area</option>
+                    <option value="Bioinformatics">Bioinformatics</option>
+                    <option value="Cell Biology">Cell Biology</option>
+                    <option value="Developmental Biology">Developmental Biology</option>
+                    <option value="Ecology">Ecology</option>
+                    <option value="Genetics">Genetics</option>
+                    <option value="Immunology">Immunology</option>
+                    <option value="Materials Science">Materials Science</option>
+                    <option value="Microbiology">Microbiology</option>
+                    <option value="Molecular Biology">Molecular Biology</option>
+                    <option value="Neuroscience">Neuroscience</option>
+                    <option value="Pharmacology">Pharmacology</option>
+                    <option value="Plant Biology">Plant Biology</option>
+                    <option value="Structural Biology">Structural Biology</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="institution_affiliation">Institution Affiliation <span class="required">*</span></label>
+                <input type="text" id="institution_affiliation" name="institution_affiliation" required="required" placeholder="University or organization name" />
+            </div>
+            
+            <div class="form-group">
+                <label for="funding_agency">Funding Agency</label>
+                <select id="funding_agency" name="funding_agency">
+                    <option value="">Select funding agency (optional)</option>
+                    <option value="NIH">National Institutes of Health (NIH)</option>
+                    <option value="NSF">National Science Foundation (NSF)</option>
+                    <option value="DOE">Department of Energy (DOE)</option>
+                    <option value="DoD">Department of Defense (DoD)</option>
+                    <option value="NASA">National Aeronautics and Space Administration (NASA)</option>
+                    <option value="USDA">United States Department of Agriculture (USDA)</option>
+                    <option value="Private_Foundation">Private Foundation</option>
+                    <option value="Industry">Industry</option>
+                    <option value="International">International Agency</option>
+                    <option value="Other">Other</option>
+                    <option value="None">No Funding</option>
+                </select>
+            </div>
+            
+            <button type="submit" class="btn-primary">Create Account</button>
+            
+            <div id="error-message" class="error-message"></div>
+            <div id="success-message" class="success-message"></div>
+        </form>
+        
+        <div style="margin-top: 20px; text-align: center;">
+            <p>Already have an account? <a href="/auth_service/login/">Sign in here</a></p>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+    <![CDATA[
+        // Enhanced registration form with both AJAX and fallback
+        document.getElementById('registrationForm').addEventListener('submit', function(e) {
+            // Check if passwords match before submitting
+            var password = document.getElementById('password').value;
+            var confirmPassword = document.getElementById('confirm_password').value;
+            
+            if (password !== confirmPassword) {
+                e.preventDefault();
+                showError('Passwords do not match');
+                return false;
+            }
+            
+            if (password.length < 6) {
+                e.preventDefault();
+                showError('Password must be at least 6 characters long');
+                return false;
+            }
+            
+            // Try AJAX first
+            e.preventDefault();
+            
+            var formData = new FormData(this);
+            var data = {};
+            var entries = formData.entries();
+            var entry = entries.next();
+            
+            while (!entry.done) {
+                data[entry.value[0]] = entry.value[1];
+                entry = entries.next();
+            }
+            
+            // Remove confirm_password from data
+            delete data.confirm_password;
+            
+            // Submit via AJAX to JSON endpoint
+            var submitBtn = document.querySelector('.btn-primary');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Creating Account...';
+            
+            // Convert data to URL encoded format
+            var urlEncodedData = [];
+            for (var key in data) {
+                if (data.hasOwnProperty(key)) {
+                    urlEncodedData.push(encodeURIComponent(key) + '=' + encodeURIComponent(data[key]));
+                }
+            }
+            var bodyData = urlEncodedData.join('&');
+            
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/registration/register', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Create Account';
+                    
+                    if (xhr.status === 200) {
+                        try {
+                            var result = JSON.parse(xhr.responseText);
+                            if (result.status === 'success') {
+                                showSuccess('Account created successfully! Redirecting to login...');
+                                setTimeout(function() {
+                                    window.location.href = '/client_service/?flash=Registration+successful!+Please+sign+in+with+your+new+account.';
+                                }, 2000);
+                            } else {
+                                showError(result.message || 'Registration failed. Please try again.');
+                            }
+                        } catch (e) {
+                            // If AJAX fails, fall back to form submission
+                            document.getElementById('registrationForm').action = '/registration/register_with_redirect';
+                            document.getElementById('registrationForm').submit();
+                        }
+                    } else {
+                        // If AJAX fails, fall back to form submission
+                        document.getElementById('registrationForm').action = '/registration/register_with_redirect';
+                        document.getElementById('registrationForm').submit();
+                    }
+                }
+            };
+            
+            xhr.onerror = function() {
+                // If AJAX fails, fall back to form submission
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Create Account';
+                document.getElementById('registrationForm').action = '/registration/register_with_redirect';
+                document.getElementById('registrationForm').submit();
+            };
+            
+            xhr.send(bodyData);
+        });
+        
+        function showError(message) {
+            var errorDiv = document.getElementById('error-message');
+            var successDiv = document.getElementById('success-message');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            successDiv.style.display = 'none';
+        }
+        
+        function showSuccess(message) {
+            var errorDiv = document.getElementById('error-message');
+            var successDiv = document.getElementById('success-message');
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            errorDiv.style.display = 'none';
+        }
+    ]]>
+    </script>
 </body>
 </html>
-
-

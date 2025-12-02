@@ -34,6 +34,6 @@ class OperationsOperation(BaseOperation):
     def action(self, token, arg):
         response = etree.Element ('response')
         servs    = etree.SubElement (response, 'operations', uri='/image_service/operations')
-        for name,func in self.server.operations.plugins.iteritems():
+        for name,func in self.server.operations.plugins.items():
             tag = etree.SubElement(servs, 'tag', name=str(name), value=str(func))
-        return token.setXml(etree.tostring(response))
+        return token.setXml(etree.tostring(response, encoding='unicode'))

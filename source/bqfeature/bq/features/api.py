@@ -54,7 +54,7 @@ DESCRIPTION
 
 """
 import logging
-import urlparse
+import urllib.parse
 import functools
 from tg import config
 
@@ -100,7 +100,7 @@ def return_feature_location_in_tables(feature_name, **resource):
 def return_feature_list():
     """returns a list of registered features"""
     server = find_server()
-    return server.FEATURE_ARCHIVE.keys()
+    return list(server.FEATURE_ARCHIVE.keys())
 
 
 #def return_feature_info(feature_name):

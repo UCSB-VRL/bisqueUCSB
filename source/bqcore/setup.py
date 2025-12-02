@@ -25,25 +25,26 @@ setup(
     author_email='',
     #url='',
     install_requires=[
-        "Pylons==1.0",
-        "WebOb==1.0.8", # WebOb==1.0.8bisque1
-        "decorator>=3.3",
-        "TurboGears2==2.1.5", #TurboGears2==2.1.5bisque
+        "Pylons", # !!! "Pylons==1.0",
+        "WebOb", # WebOb==1.0.8bisque1 # !!! WebOb==1.0.8
+        "decorator", # !!! decorator>=3.3
+        "TurboGears2", #TurboGears2==2.1.5bisque # !!! TurboGears2==2.1.5
         "Genshi",
-        "zope.sqlalchemy >= 0.4",
-        "repoze.tm2 >= 1.0a5",
+        "zope.sqlalchemy", # !!! zope.sqlalchemy >= 0.4
+        "repoze.tm2", # !!! repoze.tm2 >= 1.0a5
         "SQLAlchemy",
         #"sqlalchemy-migrate",
         "Alembic",
-        "repoze.what-quickstart",
-        "repoze.what >= 1.0.8",
-        "repoze.what-quickstart",
-        "repoze.who-friendlyform >= 1.0.4",
-        "repoze.what-pylons >= 1.0",
-        "repoze.what.plugins.sql",
-        "repoze.who <= 1.99",
+        # !!! commented out all from repoz.*
+        # "repoze.what-quickstart",
+        # "repoze.what >= 1.0.8",
+        # "repoze.what-quickstart",
+        # "repoze.who-friendlyform >= 1.0.4",
+        # "repoze.what-pylons >= 1.0",
+        # "repoze.what.plugins.sql",
+        # "repoze.who <= 1.99",
 #        "tgext.admin >= 0.3.9",
-        "tw.forms",
+        # "tw2.forms", # !!! tw.forms
         #"repoze.who.plugins.ldap",  #Optional for LDAP login
         #"repoze.who.plugins.openid",  #Optional for OpenID login
 
@@ -66,8 +67,8 @@ setup(
         # Bisque dependencies
         "lxml",
 #        "virtualenv",
-        "poster",
-        "linesman",
+        # "poster", # !!! commented out poster for now
+        "linesman", # !!! commented out linesman for now due to issue with pygraphviz
         "shortuuid",
         #"Minimatic",
         ],

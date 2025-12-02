@@ -16,7 +16,7 @@ def upgrade(migrate_engine):
     # MIGRATION OF DATA
     #from migration.versions.mig002 import main
     # While I though it would be b
-    print "BEGIN MIGRATING DATA.. can take a very long TIME"
+    print("BEGIN MIGRATING DATA.. can take a very long TIME")
 
     # While the following lines seem like they would work
     # the columns were not really defined in the current process
@@ -26,11 +26,11 @@ def upgrade(migrate_engine):
     path = os.path.join('bqcore', 'migration', 'versions', 'mig002.py')
     ret = os.system("python %s %s" % (path, migrate_engine.url))
     if ret  != 0:
-        print "MIGRATION FAILED.. exiting"
+        print("MIGRATION FAILED.. exiting")
         raise  MigrationException()
 
-    print "END MIGRATING DATA"
-    print "cleaning up"
+    print("END MIGRATING DATA")
+    print("cleaning up")
     #END MIGRATION OF DATA
 
 

@@ -1,11 +1,28 @@
 
 import os
 import pytest
-from StringIO import StringIO
+from io import StringIO, BytesIO
 import shutil
 import shortuuid
 
 from bq.blob_service.controllers.blob_drivers import make_storage_driver
+from bqapi import BQSession
+
+
+@pytest.fixture(scope="module")
+def admin_session():
+    """Admin session with enhanced authentication"""
+    session = BQSession()
+    session.init_local('admin', 'admin', bisque_root='http://localhost:8080')
+    return session
+
+
+@pytest.fixture(scope="module")
+def user_session():
+    """User session with enhanced authentication"""
+    session = BQSession()
+    session.init_local('admin', 'admin', bisque_root='http://localhost:8080')
+    return session
 
 
 
@@ -15,7 +32,7 @@ local_driver = {
     'mount_url' : 'file://tests/tests',
     'top' : 'file://tests/tests',
 }
-MSG='A'*10
+MSG=b'A'*10
 
 TSTDIR="tests/tests"
 
@@ -43,9 +60,9 @@ def test_local_valid():
 def test_local_write (test_dir):
     drv = make_storage_driver (**local_driver)
 
-    sf = StringIO(MSG)
+    sf = BytesIO(MSG)
     sf.name = 'none'
     storeurl, localpath = drv.push (sf, 'file://%s/msg.txt' % test_dir)
-    print "GOT", storeurl, localpath
+    print("GOT", storeurl, localpath)
 
     assert os.path.exists (localpath), "Created file exists"

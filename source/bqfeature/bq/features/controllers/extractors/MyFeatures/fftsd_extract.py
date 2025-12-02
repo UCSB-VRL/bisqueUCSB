@@ -15,7 +15,7 @@ def FFTSD(contour,sample):
     InterpX = np.interp(np.arange(0,total_length,total_length/float(sample)),int_index,X)
     Y=[i[1] for i in contour]
     InterpY = np.interp(np.arange(0,total_length,total_length/float(sample)),int_index,Y)
-    z = [InterpX[i]+1j*InterpY[i] for i in xrange(len(InterpX))]
+    z = [InterpX[i]+1j*InterpY[i] for i in range(len(InterpX))]
     fft_coeff = np.fft.fft(z)
     return [np.sqrt(i.imag**2+i.real**2) for count,i in enumerate(fft_coeff)]
 
@@ -42,5 +42,5 @@ if __name__=='__main__':
     #sampling
     fig = plt.figure()
     a=[[count,i] for count,i in enumerate(mag_coeff) if count>0]
-    plt.plot(*zip(*a), marker='*', color='r', ls='')
+    plt.plot(*list(zip(*a)), marker='*', color='r', ls='')
     plt.show()

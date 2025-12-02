@@ -5,11 +5,11 @@ We also need to know which matlab to use and how to construct
 the appropiate LD_LIBRARY_PATH
 """
 
-from __future__ import with_statement
+
 
 import os,sys
 import string
-from module_env import BaseEnvironment, ModuleEnvironmentError
+from .module_env import BaseEnvironment, ModuleEnvironmentError
 
 
 MATLAB_LAUNCHER="""#!/bin/sh
@@ -111,7 +111,7 @@ class MatlabEnvironment(BaseEnvironment):
             path = os.path.join(dest, 'matlab_launch' )
         with open(path, 'w') as f:
             f.write (content)
-        os.chmod (path, 0744)
+        os.chmod (path, 0o744)
         return path
 
 class MatlabDebugEnvironment(MatlabEnvironment):

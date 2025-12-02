@@ -1,16 +1,15 @@
 # misc.py
 # Author: Dmitry Fedorov
 # Center for BioImage Informatics, University California, Santa Barbara
-from __future__ import with_statement
 
-""" miscellaneous functions for Image Service and COmmand Line Converters
-"""
 
-__module__    = "misc"
-__author__    = "Dmitry Fedorov"
-__version__   = "0.1"
-__revision__  = "$Rev$"
-__date__      = "$Date$"
+"""miscellaneous functions for Image Service and COmmand Line Converters"""
+
+__module__ = "misc"
+__author__ = "Dmitry Fedorov"
+__version__ = "0.1"
+__revision__ = "$Rev$"
+__date__ = "$Date$"
 __copyright__ = "Center for BioImage Informatics, University California, Santa Barbara"
 
 from subprocess import Popen, PIPE
@@ -25,27 +24,38 @@ import re
 from bq.util.mkdir import _mkdir
 
 import logging
-log = logging.getLogger('bq.util.io_misc')
+
+log = logging.getLogger("bq.util.io_misc")
 
 
 ################################################################################
 # Misc
 ################################################################################
 
-def blocked_alpha_num_sort(s):
-    return [int(u''.join(g)) if k else u''.join(g) for k, g in groupby(unicode(s), unicode.isdigit)]
 
-def between(left,right,s):
-    _,_,a = s.partition(left)
-    a,_,_ = a.partition(right)
+# def blocked_alpha_num_sort(s):
+#     return [int(''.join(g)) if k else ''.join(g) for k, g in groupby(str(s), str.isdigit)]
+# !!! To handle cases where elements of sorted array may have integers and some doesn't have digit at all
+def blocked_alpha_num_sort(s):
+    s = str(s)
+    return [
+        str(int("".join(g))) if k else "".join(g) for k, g in groupby(s, str.isdigit)
+    ]
+
+
+def between(left, right, s):
+    _, _, a = s.partition(left)
+    a, _, _ = a.partition(right)
     return a
 
-def xpathtextnode(doc, path, default='', namespaces=None):
+
+def xpathtextnode(doc, path, default="", namespaces=None):
     r = doc.xpath(path, namespaces=namespaces)
-    if len(r)<1:
+    if len(r) < 1:
         return default
     else:
         return r[0].text
+
 
 def safeint(s, default=0):
     try:
@@ -54,12 +64,14 @@ def safeint(s, default=0):
         v = default
     return v
 
+
 def safefloat(s, default=0.0):
     try:
         v = float(s)
     except ValueError:
         v = default
     return v
+
 
 def safetypeparse(v):
     try:
@@ -69,80 +81,117 @@ def safetypeparse(v):
             v = float(v)
         except ValueError:
             pass
-    except TypeError: #in case of Nonetype
+    except TypeError:  # in case of Nonetype
         pass
     return v
 
+
 def safeencode(s):
-    if isinstance(s, unicode) is not True:
+    if isinstance(s, str) is not True:
         return str(s)
     try:
-        s.encode('ascii')
+        s.encode("ascii")
     except UnicodeEncodeError:
-        s = s.encode('utf8')
+        s = s.encode("utf8")
     return s
 
+
 def toascii(s):
-    if isinstance(s, basestring) is not True:
-        s = u'%s'%s
-    return s.encode('ascii', 'replace')
+    if isinstance(s, str) is not True:
+        s = "%s" % s
+    return s.encode("ascii", "replace")
 
+
+# def tounicode(s):
+#     if isinstance(s, str) is True:
+#         return s
+#     if isinstance(s, str) is not True:
+#         return '%s'%s
+#     try:
+#         return s.decode('utf8')
+
+
+#     except (UnicodeEncodeError, UnicodeDecodeError):
+#         try:
+#             return s.decode('latin1')
+#         except (UnicodeDecodeError, UnicodeEncodeError):
+#             return str(s.encode('ascii', 'replace'))
+# !!! modified tounicode to handle bytes and str types
+# !!! in python 3, since str is unicode and bytes is bytes
 def tounicode(s):
-    if isinstance(s, unicode) is True:
-        return s
-    if isinstance(s, basestring) is not True:
-        return u'%s'%s
-    try:
-        return s.decode('utf8')
-
-    except (UnicodeEncodeError, UnicodeDecodeError):
+    # log.info(f"----- tounicode before: {s} type: {type(s)}")
+    out_str = ""
+    if isinstance(s, str):
+        out_str = s
+    if isinstance(s, bytes):
         try:
-            return s.decode('latin1')
-        except (UnicodeDecodeError, UnicodeEncodeError):
-            return unicode(s.encode('ascii', 'replace'))
+            out_str = s.decode("utf-8")
+        except UnicodeDecodeError:
+            try:
+                out_str = s.decode("latin1")
+            except UnicodeDecodeError:
+                out_str = s.decode("ascii", errors="replace")
+    if isinstance(s, list):
+        out_str = " ".join([tounicode(x) for x in s])
+    out_str = f"{out_str}"
+    # if string is still like "b'...' then decode it
+    regex = re.compile(r"(^b'(.+)'$)|(^b\"(.+)\"$)")
+    if regex.match(out_str):
+        out_str = out_str[2:-1]
+    # log.info(f"----- tounicode after: {out_str} type: {type(out_str)}")
+    return out_str
+
 
 def run_command(command, cwd=None, shell=False):
-    '''returns a string of a successfully executed command, otherwise None'''
+    """returns a string of a successfully executed command, otherwise None"""
     try:
-        p = Popen (command, stdout=PIPE, stderr=PIPE, cwd=cwd, shell=shell)
-        o,e = p.communicate()
-        if p.returncode!=0:
-            log.info ("BAD non-0 return code for %s", command)
+        p = Popen(command, stdout=PIPE, stderr=PIPE, cwd=cwd, shell=shell)
+        o, e = p.communicate()
+        if p.returncode != 0:
+            log.info("BAD non-0 return code for %s", command)
             return None
-        # Qt reports an error: 'Qt: Untested Windows version 6.2 detected!\r\n'
-        #if e is not None and len(e)>0:
-        #    return None
-        return o or e
+        
+        # Handle Python 3 bytes to string conversion
+        result = o or e
+        if isinstance(result, bytes):
+            result = result.decode('utf-8', errors='ignore')
+            
+        return result
     except OSError:
-        log.warning ('Command not found [%s]', command[0])
+        log.warning("Command not found [%s]", command[0])
     except Exception:
-        log.exception ('Exception during execution [%s]', command )
+        log.exception("Exception during execution [%s]", command)
     return None
+
 
 def isascii(s):
     if isinstance(s, str) is True:
         return True
     try:
-        s.encode('ascii')
+        s.encode("ascii")
     except UnicodeEncodeError:
         return False
     return True
 
+
 def remove_safe(f):
     try:
         os.remove(f)
-    except OSError:
-        log.warning ('Could not remove "%s"', f)
+    except Exception as e:
+        print(f"Cannot remove file {f}: {e}")
+        log.warning(f"Cannot remove file {f}: {e}")
+
 
 # dima: We have to do some ugly stuff to get all unicode filenames to work correctly
 # under windows, although imgcnv and ImarisConvert support unicode filenames
 # bioformats and openslide do not, moreover in python <3 subprocess package
 # does not support unicode either, thus we decided to link unicode filenames
 # prior to operations and unlink them right after, this is a windows only problem!
-if os.name != 'nt':
+if os.name != "nt":
+
     def dolink(source, link_name):
-        log.debug('Hard link %s -> %s', source, link_name)
-        #return os.symlink(source, link_name)
+        log.debug("Hard link %s -> %s", source, link_name)
+        # return os.symlink(source, link_name)
         return os.link(source, link_name)
 
     def start_nounicode_win(ifnm, command):
@@ -152,50 +201,54 @@ if os.name != 'nt':
         pass
 
 else:
+
     def symlinkdir(source, link_name):
-        source = unicode(os.path.normpath(source))
-        link_name = unicode(os.path.normpath(link_name))
+        source = str(os.path.normpath(source))
+        link_name = str(os.path.normpath(link_name))
         csl = ctypes.windll.kernel32.CreateSymbolicLinkW
         if csl(link_name, source, 1) == 0:
             raise ctypes.WinError()
 
     def hardlink(source, link_name):
-        source = unicode(os.path.normpath(source))
-        link_name = unicode(os.path.normpath(link_name))
+        source = str(os.path.normpath(source))
+        link_name = str(os.path.normpath(link_name))
         csl = ctypes.windll.kernel32.CreateHardLinkW
         if csl(link_name, source, 0) == 0:
             raise ctypes.WinError()
 
     def dolink(source, link_name):
-        log.debug('Hard link %s -> %s', source, link_name)
+        log.debug("Hard link %s -> %s", source, link_name)
         return hardlink(source, link_name)
 
     def start_nounicode_win(ifnm, command):
         if isascii(ifnm):
             return command, None
         ext = os.path.splitext(ifnm)[1]
-        uniq = hashlib.md5('%s%s'%(ifnm.encode('ascii', 'xmlcharrefreplace'),datetime.datetime.now())).hexdigest()
+        uniq = hashlib.md5(
+            "%s%s"
+            % (ifnm.encode("ascii", "xmlcharrefreplace"), datetime.datetime.now())
+        ).hexdigest()
 
         # preserve drive letter to create hard link on the same drive
         # dima: os.path.join does not join drive letters correctly
         tmp_path = os.path.splitdrive(ifnm)[0]
-        if tmp_path != '':
-            tmp_path = '%s\\temp'%tmp_path
+        if tmp_path != "":
+            tmp_path = "%s\\temp" % tmp_path
         _mkdir(tmp_path)
-        tmp = str(os.path.join(tmp_path, 'bq_temp_%s%s'%(uniq, ext)))
+        tmp = str(os.path.join(tmp_path, "bq_temp_%s%s" % (uniq, ext)))
 
-        log.debug('start_nounicode_win hardlink: [%s] -> [%s]', ifnm, tmp)
+        log.debug("start_nounicode_win hardlink: [%s] -> [%s]", ifnm, tmp)
         try:
             hardlink(ifnm, tmp)
         except OSError:
-            log.debug('Failed creating a hard link: %s', tmp)
+            log.debug("Failed creating a hard link: %s", tmp)
             return command, None
-        command = [tmp if x==ifnm else x for x in command]
-        log.debug('Created a new command: %s', command)
+        command = [tmp if x == ifnm else x for x in command]
+        log.debug("Created a new command: %s", command)
         return command, tmp
 
     def purge(dir, pattern):
-        log.debug('Purging [%s] in [%s]', pattern, dir)
+        log.debug("Purging [%s] in [%s]", pattern, dir)
         regex = re.compile(pattern)
         for f in os.listdir(dir):
             if regex.search(f):
@@ -203,24 +256,22 @@ else:
                 try:
                     os.remove(tmp)
                 except Exception:
-                    log.debug('Could not remove temp link: %s', tmp)
+                    log.debug("Could not remove temp link: %s", tmp)
                     pass
 
     def end_nounicode_win(tmp):
         if tmp is None:
             return
-        log.debug('end_nounicode_win unlink: [%s]', tmp)
+        log.debug("end_nounicode_win unlink: [%s]", tmp)
         try:
             os.remove(tmp)
             tmp = None
         except OSError:
-            #log.warning('Could not remove temp link: %s', tmp)
-            #log.exception('Could not remove temp link: %s', tmp)
+            # log.warning('Could not remove temp link: %s', tmp)
+            # log.exception('Could not remove temp link: %s', tmp)
 
             # dima: after subprocess call many files are still open and
             # cant be removed, so instead match a specific patter and remove
             # all that match in the temp dir, under windows this is be ok
             # since files would be locked for removal while being used
             purge(os.path.dirname(tmp), "^bq_temp_*")
-
-

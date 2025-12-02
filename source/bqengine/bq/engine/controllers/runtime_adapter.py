@@ -96,9 +96,9 @@ class RuntimeAdapter(BaseAdapter):
             if not m.check (module_tree = module):
                 return False
 
-            async =  module.xpath('//tag[@name="asynchronous"]')
-            if len(async):
-                async[0].set('value', 'True')
+            _async =  module.xpath('//tag[@name="asynchronous"]')
+            if len(_async):
+                _async[0].set('value', 'True')
             else:
                 module.append(etree.Element('tag', name='asynchronous', value='True'))
             return True
@@ -168,7 +168,7 @@ class RuntimeAdapter(BaseAdapter):
             #                      stderr = stderr)
             #return process.pid
 
-        except Exception, e:
+        except Exception as e:
             log.exception ("During exec of %s: %s" , command_line, e)
             mex.set ('value', 'FAILED')
             etree.SubElement(mex, 'tag',

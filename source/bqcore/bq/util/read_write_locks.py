@@ -282,7 +282,7 @@ class ReadWriteLock(object):
 # name-based read/write item
 ##########################################################################
 
-import thread
+import _thread
 
 
 class ReadWriteLockItem:
@@ -319,7 +319,7 @@ class HashedReadWriteLock:
 
     def __init__(self):
         self._names = {}
-        self._hash_lock = thread.allocate_lock()
+        self._hash_lock = _thread.allocate_lock()
 
     def acquire_read(self, name, timeout=None):
         """ Acquire a read lock. Blocks only if a thread has

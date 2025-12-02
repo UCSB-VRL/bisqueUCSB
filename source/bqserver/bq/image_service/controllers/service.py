@@ -5,7 +5,7 @@ import os
 import logging
 import pkg_resources
 import tg
-import urlparse
+import urllib.parse
 import re
 from datetime import datetime
 from hashlib import md5
@@ -15,7 +15,7 @@ import random
 from pylons.controllers.util import etag_cache
 from pylons.i18n import ugettext as _, lazy_ugettext as l_
 from tg import expose, flash, config, abort
-from repoze.what import predicates
+# from repoze.what import predicates # !!! deprecated and unused
 from bq.core.service import ServiceController
 from paste.fileapp import FileApp
 from pylons.controllers.util import forward
@@ -48,7 +48,7 @@ extensions_series = set(['cfg', 'xml'])
 series_header_files = ['DiskInfo5.kinetic']
 
 def get_image_id(url):
-    path = urlparse.urlsplit(url)[2]
+    path = urllib.parse.urlsplit(url)[2]
     if path[-1]=='/':
         path =path[:-1]
 
@@ -57,7 +57,11 @@ def get_image_id(url):
 
 def cache_control (value):
     tg.response.headers.pop('Pragma', None)
-    tg.response.headers['Cache-Control'] = value
+    max_age = config.get('bisque.image_service.cache_max_age', 3600)
+    if 'max-age' in value:
+        tg.response.headers['Cache-Control'] = value
+    else:
+        tg.response.headers['Cache-Control'] = f'{value}, max-age={max_age}'
 
 class ImageServiceController(ServiceController):
     #Uncomment this line if your controller requires an authenticated user
@@ -134,7 +138,7 @@ class ImageServiceController(ServiceController):
             r = self.srv.process(url, uniq, imagemeta=meta, resource=resource, user_name=user_name)
             log.info ("FINISHED INTERNAL (%s): %s", datetime.now().isoformat(), url)
             return r
-        except ImageServiceException, e:
+        except ImageServiceException as e:
             log.error('Responce Code: %s for %s: %s ' % (e.code, uniq, e.message))
             log.info ("FINISHED INTERNAL with ERROR (%s): %s", datetime.now().isoformat(), url)
             abort(e.code, e.message)
@@ -166,7 +170,7 @@ class ImageServiceController(ServiceController):
         non_series_cnv = ['imgcnv', 'openslide']
         exts = []
         ignore = []
-        for n in ImageServer.converters.iterkeys():
+        for n in ImageServer.converters.keys():
             if n in non_series_cnv:
                 ignore.extend(ImageServer.converters.extensions(n))
             else:
@@ -193,6 +197,7 @@ class ImageServiceController(ServiceController):
     @expose()
     def _default(self, *path, **kw):
         id = path[0]
+        # log.info(f"----- request image id:{id} -----")
         return self.images(id, **kw)
 
     @expose(content_type='text/xml')
@@ -206,13 +211,13 @@ class ImageServiceController(ServiceController):
         etree.SubElement(response, 'method', name='%s/ID/OPERATION1:PAR1/OPERATION2:PAR2'%service_path, value='Executes operations for give image ID. Call /operations to check available')
         etree.SubElement(response, 'method', name='%s/image/ID'%service_path, value='same as /ID')
         etree.SubElement(response, 'method', name='%s/images/ID'%service_path, value='same as /ID, deprecated and will be removed in the future')
-        return etree.tostring(response)
+        return etree.tostring(response, encoding='unicode')
 
     @expose()
     def operations(self, **kw):
         try:
             token = self.srv.request( 'operations', ProcessToken(), None )
-        except ImageServiceException, e:
+        except ImageServiceException as e:
             abort(e.code, e.message)
         tg.response.headers['Content-Type']  = token.contentType
         cache_control( token.cacheInfo )
@@ -223,7 +228,7 @@ class ImageServiceController(ServiceController):
     def formats(self, **kw):
         try:
             token = self.srv.request( 'formats', ProcessToken(), None )
-        except ImageServiceException, e:
+        except ImageServiceException as e:
             abort(e.code, e.message)
         tg.response.headers['Content-Type']  = token.contentType
         cache_control( token.cacheInfo )
@@ -233,7 +238,7 @@ class ImageServiceController(ServiceController):
         #resource = data_service.resource_load (uniq = ident, view=view)
         try:
             resource = self.srv.cache.get_resource(ident)
-        except ImageServiceException, e:
+        except ImageServiceException as e:
             abort(e.code, e.message)
         if resource is None:
             if identity.not_anonymous():
@@ -315,7 +320,7 @@ class ImageServiceController(ServiceController):
         log.info ("PROCESSING (%s): %s", datetime.now().isoformat(), url)
         try:
             token = self.srv.process(url, ident, timeout=timeout, imagemeta=meta, resource=resource, user_name=user_name, **kw)
-        except ImageServiceFuture, e:
+        except ImageServiceFuture as e:
             message = 'The request is being processed by the system, come back soon...'
 
             # use a back-off strategy for long running tasks
@@ -334,8 +339,8 @@ class ImageServiceController(ServiceController):
             #abort(429, message) # 503, "Too many requests" - does not work
             #abort(503, message) # 503, "Service Unavailable" - does not work
             #return
-        except ImageServiceException, e:
-            log.info ("FINISHED with ERROR (%s): %s", datetime.now().isoformat(), url)
+        except ImageServiceException as e:
+            log.info ("FINISHED with ERROR (%s): %s- error: %s", datetime.now().isoformat(), url, e)
             abort(e.code, e.message)
 
         tg.response.headers['Content-Type']  = token.contentType
@@ -385,11 +390,29 @@ class ImageServiceController(ServiceController):
             # by streaming the contents of the files as opposite to sendall the whole thing
             log.info ("FINISHED (%s): %s", datetime.now().isoformat(), url)
             #log.info ("%s: returning %s with mime %s"%(ident, token.data, token.contentType ))
-            return forward(FileApp(token.data,
-                                   content_type=token.contentType,
-                                   content_disposition=disposition,
-                                   ).cache_control (max_age=60*60*24*7*6)) # 6 weeks
+            # Create FileApp
+            from webob.static import FileApp
+            from tg import use_wsgi_app
+            fileapp = FileApp(token.data,
+                            content_type=token.contentType,
+                            content_disposition=disposition)
 
+            # Inject Cache-Control manually via response headers
+            # max_age = config.get('bisque.image_service.cache_max_age', 3600)
+            # tg.response.headers['Cache-Control'] = f'public, max-age={max_age}'
+            
+            try:
+                modified = datetime.fromtimestamp(os.stat(token.data).st_mtime)
+                etag_value = md5((str(modified) + str(ident)).encode()).hexdigest()
+                tg.response.headers['ETag'] = f'"{etag_value}"'
+                
+                # Set cache control with revalidation
+                tg.response.headers['Cache-Control'] = 'public, must-revalidate'
+            except OSError:
+                tg.response.headers['Cache-Control'] = 'no-cache'
+            return use_wsgi_app(fileapp)
+
+        # log.info(f"------- request image id:{ident} token = {token}-----")
         log.info ("FINISHED with ERROR (%s): %s", datetime.now().isoformat(), url)
         tg.response.status_int = 404
         return "File not found"

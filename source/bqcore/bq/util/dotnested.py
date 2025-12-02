@@ -65,7 +65,7 @@ def parse_nested (dct,  keys=None, sep = '.'):
     """
     nested = {}
     if isinstance (dct, dict):
-        dct = dct.items()
+        dct = list(dct.items())
 
     keys = keys or [ x[0].split(sep)[0] for x in dct ]
     for dpair, val in dct:
@@ -101,7 +101,7 @@ def unparse_nested (dct,  keys=None, sep='.'):
      """
     unnested = []
     if isinstance (dct, dict):
-        dct = dct.items()
+        dct = list(dct.items())
     for dpair, val in dct:
         if isinstance(val, dict):
             val  = unparse_nested(val, sep=sep)
@@ -127,20 +127,20 @@ def unparse_nested (dct,  keys=None, sep='.'):
 if __name__ == "__main__":
     dct = { 'A.a.a' : 1, 'A.a.b' : 2, 'A.b.a' : 3, 'B.a.a' : 4, 'C.a' : 5 }
     nest= parse_nested(dct, ['A', 'B'] )
-    print nest
-    print unparse_nested (nest)
-    print parse_nested(dct)
+    print(nest)
+    print(unparse_nested (nest))
+    print(parse_nested(dct))
 
     dct = { 'A.a.a' : 1, 'A.a.b' : 2, 'A.b.a' : 3, 'A.a.a.b' : 4, 'C.a' : 5 }
-    print parse_nested(dct, ['A'] )
+    print(parse_nested(dct, ['A'] ))
 
 
     dct = [ ('A.a.a', 1) , ('A.a.b',  2) , ('A.b.a' ,  3) , ('A.a.a.b' , 4) , ('A.a.a' ,  5) ]
-    print parse_nested(dct, ['A'] )
+    print(parse_nested(dct, ['A'] ))
     #assert dct == {'A': {'a': {'a': [1, {'b': 4}, 5], 'b': 2}, 'b': {'a': 3}}}
 
 
     dct = [ ('A.a.a', 1) , ('A.a.b',  2) , ('A.b.a' ,  3) , ('A.a.a.b' , 4) , ('A.a.a' ,  5), ('A.a.a.b.c' , 6)]
     nest =  parse_nested(dct, ['A'] )
-    print nest
-    print unparse_nested (nest)
+    print(nest)
+    print(unparse_nested (nest))

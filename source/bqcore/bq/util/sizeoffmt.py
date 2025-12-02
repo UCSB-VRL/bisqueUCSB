@@ -1,7 +1,7 @@
 # From http://stackoverflow.com/questions/1094841/reusable-library-to-get-human-readable-version-of-file-size
 
 from math import log
-unit_list = zip(['bytes', 'kB', 'MB', 'GB', 'TB', 'PB'], [0, 0, 1, 2, 2, 2])
+unit_list = list(zip(['bytes', 'kB', 'MB', 'GB', 'TB', 'PB'], [0, 0, 1, 2, 2, 2]))
 def sizeof_fmt(num):
     """Human friendly file size"""
     if num > 1:

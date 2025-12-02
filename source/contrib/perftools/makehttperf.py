@@ -1,8 +1,8 @@
-from __future__ import print_function
+
 import sys
 import os
 import argparse
-import urlparse
+import urllib.parse
 import requests
 from lxml import etree
 import contextlib
@@ -43,7 +43,7 @@ def gen_wlog(args, options, els):
     with open(args.request_file, 'wb') as req:
         for attrs in els:
             print (SERVICE_URL.format (**attrs), '\0', sep='', end='', file=req)
-            urls.append (urlparse.urljoin(args.url, CLEAN_URL.format(**attrs)))
+            urls.append (urllib.parse.urljoin(args.url, CLEAN_URL.format(**attrs)))
 
     with special_open(args.script) as out:
         print (PRE_SCRIPT, file=out)
@@ -77,7 +77,7 @@ def main():
 
     options=[]
     args = parser.parse_args()
-    url = urlparse.urlparse (args.url)
+    url = urllib.parse.urlparse (args.url)
     if url.scheme == 'https':
         options.append('--ssl')
     options.append ('--server={0}'.format(url.hostname))

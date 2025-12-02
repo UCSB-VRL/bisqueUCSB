@@ -21,18 +21,23 @@ port = 8080
 
 [app:main]
 use = config:site.cfg
-sqlalchemy.url = sqlite:///./test1.db
+sqlalchemy.url = sqlite:///./data/bisque.db
 skip_authentication = true
+
+[app:main_with_auth]
+use = config:site.cfg
+sqlalchemy.url = sqlite:///./data/bisque.db
+skip_authentication = false
 
 
 
 [test]
-host.root= http://loup.ece.ucsb.edu:8888
-host.user= test
-host.password= test
+host.root = http://127.0.0.1:8080
+host.user = admin
+host.password = admin
 
 [store]
-samples_url= http://flour.ece.ucsb.edu:8080/~bisque/test_data/images/
-input_dir= sampledata
-results_dir= results
-files= flowers_24bit_nointr.png
+samples_url = https://s3-us-west-2.amazonaws.com/viqi-test-images/
+input_dir = SampleData
+results_dir = Results
+files = flowers_24bit_nointr.png

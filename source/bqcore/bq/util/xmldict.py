@@ -50,7 +50,7 @@ def d2xml(d):
     @return:  A etree Root element
     """
     def _d2xml(d, p):
-        for k,v in d.items():
+        for k,v in list(d.items()):
             if isinstance(v,dict):
                 node = etree.SubElement(p, k)
                 _d2xml(v, node)
@@ -65,7 +65,7 @@ def d2xml(d):
                 #    p.set(k, v)
                 p.set(k, v)
 
-    k,v = d.items()[0]
+    k,v = list(d.items())[0]
     node = etree.Element(k)
     _d2xml(v, node)
     return node
@@ -75,9 +75,9 @@ def d2xml(d):
 if __name__=="__main__":
 
     X = """<T uri="boo"><a n="1"/><a n="2"/><b n="3"><c x="y"/></b></T>"""
-    print X
+    print(X)
     Y = xml2d(etree.XML(X))
-    print Y
-    Z = etree.tostring (d2xml(Y) )
-    print Z
+    print(Y)
+    Z = etree.tostring (d2xml(Y) , encoding='unicode')
+    print(Z)
     assert X == Z

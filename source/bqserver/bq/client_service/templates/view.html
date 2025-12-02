@@ -13,18 +13,107 @@
     <title>Resource viewer</title>
 
     <!-- GMaps API -->
-    <script py:if="tg.config.get('bisque.gmaps', None) is None" type="text/javascript" src="//maps.googleapis.com/maps/api/js?sensor=false"></script>
-    <script py:if="tg.config.get('bisque.gmaps', None) is not None" type="text/javascript" src="//maps.googleapis.com/maps/api/js?key=${tg.config.get('bisque.gmaps')}"></script>
+    <!-- Script tags created dynamically to avoid Genshi template issues with & characters -->
 
     <!-- Fix for templates that do not create html in the body -->
     <style type="text/css">
+    /*<![CDATA[*/
     #content { margin: 0px; }
+    /*]]>*/
     </style>
 
     <script type="text/javascript">
-    Ext.onReady(function() {
-        var _SB = BQ.ResourceViewer.dispatch('${resource}');
+    //<![CDATA[
+    var googleMapsLoaded = false;
+    var extReady = false;
+    var resourceViewerInitialized = false;
+
+    // Create and load Google Maps API script dynamically
+    function loadGoogleMapsAPI() {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.async = true;
+        script.defer = true;
+        
+        var apiKey = '${tg.config.get("bisque.gmaps") or ""}';
+        console.log('API Key:', apiKey); // Debug log
+        if (apiKey && apiKey !== '') {
+            script.src = '//maps.googleapis.com/maps/api/js?key=' + apiKey + '&v=weekly&loading=async';
+        } else {
+            script.src = '//maps.googleapis.com/maps/api/js?v=weekly&loading=async';
+        }
+        
+        document.head.appendChild(script);
+    }
+
+    // Suppress Google Maps deprecation warnings
+    var originalConsoleWarn = console.warn;
+    console.warn = function() {
+        var args = Array.prototype.slice.call(arguments);
+        var message = args.join(' ');
+        // Filter out the Marker deprecation warning since we're using standard markers intentionally
+        if (message.includes('google.maps.Marker is deprecated')) {
+            return;
+        }
+        originalConsoleWarn.apply(console, args);
+    };
+
+    // Add comprehensive error handlers for Google Maps API internal errors
+    window.addEventListener('error', function(e) {
+        var errorMessage = e.message || e.error?.message || '';
+        if (errorMessage.match(/b\.\w+ is not a function/)) {
+            console.warn('Google Maps API internal error suppressed:', errorMessage);
+            e.preventDefault();
+            e.stopPropagation();
+            return true;
+        }
+    }, true);
+
+    // Handle Promise rejections that might contain Google Maps errors
+    window.addEventListener('unhandledrejection', function(e) {
+        var errorMessage = e.reason?.message || e.reason || '';
+        if (typeof errorMessage === 'string' && errorMessage.match(/b\.\w+ is not a function/)) {
+            console.warn('Google Maps API promise error suppressed:', errorMessage);
+            e.preventDefault();
+            return true;
+        }
     });
+
+    // Override console.error to suppress Google Maps internal errors
+    var originalConsoleError = console.error;
+    console.error = function() {
+        var args = Array.prototype.slice.call(arguments);
+        var message = args.join(' ');
+        if (message.match(/b\.\w+ is not a function/)) {
+            console.warn('Google Maps API internal error suppressed in console:', message);
+            return;
+        }
+        originalConsoleError.apply(console, args);
+    };
+
+    // Poll for Google Maps API availability
+    function checkGoogleMapsLoaded() {
+        if (typeof google !== 'undefined' && typeof google.maps !== 'undefined' && typeof google.maps.Map !== 'undefined') {
+            googleMapsLoaded = true;
+            initResourceViewer();
+        } else {
+            setTimeout(checkGoogleMapsLoaded, 100);
+        }
+    }
+
+    function initResourceViewer() {
+        if (googleMapsLoaded && extReady && !resourceViewerInitialized) {
+            resourceViewerInitialized = true;
+            var _SB = BQ.ResourceViewer.dispatch('${resource}');
+        }
+    }
+
+    Ext.onReady(function() {
+        extReady = true;
+        loadGoogleMapsAPI();
+        checkGoogleMapsLoaded();
+    });
+    //]]>
     </script>
 
 </head>

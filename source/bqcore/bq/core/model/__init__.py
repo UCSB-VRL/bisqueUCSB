@@ -1,24 +1,31 @@
 # -*- coding: utf-8 -*-
 """The application's model objects"""
 
-from zope.sqlalchemy import ZopeTransactionExtension
-from sqlalchemy.orm import scoped_session, sessionmaker, mapper as sa_mapper
+# from zope.sqlalchemy import ZopeTransactionExtension #!!! Before upgrading to py3.10+
+from zope.sqlalchemy import register  # !!! In between upgrading to py3.10+ (Experimental)
+from sqlalchemy.orm import scoped_session, sessionmaker
+# , mapper as sa_mapper # !!! Before upgrading to py3.10+
+from sqlalchemy.orm import registry # !!! In between upgrading to py3.10+ (Experimental)
+mapper_registry = registry()
 #from sqlalchemy import MetaData
 from sqlalchemy.ext.declarative import declarative_base
 
 # Global session manager: DBSession() returns the Thread-local
 # session object appropriate for the current web request.
-maker = sessionmaker(autoflush=True, autocommit=False,
-                     extension=ZopeTransactionExtension())
+# maker = sessionmaker(autoflush=True, autocommit=False,
+#                      extension=ZopeTransactionExtension()) # !!! Before upgrading to py3.10+
+maker = sessionmaker(autoflush=True, autocommit=False)  # !!! In between upgrading to py3.10+ (Experimental)
 DBSession = scoped_session(maker)
+register(DBSession)  # !!! replaces ZopeTransactionExtension() In between upgrading to py3.10+ (Experimental)
 ### Moving from SA 5.5  -> 5.6
 def session_mapper (scoped_session):
     def mapper (cls, *arg, **kw):
         cls.query = scoped_session.query_property ()
-        return sa_mapper (cls, *arg, **kw)
+        # return sa_mapper (cls, *arg, **kw)
+        return mapper_registry.map_imperatively(cls, *arg, **kw) # !!! In between upgrading to py3.10+ (Experimental)
     return mapper
 
-mapper = session_mapper (DBSession)
+mapper = session_mapper(DBSession)
 
 
 # Base class for all of our model classes: By default, the data model is

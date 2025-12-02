@@ -2,7 +2,8 @@ from bq.core.service import service_registry
 
 #from controllers.blob_drivers import make_short_uuid, localpath2url, url2localpath
 from bq.util.urlpaths import localpath2url, url2localpath
-
+# import logging
+# log = logging.getLogger(__name__)
 def find_server():
     return service_registry.find_service ('blob_service')
 

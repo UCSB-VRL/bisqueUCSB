@@ -193,16 +193,16 @@ def main():
     if args.verbose:
         logging.basicConfig (level = logging.DEBUG)
 
-    print "LIMIT", args.limit
+    print("LIMIT", args.limit)
 
     session = BQSession()
     session.args = args
     # Ensure we have a way to login
     if not args.dryrun:
         if not args.credentials:
-            args.credentials = input("Please enter bisque credentials: ")
+            args.credentials = eval(input("Please enter bisque credentials: "))
         if ':' not in args.credentials:
-            password = input ("Please enter password: ")
+            password = eval(input ("Please enter password: "))
             args.credentials = ":".join ([args.credentials, password])
         user, password = args.credentials.split (":")
 

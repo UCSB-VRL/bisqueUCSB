@@ -2099,6 +2099,33 @@ BQImagePhys.prototype.init = function () {
     this.display_channels[2] = -1;
 
 
+    // Create intelligent default channel colors based on number of channels
+    // For scientific/medical images, use grayscale for single channels
+    // Only use RGB colors when we actually have 3+ channels that might be RGB
+    if (this.num_channels === 1) {
+        // Single channel - use white/grayscale for better contrast
+        this.channel_colors_default = [
+            new Ext.draw.Color( 255, 255, 255 ), // white/gray
+        ];
+    } else if (this.num_channels === 2) {
+        // Two channels - use contrasting colors
+        this.channel_colors_default = [
+            new Ext.draw.Color( 255, 255, 255 ), // white
+            new Ext.draw.Color( 255,   0,   0 ), // red
+        ];
+    } else {
+        // Three or more channels - use RGB sequence
+        this.channel_colors_default = [
+            new Ext.draw.Color( 255,   0,   0 ), // red
+            new Ext.draw.Color(   0, 255,   0 ), // green
+            new Ext.draw.Color(   0,   0, 255 ), // blue
+            new Ext.draw.Color( 255, 255, 255 ), // gray
+            new Ext.draw.Color(   0, 255, 255 ), // cyan
+            new Ext.draw.Color( 255,   0, 255 ), // magenta
+            new Ext.draw.Color( 255, 255,   0 ), // yellow
+        ];
+    }
+
     this.channel_colors = this.channel_colors_default.slice(0, Math.min(this.num_channels, this.channel_colors_default.length));
     var diff = this.num_channels-this.channel_colors.length;
     for (var i=0; i<diff; i++)

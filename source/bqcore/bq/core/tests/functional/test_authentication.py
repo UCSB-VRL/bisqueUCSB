@@ -6,66 +6,126 @@ As bqcore grows and the authentication method changes, only these tests
 should be updated.
 
 """
+# !!! modern way with pytest
 
-from bq.core.tests import TestController
+import pytest
+class TestAuthentication:
+    """Tests for the default authentication setup."""
 
-
-class TestAuthentication(TestController):
-    """Tests for the default authentication setup.
-
-    By default in TurboGears 2, :mod:`repoze.who` is configured with the same
-    plugins specified by repoze.what-quickstart (which are listed in
-    http://code.gustavonarea.net/repoze.what-quickstart/#repoze.what.plugins.quickstart.setup_sql_auth).
-
-    As the settings for those plugins change, or the plugins are replaced,
-    these tests should be updated.
-
-    """
-
-    application_under_test = 'main'
-
-    def test_forced_login(self):
-        """Anonymous users are forced to login
-
-        Test that anonymous users are automatically redirected to the login
-        form when authorization is denied. Next, upon successful login they
-        should be redirected to the initially requested page.
-
-        """
-        # Requesting a protected area
-        resp = self.app.get('/client_service/upload', status=302)
+    def test_forced_login(self, app):
+        """Anonymous users are forced to login and redirected properly."""
+        # Request a protected area
+        # !!! /client_service/upload is not valid anymore
+        # resp = app.get('/client_service/upload', status=302)
+        resp = app.get('/import/transfer', status=302)
         assert resp.location.startswith('http://localhost/auth_service/login')
-        # Getting the login form:
+
+        # Follow redirect to login form
         resp = resp.follow(status=200)
         form = resp.form
-        # Submitting the login form:
-        form['login'] = u'admin'
-        form['password'] = 'admin'
-        post_login = form.submit(status=302)
-        # Being redirected to the initially requested page:
-        assert post_login.location.startswith('http://localhost/auth_service/post_login')
-        initial_page = post_login.follow(status=302)
-        assert 'auth_tkt' in initial_page.request.cookies, \
-               "Session cookie wasn't defined: %s" % initial_page.request.cookies
-        assert initial_page.location.startswith('http://localhost/client_service/upload'), \
-               initial_page.location
 
-    def test_voluntary_login(self):
-        """Voluntary logins must work correctly"""
-        # Going to the login form voluntarily:
-        resp = self.app.get('/auth_service/login', status=200)
-        form = resp.form
-        # Submitting the login form:
-        form['login'] = u'admin'
+        # Submit login form
+        form['login'] = 'admin'
         form['password'] = 'admin'
         post_login = form.submit(status=302)
-        # Being redirected to the home page:
+
+        # Should redirect to post_login
         assert post_login.location.startswith('http://localhost/auth_service/post_login')
+
+        # Follow redirect to originally requested page
+        initial_page = post_login.follow(status=302)
+
+        cookies = {c.name: c.value for c in app.cookiejar}
+        assert 'authtkt' in cookies, \
+            f"Session cookie wasn't defined: {cookies}"
+
+        # assert initial_page.location.startswith('http://localhost/client_service/upload')
+        assert initial_page.location.startswith('http://localhost/import/transfer')
+
+    def test_voluntary_login(self, app):
+        """Voluntary logins must work correctly."""
+        resp = app.get('/auth_service/login', status=200)
+        form = resp.form
+
+        form['login'] = 'admin'
+        form['password'] = 'admin'
+        post_login = form.submit(status=302)
+
+        assert post_login.location.startswith('http://localhost/auth_service/post_login')
+
         home_page = post_login.follow(status=302)
-        assert 'auth_tkt' in home_page.request.cookies, \
-               'Session cookie was not defined: %s' % home_page.request.cookies
+        cookies = {c.name: c.value for c in app.cookiejar}
+
+        assert 'authtkt' in cookies, \
+            f'Session cookie was not defined: {cookies}'
+
         assert home_page.location == 'http://localhost/'
 
+#!!! old way with nose
+# from bq.core.tests import TestController
+
+
+# class TestAuthentication(TestController):
+#     """Tests for the default authentication setup.
+
+#     By default in TurboGears 2, :mod:`repoze.who` is configured with the same
+#     plugins specified by repoze.what-quickstart (which are listed in
+#     http://code.gustavonarea.net/repoze.what-quickstart/#repoze.what.plugins.quickstart.setup_sql_auth).
+
+#     As the settings for those plugins change, or the plugins are replaced,
+#     these tests should be updated.
+
+#     """
+
+#     application_under_test = 'main'
+
+#     def test_forced_login(self):
+#         """Anonymous users are forced to login
+
+#         Test that anonymous users are automatically redirected to the login
+#         form when authorization is denied. Next, upon successful login they
+#         should be redirected to the initially requested page.
+
+#         """
+#         # Requesting a protected area
+#         resp = self.app.get('/client_service/upload', status=302)
+#         assert resp.location.startswith('http://localhost/auth_service/login')
+#         # Getting the login form:
+#         resp = resp.follow(status=200)
+#         form = resp.form
+#         # Submitting the login form:
+#         form['login'] = 'admin'
+#         form['password'] = 'admin'
+#         post_login = form.submit(status=302)
+#         # Being redirected to the initially requested page:
+#         assert post_login.location.startswith('http://localhost/auth_service/post_login')
+#         initial_page = post_login.follow(status=302)
+#         assert 'auth_tkt' in initial_page.request.cookies, \
+#                "Session cookie wasn't defined: %s" % initial_page.request.cookies
+#         assert initial_page.location.startswith('http://localhost/client_service/upload'), \
+#                initial_page.location
+
+#     def test_voluntary_login(self):
+#         """Voluntary logins must work correctly"""
+#         # Going to the login form voluntarily:
+#         resp = self.app.get('/auth_service/login', status=200)
+#         form = resp.form
+#         # Submitting the login form:
+#         form['login'] = 'admin'
+#         form['password'] = 'admin'
+#         post_login = form.submit(status=302)
+#         # Being redirected to the home page:
+#         assert post_login.location.startswith('http://localhost/auth_service/post_login')
+#         home_page = post_login.follow(status=302)
+#         cookies = {c.name: c.value for c in self.app.cookiejar}
+#         # assert 'auth_tkt' in home_page.request.cookies, \
+#         #        'Session cookie was not defined: %s' % home_page.request.cookies
+#         # !!! modern way
+#         assert 'authtkt' in cookies, \
+#                'Session cookie was not defined: %s' % cookies
+
+#         assert home_page.location == 'http://localhost/'
+# !!! this was commented out before
 #     def test_logout(self):
 #         """Logouts must work correctly"""
 #         # Logging in voluntarily the quick way:

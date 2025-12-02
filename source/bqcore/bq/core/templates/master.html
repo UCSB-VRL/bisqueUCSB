@@ -101,6 +101,12 @@
             BQ.ui.popup( '${tg.flash_obj.status}', '${tg.flash_obj.message}' );
         });
     </script>-->
+    <!-- Modern way of Flash message handling in py3.10+-->
+    <script type="text/javascript" py:if="tg.flash_obj.message" >
+        Ext.onReady( function() {
+            BQ.ui.popup( '${tg.flash_obj.status}', '${tg.flash_obj.message}' );
+        });
+    </script>
 
 </head>
 </py:match>

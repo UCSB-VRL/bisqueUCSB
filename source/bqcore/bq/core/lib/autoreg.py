@@ -1,19 +1,21 @@
 import logging
 import transaction
 from sqlalchemy.exc import SQLAlchemyError, DatabaseError
-from zope.interface import implements
+# from zope.interface import implements # !!! deprecated
+from zope.interface import implementer # !!! modern approach
 from repoze.who.interfaces import IMetadataProvider #, IAuthenticator
 
 from bq.core import model
 
 log = logging.getLogger('auth.autoreg')
 
+@implementer(IMetadataProvider) # !!! modern approach
 class AutoRegister (object):
     """This plugin attempts to register users that are so far unknown
     to the system.  During the metadata phase it looks to see if the user
     name is currently known and if  not so will create a local user structure
     """
-    implements(IMetadataProvider)
+    # implements(IMetadataProvider) # !!! deprecated
 
     def __init__( self ):
         """Create autoregister metadata provider to create local users
@@ -27,7 +29,7 @@ class AutoRegister (object):
         if g is None:
             g = model.Group()
             g.group_name = login_identifier
-            g.display_name = u'%s Group' % login_identifier
+            g.display_name = '%s Group' % login_identifier
             model.DBSession.add(g)
         return g
 

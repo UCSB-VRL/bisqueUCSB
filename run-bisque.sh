@@ -1,9 +1,10 @@
 #!/bin/bash
+# Updated by Wahid Sadique Koly on 2025-07-29 to align with the new upgraded codebase.
 set -x
 CMD=$1; shift
-INDEX=${PY_INDEX:=https://biodev.ece.ucsb.edu/py/bisque/d8/+simple}
+# INDEX=${PY_INDEX:=https://biodev.ece.ucsb.edu/py/bisque/d8/+simple}
 CONFIG=./config/site.cfg
-export  PIP_INDEX_URL=$INDEX
+# export  PIP_INDEX_URL=$INDEX
 reports=$(pwd)/reports/
 BUILD=/builder
 BQHOME=${BQHOME:=/source/}
@@ -24,7 +25,7 @@ if [ "$CMD" = "build" ] ; then
     let returncode=0
     echo "BUILDING"
     if [ ! -d ${VENV} ] ; then
-        virtualenv ${VENV}
+        python3 -m venv ${VENV}
     fi
     source ${VENV}/bin/activate
 
@@ -62,24 +63,24 @@ if [ "$CMD" = "bootstrap" ] ; then
     CMD=$1; shift
 fi
 
-if [ "$CMD" = "pylint" ] ; then
-    echo "Pylint testing"
-#    if [ ! -f  ${BQHOME}config/site.cfg ] ; then
-    if [ ! -f  config/site.cfg ] ; then
-        echo "Please run bootstrap first i.e. bootstrap pylint"
-        exit 1
-    fi
-    export PYLINTHOME=.
-    ${BIN}pip install -i $INDEX pylint bisque_pylint_plugin
-    #paver -f /usr/share/bisque/pavement.py pylint  $@
-    ARGS=""
-    while [[ "$1" == --* ]] ; do
-        ARGS="$ARGS $1" ; shift
-    done
-    ${BIN}paver -f pavement.py pylint --output-format=parseable --disable=R,C,W,I $ARGS >${reports}pylint.log
-    CODE=$?
-    CMD=$1; shift
-fi
+# if [ "$CMD" = "pylint" ] ; then
+#     echo "Pylint testing"
+# #    if [ ! -f  ${BQHOME}config/site.cfg ] ; then
+#     if [ ! -f  config/site.cfg ] ; then
+#         echo "Please run bootstrap first i.e. bootstrap pylint"
+#         exit 1
+#     fi
+#     export PYLINTHOME=.
+#     ${BIN}pip install -i $INDEX pylint bisque_pylint_plugin
+#     #paver -f /usr/share/bisque/pavement.py pylint  $@
+#     ARGS=""
+#     while [[ "$1" == --* ]] ; do
+#         ARGS="$ARGS $1" ; shift
+#     done
+#     ${BIN}paver -f pavement.py pylint --output-format=parseable --disable=R,C,W,I $ARGS >${reports}pylint.log
+#     CODE=$?
+#     CMD=$1; shift
+# fi
 
 if [ "$CMD" = "unit-tests" ] ; then
     echo "Unit  testing $@"

@@ -22,11 +22,11 @@ from migration.versions.env002 import *
 if __name__ == '__main__':
     if len(sys.argv)>1:
         url = sys.argv[1]
-        print "using %s" % url
+        print("using %s" % url)
         engine = create_engine(url, echo = False)
         metadata.bind = engine
         DBSession.configure(bind=engine)
-        print "attached to", engine
+        print("attached to", engine)
 ##
 from migration.versions.model002 import *
 
@@ -44,13 +44,13 @@ def new_tag(r, name, val, ty_=None):
     return t
 
 def move_files_to_resources():
-    print "MOVING FILE TABLE TO RESOURCE"
+    print("MOVING FILE TABLE TO RESOURCE")
     DBSession.autoflush = False
     for count, fi in enumerate(DBSession.query(FileEntry)):
         image = DBSession.query (Image).filter_by(src = fi.uri).first()
         hash_id = make_uniq_hash(fi.original or '', fi.ts)
         if image is None:
-            print "processing file", fi.local
+            print("processing file", fi.local)
             #resource = DBSession.query(Taggable).filter_by(resource_uniq = fi.sha1).first()
             #if resource is None:
             owner = DBSession.query(BQUser).filter_by(user_name = fi.owner).first()
@@ -63,12 +63,12 @@ def move_files_to_resources():
             if owner:
                 resource.owner_id = owner.id
             else:
-                print "file with no owner"
+                print("file with no owner")
                 resource.owner_id = 1
             DBSession.add(resource)
         else:
             resource = image
-            print "processing image", fi.local
+            print("processing image", fi.local)
             #image.src = "/image_service/images/%s" % hash_id
             resource.resource_type   = 'image'
 
@@ -83,10 +83,10 @@ def move_files_to_resources():
 
 def nunicode (v):
     #return v is not None and unicode(v)
-    return (v is not None and unicode(v)) or None
+    return (v is not None and str(v)) or None
 
 def move_all_to_resource():
-    print "MOVING Images, etc to RESOURCE"
+    print("MOVING Images, etc to RESOURCE")
     alltypes_ =  [ Taggable, Image, Tag, GObject, Dataset, Module, ModuleExecution, Service,
                    Template, BQUser ]
 
@@ -99,40 +99,40 @@ def move_all_to_resource():
         r.resource_parent_id = getattr(r, 'parent_id', None)
 
     for ty_ in [ Tag, GObject, Dataset,  Template,  ]:
-        print "processing ", ty_.xmltag
+        print("processing ", ty_.xmltag)
         for r in DBSession.query (ty_):
             map_(r, ty_)
         DBSession.flush()
 
     # Special type here
-    print "processing ", BQUser.xmltag
+    print("processing ", BQUser.xmltag)
     for r in DBSession.query(BQUser):
         #map_(r, BQUser)
-        r.resource_type = u'user'
+        r.resource_type = 'user'
         r.resource_name = nunicode(r.user_name)
         r.resource_value = nunicode(r.email_address)
         new_tag(r, 'display_name', r.display_name)
     DBSession.flush()
 
-    print "processing ", Module.xmltag
+    print("processing ", Module.xmltag)
     for r in DBSession.query(Module):
         #map_(r, Module)
-        r.resource_type = u'module'
+        r.resource_type = 'module'
         r.resource_name  = nunicode(r.name)
         r.resource_user_type = nunicode(r.type)
         r.resource_value = nunicode(r.codeurl)
     DBSession.flush()
 
-    print "processing ", ModuleExecution.xmltag
+    print("processing ", ModuleExecution.xmltag)
     for r in DBSession.query(ModuleExecution):
         #map_(r, ModuleExecution)
-        r.resource_type = u'mex'
+        r.resource_type = 'mex'
         r.resource_name = nunicode(r.module)
         r.resource_value = nunicode(r.status)
     DBSession.flush()
 
     # Don't bother as they must reregister
-    print "processing ", Service.xmltag
+    print("processing ", Service.xmltag)
     for r in DBSession.query(Service):
         DBSession.delete(r)
     #    #map_(r, Service)
@@ -140,7 +140,7 @@ def move_all_to_resource():
     #    r.resource_user_type = u'app'
     #    r.resource_value = r.uri
 
-    print "processing ", Image.xmltag
+    print("processing ", Image.xmltag)
     for r in DBSession.query(Image):
         #r.resource_type = u'image'
         #map_(r, Image)
@@ -152,15 +152,15 @@ def move_all_to_resource():
 
 
 def move_values():
-    print "ADDING DOCUMENT POINTERS TO VALUES"
-    print "processing values:", Tag.xmltag
+    print("ADDING DOCUMENT POINTERS TO VALUES")
+    print("processing values:", Tag.xmltag)
     for count, r in enumerate(DBSession.query(Tag)):
         for v in r.values:
             v.document_id = r.document_id
         if len(r.values) == 1:
             v = r.values[0]
             if v.valstr is not None:
-                r.resource_value = unicode(v.valstr)
+                r.resource_value = str(v.valstr)
             elif v.valnum is not None:
                 r.resource_value = v.valnum
                 r.resource_user_type = 'numeric'
@@ -210,13 +210,13 @@ def build_document_pointers():
     """
     DBSession.autoflush = False
     types_ =  [ Image, Dataset, Module, ModuleExecution, Service, Template, BQUser ]
-    print "ADDING DOCUMENT POINTERS"
+    print("ADDING DOCUMENT POINTERS")
     visited = {}
     for ty_ in types_:
-        print "processing %s" % ty_.xmltag
+        print("processing %s" % ty_.xmltag)
         for count, resource in  enumerate(DBSession.query(ty_)):
-            print >>sys.stderr, "doc %s(%s) %s" % (resource.table, count, resource.id )
-            resource.resource_type = unicode(resource.xmltag)
+            print("doc %s(%s) %s" % (resource.table, count, resource.id ), file=sys.stderr)
+            resource.resource_type = str(resource.xmltag)
 
             #if resource.id in visited:
             #    print "VISTED %s before when visiting %s" % (resource, visited[resource.id][1])
@@ -236,9 +236,9 @@ def build_document_pointers():
     user_types = [ (nm, ty) for nm, ty in [ dbtype_from_name(str(y)) for y in all_resources() ]
                     if ty == Taggable ]
     for table, ty_ in user_types:
-        print "processing %s" % table
+        print("processing %s" % table)
         for resource in  DBSession.query(ty_).filter(ty_.tb_id == UniqueName(table).id):
-            print "doc %s %s" % (resource.table, resource.id)
+            print("doc %s %s" % (resource.table, resource.id))
 
             #if resource.id in visited:
             #    print "VISTED %s before when visiting %s" % (resource, visited[resource.id][1])
@@ -257,7 +257,7 @@ def main():
         move_all_to_resource()
         move_values()
         move_files_to_resources()
-    except Exception, e:
+    except Exception as e:
         logging.exception("")
         raise e
 

@@ -69,6 +69,18 @@ class ExtEncoder(json.JSONEncoder):
     def default(self, o): # pylint: disable=method-hidden
         if isinstance(o, (dt.datetime, dt.date, dt.time)):
             return o.isoformat()
+        # !!! Handled numpy types
+        import numpy as np
+        if isinstance(o, np.integer):
+            return int(o)
+        elif isinstance(o, np.floating):
+            return float(o)
+        elif isinstance(o, np.ndarray):
+            return o.tolist()
+        elif isinstance(o, (np.bytes_, bytes)):
+            return o.decode('utf-8', errors='ignore')
+        elif isinstance(o, np.str_):
+            return str(o)
         #try:
         #    return super(ExtEncoder, o).default(o)
         #except TypeError:

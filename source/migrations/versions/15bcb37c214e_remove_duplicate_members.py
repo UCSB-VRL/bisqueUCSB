@@ -18,7 +18,7 @@ from sqlalchemy import Table, MetaData, and_
 from sqlalchemy.orm import sessionmaker, aliased
 from sqlalchemy.ext.declarative import declarative_base
 from bq.util.fakerequestenv import create_fake_env
-from orderedset import OrderedSet
+# from orderedset import OrderedSet # !!! This is not available in Python 3.10
 
 def upgrade():
 
@@ -31,9 +31,10 @@ def upgrade():
     Dataset = aliased(Taggable)
     datasets = DBSession.query(Dataset).filter(Dataset.resource_type == 'dataset')
     for dataset in datasets:
-        objs = OrderedSet (  val.valobj for val  in dataset.values )
+        # objs = OrderedSet (  val.valobj for val  in dataset.values )
+        objs = list(dict.fromkeys(val.valobj for val in dataset.values)) # !!! Replacement of orderedset
         if len (objs) != len (dataset.values):
-            print "Replacing  ", dataset.resource_uniq
+            print("Replacing  ", dataset.resource_uniq)
             dataset.values[:] = [ Value (o = obj)  for obj in objs ]
             #dataset.values.reorder()
             DBSession.flush()

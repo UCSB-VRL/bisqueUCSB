@@ -19,10 +19,10 @@ else:
     import unittest
 import os
 import posixpath
-import urlparse
+import urllib.parse
 import time
 from lxml import etree
-import ConfigParser
+import configparser
 from bqapi import BQSession, BQCommError
 import random
 
@@ -34,7 +34,7 @@ def int2hex(v):
 # Upload
 ##################################################################
 
-config = ConfigParser.ConfigParser()
+config = configparser.ConfigParser()
 config.read('config.cfg')
 
 root = config.get('Host', 'root') or 'localhost:8080'
@@ -63,19 +63,19 @@ for i in range(10):
     etree.SubElement (polygon, 'tag', name='color', type='color', value='%s'%color)
     etree.SubElement (polygon, 'tag', name='hi res image', type='image', value='/data_service/00-a8TBcf7ChJ7sEkLoeGBUW9')
 
-    polygons.append(etree.tostring(polygon))
+    polygons.append(etree.tostring(polygon, encoding='unicode'))
 
 request = '<request>%s</request>'%''.join(polygons)
 
-print request
+print(request)
 
 url = session.service_url('data_service', 'image')
 url = '%s/00-8SnBBQ8DHLpugkrVECBpvF'%url
 
-print url
+print(url)
 
 r = session.postxml(url, etree.fromstring(request), method='POST')
 if r is None:
-    print 'Upload failed'
-print 'id: %s'%r.get('resource_uniq')
-print 'url: %s'%r.get('uri')
+    print('Upload failed')
+print('id: %s'%r.get('resource_uniq'))
+print('url: %s'%r.get('uri'))

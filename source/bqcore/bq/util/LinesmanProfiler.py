@@ -7,7 +7,7 @@ from sqlalchemy.types import DateTime, PickleType, FLOAT, Integer, String
 from sqlalchemy.orm import sessionmaker, scoped_session
 import logging
 import time
-import cPickle
+import pickle
 import transaction
 from webob import Request, Response
 

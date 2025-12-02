@@ -54,7 +54,7 @@ DESCRIPTION
 """
 
 import base64
-from urllib import urlencode
+from urllib.parse import urlencode
 import mimetypes
 import logging
 

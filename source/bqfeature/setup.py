@@ -17,7 +17,7 @@ setup(
     author_email='',
     #url='',
     install_requires=[
-                      "importlib", #not needed for python 2.7
+                    #   "importlib", #not needed for python 2.7 # !!! Also not needed in python3
                       "bqcore",
                       "numpy",
                       "pillow",
@@ -25,7 +25,7 @@ setup(
                       "tables",
                       "numexpr",
 #                      "cython",
-                      "libtiff==0.4.0"
+                    #   "libtiff" #!!! libtiff==0.4.0 was before, may need to replace with pylibtiff temporarily commented out
                       ],
     packages=find_packages(),
     namespace_packages = ['bq'],

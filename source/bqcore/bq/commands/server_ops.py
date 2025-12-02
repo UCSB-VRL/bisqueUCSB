@@ -1,8 +1,8 @@
 #!/usr/bin/python
 import os, sys, time
 from subprocess import Popen, call, PIPE, STDOUT
-from urlparse import urlparse
-from ConfigParser import SafeConfigParser
+from urllib.parse import urlparse
+from configparser import SafeConfigParser
 import shlex
 import psutil
 
@@ -130,14 +130,14 @@ def tail(f, window=20):
     for l in f:
         lines[count % window] = l
         count += 1
-    print lines[count % window:], lines[:count % window]
+    print(lines[count % window:], lines[:count % window])
 
 def check_running (pid_file):
     if os.path.exists(pid_file):
-        print "Warning you appear to be restarting another BISQUIK process"
-        print "Please stop that process before starting another"
-        print "Try to stop previous running instance (Y/n)"
-        a = raw_input()
+        print("Warning you appear to be restarting another BISQUIK process")
+        print("Please stop that process before starting another")
+        print("Try to stop previous running instance (Y/n)")
+        a = input()
         if a == '' or a[0].upper() == "Y":
             return True
         else:
@@ -147,7 +147,7 @@ def check_running (pid_file):
 def paster_command(command, options, cfgopt, processes, cfg_file = None, *args):
     def verbose(msg):
         if options.verbose:
-            print msg
+            print(msg)
 
     paster_verbose = '-v' if options.verbose else '-q'
     verbose ("%s bisque on %s .. please wait" % (ING[command], cfgopt['port']))
@@ -186,9 +186,9 @@ def paster_command(command, options, cfgopt, processes, cfg_file = None, *args):
 def uwsgi_command(command, options, cfgopt, processes,  cfg_file = None, *args):
     def verbose(msg):
         if options.verbose:
-            print msg
+            print(msg)
 
-    if command is 'stop':
+    if command == 'stop':
         pidfile = cfgopt['pidfile']
         uwsgi_cmd = [exe_path('uwsgi'), '--stop', pidfile]
         #processes.append(Popen(uwsgi_cmd,shell=True,stdout=sys.stdout))
@@ -196,10 +196,10 @@ def uwsgi_command(command, options, cfgopt, processes,  cfg_file = None, *args):
         verbose('Executing: ' + ' '.join(uwsgi_cmd))
         if not options.dryrun:
             if  call(uwsgi_cmd) != 0:
-                print "Stop failed .. process already dead?"
+                print("Stop failed .. process already dead?")
             if os.path.exists (pidfile):
                 os.remove (pidfile)
-    elif command is 'start':
+    elif command == 'start':
         #uwsgi_opts = cfgopt['uwsgi']
         uwsgi_cmd = [exe_path('uwsgi'), '--ini-paste', cfg_file,
 #                     '--env', 'LC_ALL=en_US.UTF-8',
@@ -210,7 +210,7 @@ def uwsgi_command(command, options, cfgopt, processes,  cfg_file = None, *args):
         verbose('Executing: ' + ' '.join(uwsgi_cmd))
         if not options.dryrun:
             if call(uwsgi_cmd) != 0:
-                print "Start failed"
+                print("Start failed")
     return processes
 
 
@@ -219,8 +219,8 @@ def logger_command(command, cfgopt, processes):
 
     launcher  = shlex.split (cfgopt['logging_server'])
 
-    print "%s logging service" % ING[command]
-    if command is 'start':
+    print("%s logging service" % ING[command])
+    if command == 'start':
         with open(os.devnull, 'w') as fnull:
             #logger = Popen(cfgopt['logging_server'], stdout=fnull, stderr=fnull, shell=True)
             logger = Popen([exe_path (launcher[0])] + launcher[1:],  shell= (os.name == 'nt') )
@@ -228,16 +228,16 @@ def logger_command(command, cfgopt, processes):
             with open(pidfile, 'w') as pd:
                 pd.write("%s\n" % logger.pid)
         else:
-            print "log_service pid %s with code %s" % (logger.pid, logger.returncode)
+            print("log_service pid %s with code %s" % (logger.pid, logger.returncode))
         processes.append(logger)
-    elif command is 'stop':
+    elif command == 'stop':
         if  os.path.exists (pidfile):
             with open(pidfile, 'r') as pd:
                 pid = int (pd.read())
             kill_process (pid)
             os.remove (pidfile)
         else:
-            print "No pid file for logging server"
+            print("No pid file for logging server")
 
 
 BACKENDS = {
@@ -250,19 +250,19 @@ def operation(command, options, *args):
     """
     def verbose(msg):
         if options.verbose:
-            print msg
+            print(msg)
 
     cfg_file=options.site or SITE_CFG
     site_cfg = find_config_path(cfg_file)
     if site_cfg is None:
-        print "Cannot find %s.. please make sure you are in the bisque dir" % cfg_file
+        print("Cannot find %s.. please make sure you are in the bisque dir" % cfg_file)
         return
     site_dir = os.path.dirname(os.path.abspath(site_cfg))
 
     verbose('using config : %s' % site_cfg)
     try:
         config = readhostconfig(site_cfg)
-        verbose("SERVERS %s" % (config['servers'].keys()))
+        verbose("SERVERS %s" % (list(config['servers'].keys())))
         processes = []
         cfgopt = {} # {'root': config['root']}
         cfgopt['site_dir'] = site_dir
@@ -273,7 +273,7 @@ def operation(command, options, *args):
                 cfgopt[f] = config[f]
 
         if not os.path.exists (config['run_dir']):
-            print "Please check your site.cfg.  bisque.paths.run is not set correctly"
+            print("Please check your site.cfg.  bisque.paths.run is not set correctly")
             return
         os.chdir (config['run_dir'])
         # Get the backend
@@ -286,9 +286,9 @@ def operation(command, options, *args):
 
         # Process non-server commands
         if command == 'list':
-            print "ARGS: %s" % (args,)
-            for server, params in  config['servers'].items():
-                print "server %s  : %s " % (server, params)
+            print("ARGS: %s" % (args,))
+            for server, params in  list(config['servers'].items()):
+                print("server %s  : %s " % (server, params))
             return
 
         if not args and 'logging_server' in cfgopt:
@@ -302,7 +302,7 @@ def operation(command, options, *args):
             if args and key not in args:
                 continue
 
-            print ING[command], key
+            print(ING[command], key)
 
             cfgopt['services_enabled'] = ','.join([
                 l.strip() for l in serverspec.pop('services_enabled', '').split(',')])
@@ -319,7 +319,7 @@ def operation(command, options, *args):
             cfg_file_name =  "%s_%s.cfg" % (key, backend)
             cfg_file  = find_config_path(cfg_file_name)
             if not cfg_file:
-                print ("Cannot find config file %s" % cfg_file_name)
+                print(("Cannot find config file %s" % cfg_file_name))
                 print ("Please run bq-admin setup configuration")
                 return
 
@@ -338,7 +338,7 @@ def operation(command, options, *args):
                     processes = paster_command('stop', options, cfgopt, processes, args)
                     for proc in processes:
                         proc.wait()
-                    print 'Recovered Paste windows error and successfully stopped daemon'
+                    print('Recovered Paste windows error and successfully stopped daemon')
 
                 processes = []
 
@@ -348,11 +348,11 @@ def operation(command, options, *args):
                         pid= int (open (cfgopt['pidfile']).read())
                         if psutil.pid_exists (pid):
                             if options.force:
-                                print 'old pid file: %s exists! restarting...' % cfgopt['pidfile']
+                                print('old pid file: %s exists! restarting...' % cfgopt['pidfile'])
                                 operation("stop", options, cfg_file, *args)
                                 time.sleep(5)
                             else:
-                                print "Can't start because of existing PID file"
+                                print("Can't start because of existing PID file")
                                 sys.exit(2)
                     except ValueError:
                         pass

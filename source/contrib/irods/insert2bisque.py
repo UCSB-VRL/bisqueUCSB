@@ -5,9 +5,9 @@
 import os
 import sys
 import shlex
-import urllib
-import urllib2
-import urlparse
+import urllib.request, urllib.parse, urllib.error
+import urllib.request, urllib.error, urllib.parse
+import urllib.parse
 import base64
 import logging
 from optparse import OptionParser
@@ -26,20 +26,20 @@ log = logging.getLogger('i2b')
 
 def insert_bisque(path, user, host, credentials):
     try:
-        opener = urllib2.build_opener(
-            urllib2.HTTPRedirectHandler(),
-            urllib2.HTTPHandler(debuglevel=0),
-            urllib2.HTTPSHandler(debuglevel=0))
+        opener = urllib.request.build_opener(
+            urllib.request.HTTPRedirectHandler(),
+            urllib.request.HTTPHandler(debuglevel=0),
+            urllib.request.HTTPSHandler(debuglevel=0))
 
-        request = urllib2.Request(host)
+        request = urllib.request.Request(host)
         request.add_header('authorization',  'Basic ' + base64.encodestring(credentials).strip())
         resource = "<resource name='%s' value='%s' />" % (os.path.basename(path), path )
-        resource = urllib.urlencode({ "user" : user, "irods_resource" : resource })
+        resource = urllib.parse.urlencode({ "user" : user, "irods_resource" : resource })
         request.add_data (resource)
         r = opener.open(request)
         response = r.read()
         log.info( 'insert %s -> %s' % (host, response))
-    except Exception,e:
+    except Exception as e:
         log.exception( "exception occurred %s" % e )
         raise e
 
@@ -60,7 +60,7 @@ if __name__ == "__main__":
         parser.error("need path and user")
 
     path, user = args 
-    if not urlparse.urlparse (path).scheme:
+    if not urllib.parse.urlparse (path).scheme:
         path = IRODS_HOST + path
 
 

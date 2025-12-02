@@ -215,7 +215,7 @@ def isEqualXMLElement(element_a,element_b):
         if name not in element_a.attrib:
             assert 0, 'Element B has an attribute element A is missing: %s'%name
 
-    for name, value in element_a.attrib.items():
+    for name, value in list(element_a.attrib.items()):
         if is_number(element_b.attrib.get(name)) and is_number(value):
             np.testing.assert_approx_equal(float(element_b.attrib.get(name)),float(value), 6)
         else:
@@ -312,10 +312,10 @@ def isHDFEqual(path_hdf_a,path_hdf_b):
 
            assert set(table_a.colnames)==set(table_b.colnames), '%s!=%s'%(table_a.colnames,table_b.colnames)
 
-           sorted_resource_a = sorted(zip(range(len(table_a)),table_a[:]['image']), key=lambda x:x[1:])
-           sorted_resource_b = sorted(zip(range(len(table_b)),table_b[:]['image']), key=lambda x:x[1:])
+           sorted_resource_a = sorted(zip(list(range(len(table_a))),table_a[:]['image']), key=lambda x:x[1:])
+           sorted_resource_b = sorted(zip(list(range(len(table_b))),table_b[:]['image']), key=lambda x:x[1:])
 
-           for idx_a,idx_b in zip(zip(*sorted_resource_a)[0],zip(*sorted_resource_b)[0]):
+           for idx_a,idx_b in zip(list(zip(*sorted_resource_a))[0],list(zip(*sorted_resource_b))[0]):
                for colname in table_a.colnames:
                    if colname == 'feature':
                        np.testing.assert_array_almost_equal(table_a[idx_a][colname],table_b[idx_b][colname], 4)

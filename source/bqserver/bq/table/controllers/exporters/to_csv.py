@@ -69,7 +69,12 @@ try:
 except ImportError:
     log.info('Pandas was not found but required for table service!')
 
-from pylons.controllers.util import abort
+try:
+    from pylons.controllers.util import abort
+except ImportError:
+    # TurboGears 2 uses different import
+    from tg import abort
+
 from bq.table.controllers.table_exporter import TableExporter
 
 #---------------------------------------------------------------------------------------

@@ -19,10 +19,10 @@ else:
     import unittest
 import os
 import posixpath
-import urlparse
+import urllib.parse
 import time
 from lxml import etree
-import ConfigParser
+import configparser
 import random
 
 from bqapi import BQSession, BQCommError
@@ -39,7 +39,7 @@ num_gobs = 5000
 gobs_sz = 100
 image_uri = sys.argv[1]
 
-config = ConfigParser.ConfigParser()
+config = configparser.ConfigParser()
 config.read('config.cfg')
 
 root = config.get('Host', 'root') or 'localhost:8080'
@@ -94,6 +94,6 @@ for j in range(num_gobs):
 url = session.service_url('data_service', 'mex')
 r = session.postxml(url, mex, method='POST')
 if r is None:
-    print 'Upload failed'
-print 'id: %s'%r.get('resource_uniq')
-print 'url: %s'%r.get('uri')
+    print('Upload failed')
+print('id: %s'%r.get('resource_uniq'))
+print('url: %s'%r.get('uri'))

@@ -91,6 +91,10 @@ class ExtEncoder(json.JSONEncoder):
             return float(o)
         elif isinstance(o, np.ndarray):
             return o.tolist()
+        elif isinstance(o, (np.bytes_, bytes)):
+            return o.decode('utf-8', errors='ignore')
+        elif isinstance(o, np.str_):
+            return str(o)
         #try:
         #    return super(ExtEncoder, o).default(o)
         #except TypeError:

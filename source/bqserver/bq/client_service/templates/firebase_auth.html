@@ -1,0 +1,318 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:py="http://genshi.edgewall.org/"
+    xmlns:xi="http://www.w3.org/2001/XInclude">
+
+<xi:include href="master.html" />
+
+<head>
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
+    <title>Firebase Authentication - BisQue</title>
+    <link rel="stylesheet" type="text/css" href="${tg.url('/client_service/css/login.css')}" />
+    
+    <!-- Firebase JS SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    
+    <style>
+        .firebase-auth-container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: white;
+        }
+        
+        .provider-button {
+            display: block;
+            width: 100%;
+            padding: 12px 20px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            transition: opacity 0.2s;
+        }
+        
+        .provider-button:hover {
+            opacity: 0.9;
+        }
+        
+        .provider-button.google { background-color: #4285f4; }
+        .provider-button.facebook { background-color: #1877f2; }
+        .provider-button.github { background-color: #24292e; }
+        .provider-button.twitter { background-color: #1da1f2; }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            display: none;
+        }
+        
+        .error {
+            color: #d32f2f;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #d32f2f;
+            border-radius: 4px;
+            background: #ffebee;
+            display: none;
+        }
+        
+        .success {
+            color: #2e7d32;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #2e7d32;
+            border-radius: 4px;
+            background: #e8f5e8;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="firebase-auth-container">
+        <h2>Sign in to BisQue</h2>
+        
+        <div id="loading" class="loading" style="display: block;">
+            <p>Preparing ${provider.title()} authentication...</p>
+        </div>
+        
+        <div id="error" class="error"></div>
+        <div id="success" class="success"></div>
+        
+        <div id="auth-providers" style="display: none;">
+            <p>Click the button below to sign in with ${provider.title()}:</p>
+            
+            <button class="provider-button ${provider}" onclick="signInWithProvider('${provider}')">
+                Continue with ${provider.title()}
+            </button>
+            
+            <div style="text-align: center; margin-top: 20px;">
+                <p>Or choose a different provider:</p>
+                
+                <button class="provider-button google" onclick="signInWithProvider('google')" py:if="provider != 'google' and 'firebase_google' in providers">
+                    Continue with Google
+                </button>
+                
+                <button class="provider-button facebook" onclick="signInWithProvider('facebook')" py:if="provider != 'facebook' and 'firebase_facebook' in providers">
+                    Continue with Facebook
+                </button>
+                
+                <button class="provider-button github" onclick="signInWithProvider('github')" py:if="provider != 'github' and 'firebase_github' in providers">
+                    Continue with GitHub
+                </button>
+                
+                <button class="provider-button twitter" onclick="signInWithProvider('twitter')" py:if="provider != 'twitter' and 'firebase_twitter' in providers">
+                    Continue with Twitter
+                </button>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="/auth_service/login">← Back to regular login</a>
+        </div>
+    </div>
+
+    <script>
+        /*<![CDATA[*/
+        // Firebase configuration from server
+        const firebaseConfig = {
+            apiKey: "${firebase_config.get('web_api_key', '')}",
+            authDomain: "${firebase_config.get('project_id', '')}.firebaseapp.com",
+            projectId: "${firebase_config.get('project_id', '')}"
+        };
+        
+        // Provider requested from URL
+        const requestedProvider = "${provider}";
+        const cameFrom = "${came_from}";
+        
+        // Initialize Firebase
+        let firebaseApp;
+        let auth;
+        
+        try {
+            firebaseApp = firebase.initializeApp(firebaseConfig);
+            auth = firebase.auth();
+            console.log('Firebase initialized successfully');
+            
+            // Auto-trigger authentication for the requested provider
+            if (requestedProvider && requestedProvider !== 'undefined') {
+                setTimeout(function() {
+                    signInWithProvider(requestedProvider);
+                }, 1000);
+            }
+            
+        } catch (error) {
+            console.error('Firebase initialization failed:', error);
+            showError('Firebase initialization failed. Please check configuration.');
+        }
+        
+        // Provider configurations
+        const providers = {
+            google: new firebase.auth.GoogleAuthProvider(),
+            facebook: new firebase.auth.FacebookAuthProvider(),
+            github: new firebase.auth.GithubAuthProvider(),
+            twitter: new firebase.auth.TwitterAuthProvider()
+        };
+        
+        // Configure provider scopes
+        providers.google.addScope('email');
+        providers.google.addScope('profile');
+        
+        providers.facebook.addScope('email');
+        providers.facebook.addScope('public_profile');
+        
+        providers.github.addScope('user:email');
+        providers.github.addScope('read:user');
+        
+        providers.twitter.addScope('email');
+        
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+            document.getElementById('auth-providers').style.display = show ? 'none' : 'block';
+        }
+        
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            document.getElementById('success').style.display = 'none';
+            showLoading(false);
+        }
+        
+        function showSuccess(message) {
+            const successDiv = document.getElementById('success');
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            document.getElementById('error').style.display = 'none';
+        }
+        
+        async function signInWithProvider(providerName) {
+            if (!auth) {
+                showError('Firebase not initialized');
+                return;
+            }
+            
+            const provider = providers[providerName];
+            if (!provider) {
+                showError('Provider ' + providerName + ' not configured');
+                return;
+            }
+            
+            showLoading(true);
+            
+            try {
+                // Sign in with popup
+                const result = await auth.signInWithPopup(provider);
+                const user = result.user;
+                
+                console.log('Firebase auth successful:', user);
+                
+                // Get the ID token
+                const idToken = await user.getIdToken();
+                
+                // Send token to BisQue backend for verification
+                await verifyTokenWithBisque(idToken);
+                
+            } catch (error) {
+                console.error('Firebase auth error:', error);
+                
+                // Handle specific error codes
+                if (error.code === 'auth/popup-closed-by-user') {
+                    showError('Sign-in was cancelled');
+                } else if (error.code === 'auth/popup-blocked') {
+                    showError('Pop-up was blocked by browser. Please allow pop-ups and try again.');
+                } else if (error.code === 'auth/cancelled-popup-request') {
+                    showError('Another sign-in process is in progress');
+                } else {
+                    showError('Authentication failed: ' + error.message);
+                }
+            }
+        }
+        
+        async function createSessionWithBisque(idToken) {
+            try {
+                const response = await fetch('/auth_service/firebase_session_create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        idToken: idToken,
+                        came_from: cameFrom 
+                    })
+                });
+                
+                // Handle redirect response (302)
+                if (response.redirected) {
+                    window.location.href = response.url;
+                    return;
+                }
+                
+                // Handle success response
+                if (response.ok) {
+                    const redirectUrl = cameFrom || '/client_service/';
+                    setTimeout(function() {
+                        window.location.href = redirectUrl;
+                    }, 500);
+                } else {
+                    throw new Error('Session creation failed');
+                }
+                
+            } catch (error) {
+                console.error('Session creation error:', error);
+                showError('Failed to create session with server');
+            }
+        }
+        
+        async function verifyTokenWithBisque(idToken) {
+            try {
+                const response = await fetch('/auth_service/firebase_token_verify', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'id_token=' + encodeURIComponent(idToken)
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    showSuccess('Authentication successful! Creating session...');
+                    
+                    // Now create the session by calling firebase_session_create with the token
+                    await createSessionWithBisque(idToken);
+                    
+                } else {
+                    showError(data.message || 'Authentication failed');
+                }
+                
+            } catch (error) {
+                console.error('Token verification error:', error);
+                showError('Failed to verify authentication with server');
+            }
+        }
+        
+        // Handle authentication state changes
+        if (auth) {
+            auth.onAuthStateChanged(function(user) {
+                if (user) {
+                    console.log('User is signed in:', user);
+                } else {
+                    console.log('User is signed out');
+                }
+            });
+        }
+        /*]]>*/
+    </script>
+</body>
+</html>

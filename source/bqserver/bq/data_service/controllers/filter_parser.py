@@ -46,7 +46,7 @@ t_ignore = r' '
 
 def t_error(t):
 
-    print "Illegal character '%s'" % t.value[0]
+    print("Illegal character '%s'" % t.value[0])
     t.lexer.skip(1)
 
 def p_expr(p):
@@ -65,7 +65,7 @@ def p_filter(p) :
     #     P0      P1   P2   P3         P4
     #print p[1]
     dbclass = dbtype_from_tag(p[1])[1]
-    print "FILTER", p[3]
+    print("FILTER", p[3])
     columns = [getattr(dbclass, col[0]) for col in p[3]][::-1]
     filters = [ getattr(dbclass, col[0]) == col[1] for col in p[3][1:] ]
     if not any ( col[0] == 'resource_hidden' for col  in p[3][1:] ):
@@ -115,14 +115,14 @@ def p_tagval(p):
               | NAME
               | QUOTED
     '''
-    print "tagval"
+    print("tagval")
     p[0] = p[1]
 
 
 
 
 def p_error(p):
-    print "Syntax error at token", p
+    print("Syntax error at token", p)
     #yacc.errok()
 
 #  We generate the table once and leave it in generated.  This should be
@@ -145,7 +145,7 @@ def lexit (text):
     while True:
         tok = lexer.token()
         if not tok: break      # No more input
-        print tok
+        print(tok)
 
 
 if __name__ == "__main__":
@@ -155,4 +155,4 @@ if __name__ == "__main__":
     qs =  filter_parse (text)
 
     for query in qs:
-        print query
+        print(query)

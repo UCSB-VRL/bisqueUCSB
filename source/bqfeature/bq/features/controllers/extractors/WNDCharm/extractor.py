@@ -5,11 +5,11 @@
 import logging
 log = logging.getLogger("bq.features")
 
-from PyWNDCharmFeatureList import feature_list
+from .PyWNDCharmFeatureList import feature_list
 import sys
-import WNDCharmBase
+from . import WNDCharmBase
 
-for features_name in feature_list.keys():
+for features_name in list(feature_list.keys()):
     #initalizes a class for each feature in wndcharm
     WNDCharmFeature = type(features_name,
              (WNDCharmBase.WNDCharm,), 

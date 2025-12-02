@@ -50,14 +50,14 @@ class create(object):
 
         # Get to toplevel directory name i.e. the project
         while not self.name:
-            self.name = raw_input("Enter bisque project [egg] name: ")
+            self.name = input("Enter bisque project [egg] name: ")
 
         # The package name to be used internally
         while not self.package:
             package = self.name.lower()
             package = beginning_letter.sub("", package)
             package = valid_only.sub("", package)
-            self.package = raw_input("Enter [python] package name  [%s]: " % package)
+            self.package = input("Enter [python] package name  [%s]: " % package)
             if not self.package:
                 self.package = package
 
@@ -65,7 +65,7 @@ class create(object):
             mount = self.package.lower()
             mount = beginning_letter.sub("", mount)
             mount = valid_only.sub("", mount)
-            self.mount = raw_input("Enter mount point (url point) [%s]: " % mount)
+            self.mount = input("Enter mount point (url point) [%s]: " % mount)
             if not self.mount:
                 self.mount = mount
 
@@ -93,7 +93,7 @@ class createCoreService(create):
     name = None
     def run(self):
         if not os.path.exists('bqcore'):
-            print "Must be run in the top level Bisque directory"
+            print("Must be run in the top level Bisque directory")
             sys.exit(1)
         super(createCoreService, self).run()
 

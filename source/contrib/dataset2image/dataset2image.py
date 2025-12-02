@@ -99,7 +99,7 @@ def convert_dataset(sess, dataset_uniq, want_delete=False, bisque_root=None, dry
         if not dryrun:
             #extra = {'user':as_user} if as_user is not None else {}
             #res = sess.postxml(url=bisque_root+'/data_service', xml=new_image, **extra)
-            res = data.post (data=etree.tostring(new_image), render="xml")
+            res = data.post (data=etree.tostring(new_image, encoding='unicode'), render="xml")
         else:
             res = etree.Element('image', name="dryrun" , resource_uniq='00-dryrun')
         logging.debug("new image posted back")
@@ -155,7 +155,7 @@ def update_references(sess, dataset_map, bisque_root=None, update_mexes=False, u
             refs = deep_dataset.xpath("./value[@type='object']")
             for ref in refs:
                 val = ref.text
-                for dataset_uniq, img_uniq in dataset_map.iteritems():
+                for dataset_uniq, img_uniq in dataset_map.items():
                     if val.startswith('http') and val.endswith(dataset_uniq):
                         # found pointer to dataset => convert it
                         ref.text = val.replace(dataset_uniq, img_uniq)
@@ -167,7 +167,7 @@ def update_references(sess, dataset_map, bisque_root=None, update_mexes=False, u
                     if not dryrun:
                         #extra = {'user':as_user} if as_user is not None else {}
                         #sess.postxml(url=dataset.get('uri'), xml=deep_dataset, **extra)
-                        data.post(data=etree.tostring(deep_dataset)) # no check?
+                        data.post(data=etree.tostring(deep_dataset, encoding='unicode')) # no check?
                     logging.debug("dataset %s updated" % dataset.get('resource_uniq'))
                 except bqapi.BQCommError:
                     logging.error("could not update dataset %s" % dataset.get('resource_uniq'))
@@ -193,7 +193,7 @@ def update_references(sess, dataset_map, bisque_root=None, update_mexes=False, u
             tags = deep_mex.xpath("./tag[@name='inputs' or @name='outputs']//tag")
             for tag in tags:
                 val = tag.get("value")
-                for dataset_uniq, img_uniq in dataset_map.iteritems():
+                for dataset_uniq, img_uniq in dataset_map.items():
                     if val.startswith('http') and val.endswith(dataset_uniq):
                         # found pointer to dataset => convert it
                         tag.set("value", val.replace(dataset_uniq, img_uniq))
@@ -205,7 +205,7 @@ def update_references(sess, dataset_map, bisque_root=None, update_mexes=False, u
                     if not dryrun:
                         #extra = {'user':as_user} if as_user is not None else {}
                         #sess.postxml(url=mex.get('uri'), xml=deep_mex, **extra)
-                        data.post (mex.get('resource_uniq'), data=etree.tostring(deep_mex))
+                        data.post (mex.get('resource_uniq'), data=etree.tostring(deep_mex, encoding='unicode'))
                     logging.debug("mex %s updated" % mex.get('resource_uniq'))
                 except bqapi.BQCommError:
                     logging.error("could not update mex %s" % mex.get('resource_uniq'))
@@ -235,7 +235,7 @@ def rerun_mexes(sess, dataset_map, bisque_root=None, dryrun=False, as_user=None)
                 continue
             in_links = mex_input.xpath("./tag[(@name='resource_url' or @name='image_url') and @type='dataset']")
             if len(in_links) >= 1 and in_links[0].get('value').startswith('http'):
-                for dataset_uniq, img_uniq in dataset_map.iteritems():
+                for dataset_uniq, img_uniq in dataset_map.items():
                     if in_links[0].get('value').endswith(dataset_uniq):
                         # found a mex with converted input => create new mex for re-run
                         logging.debug("found mex to rerun: %s" % mex.get('resource_uniq'))
@@ -260,7 +260,7 @@ def reload_images(sess, dataset_map, bisque_root=None, dryrun=False):
     data = sess.service('data_service')
     image = sess.service('image_service')
     
-    for dataset_uniq, img_uniq in dataset_map.iteritems():
+    for dataset_uniq, img_uniq in dataset_map.items():
         logging.info ("prefetch %s", img_uniq)
         data.fetch (img_uniq)
         if dryrun :
@@ -338,7 +338,7 @@ def main():
         update_references(sess, dataset_map, bisque_root=args.server.rstrip('/'), update_mexes=args.mexrefs, update_datasets=args.dsrefs, dryrun=args.dryrun, as_user=args.user)
         if args.delete:
             logging.info ("MAP %s", dataset_map)
-            delete_datasets(sess, dataset_map.keys(), bisque_root=args.server.rstrip('/'), dryrun=args.dryrun)
+            delete_datasets(sess, list(dataset_map.keys()), bisque_root=args.server.rstrip('/'), dryrun=args.dryrun)
         
         if args.mexrerun:
             reload_images (sess, dataset_map, bisque_root=args.server.rstrip('/'), dryrun=args.dryrun)

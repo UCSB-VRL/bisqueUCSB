@@ -7,9 +7,9 @@ import logging
 from bq.util.paths import find_config_path
 from bq.util.configfile import ConfigFile
 
-from module_env import ModuleEnvironmentError
-from command_run import CommandRunner
-from condor_run import CondorRunner
+from .module_env import ModuleEnvironmentError
+from .command_run import CommandRunner
+from .condor_run import CondorRunner
 
 MODULE_RUNNERS = [CommandRunner, CondorRunner]
 RUNNER_MAP     = dict([(r.name, r) for r in MODULE_RUNNERS ])

@@ -5,7 +5,7 @@ import subprocess
 import argparse
 import glob
 import shutil
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import tarfile
 
 VENV_SOURCE="https://pypi.python.org/packages/source/v/virtualenv/virtualenv-14.0.6.tar.gz"
@@ -34,16 +34,16 @@ if os.name == 'nt':
 
 # installs pip wheels from a URL or pypy
 def install_package(filename, URL, command=None):
-    print 'Installing %s\n'%filename
+    print('Installing %s\n'%filename)
     if URL is not None:
-        urllib.urlretrieve (URL, filename)
-    print command
+        urllib.request.urlretrieve (URL, filename)
+    print(command)
     subprocess.call (command, shell=shell)
     if URL is not None:
         try:
             os.remove(filename)
         except OSError:
-            print 'Warning: could not remove %s\n'%filename
+            print('Warning: could not remove %s\n'%filename)
 
 # installs package using python setup file
 def install_setup(filename, URL=None):
@@ -62,14 +62,14 @@ def install_sys_pip(filename, URL=None):
 
 def install_source(filename, URL, command=None):
     if URL is not None:
-        urllib.urlretrieve (URL, filename)
+        urllib.request.urlretrieve (URL, filename)
 
     tar = tarfile.open (filename)
     names = tar.getnames()
     tar.extractall()
     tar.close()
     vdir = names[0]
-    print "Extracted to: %s"%vdir
+    print("Extracted to: %s"%vdir)
 
     if command is not None:
         subprocess.call (command, shell=shell)
@@ -77,7 +77,7 @@ def install_source(filename, URL, command=None):
         try:
             os.remove(filename)
         except OSError:
-            print 'Warning: could not remove %s\n'%filename
+            print('Warning: could not remove %s\n'%filename)
     return vdir
 
 def run_bootstrap():
@@ -90,25 +90,25 @@ def run_bootstrap():
 
     # check python version
     if not sys.version_info[:2] == (2, 7):
-        print "BisQue requires python 2.7.X but found %s, aborting install..."%(sys.version)
+        print("BisQue requires python 2.7.X but found %s, aborting install..."%(sys.version))
         if os.name == 'nt':
-            print "We suggest installing ActivePython 2.7 from http://www.activestate.com/"
+            print("We suggest installing ActivePython 2.7 from http://www.activestate.com/")
         return 1
 
     # check 64bit python
     if sys.maxsize <= 2**32:
-        print "BisQue requires 64bit python, aborting install..."
+        print("BisQue requires 64bit python, aborting install...")
         return 1
 
 
-    print "\n----------------------------------------------------------"
-    print 'Fetch virtual environment for BisQue installation'
-    print "----------------------------------------------------------\n"
+    print("\n----------------------------------------------------------")
+    print('Fetch virtual environment for BisQue installation')
+    print("----------------------------------------------------------\n")
     vdir = install_source(os.path.basename(VENV_SOURCE), VENV_SOURCE)
 
-    print "\n----------------------------------------------------------"
-    print 'Creating virtual environment for BisQue installation'
-    print "----------------------------------------------------------\n"
+    print("\n----------------------------------------------------------")
+    print('Creating virtual environment for BisQue installation')
+    print("----------------------------------------------------------\n")
 
     if os.name != 'nt':
         r = subprocess.call(["python", "%s/virtualenv.py"%vdir, args.bqenv])
@@ -120,23 +120,23 @@ def run_bootstrap():
         r = subprocess.call(["python", "%s/virtualenv.py"%vdir, args.bqenv, '--no-setuptools'])
         activate = os.path.join(args.bqenv, 'Scripts', 'activate_this.py')
     if r != 0:
-        print 'virtualenv is missing, it needs to be pre-installed with your python version, aborting...'
+        print('virtualenv is missing, it needs to be pre-installed with your python version, aborting...')
         return
 
-    print 'Activating virtual environment using: %s\n'%activate
+    print('Activating virtual environment using: %s\n'%activate)
     try:
-        execfile (activate, dict(__file__=activate))
+        exec(compile(open(activate, "rb").read(), activate, 'exec'), dict(__file__=activate))
     except Exception:
-        print "Could not activate Virtual Environment, it needs to be pre-installed with your python version..."
+        print("Could not activate Virtual Environment, it needs to be pre-installed with your python version...")
         return 1
 
     os.environ['VIRTUAL_ENV'] = os.path.abspath(args.bqenv)
 
     # install pip and setuptools if under windows, due to a bug
     if os.name == 'nt':
-        print "\n----------------------------------------------------------"
-        print 'Re-Installing pip and setuptools to fix virtualenv error under windows'
-        print "----------------------------------------------------------\n"
+        print("\n----------------------------------------------------------")
+        print('Re-Installing pip and setuptools to fix virtualenv error under windows')
+        print("----------------------------------------------------------\n")
         install_setup("get-pip.py", "https://bootstrap.pypa.io/get-pip.py")
         install_easy('pywin32-219.win-amd64-py2.7.exe', "https://biodev.ece.ucsb.edu/~bisque/wheels/pywin32-219.win-amd64-py2.7.exe")
     else:
@@ -144,15 +144,15 @@ def run_bootstrap():
         install_sys_pip('pip')
         install_sys_pip('setuptools')
 
-    print "\n----------------------------------------------------------"
-    print 'Installing additional packages'
-    print "----------------------------------------------------------\n"
+    print("\n----------------------------------------------------------")
+    print('Installing additional packages')
+    print("----------------------------------------------------------\n")
     for pkg,URL in PIP_LIST:
         install_pip(pkg, URL)
 
-    print "\n----------------------------------------------------------"
-    print 'Ensure Mercurial installation'
-    print "----------------------------------------------------------\n"
+    print("\n----------------------------------------------------------")
+    print('Ensure Mercurial installation')
+    print("----------------------------------------------------------\n")
     try:
        r = subprocess.call(['hg', '--version'], shell=shell)
     except Exception:
@@ -167,43 +167,43 @@ def run_bootstrap():
     # check if we need to fetch the source-code
     fn = 'requirements.txt'
     if os.path.exists(fn) is not True:
-        print "********************************"
-        print "**     Fetching BisQue        **"
-        print "********************************"
-        print "Cloning: ", args.repo
-        print
+        print("********************************")
+        print("**     Fetching BisQue        **")
+        print("********************************")
+        print("Cloning: ", args.repo)
+        print()
         subprocess.call(['hg', 'clone', args.repo, 'tmp'], shell=shell)
         for df in glob.glob('tmp/*') + glob.glob('tmp/.hg*'):
             if not os.path.exists(os.path.basename(df)):
                 shutil.move (df, os.path.basename(df))
 
 
-    print "********************************"
-    print "**  Installing requirements   **"
-    print "********************************"
-    print
-    print
+    print("********************************")
+    print("**  Installing requirements   **")
+    print("********************************")
+    print()
+    print()
     #subprocess.call(['pip', 'install', '--trusted-host', 'biodev.ece.ucsb.edu', '-i', 'http://biodev.ece.ucsb.edu/py/bisque/dev/+simple', 'Paste==1.7.5.1+bisque2'], shell=shell)
     #subprocess.call(['pip', 'install', '--trusted-host', 'biodev.ece.ucsb.edu', '-r', 'requirements.txt'], shell=shell)
     #subprocess.call(['pip', 'install', '-r', 'requirements.txt', '--trusted-host=biodev.ece.ucsb.edu'], shell=shell)
     subprocess.call(['pip', 'install', '-r', 'requirements.txt', '-i', PIP_INDEX], shell=shell)
 
-    print "**************************************************************"
-    print "To finish installation, please, execute the following commands"
-    print "Use 'server' for a full BisQue server"
-    print "Use 'engine' to run a module serving a remote BisQue"
-    print "Please visit:"
-    print "  http://biodev.ece.ucsb.edu/projects/bisquik/wiki/InstallationInstructions"
-    print "for more information"
-    print "*************************************************************\n"
+    print("**************************************************************")
+    print("To finish installation, please, execute the following commands")
+    print("Use 'server' for a full BisQue server")
+    print("Use 'engine' to run a module serving a remote BisQue")
+    print("Please visit:")
+    print("  http://biodev.ece.ucsb.edu/projects/bisquik/wiki/InstallationInstructions")
+    print("for more information")
+    print("*************************************************************\n")
     if os.name == 'nt':
-        print "bqenv\\Scripts\\activate.bat"
+        print("bqenv\\Scripts\\activate.bat")
     else:
-        print "source bqenv/bin/activate"
+        print("source bqenv/bin/activate")
 
-    print "paver setup    [server|engine]"
-    print "bq-admin setup [server|engine]"
-    print "bq-admin deploy public"
+    print("paver setup    [server|engine]")
+    print("bq-admin setup [server|engine]")
+    print("bq-admin deploy public")
 
 
     # dima: we should run all the above mentioned commands right here

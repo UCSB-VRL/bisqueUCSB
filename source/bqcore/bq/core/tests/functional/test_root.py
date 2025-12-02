@@ -10,72 +10,99 @@ functional tests exercise the whole application and its WSGI stack.
 Please read http://pythonpaste.org/webtest/ for more information.
 
 """
-from nose.tools import assert_true
 
-from bq.core.tests import TestController
+# !!! modern way with pytest
+import pytest
+# from bs4 import BeautifulSoup
 
+class TestRootController:
+    """Tests for the methods in the root controller."""
 
-class TestRootController(TestController):
-    """Tests for the method in the root controller."""
-
-    def test_index(self):
-        """The front page is working properly"""
+    def test_index(self, app):
+        """The front page is working properly."""
         msg = 'Welcome'
-        response = self.app.get('/', status=302)
+        response = app.get('/', status=302)
         response = response.follow(status=200)
 
-        # You can look for specific strings:
-        assert_true(msg in response)
+        assert msg in response.text
 
-        # You can also access a BeautifulSoup'ed response in your tests
-        # (First run $ easy_install BeautifulSoup
-        # and then uncomment the next two lines)
+        # If you want to use BeautifulSoup for more precise checks:
+        # soup = BeautifulSoup(response.text, 'html.parser')
+        # links = soup.find_all('a')
+        # assert links, "Expected some links on the page, but none found."
 
-        #links = response.html.findAll('a')
-        #print links
-        #assert_true(links, "Mummy, there are no links here!")
+    def test_services(self, app):
+        """Displaying Services works."""
+        response = app.get('/services', status=200)
+        assert 'client_service' in response.text
 
-    def test_services(self):
-        """Displaying Services works """
-        response = self.app.get('/services')
-        assert_true('client_service' in response)
+# !!! old approach with nose
+# from nose.tools import assert_true
 
-#     def test_data(self):
-#         """The data display demo works with HTML"""
-#         response = self.app.get('/data.html?a=1&b=2')
-#         expected = """\
-# <table>
-#         <tr>
-#             <td>a</td>
-#             <td>1</td>
-#         </tr>
-#         <tr>
-#             <td>b</td>
-#             <td>2</td>
-#         </tr>
-#     </table>
-# """
-#         assert expected in response, response
+# from bq.core.tests import TestController
 
-#     def test_data_json(self):
-#         """The data display demo works with JSON"""
-#         resp = self.app.get('/data.json?a=1&b=2')
-#         assert '"a": "1", "b": "2"' in resp, resp
 
-#     def test_secc_with_manager(self):
-#         """The manager can access the secure controller"""
-#         # Note how authentication is forged:
-#         environ = {'REMOTE_USER': 'manager'}
-#         resp = self.app.get('/secc', extra_environ=environ, status=200)
-#         assert 'Secure Controller here' in resp.body, resp.body
+# class TestRootController(TestController):
+#     """Tests for the method in the root controller."""
 
-#     def test_secc_with_editor(self):
-#         """The editor cannot access the secure controller"""
-#         environ = {'REMOTE_USER': 'editor'}
-#         self.app.get('/secc', extra_environ=environ, status=403)
-#         # It's enough to know that authorization was denied with a 403 status
+#     def test_index(self):
+#         """The front page is working properly"""
+#         msg = 'Welcome'
+#         response = self.app.get('/', status=302)
+#         response = response.follow(status=200)
 
-#     def test_secc_with_anonymous(self):
-#         """Anonymous users must not access the secure controller"""
-#         self.app.get('/secc', status=401)
-#         # It's enough to know that authorization was denied with a 401 status
+#         # You can look for specific strings:
+#         assert_true(msg in response)
+
+#         # You can also access a BeautifulSoup'ed response in your tests
+#         # (First run $ easy_install BeautifulSoup
+#         # and then uncomment the next two lines)
+
+#         #links = response.html.findAll('a')
+#         #print links
+#         #assert_true(links, "Mummy, there are no links here!")
+
+#     def test_services(self):
+#         """Displaying Services works """
+#         response = self.app.get('/services')
+#         assert_true('client_service' in response)
+
+# #     def test_data(self):
+# #         """The data display demo works with HTML"""
+# #         response = self.app.get('/data.html?a=1&b=2')
+# #         expected = """\
+# # <table>
+# #         <tr>
+# #             <td>a</td>
+# #             <td>1</td>
+# #         </tr>
+# #         <tr>
+# #             <td>b</td>
+# #             <td>2</td>
+# #         </tr>
+# #     </table>
+# # """
+# #         assert expected in response, response
+
+# #     def test_data_json(self):
+# #         """The data display demo works with JSON"""
+# #         resp = self.app.get('/data.json?a=1&b=2')
+# #         assert '"a": "1", "b": "2"' in resp, resp
+
+# #     def test_secc_with_manager(self):
+# #         """The manager can access the secure controller"""
+# #         # Note how authentication is forged:
+# #         environ = {'REMOTE_USER': 'manager'}
+# #         resp = self.app.get('/secc', extra_environ=environ, status=200)
+# #         assert 'Secure Controller here' in resp.body, resp.body
+
+# #     def test_secc_with_editor(self):
+# #         """The editor cannot access the secure controller"""
+# #         environ = {'REMOTE_USER': 'editor'}
+# #         self.app.get('/secc', extra_environ=environ, status=403)
+# #         # It's enough to know that authorization was denied with a 403 status
+
+# #     def test_secc_with_anonymous(self):
+# #         """Anonymous users must not access the secure controller"""
+# #         self.app.get('/secc', status=401)
+# #         # It's enough to know that authorization was denied with a 401 status

@@ -57,7 +57,7 @@ import sys
 import math
 import inspect
 import logging
-from urllib import quote
+from urllib.parse import quote
 from lxml import etree
 
 log = logging.getLogger('bqapi.bqnode')
@@ -90,7 +90,7 @@ class BQNode (etree.ElementBase):
     def __setattr__(self, name, val):
         if name in self.xmlfields:
             return self.set (name, val)
-        print "SETTER"
+        print("SETTER")
         object.__setattr__(self, name, val)
 
     def initialize(self):
@@ -108,7 +108,7 @@ class BQNode (etree.ElementBase):
         return '(%s#%s)' % (self.TAG, len(self))
 
     def __str__(self):
-        return etree.tostring(self)
+        return etree.tostring(self, encoding='unicode', pretty_print=True)
     #    return '(%s:%s:%s)'%(self.TAG,','.join (['%s=%s' % (f, getattr(self,f,'')) for f in self.attrib]), [ str (q) for q in self ] )
 
     def toTuple (self):
@@ -158,7 +158,7 @@ class BQResource (BQNode):
     def add_tag(self, name=None, value=None, type=None, tag=None):
         if tag is None:
             args = dict ( name=name, value=value, type=type)
-            tag = BQTag( **dict ((k, v)  for k,v in args.items() if v is not None) )
+            tag = BQTag( **dict ((k, v)  for k,v in list(args.items()) if v is not None) )
         self.append(tag)
         return tag
     addTag = add_tag
@@ -166,7 +166,7 @@ class BQResource (BQNode):
     def add_gob(self, name=None, value=None, type=None, gob=None):
         if gob is None:
             args = dict ( name=name, value=value, type=type)
-            gob = BQGObject( **dict ((k, v)  for k,v in args.items() if v is not None) )
+            gob = BQGObject( **dict ((k, v)  for k,v in list(args.items()) if v is not None) )
         self.append(gob)
         return gob
     addGObject = add_gob
@@ -420,7 +420,7 @@ class BQVertex (BQNode):
         self.x=x; self.y=y; self.z=z; self.t=t
 
     def fromObj(self, **kw):
-        for k,v in kw.items():
+        for k,v in list(kw.items()):
             if k in self.xmlfields:
                 setattr(self,k,v)
 
@@ -637,7 +637,7 @@ class BQFactory (etree.PythonElementClassLookup):
     # Generation
     @classmethod
     def to_string (self, nodes):
-        return etree.tostring (nodes)
+        return etree.tostring (nodes, encoding='unicode')
 
     @classmethod
     def to_etree(self, bqnode):
@@ -730,7 +730,7 @@ def model_fields(dbo, baseuri=None):
 
         # Put value in attribute dictionary
         if attr_val is not None and attr_val!='':
-            if isinstance(attr_val, basestring):
+            if isinstance(attr_val, str):
                attrs[fn] = attr_val
             else:
                attrs[fn] = str(attr_val) #unicode(attr_val,'utf-8')

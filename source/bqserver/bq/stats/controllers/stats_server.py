@@ -91,7 +91,7 @@ import logging
 import pkg_resources
 from pylons.i18n import ugettext as _, lazy_ugettext as l_
 from tg import expose, flash, response
-from repoze.what import predicates 
+# from repoze.what import predicates  # !!! deprecated and currently not used
 from bq.core.service import ServiceController
 #from bq.stats import model
 
@@ -105,16 +105,16 @@ import sys
 import inspect
 import json
     
-import cStringIO
-from urllib import quote
-from urllib import unquote
+import io
+from urllib.parse import quote
+from urllib.parse import unquote
 
 from itertools import *
-from bqapi import *
+from .bqapi import *
 
 # Import all required operations
-import stats_operators
-import stats_summarizers
+from . import stats_operators
+from . import stats_summarizers
 
 from bq import data_service
 
@@ -189,7 +189,7 @@ class statsController(ServiceController):
             tag      = etree.SubElement (stream, 'tag')
             tag.attrib['name']  = n           
             tag.attrib['value'] = '%s [ver %s]'%(self.operators[n].__doc__, self.operators[n].version)
-        return etree.tostring(stream)   
+        return etree.tostring(stream, encoding='unicode')   
 
 
     @expose(content_type='text/xml')
@@ -200,7 +200,7 @@ class statsController(ServiceController):
             tag      = etree.SubElement (stream, 'tag')
             tag.attrib['name']  = n            
             tag.attrib['value'] = '%s [ver %s]'%(self.summarizers[n].__doc__, self.summarizers[n].version)
-        return etree.tostring(stream)           
+        return etree.tostring(stream, encoding='unicode')           
 
 
     @expose('bq.stats.templates.index')
@@ -254,8 +254,8 @@ class statsController(ServiceController):
             for k in i:     
                 v = i[k]
                 if hasattr(v, '__iter__') and len(v)>0: 
-                    v = ','.join( [quote(unicode(x).encode ('utf8')) for x in v] )
-                BQTag(name=k, value=unicode(v)).toEtree(r)
+                    v = ','.join( [quote(str(x).encode ('utf8')) for x in v] )
+                BQTag(name=k, value=str(v)).toEtree(r)
         
         filename = kw.get('filename', 'stats.xml')
         try:
@@ -264,7 +264,7 @@ class statsController(ServiceController):
             disposition = 'filename="%s"; filename*="%s"'%(filename.encode('utf8'), filename.encode('utf8'))        
         response.headers['Content-Type'] = 'text/xml'
         response.headers['Content-Disposition'] = disposition       
-        return etree.tostring(stream)
+        return etree.tostring(stream, encoding='unicode')
     
     #-------------------------------------------------------------
     # Formatters - JSON
@@ -299,7 +299,7 @@ class statsController(ServiceController):
                 else:
                     mytitles.append( title.replace(',', ';') )
         
-        it = izip_longest(fillvalue='', *myiters)
+        it = zip_longest(fillvalue='', *myiters)
         ts = (t for t in it)
         rows = []
         for t in ts:
@@ -338,9 +338,9 @@ class statsController(ServiceController):
                 else:
                     mytitles.append( title.replace(',', ';') )
                             
-        it = izip_longest(fillvalue='', *myiters)
+        it = zip_longest(fillvalue='', *myiters)
         ts = (t for t in it)
-        stream = "\n".join([(', '.join([unicode(e).encode('utf8') for e in t])) for t in ts])
+        stream = "\n".join([(', '.join([str(e).encode('utf8') for e in t])) for t in ts])
         
         filename = kw.get('filename', 'stats.csv')
         try:

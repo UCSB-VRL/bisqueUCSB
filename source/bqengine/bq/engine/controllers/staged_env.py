@@ -35,7 +35,7 @@ class StagedEnvironment(BaseEnvironment):
         for mex in runner.mexes:
             mex.initial_dir = mex.module_dir = setup_dir
             mex.files = mex.get('files', [])
-            if isinstance(mex.files, basestring):
+            if isinstance(mex.files, str):
                 mex.files =  strtolist(mex.files)
             mex.staging_path= mex.staging_path or mex.named_args.get ('staging_path')
             if mex.staging_path is None:

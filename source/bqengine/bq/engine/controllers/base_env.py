@@ -31,7 +31,7 @@ def strtobool(x):
     return {"true": True, "false": False}.get(x.lower(), False)
 
 def strtolist(x, sep=','):
-    if isinstance(x, basestring):
+    if isinstance(x, str):
         return [ s.strip() for s in x.split(sep)]
     return x
 
@@ -60,7 +60,7 @@ class BaseEnvironment (ModuleEnvironment):
         is respected and the defaults values are setup.  Some environments
         will take over this responsibility
         """
-        for k,v in self.config.items():
+        for k,v in list(self.config.items()):
             if  hasattr(runner, k):
                 v = self.strtotype (getattr(runner, k), type(v))
             setattr(runner, k, v)
@@ -92,7 +92,7 @@ class BaseEnvironment (ModuleEnvironment):
                 self.log.warn ('missing input for parameter %s' , mi.get('value'))
             input_nodes += found
         for i, node in enumerate(input_nodes):
-            if 'index' in node.keys():
+            if 'index' in list(node.keys()):
                 continue
             node.set ('index', str(i))
 

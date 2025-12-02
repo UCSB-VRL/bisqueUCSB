@@ -69,28 +69,28 @@ def json_to_imagej(pipeline):
         if pipeline[str(step_id)]['__Label__'] == 'endblock':
             line = '}'
         elif pipeline[str(step_id)]['__Label__'] == 'enddo':
-            line = '} while(' + ','.join([param.values()[0] for param in pipeline[str(step_id)]['Parameters']]) + ');'
+            line = '} while(' + ','.join([list(param.values())[0] for param in pipeline[str(step_id)]['Parameters']]) + ');'
         elif pipeline[str(step_id)]['__Label__'] in ['__for__', '__if__', '__while__']:
-            line = pipeline[str(step_id)]['__Label__'].strip('_') + '(' + ';'.join([param.values()[0].strip('"') for param in pipeline[str(step_id)]['Parameters']]) + ') {'
+            line = pipeline[str(step_id)]['__Label__'].strip('_') + '(' + ';'.join([list(param.values())[0].strip('"') for param in pipeline[str(step_id)]['Parameters']]) + ') {'
         elif pipeline[str(step_id)]['__Label__'] == '__else__':
             line = '} else {'
         elif pipeline[str(step_id)]['__Label__'] == 'startdo':
             line = 'do {'
         elif pipeline[str(step_id)]['__Label__'] == 'function':
-            params = [param.values()[0] for param in pipeline[str(step_id)]['Parameters']]
+            params = [list(param.values())[0] for param in pipeline[str(step_id)]['Parameters']]
             line = 'function %s(%s) {' % (params[0], ','.join(params[1:]))
         elif pipeline[str(step_id)]['__Label__'] == 'return':
-            line = 'return %s;' % pipeline[str(step_id)]['Parameters'][0].values()[0]
+            line = 'return %s;' % list(pipeline[str(step_id)]['Parameters'][0].values())[0]
         elif pipeline[str(step_id)]['__Label__'] == 'macro':
-            line = 'macro %s {' % pipeline[str(step_id)]['Parameters'][0].values()[0]
+            line = 'macro %s {' % list(pipeline[str(step_id)]['Parameters'][0].values())[0]
         else:
             resvar = None
             params = []
             for param in pipeline[str(step_id)]['Parameters']:
-                if 'resvar' in param.keys():
-                    resvar = param.values()[0]
+                if 'resvar' in list(param.keys()):
+                    resvar = list(param.values())[0]
                 else:
-                    params.append(param.values()[0])
+                    params.append(list(param.values())[0])
             if pipeline[str(step_id)]['__Label__'] == 'assign':
                 # assignment
                 line = (resvar + ' = ' if resvar is not None else '') + ','.join(params) + ';'
@@ -271,7 +271,7 @@ class ExporterImageJ (PipelineExporter):
     def _get_parameters(self, step, param_name):
         res = []
         for param in step['Parameters']:
-            if param.keys()[0] == param_name:
+            if list(param.keys())[0] == param_name:
                 res.append(param[param_name].strip())
         return res
     

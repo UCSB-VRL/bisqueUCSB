@@ -52,7 +52,7 @@ __license__ = 'MIT license'
 # standard library modules
 import sys
 import threading
-import Queue
+import queue
 import traceback
 
 
@@ -136,7 +136,7 @@ class WorkerThread(threading.Thread):
 
     def run(self):
         """Repeatedly process the job queue until told to exit."""
-        import Queue
+        import queue
         while True:
             if self._dismissed.isSet():
                 # we are dismissed, break out of loop
@@ -147,7 +147,7 @@ class WorkerThread(threading.Thread):
             try:
                 request = self._requests_queue.get(True, self._poll_timeout)
                 #request = self._requests_queue.get()
-            except Queue.Empty:
+            except queue.Empty:
                 continue
             else:
                 if self._dismissed.isSet():
@@ -250,8 +250,8 @@ class ThreadPool(object):
             ``ThreadPool.putRequest()`` and catch ``Queue.Full`` exceptions.
 
         """
-        self._requests_queue = Queue.Queue(q_size)
-        self._results_queue = Queue.Queue(resq_size)
+        self._requests_queue = queue.Queue(q_size)
+        self._results_queue = queue.Queue(resq_size)
         self.workers = []
         self.dismissedWorkers = []
         self.workRequests = {}
@@ -329,7 +329,7 @@ class ThreadPool(object):
 
                     request.callback(request, result)
                 del self.workRequests[request.requestID]
-            except Queue.Empty:
+            except queue.Empty:
                 break
 
     def wait(self, block= False):
@@ -371,18 +371,18 @@ if __name__ == '__main__':
 
     # this will be called each time a result is available
     def print_result(request, result):
-        print "**** Result from request #%s: %r" % (request.requestID, result)
+        print("**** Result from request #%s: %r" % (request.requestID, result))
 
     # this will be called when an exception occurs within a thread
     # this example exception handler does little more than the default handler
     def handle_exception(request, exc_info):
         if not isinstance(exc_info, tuple):
             # Something is seriously wrong...
-            print request
-            print exc_info
+            print(request)
+            print(exc_info)
             raise SystemExit
-        print "**** Exception occured in request #%s: %s" % \
-          (request.requestID, exc_info)
+        print("**** Exception occured in request #%s: %s" % \
+          (request.requestID, exc_info))
 
     # assemble the arguments for each job to a list...
     data = [random.randint(1,10) for i in range(20)]
@@ -402,13 +402,13 @@ if __name__ == '__main__':
     )
 
     # we create a pool of 3 worker threads
-    print "Creating thread pool with 3 worker threads."
+    print("Creating thread pool with 3 worker threads.")
     main = ThreadPool(3)
 
     # then we put the work requests in the queue...
     for req in requests:
         main.putRequest(req)
-        print "Work request #%s added." % req.requestID
+        print("Work request #%s added." % req.requestID)
     # or shorter:
     # [main.putRequest(req) for req in requests]
 
@@ -423,21 +423,21 @@ if __name__ == '__main__':
         try:
             time.sleep(0.5)
             main.poll()
-            print "Main thread working...",
-            print "(active worker threads: %i)" % (threading.activeCount()-1, )
+            print("Main thread working...", end=' ')
+            print("(active worker threads: %i)" % (threading.activeCount()-1, ))
             if i == 10:
-                print "**** Adding 3 more worker threads..."
+                print("**** Adding 3 more worker threads...")
                 main.createWorkers(3)
             if i == 20:
-                print "**** Dismissing 2 worker threads..."
+                print("**** Dismissing 2 worker threads...")
                 main.dismissWorkers(2)
             i += 1
         except KeyboardInterrupt:
-            print "**** Interrupted!"
+            print("**** Interrupted!")
             break
         except NoResultsPending:
-            print "**** No pending results."
+            print("**** No pending results.")
             break
     if main.dismissedWorkers:
-        print "Joining all dismissed worker threads..."
+        print("Joining all dismissed worker threads...")
         main.joinAllDismissedWorkers()

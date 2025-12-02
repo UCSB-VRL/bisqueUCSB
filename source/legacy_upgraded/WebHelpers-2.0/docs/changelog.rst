@@ -1,0 +1,4 @@
+Full Changelog
+%%%%%%%%%%%%%%
+
+.. include:: ../CHANGELOG

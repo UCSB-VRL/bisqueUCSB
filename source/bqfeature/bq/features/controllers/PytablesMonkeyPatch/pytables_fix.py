@@ -4,7 +4,7 @@ import warnings
 from tables.exceptions import PerformanceWarning
 from tables import Leaf
 
-from monkeypatch import *
+from .monkeypatch import *
 
 tables_v = [int(s) for s in tables.__version__.split('.')]
 

@@ -1,9 +1,15 @@
 #!/bin/bash
+# Updated by Wahid Sadique Koly on 2025-07-29 to align with the new upgraded codebase.
 
-cd /tmp
-wget https://pypi.python.org/packages/d4/0c/9840c08189e030873387a73b90ada981885010dd9aea134d6de30cd24cb8/virtualenv-15.1.0.tar.gz
-tar xvfz virtualenv-15.1.0.tar.gz
-cd virtualenv-15.1.0
-python setup.py install
-cd /tmp
-rm -rf virtualenv*
+# Use Python 3's built-in venv module instead of virtualenv
+# This is the modern approach for Python 3
+echo "Setting up Python 3 virtual environment..."
+
+# Create virtual environment using Python 3's venv module
+python3 -m venv /usr/lib/bisque
+
+# Activate the virtual environment and upgrade pip
+source /usr/lib/bisque/bin/activate
+python -m pip install --upgrade pip setuptools wheel
+
+echo "Python 3 virtual environment setup complete"

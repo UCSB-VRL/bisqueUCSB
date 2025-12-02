@@ -4,10 +4,10 @@ import pkg_resources
 from lxml import etree
 from pylons.i18n import ugettext as _, lazy_ugettext as l_
 from tg import expose, flash, require, request
-from repoze.what import predicates
+# from repoze.what import predicates # !!! was in the py2 version
+from tg import predicates # !!! modern alternative
 from bq.core.service import ServiceController
 from bq.dataset_service import model
-
 
 from bq import data_service
 from bq import module_service
@@ -76,7 +76,7 @@ class TagEditOp (DatasetOp):
         @poarag tagdoc
         """
         member = member.text
-        if isinstance(tagdoc, basestring):
+        if isinstance(tagdoc, str):
             tagdoc = etree.XML(tagdoc)
 
         log.debug ('TagEdit (%s) %s with %s' % (action, member, etree.tostring(tagdoc)))
@@ -182,7 +182,7 @@ def iterate(duri=None, operation='idem', dataset=None, members = None, last= Fal
         if result is not None:
             results.append (result)
 
-    return etree.tostring(results)
+    return etree.tostring(results, encoding='unicode')
 
 
 
@@ -243,7 +243,7 @@ class DatasetServer(ServiceController):
 
         log.debug ("members = %s" % etree.tostring (dataset))
         r = data_service.update(dataset)
-        return etree.tostring(r)
+        return etree.tostring(r, encoding='unicode')
 
     @expose(content_type="text/xml")
     @require(predicates.not_anonymous())

@@ -49,13 +49,14 @@ Store resource all special clients to simulate a filesystem view of resources.
 """
 import os
 import string
-import urllib
-import urlparse
+import urllib.request, urllib.parse, urllib.error
+import urllib.parse
 import shutil
 import posixpath
 
 from bq.util.paths import data_path
-
+import logging
+log = logging.getLogger(__name__)
 if os.name == 'nt':
     def move_file (fp, newpath):
         with open(newpath, 'wb') as trg:
@@ -74,7 +75,7 @@ if os.name == 'nt':
             path = path.encode('utf-8')
         except UnicodeDecodeError:
             pass # was encoded before
-        url = urllib.quote(path)
+        url = urllib.parse.quote(path)
         # KGK:would be better to add regexp matcher here
         if len(path)>3 and path[0] != '/' and path[1] == ':':
             # path starts with a drive letter: c:/ and is not a valid file like /:myfile/
@@ -88,8 +89,8 @@ if os.name == 'nt':
         "url should be utf8 encoded (but may actually be unicode from db)"
         if url.startswith('file://'):
             url = url[7:]
-        path = posixpath.normpath(urlparse.urlparse(url).path)
-        path = urllib.unquote(path)
+        path = posixpath.normpath(urllib.parse.urlparse(url).path)
+        path = urllib.parse.unquote(path)
         if len(path)>3 and path[0] == '/' and path[2] == ':':
             path = path[1:]
         path = force_filesys(path)
@@ -104,24 +105,45 @@ if os.name == 'nt':
             # dima: safeguard measure for old non-encoded unicode paths
             return s
 else:
+    # def move_file (fp, newpath):
+    #     if hasattr(fp, 'name') and os.path.exists(f"{fp.name}"):
+    #         oldpath = os.path.abspath(f"{fp.name}")
+    #         shutil.move (oldpath, newpath)
+    #     else:
+    #         with open(newpath, 'wb') as trg:
+    #             shutil.copyfileobj(fp, trg)
+    
+    # !!! modern move_file
     def move_file (fp, newpath):
-        if hasattr(fp, 'name') and os.path.exists(fp.name):
+        if hasattr(fp, 'name') and isinstance(fp.name, str) and os.path.exists(fp.name):
             oldpath = os.path.abspath(fp.name)
-            shutil.move (oldpath, newpath)
+            shutil.move(oldpath, newpath)
         else:
+            # log.info(f"------ Moving file to {newpath} from {fp}")
+            newdir = os.path.dirname(newpath)
+            if not os.path.exists(newdir):
+                os.makedirs(newdir, exist_ok=True)
             with open(newpath, 'wb') as trg:
-                shutil.copyfileobj(fp, trg)
+                shutil.copyfileobj(fp, trg)   
 
     data_url_path = data_path
 
     def localpath2url(path):
         "convert a filespec to a utf8 %-encoded url"
-        try:
-            path = path.encode('utf-8')
-        except UnicodeDecodeError:
-            pass # was already encoded
-        url = urllib.quote(path)
-        url = 'file://%s'%url
+        # try:
+        #     path = path.encode('utf-8')
+        # except UnicodeDecodeError:
+        #     pass # was already encoded
+        if isinstance(path, bytes):
+            # path is a bytestring (either ascii or utf8 encoded)
+            try:
+                path = path.decode('utf-8')
+            except Exception as e:
+                # log.exception("Error decoding path %s: %s", path, e)
+                path = f"{path}"
+        url = urllib.parse.quote(path)
+        # url = 'file://%s'%url
+        url = f"file://{url}"
         return url
 
     def force_filesys(s):
@@ -131,24 +153,32 @@ else:
         # a bytestring
         # http://stackoverflow.com/questions/14539807/convert-unicode-with-utf-8-string-as-content-to-str
         try:
-            if isinstance(s, unicode):
-                s = s.encode('latin1')
+            if isinstance(s, str):
+                # DON'T encode Unicode as latin1 - this corrupts Unicode characters!
+                # Instead, keep it as a proper Unicode string for non-ASCII characters
+                if all(ord(c) < 256 for c in s):
+                    # Only encode as latin1 if all characters are in the latin1 range
+                    s = s.encode('latin1')
+                else:
+                    # Keep as Unicode string for non-latin1 characters (like Cyrillic)
+                    return s
             # if we get here then we are  a bytestring (either ascii or utf8 encoded)
         except UnicodeEncodeError:
             # will be here if it *really* was unicode 16 (should still be unicode)
-            if isinstance(s, unicode):
+            if isinstance(s, str):
                 s =  s.encode('utf8')
         # We should have an 8bit utf8 string or  a unciode that we can encode as utf8
         return s
 
     def url2localpath(url):
         "url should be utf8 encoded (but may actually be unicode from db)"
+        url = f"{url}"
         if url.startswith('file://'):
             url = url[7:]
-        path = posixpath.normpath(urlparse.urlparse(url).path)
-        path = urllib.unquote(path)
+        path = os.path.normpath(urllib.parse.urlparse(url).path)
+        path = urllib.parse.unquote(path)
         path = force_filesys(path)
-        return path
+        return f"{path}"
 
 def config2url(conf):
     "Make entries read from config with corrent encoding.. check for things that look like path urls"
@@ -162,11 +192,46 @@ def config2url(conf):
         return conf
 
 
+# def url2unicode(url):
+#     "Unquote and try to decode"
+#     url = urllib.parse.unquote (url)
+#     try:
+#         return url.decode('utf-8')
+#     except UnicodeEncodeError:
+#         pass
+#     return url
+
+# !!! alternative approach
 def url2unicode(url):
-    "Unquote and try to decode"
-    url = urllib.unquote (url)
+    "Unquote and try to decode with better Unicode support for Cyrillic characters"
+    # Handle different encoding scenarios for Unicode filenames
     try:
-        return url.decode('utf-8')
-    except UnicodeEncodeError:
-        pass
-    return url
+        # First try regular URL unquoting
+        url = urllib.parse.unquote(url)
+        
+        if isinstance(url, bytes):
+            # Try UTF-8 first (most common)
+            try:
+                return url.decode('utf-8')
+            except UnicodeDecodeError:
+                # Try latin-1 as fallback (preserves bytes)
+                try:
+                    return url.decode('latin-1')
+                except UnicodeDecodeError:
+                    # Last resort: replace invalid characters
+                    return url.decode('ascii', 'replace')
+        else:
+            # Already a string, but might be percent-encoded twice
+            if '%' in url:
+                try:
+                    # Try unquoting again in case of double encoding
+                    decoded_again = urllib.parse.unquote(url)
+                    if decoded_again != url:
+                        return decoded_again
+                except Exception:
+                    pass
+            return url
+    except Exception as e:
+        # log.exception("Error decoding url %s: %s", url, e)
+        # Return as-is if nothing works
+        return f"{url}"

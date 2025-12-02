@@ -6,7 +6,7 @@ import logging
 import pkg_resources
 from pylons.i18n import ugettext as _, lazy_ugettext as l_
 from tg import expose, flash, cache
-from repoze.what import predicates
+# from repoze.what import predicates # !!! not used
 from bq.core.service import ServiceController
 
 from lxml import etree
@@ -54,7 +54,7 @@ class usageController(ServiceController):
             etree.SubElement(resource, 'tag', name='number_tags', value=str(tag_count))
             etree.SubElement(resource, 'tag', name='number_gobs', value=str(gob_count))
 
-            return etree.tostring(resource)
+            return etree.tostring(resource, encoding='unicode')
 
         usage_cache = cache.get_cache ("usage")
         resource = usage_cache.get_value (
@@ -80,7 +80,7 @@ class usageController(ServiceController):
             # dima: some error happens in data_service and this throws
             try:
                 req = data_service.query(resource_type, view='count', ts=ts, permcheck=False)
-                log.debug('Daily Usage for [%s - %s] %s'%(d2.isoformat(), d1.isoformat(), etree.tostring(req)))
+                log.debug('Daily Usage for [%s - %s] %s'%(d2.isoformat(), d1.isoformat(), etree.tostring(req, encoding='unicode')))
                 c = req.xpath('//%s[@count]'%resource_type)
                 if len(c)>0:
                     counts.append( c[0].get('count') )
@@ -105,7 +105,7 @@ class usageController(ServiceController):
             # dima: some error happens in data_service and this throws
             try:
                 req = data_service.query(resource_type, view='count', ts=ts, permcheck=False)
-                log.debug('Monthly Usage for [%s - %s] %s'%(d2.isoformat(), d1.isoformat(), etree.tostring(req)))
+                log.debug('Monthly Usage for [%s - %s] %s'%(d2.isoformat(), d1.isoformat(), etree.tostring(req, encoding='unicode')))
                 c = req.xpath('//%s[@count]'%resource_type)
                 if len(c)>0:
                     counts.append( c[0].get('count') )
@@ -132,7 +132,7 @@ class usageController(ServiceController):
         resource = etree.Element('resource', uri='/usage/uploads')
         etree.SubElement(resource, 'tag', name='counts', value=','.join(counts))
         etree.SubElement(resource, 'tag', name='days', value=','.join(days))
-        return etree.tostring(resource)
+        return etree.tostring(resource, encoding='unicode')
 
     @expose(content_type="text/xml")
     def uploads_monthly(self, **kw):
@@ -149,7 +149,7 @@ class usageController(ServiceController):
         resource = etree.Element('resource', uri='/usage/uploads_monthly')
         etree.SubElement(resource, 'tag', name='counts', value=','.join(counts))
         etree.SubElement(resource, 'tag', name='days', value=','.join(days))
-        return etree.tostring(resource)
+        return etree.tostring(resource, encoding='unicode')
 
     @expose(content_type="text/xml")
     def analysis(self, **kw):
@@ -165,7 +165,7 @@ class usageController(ServiceController):
         resource = etree.Element('resource', uri='/usage/analysis')
         etree.SubElement(resource, 'tag', name='counts', value=','.join(counts))
         etree.SubElement(resource, 'tag', name='days', value=','.join(days))
-        return etree.tostring(resource)
+        return etree.tostring(resource, encoding='unicode')
 
     @expose(content_type="text/xml")
     def analysis_monthly(self, **kw):
@@ -181,7 +181,7 @@ class usageController(ServiceController):
         resource = etree.Element('resource', uri='/usage/analysis_monthly')
         etree.SubElement(resource, 'tag', name='counts', value=','.join(counts))
         etree.SubElement(resource, 'tag', name='days', value=','.join(days))
-        return etree.tostring(resource)
+        return etree.tostring(resource, encoding='unicode')
 
 
 def initialize(uri):

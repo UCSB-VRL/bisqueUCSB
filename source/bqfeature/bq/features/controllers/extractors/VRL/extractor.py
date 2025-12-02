@@ -7,7 +7,7 @@ from bq.features.controllers.exceptions import FeatureExtractionError
 from bq.features.controllers.utils import image2numpy, gobject2mask, except_image_only, calculation_lock
 from bqapi import BQServer
 from bq.features.controllers import Feature
-from pyVRLLib import extractEHD, extractHTD
+from .pyVRLLib import extractEHD, extractHTD
 import logging
 
 from bq.features.controllers.utils import image2numpy, except_image_only

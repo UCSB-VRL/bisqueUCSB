@@ -7,7 +7,7 @@ from time import sleep
 try: 
     from queue import Queue, Empty
 except ImportError:
-    from Queue import Queue, Empty # Python 2.x
+    from queue import Queue, Empty # Python 2.x
 
 logger = logging.getLogger('bq.engine_service.pool')
 
@@ -91,7 +91,7 @@ def worker(queue, thread_tasks, worker_id):
             request ['return_code'] =retcode
             if retcode == 0:
                 callme = request.get('on_success')
-        except Exception, e:
+        except Exception as e:
             request['with_exception'] = e
         finally:
             thread_tasks[worker_id] = None

@@ -105,5 +105,5 @@ if __name__=='__main__':
     feature = extractEHD(im)
     #feature, label=extractHTD(im,mask=mask)
     end=time.time()
-    print 'time elapsed: %s'%str(end-start)
-    print feature
+    print('time elapsed: %s'%str(end-start))
+    print(feature)

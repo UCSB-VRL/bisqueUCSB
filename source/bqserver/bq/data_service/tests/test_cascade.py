@@ -49,7 +49,7 @@ if __name__ == '__main__':
 
     root = TreeNode(info = 'root')
 
-    print
+    print()
 
     for k in range (4):
         kid = TreeNode(info = "kid %s" % k)

@@ -60,11 +60,11 @@ def upgrade():
                 pass
 
         rows += 1
-	if rows  % 1000 == 0:
+        if rows  % 1000 == 0:
             DBSession.commit()
-            print >>sys.stderr, ".",
+            print(".", end=' ', file=sys.stderr)
 
-    print "converted %s numbers and %s objects" % (converted_numbers, converted_objs)
+    print("converted %s numbers and %s objects" % (converted_numbers, converted_objs))
     DBSession.commit()
     DBSession.close()
 

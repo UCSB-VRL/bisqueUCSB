@@ -48,8 +48,8 @@ DESCRIPTION
 """
 import os
 import logging
-import urlparse
-import urllib
+import urllib.parse
+import urllib.request, urllib.parse, urllib.error
 import string
 import shutil
 import collections
@@ -153,7 +153,7 @@ def load_storage_drivers():
     for store in store_list:
         # pull out store related params from config
         params = dict ( (x[0].replace('bisque.stores.%s.' % store, ''), x[1])
-                        for x in  config.items() if x[0].startswith('bisque.stores.%s.' % store))
+                        for x in  list(config.items()) if x[0].startswith('bisque.stores.%s.' % store))
         if 'path' not in params:
             log.error ('cannot configure %s without the path parameter' , store)
             continue
@@ -218,7 +218,7 @@ class StorageDriver(object):
 #     def walk(self, ident):
 #         'walk a specific directory in the store'
 
-
+import re
 
 class LocalDriver (StorageDriver):
     """Local filesystem driver"""
@@ -230,22 +230,24 @@ class LocalDriver (StorageDriver):
         :param  top: allow old style (relatave path file paths)
         :param readonly: set repo readonly
         """
+        # !!! All paths are wrapped in tounicode, as they were causing issues when paths were being joined
+        # !!! Ex: b'/dir' + '' resulting b'/dir'/ 
         # posixpath.join '' force ending with /
-        self.mount_url = posixpath.join(mount_url,'')
-        self.mount_path = posixpath.join (url2localpath (self.mount_url),'')
+        self.mount_url = tounicode(os.path.join(mount_url,''))
+        self.mount_path = tounicode(os.path.join (tounicode(url2localpath (self.mount_url)),''))
         datadir = data_url_path()
-        for key, value in kw.items():
+        for key, value in list(kw.items()):
             setattr(self, key, string.Template(value).safe_substitute(datadir=datadir))
         #self.top = posixpath.join(top or self.mount_url, '')
         self.readonly = asbool(readonly)
         if top:
-            self.top = posixpath.join(string.Template(top).safe_substitute(datadir=datadir), '')
-            self.top_path = posixpath.join(url2localpath(self.top), '')
+            self.top = tounicode(os.path.join(string.Template(top).safe_substitute(datadir=datadir), ''))
+            self.top_path = tounicode(os.path.join(tounicode(url2localpath(self.top)), ''))
         else:
             self.top = None
             self.top_path = ''
 
-
+        # log.info(f"--------> mount url {self.mount_url}  mount path: {self.mount_path} top {self.top} top_path {self.top_path}")
         self.options = kw
 
 
@@ -258,12 +260,12 @@ class LocalDriver (StorageDriver):
 
         # It might be a shorted
         storeurl,_ = split_subpath(storeurl)
-        scheme = urlparse.urlparse(storeurl).scheme
+        scheme = urllib.parse.urlparse(storeurl).scheme
 
         if not scheme and storeurl[0] != '/':
-            storeurl = urlparse.urljoin (self.top, storeurl)
+            storeurl = urllib.parse.urljoin (self.top, storeurl)
             # OLD STYLE : may have written %encoded values to file system
-            path = posixpath.normpath(urlparse.urlparse(storeurl).path)
+            path = posixpath.normpath(urllib.parse.urlparse(storeurl).path)
             path = force_filesys (path)
             log.debug ("checking unquoted %s", tounicode(path))
             if os.path.exists (path):
@@ -272,15 +274,15 @@ class LocalDriver (StorageDriver):
             #should have matched earlier
             return None
         elif storeurl.startswith('file://'):
-            storeurl = urlparse.urljoin(self.top, storeurl[7:])
+            storeurl = urllib.parse.urljoin(self.top, storeurl[7:])
         else:
             return None
-        localpath = url2localpath (storeurl)
+        localpath = tounicode(url2localpath (storeurl))
         log.debug ("checking %s", tounicode(localpath))
-        return os.path.exists(localpath) and localpath2url(localpath)
+        return os.path.exists(localpath) and tounicode(localpath2url(localpath))
 
     def relative(self, storeurl):
-        path = url2localpath (self.valid (storeurl))
+        path = tounicode(url2localpath (self.valid (storeurl)))
         log.debug ("MOUNT %s PATH %s",self.mount_path,  path)
         return  path.replace (self.mount_path, '')
 
@@ -289,14 +291,15 @@ class LocalDriver (StorageDriver):
         "Push a local file (file pointer)  to the store"
 
         log.debug('local.push: url=%s', storeurl)
-        origpath = localpath = url2localpath(storeurl)
+        # !!! wrapped in tounicode to avoid issues with paths
+        origpath = localpath = tounicode(url2localpath(storeurl))
         fpath,ext = os.path.splitext(origpath)
         _mkdir (os.path.dirname(localpath))
         uniq = uniq or make_uniq_code()
-        for x in xrange(len(uniq)-7):
+        for x in range(len(uniq)-7):
         #for x in range(100):
             if not os.path.exists (localpath):
-                log.debug('local.write: %s -> %s' , tounicode(storeurl), tounicode(localpath))
+                log.info('local.write: %s -> %s' , tounicode(storeurl), tounicode(localpath))
                 #patch for no copy file uploads - check for regular file or file like object
                 try:
                     move_file (fp, localpath)
@@ -310,27 +313,24 @@ class LocalDriver (StorageDriver):
                 ident = localpath[len(self.top_path):]
                 #if ident[0] == '/':
                 #    ident = ident[1:]
-                ident = localpath2url(ident)
+                ident = tounicode(localpath2url(ident))
                 log.info('local push  blob_id: %s -> %s',  tounicode(ident), tounicode(localpath))
                 return ident, localpath
             localpath = "%s-%s%s" % (fpath , uniq[3:7+x] , ext)
             #localpath = "%s-%04d%s" % (fpath , x , ext)
-            log.warn ("local.write: File exists... trying %s", tounicode(localpath))
+            log.warning ("local.write: File exists... trying %s", tounicode(localpath))
         raise DuplicateFile(localpath)
 
     def pull (self, storeurl, localpath=None, blocking=True):
         "Pull a store file to a local location"
-        #log.debug('local_store localpath: %s', path)
         path,sub = split_subpath(storeurl)
         if not path.startswith('file:///'):
             if path.startswith('file://'):
                 path = os.path.join(self.top, path.replace('file://', ''))
             else:
                 path = os.path.join(self.top, path)
-
-        path = url2localpath(path.replace('\\', '/'))
-
-        #log.debug('local_store localpath path: %s', path)
+        # !!! Added tounicode to avoid issues with paths, i.e: b'dir...
+        path = tounicode(url2localpath(path.replace('\\', '/')))
 
         # if path is a directory, list contents
         files = None
@@ -360,8 +360,8 @@ class LocalDriver (StorageDriver):
                 path = os.path.join(self.top, path.replace('file://', ''))
             else:
                 path = os.path.join(self.top, path)
-
-        path = url2localpath(path.replace('\\', '/'))
+        # !!! Added tounicode to avoid issues with paths i.e: b'dir...
+        path = tounicode(url2localpath(path.replace('\\', '/')))
         log.info("local deleting %s", path)
         if os.path.isfile (path):
             try:
@@ -378,8 +378,8 @@ class LocalDriver (StorageDriver):
                 path = os.path.join(self.top, path.replace('file://', ''))
             else:
                 path = os.path.join(self.top, path)
-
-        path = url2localpath(path.replace('\\', '/'))
+        # !!! Added tounicode to avoid issues with paths i.e: b'dir...
+        path = tounicode(url2localpath(path.replace('\\', '/')))
         return path, sub
 
     def __str__(self):
@@ -404,7 +404,7 @@ class IrodsDriver(StorageDriver):
         """
         self.mount_url = posixpath.join (mount_url, '')
         datadir = data_url_path()
-        for key, value in kw.items():
+        for key, value in list(kw.items()):
             setattr(self, key, string.Template(value).safe_substitute(datadir=datadir))
         if credentials:
             try:
@@ -434,7 +434,7 @@ class IrodsDriver(StorageDriver):
         fpath,ext = os.path.splitext(storeurl)
         uniq = uniq or make_uniq_code()
         try:
-            for x in xrange(len(uniq)-7):
+            for x in range(len(uniq)-7):
                 if not irods.irods_isfile (storeurl, user=self.user, password = self.password):
                     break
                 storeurl = "%s-%s%s" % (fpath , uniq[3:7+x] , ext)
@@ -468,7 +468,7 @@ class IrodsDriver(StorageDriver):
         log.info('irods.delete: %s' , irods_ident)
         try:
             irods.irods_delete_file(irods_ident, user=self.user, password=self.password, cache=self.cache)
-        except irods.IrodsError, e:
+        except irods.IrodsError as e:
             log.exception ("Error deleteing %s :%s", irods_ident, e)
         return None
 
@@ -550,7 +550,7 @@ class S3Driver(StorageDriver):
         s3_base,ext = os.path.splitext(s3_ident)
         log.info('s3.write: %s -> %s' , storeurl, s3_ident)
         uniq = uniq or make_uniq_code()
-        for x in xrange(len(uniq)-7):
+        for x in range(len(uniq)-7):
             s3_key = s3_ident.replace("s3://","")
             if not s3_handler.s3_isfile (self.bucket_id, s3_key, self.creds):
                 break
@@ -657,7 +657,7 @@ class SMBNetDriver(StorageDriver):
             return
         self.user, self.password = credentials.split (':')
         self.localhost = socket.gethostname()
-        urlcomp = urlparse.urlparse (self.mount_url)
+        urlcomp = urllib.parse.urlparse (self.mount_url)
         self.serverhost = urlcomp.netloc
         self.server_ip = socket.gethostbyname(self.serverhost)
 
@@ -698,7 +698,7 @@ class SMBNetDriver(StorageDriver):
     @classmethod
     def split_smb(cls,storeurl):
         "return a pair sharename, path suitable for operations"
-        smbcomp = urlparse.urlparse (storeurl)
+        smbcomp = urllib.parse.urlparse (storeurl)
         # smb://host    smbcomp.path = /sharenmae/path
         _, sharename, path = smbcomp.path.split ('/', 2)
 
@@ -714,7 +714,7 @@ class SMBNetDriver(StorageDriver):
         sharename, path = self.split_smb(storeurl)
         uniq = uniq or make_uniq_code()
         base,ext = os.path.splitext(path)
-        for x in xrange(len(uniq)-7):
+        for x in range(len(uniq)-7):
             try:
                 if not self.conn.getAttributes (sharename, path):
                     break
@@ -779,7 +779,7 @@ def make_storage_driver(mount_url, **kw):
         'smb'   : SMBNetDriver,
         }
 
-    scheme = urlparse.urlparse(mount_url).scheme.lower()
+    scheme = urllib.parse.urlparse(mount_url).scheme.lower()
     if scheme in supported_storage_schemes:
         store = storage_drivers.get(scheme)
         log.debug ("creating %s driver with %s " , scheme, mount_url)

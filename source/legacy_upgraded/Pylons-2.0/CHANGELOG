@@ -1,0 +1,759 @@
+Pylons Changelog
+================
+2.0.0 (May 06, 2025)
+* Updated all scripts syntax to work with python 3+, tested with python 3.10
+
+1.0.2 (July 21, 2015)
+* In the event of a NilAccept for the language, request.languages() would
+  throw an AttributeError exception. Fixes #24.
+* Encode Location HTTP header in redirect responses in UTF-8. Per
+  RFC 3987. Refers to #15.
+* Remove "Post Traceback" as it was a possible XSS vector with prior versions
+  of WebError, and the PylonsHQ site is no longer in existence to support them.
+
+1.0.1 (August 13th, 2012)
+* No changes since RC1.
+
+1.0.1RC1 (December 12, 2011)
+* WARNING: pylons.lib.decorators has had two functions removed:
+  ``determine_response_charset`` and ``encode_formencode_errors``.
+* Updated dependencies to latest versions of Paste, PasteDeploy, and
+  compatibility for the latest WebOb 1.2 betas.
+* authenticate_form allows for GET. Patch by Domen Kožar.
+* jsonify now properly sets charset to utf-8.
+* Add ability for jsonify to handle objects with a __json__ attribute using
+  custom JSONEncoder class similar to TG2. Patch by Bob Farrell.
+* Added ability for __before__ to reference a callable function. Patch
+  contributed by mverdone.
+* Pulled in JSON-RPC support from agentultra's pylons fork.
+* Apply patch for proper pylons.__version__ under Windows. Contributed by
+  Christoph Zwerschke.
+* Utilize MarkupSafe for faster HTML escaping.
+* Fix signed cookies by using standard base64 alphabet, and prevent timing
+  attacks on signature comparison.
+* Added setup of app_globals and config to Pylons config.init_app to ensure
+  as long as the Pylons application is loaded, the app_globals and config
+  will be appropriately initialized.
+* Documentation updates.
+
+1.0 (May 27, 2010)
+* Minor tweak to allow proper importing of pylons.
+
+1.0RC1 (March 1, 2010)
+* Switched to using Routes 1.12 with support for no longer using the odd
+  routes singleton.
+* Removed pylons.middleware.StaticJavascripts, this is not used anymore.
+* Added more unit tests.
+
+1.0b1 (February 5, 2010)
+* Removed CacheMiddleware. cache object is now setup as an attribute on the
+  app_globals object for use where needed.
+* WARNING: config only supports dict access
+* WARNING: Method arguments no longer assigned to 'tmpl_context' by default.
+* WARNING: Changed default to strict_tmpl_context.
+* WARNING: Removed legacy pylons.c and pylons.g globals.
+* WARNING: Removed legacy pylons.database module.
+* WARNING: Removed legacy pylons.config module.
+* WARNING: Removed Buffet options, setup, and legacy render/render_response
+  function from pylons.templating. This also means config no longer accepts
+  the add_template_engine option.
+* WARNING: Removed legacy redirect_to function.
+* WARNING: @https decorator no longer accepts url_for-like arguments.
+* Add a "paster routes" command.  This prints the mapper, which from Routes
+  1.12 onwards gives sensibly formatted output.
+* Fix unit tests on Windows
+* Prepare for Routes 1.12, ensure tests don't assume implicit routing
+
+0.10 (May 27, 2010)
+* Fix legacy warning replacement.
+
+0.10RC1 (March 1, 2010)
+* No changes to Pylons core since b1.
+
+0.10b1 (February 5, 2010)
+* redirect_to is now deprecated, use redirect(url(*args, **kwargs)) instead.
+* url_for like args to the https decorator are now deprecated, pass it a url
+  or a callable returning a url instead.
+* Changed 1.0 deprecated pylons.c, pylons.g, pylons.buffet instances to
+  throw deprecation warnings.
+* Fixed etag_cache matching when the If-None-Match header contains a comma
+  separated list of etags. Fixes #557. Thanks magicbronson.
+* Added tests for restcontroller with sub-directory, and fixed generated unit
+  tests. Patches supplied by Michael van Tellingen, fixes #571.
+* Retain the original controller exception when thrown under
+  environ['pylons.controller.exception'] for use in the error controller.
+* Fixed bug with unit tests running the app load twice during testing.
+  Fixes #620.
+* Updated project templates to use actual config instance, rather than the
+  StackedObjectProxy classes.
+* Changed PylonsConfig to be dict subclass, rather than DispatchingConfig
+  subclass.
+
+
+0.9.7 (February 23, 2009)
+* WARNING: A new option is available to determine whether or not an actions
+  arguments should be automatically attached to 'c'. To turn off this implicit
+  behavior in environment.py:
+    config['pylons.c_attach_args'] = False
+  This is set to True by default.
+* WARNING: Fixed a minor security hole in the default Pylons error page that
+  could result in an XSS security hole.
+* WARNING: Fixed a security hole in the default project template to use the
+  StaticURLParser to ensure arbitrary files can't be sent.
+* WARNING: Refactored PylonsApp to remove legacy PylonsApp, moved
+  session/cache and routes middleware into the project template. This will
+  require projects to be updated to include those 3 middleware in the projects
+  middleware.py.
+* Added redirect, preferred over redirect_to. Takes an explicit url instead of
+  url_for like arguments
+* Changed to using WebTest instead of paste.fixture for app testing.
+* Added render_mako_def to render def blocks within a mako template.
+* Changes to cache_decorator and cached_template to support Beaker API
+  changes in version 1.1.  1.0.3 is still supported.
+* Fix HEAD requests causing an Exception as if no content was returned
+  by the controller. Fixes #507. Thanks mvtellingen, Petr Kobalicek.
+* Fix a crash when returning the result of ``etag_cache`` in a controller.
+  Fixes #508.
+* "response" flag has been removed from pylons.decorators.cache.beaker_cache,
+  as it sends all headers along unconditionally including cookies;
+  additionally, the flag was taking effect in all cases previously
+  so prior versions of beaker_cache are not secure.
+
+  In its place, a new option "cache_headers" is provided, which is a
+  tuple of specific header names to be cached.  It defaults
+  to ('content-type','content-length').
+* "invalidate_on_startup" flag added to beaker_cache, which provides a
+  "starttime" to the cache such that when the application is started
+  or restarted, the cache entry is invalidated.
+* Updating host to use 127.0.0.1 for development binding.
+* Added option to specify the controller name with a __controller__ variable
+  in the controller's module. This name will be used for the controller class
+  rather than the default naming scheme.
+* setup.py egg_info now restores projects' paster_plugins.txt,
+  allowing paster shell to work again after the egg-info directory was
+  lost. fixes #282. Thanks sevkin.
+* The paste_deploy_config.ini_tmpl template is now located at
+  package/config/deployment.ini_tmpl for new projects.
+* Project's default test fixtures no longer hardcode test.ini; the ini
+  file used can now be specified via the nosetests --with-pylons
+  argument (defaults to test.ini in setup.cfg). fixes #400.
+* @validate now defaults to translating FormEncode error messages via
+  Pylons' gettext catalog, then falls back to FormEncode's. fixes #296.
+  Thanks Max Ischenko.
+* Fixed SQLAlchemy logging not working in paster shell. Fixes #363. Thanks
+  Christoph Haas.
+* Added optionally engine initialization, to prevent Buffet from loading
+  if there's no 'buffet.template_engines' in the config.
+* Updated minimal template to work with Tempita and other new templating
+  changes.
+* Fixed websetup to parse location config file properly when the section
+  isn't 'main'. Fixes #399.
+* Added default Mako filter of escape for all template rendering.
+* Fixed template for Session.remove inclusion when using SA. Fixed
+  render_genshi to properly use fragment/format options. Thanks Antonin
+  Enfrun.
+* Remove template engine from load_environment call.
+* Removing template controller from projects. Fixes #383.
+* Added signed_cookie method to WebOb Request/Response sub-classes.
+* Updated project template to setup appropriate template loader and controller
+  template to doc how to import render.
+* Added documentation for render functions in pylons.templating.
+* Adding specific render functions that don't require Buffet.
+* Added forward controller.util function for forwarding the request to WSGI
+  apps. Fixes #355.
+* Added default input encoding for Mako to utf-8. Suggested in #348.
+* Fixed paster controller to raise an error if the controller for it already
+  exists. Fixes #279.
+* Added __init__.py to template dir in project template if the template engine
+  is genshi or kid. Fixes #353.
+* Fixed jsonify to use application/json as its the proper mime-type and now
+  used all over the net.
+* Fixed minimal template not replacing variables properly. Fixes #377.
+* Fixed @validate decorator to no longer catch exceptions should they be
+  raised in the action that is supposed to display a form. Fixes #374.
+* Fixed paster shell command to no longer search for egg_info dir. Allows
+  usage of paster shell with installed packages. Suggested by Gavin Carothers.
+* Added mimetype function and MIMETypes class for registering mimetypes.
+* WARNING: Usage of pylons.Response is now deprecated. Please use
+  pylons.response instead.
+* Removed use of WSGIRequest/WSGIResponse and replaced with WebOb subclasses
+  that implement methods to make it backwards compatible with the Paste
+  wsgiwrappers.
+* Fixed missing import in template controller.
+* Deprecated function uses string substitution to avoid Nonetype error when
+  Python optimization is on. Fixes #334.
+* E-tag cache no longer returns Content-Type in the headers. Fixes #323.
+* XMLRPCController now properly includes the Content-Length of the response.
+  Fixes #310, thanks Nicholas.
+* Added SQLAlchemy option to template, which adds SQLAlchemy setup to the
+  project template.
+* Switched project templating to use Tempita.
+* Updated abort/redirect_to to use appropriate Response object when WebOb is
+  used.
+* Updated so that 404's properly return as Response objects when WebOb is in
+  use instead of WSGIResponse.
+* Added beaker_cache option to avoid caching/restoring global Response values
+  that were present during the first cache operation.
+* Adding StatusCodeRedirect to handle internal redirects based on the status
+  code returned by the app. This replaces the use of ErrorDocuments in
+  projects.
+* Refactored error exceptions to use WebError.
+* WSGIController now uses the environ references to response, request, and
+  the c object for higher performance.
+* Added optional use of WebOb instead of paste.wsgiwrapper objects.
+* Fixed bug with beaker_cache defaulting to dbm rather than the beaker
+  cache app-wide default.
+* The --with-pylons nose plugin no longer requires a project to have been
+  registered with setuptools to work.
+* The config object is now included in the template namespace.
+* StaticJavascripts now accepts keyword arguments for StaticURLParser.
+  Suggested by Marcin Kasperski.
+* Fix pylons.database.AutoConnectHub's doInTransaction not automatically
+  connecting when necessary. Fixes #327.
+
+0.9.6.1 (September 27th, 2007)
+* Fixed validate decorator to resume pre-0.9.6 behavior of only validating
+  POST requests by default. Added option to validate during GET as well and
+  a recursion avoidance check to prevent validate from running more than once.
+* WARNING: Fixed a security hole allowing private controller methods (those
+  beginning with an underscore) to be accessed from the outside. Found by
+  Tomasz Nazar.
+* Added nose plugin '--with-pylons=test.ini' option to load the Pylons app
+  before scanning for unit tests. This enables Pylons apps to be unit tested
+  with doc tests.
+* PylonsBaseWSGIApp now caches controller lookup and the effective logging
+  level for a little better performance.
+
+0.9.6 (September 8th, 2007)
+* Updated requirements for newer WebHelpers for SQLAlchemy 0.4 compatibility.
+  Fixes #300.
+* Fixed pylons.templating to not pull session objects if there are none in use
+  for the request. Thanks Bob Ippolito.
+* Catch UnicodeEncodeErrors when finding the Controller action method and fail
+  gracefully. Thanks max. Fixes #298.
+* Allow passing of a state keyword to the validate decorator for the
+  to_python methods. Fixes #297.
+* paster shell now configures logging from the config file, like paster serve
+  and setup-app. This can be disabled via the -q option. Thanks Yannick
+  Gingras.
+
+0.9.6rc3 (August 18, 2007)
+* Fixed controllers.core to allow responses of None (empty bodies). Logs a
+  message indicating the response was empty.
+* pylons.helpers has been moved to pylons.controllers.util, to differentiate
+  between controller utility functions and projects' helpers modules.
+* Fixed non-basestring/generator/WSGIResponse objects returned from
+  Controllers not being set as the response content. Thanks Alex Conrad.
+* development.ini now configures the app's Logger level to DEBUG by default.
+  Thanks Christoph Haas
+
+0.9.6rc2 (August 2, 2007)
+* Projects now include a MANIFEST.in file: it directs distutils to recursively
+  include all files in the project's public/ and templates/ dir. This fixes
+  these dirs not being included in dists unless they were checked into an RCS
+  recognized by setuptools. This is at the expense of dists now globbing all
+  files in those dirs (even those not checked into your RCS). Thanks Christoph
+  Haas.
+* Fixed the validate decorator not setting c.form_errors in certain
+  circumstances. Thanks max. Fixes #286.
+* email_to lines commented out in development.ini and test.ini files to avoid
+  emails being sent to a non-existent address by mistake. If an error occurs
+  it is logged but no email is sent unless email_to is specified.
+* [paste.app_factory] entry points changed to point to the actual make_app()
+  function to make it simpler for someone to work out how Pylons works (tests
+  updated accordingly too).
+* All use of the ez_setup module is now tested by an ImportError to make
+  Pylons compatible with Buildout. Note: Tags and releases should be made
+  using an svn export and an svn add to ensure a real copy of the ez_setup
+  module is included and not just an svn:external so that the module is tied
+  to time of the release.
+* More full-featured README.txt included.
+* Updated beaker_cache to cache global response cookies/status/headers.
+  Fixes #280.
+* Fixed missing abort name import in restrict rest decorator. Fixes #281.
+* Added cheetah as a supported template language for template_engine option.
+* Fixed public/ and templates/ directories not being created with paster
+  create.
+
+0.9.6rc1 (July 15, 2007)
+* Fixed cookie header addition to use add instead of append. Thanks to
+  anonymous patcher. Fixes #268, again.
+* Added ability to pass _code option to specify the status code type for
+  redirect_to.
+* Fixed redirect_to to not copy all headers into redirect for old _response
+  usage. Fixes #268.
+* WARNING: By default, the Pylons request object now returns unicode
+  parameter (pylons.GET/POST/params) values (and assumes those parameters
+  were sent to Pylons as utf-8). Unicode parameters can cause major
+  problems if your application is not setup to handle unicode. To disable
+  unicode parameters (0.9.5 default behavior), add the following to your
+  load_environment function (0.9.6 syntax):
+
+  config['request_options']['charset'] = None
+
+  or, if still using the deprecated pre-0.9.6 pylons.config syntax, add:
+
+  request_settings = pylons.config.request_defaults.copy()
+  request_settings['charset'] = None
+  return pylons.config.Config(tmpl_options, map, paths,
+                              request_settings=request_settings)
+
+* WARNING: Template names beginning with a / (or the OS's path separator)
+  will now result in the name not having the separator's replaced with '.'s
+  for the template engine. This shouldn't affect most projects as they usually
+  assume a dot notation will be used with dot notation template engines (Kid,
+  Genshi, etc.). This change allows template engines that can take filename
+  paths to function properly. Fixes #233.
+* WARNING: The pylons.util.get_prefix(environ) function is deprecated. Please
+  use:
+      environ.get('SCRIPT_NAME', '')
+  instead (the get_prefix function is used in the default ErrorController).
+  Fixes #243.
+* WARNING: The paths dictionary's 'root_path' has moved to the less
+  redundant 'root'.
+* Fixed the Error Documents/EvalException css referencing non-existent images.
+  Thanks Shannon -jj Behrens. Fixes #238.
+* Added ability to pass _code option to specify the status code type for
+  redirect_to.
+* Fixed redirect_to to not copy all headers into redirect for old _response
+  usage. Fixes #268.
+* Added logging statements throughout Pylons code, added logging setup to
+  default template. Fixes #98.
+* Refactored global response to be setup in wsgiapp along with the other
+  globals. Updated WSGIController to copy in global response headers and
+  cookies into a WSGI app's output.
+* Added global pylons.response object. Thanks Shannon -jj Behrens and Damjan
+  Georgievski. Fixes #268 and #201.
+* Updated default project template files for new configuration layout. Options
+  to handle config now just in environment.py, and middleware.py handling just
+  middleware. Fixes #203.
+* Removing mako tests, as its now the default. Default test changed from
+  Myghty to Mako.
+* Changing default templating to mako.
+* Added the https decorator. It requires an action to be loaded via
+  https. Patch by ido. Fixes #241.
+* Added upgrade instructions, and posted a copy on the wiki. Fixes #230.
+* Added deprecation warnings for usage of the Pylons Controller class, all
+  controllers should inherit from WSGIController instead. Fixes #239.
+* Removed deprecated attach_locals function from Controller class.
+* Added an authenticate_form decorator for use with WebHelpers'
+  secure_form_tag functions for preventing CSRF attacks. Original patch
+  by David Turner. Fixes #157.
+* Fix Buffet's include_pylons_variables not being upheld. Thanks Jonathan
+  LaCour.
+* The validate decorator now accepts extra keyword arguments (**htmlfill_kwargs)
+  to pass along to formencode's htmlfill.render function.
+* Removed POST-only restriction on validate decorator, now handles GET
+  requests. No form arg required during a GET request, which will run the
+  current action with c.form_errors set to the errors. Fixes #246.
+* Added PylonsConfig, which gets accessed as pylons.config dict. Contains
+  all the merged ini options, in addition to the Config options such as
+  'routes.map', 'pylons.paths', 'buffet.template_options', etc. Check the
+  pylons.config docs on PylonsConfig for dict keys populated by it.
+* Split up resolution stages in wsgiapp, so that controller lookup is a
+  separate function making it easier to subclass. PylonsApp now takes a
+  base_wsgi_app argument which is then used for the BaseWSGIApp instead of the
+  one from wsgiapp.py.
+* Added mako template render tests.
+* Added storage of the action func used to handle a call, for later code that
+  might need a reference to the action that originally handled the request.
+  Fixes #253.
+* Updated config object to optionally take a single merged conf dict, updated
+  project templates to pass around the single merged conf dict.
+* Changed project template to use new Beaker session keys.
+* Changed default routing for raw template matching to not unicode decode the
+  route argument. Fixes #242.
+* Catch any exceptions raised by template engine entry points and emit a
+  warning instead of crashing. Thanks markbradley. Fixes #249
+* Fixed the validate decorator not working with formencode's
+  CompoundValidators when variable_decode=False. Fixes #209.
+* Fixed the validate decorator failing with a KeyError when no value is
+  specified to validate against for separate validators (as opposed to a
+  schema). Reported by Graham Stratton.
+* Fixed paster shell not merging app_conf and global_conf into the main CONFIG
+  dict namespace. Original patch by David Smith. Fixes #244.
+* Added logging to decorators. Refs #98.
+* Fixed paster restcontroller to test for lib.base and only add that import
+  statement when its present. This fixes the restcontroller template when used
+  with minimal Pylons project templates. Fixes #237.
+* Fixed the EvalException debugger showing broken links and buttons when the
+  app's ErrorController was broken (such as when BaseController's __before__
+  raises an exception). Suggested by Ian Bicking. Fixes #228.
+* paster create now accepts a 'template_engine' option to setup the new
+  project's default template engine. E.g. to create a new project that
+  uses Genshi by default, use:
+  paster create --template=pylons mygenshiproj template_engine=genshi
+  Suggested by Ian Bicking. Fixes #141.
+* Fixed the validate decorator triggering the following error with
+  FormEncode>=0.7 and non-ascii rendered form content:
+  UnicodeDecodeError: 'ascii' codec can't decode byte 0xc3 in position 10:
+  ordinal not in range(128) the form was passed in as an encoded string, but
+  some data or error messages were unicode strings; the form should be passed
+  in as a unicode string
+  Reported by Christoph Haas.
+* HTTPExceptions are now converted to Response objects (for __after__),
+  making the httpexceptions middleware no longer required.
+* Added Warning to jsonify to warn about cross-site attacks when returning
+  a list as the outer-most element to jsonify. Fixes #232.
+* Fixed beaker_cache decorator to take optional keyword arguments intended
+  for the backend cache container (such as url for memcached).
+* Fixed paster controller assuming the minimal template was in use when
+  the lib.base module existed but raised an exception.
+* Fixed bug in XMLRPC Controller not setting proper Content-Type. Fixes #236.
+* Added the '-d' ('--disable-ipython') option to paster shell for
+  disabling IPython.
+* Allow creation of controllers named 'setup' via paster controller.
+  Reported by Matt Good.
+* Added support for generic arguments to SQLAlchemy's create_engine of
+  the form sqlalchemy.* from the PasteDeploy config file.
+
+0.9.5 (Apr 11th, 2007)
+* Fixed a Python 2.3 incompatibility with paster shell, causing the
+  Exception:
+  File "Pylons-0.9.5-py2.3.egg/pylons/commands.py", line 357, in command
+    locs.update([(name, getattr(base, name)) for name in base_public])
+  AttributeError: keys
+* Fixed paster shell breaking for projects where the base package was not
+  the first package listed in top_level.txt. Patch from Alberto Valverde.
+  Fixes #229.
+* Fixed doc references to config['app_conf']. Fixes #116.
+* Changed `get_engine_conf` to properly evaluate sqlalchemy echo statement
+  when its 'debug'. Fixes #226.
+* make_session and create_engine now accept keyword arguments to pass to
+  SQLAlchemy's create_engine.
+* make_session now accepts the keyword argument 'session_kwargs' to pass
+  to SQLAlchemy's create_session.
+* Fixed _inspect_call to call function with keyword arguments instead of list
+  args. Corrects issue with action defaults that caused the value for the
+  latter args to be in the wrong spots. Spotted by Topher. Fixes #223.
+* Added the allow_none option (passed to xmlrpc.dumps) to XMLRPCController.
+  Suggested by Jaroslaw Zabiello.
+* Updated XMLRPC Controller with patch for name lookup and additional unit
+  tests for the patch. Fixes #216.
+* Updated docs for validate decorator to more clearly illustrate what the
+  post_only args apply to. Fixes #221.
+* Added ability to return strings in the WSGIController. Fixes #218.
+* Added lazy i18n translation functions. Patch from David Smith. Fixes #181.
+* Added fix for XMLRPCController system.methodHelp function and unit test.
+  Patch and unit test submitted by Graham Higgins.
+* Fixed bug in validate decorator with new UnicodeMultiDict response content
+  not properly retaining form content as unicode for formencode's htmlfill.
+* Fixed bug in XMLRPC Controller with xmlrpclib Faults not being properly
+  transformed into a WSGI response within the controller.
+* WARNING: Pylons now requires the decorator module: it no longer packages
+  it as pylons.decorator. Code relying on the pylons.decorator.decorator
+  function will trigger a deprecation warning and should be changed to use
+  decorator.decorator.
+* WARNING: pylons.h was deprecated for using projects' lib.helpers module
+  directly in 0.9.3. pylons.h is now formally deprecated (emits
+  DeprecationWarnings). Projects still accessing pylons.h must change the
+  following import:
+      from pylons import h
+  to:
+      import MYPROJ.lib.helpers as h
+* pylons.jsonify and pylons.Controller references have been deprecated
+  (they are misplaced references). They continue to be available at
+  pylons.decorators.jsonify and pylons.controllers.Controller, as they always
+  have been.
+* Updated templating Buffet to recognize format parameter and properly pass it
+  to the template engine.
+* Updated LICENSE for new year and to indicate license covering templates
+  generated. Fixes #188.
+* Interactive debugger now supports Mako. After r1780 if you are using a
+  custom theme you will need to change '%(myghty_data)s' to
+  '%(template_data)s' in your template. If you are using JavaScript the tab
+  id is now "template_data".
+* Fixed bug in WSGIController with private function attempts not returning a
+  valid WSGI response.
+* Added full unit test coverage of cache decorator.
+* Adding messages binary file, enabling i18n unit tests. Updating pylons.i18n
+  to import LanguageError. Fixes #193.
+* Adding i18n tests, not active yet as they're waiting on a binary file from a
+  patch. Refs #193.
+* Updated tests so that they now work with nose, removing py.test requirement.
+* Switching config setup to load keys into main config dict with app_conf and
+  global_conf keys set for any code looking for those keys. Fixes #116.
+* PylonsInstaller is now the default paste.app_install entry point for new
+  projects: this makes Cheetah no longer required for the paster make-config
+  command. (Thanks Alexander Schremmer, Ian Bicking)
+* Added custom redirect_to function in pylons.helpers that will take an
+  optional _response arg to pull headers and cookies out for preservation
+  during a redirect. Fixes #136.
+* Changed config.Config.__init__ to take all options as keyword args so
+  unused args can be skipped. Fixes #162.
+* The request object can now automatically decode GET/POST/params vars to
+  unicode, when its charset attribute is set.
+* Added a new request_settings keyword arg to Config's constructor. Allows
+  setting the default charset and errors values of of the request object.
+* Deprecated Config constructor's default_charset keyword arg. Use Config's
+  response_settings keyword arg instead.
+* Fixed paster controller to test for lib.base and only add that import
+  statement when its present. This fixes the controller template when used with
+  minimal Pylons project templates. Fixes #140 and fixes #139.
+* Fixed the paster shell error: KeyError: 'pylons.routes_dict' when calling
+  app.get and app.post.
+* Fixed paster shell not working on projects with names containing hyphens.
+* Fixed the config directive 'sqlalchemy.echo' set to False being interpreted
+  as True. Patch by Alex Conrad.
+* Fixed paster shell not restoring CONFIG['global_conf'].
+
+0.9.4.1 (Jan. 5th, 2007)
+* Added restcontroller command that generates a RESTful controller template
+  and provides the appropriate map.resource command to add. Suggested by
+  Matthew Scott.
+* Fixed SQLObject pylons.database.PackageHub error:
+  exceptions.NameError: global name 'CONFIG' is not defined
+* Fixed pylons.database.session_context not working outside of requests
+  (such as in websetup.py).
+* Updated template options config to take template options for multiple
+  engines for less binding to Myghty.
+* Fixed paster shell incorrectly importing the the tuple (model,) as the
+  model object.
+
+0.9.4 (Dec. 29th, 2006)
+* WARNING: Removed the lang_extract and lang_compile commands. They used
+  pygettext.py and its associated msgfmt.py, which lacked the ability to
+  extract ngettext style function calls and had issues with unicode strings.
+  The new I18NToolBox project aims to provide this functionality (and more)
+  via the gettext command line utilities. http://i18ntoolbox.ufsoft.org
+* All Pylons special objects are now available within paster shell (not just
+  h and g).
+* WARNING: Myghty's allow_globals config var has changed, causing the
+  following when running pre-compiled templates:
+      Error(TypeError): do_run_component() takes exactly 13 non-keyword
+      arguments (5 given)
+  Delete the compiled Myghty templates directory (specified by cache_dir or
+  myghty_data_dir in the config file) to resolve the error.
+* Changed i18n functions in templates to use proxy objects so that using
+  set_lang in a template works right. Fixes #153.
+* Now allowing any template plugin to overwrite global PYLONS_VARS (such as c,
+  g), not just pylonsmyghty.
+* Adding SQLAlchemy support to the database.py file. Saves the session engine
+  to g to maintain it during the apps lifetime. Uses SessionContext plugin for
+  management of the current session.
+* Updated config object so that init_app can take an optional template engine
+  argument to declare the default template engine.
+* Updated Myghty plugin to use extra_vars_func when passed in.
+* Fixed Buffet to use extra_vars_func properly.
+* Fixed the validate decorator when there are validation errors and
+  variable_decode=True: now passing the original params to htmlfill.render
+  instead of the varable_decode'd version. Patch by FlimFlamMan.
+* Added ungettext function for use with pluralized i18n, and the N_ function
+  (gettext_noop) to mark global strings for translation. Added ungettext, N_
+  and translator objects to be globals for templates. Refs #126.
+* WARNING: The localization function '_' now uses ugettext (returns unicode
+  strings) instead of gettext. To preserve the old behavior, append the
+  following line to your project's lib.base and lib.helpers imports:
+  from pylons.helpers import gettext as _
+* Pylons special objects are now available within the interactive debugger
+  (deprecating _attach_locals).
+* Added setup-app run before unit tests run so that webapp has proper setup
+  tasks handled. Fixes #113.
+* Added paste.deploy.CONFIG setup to middleware.py, websetup.py and testing
+  files in the Pylons project templates. Closes #112.
+* Added security policy doc to index for use as Pylons security policy.
+  Closes #91.
+* Improved the repr() of the c context object to show attributes.
+* Set environ['paste.testing_variables'] whenever that key is available, not
+  just in testing mode.
+* Added capability to have an action be a generator function.
+* Added introspection capability to XMLRPCController and signature checking.
+* Updated Controller to use additional arg lookup scheme so that the source of
+  the function args for _inspect_call can be easily overridden.
+* Updated RPCController, renamed to XMLRPCController. XMLRPCController now
+  functions properly and will automatically return proper xmlrpc responses.
+* Added test configuration ini file to default template. Closes #114.
+* Fixed problem with pylons.database.PackageHub.__get__ raising errors
+  other than AttributeError when the database isn't configured.  Added
+  new UnconfiguredConnectionError exception, instead of just KeyError
+  or TypeError (depending on what part of the configuration failed).
+* Fixed default g init, since bare object has no init method. Reported by Ian
+  Bicking.
+* Fixed issue with SQLObject method override having wrong name. Reported by
+  climbus with patch. Fixes #133.
+* Moved log function to pylons.helpers and translation functions to
+  pylons.i18n. using pylons.util purely for Pylons internal util functions.
+* WARNING: Removed 0.8.x legacy code and backwards compatibility functions.
+* PylonsApp now has option to not use Routes middleware, default resolving
+  uses new wsgi.org routing_args spec.
+* Refactored routes dispatching to use new Routes middleware.
+* Fixed paster shell command to properly acquire mapper object without
+  relying on the template being configured in a specific manner.
+* Added keyword argument pool_connection to
+  pylons.database.PackageHub; if set to false then SQLObject connections
+  won't use pooled database connections (a new connection will be
+  opened for each request).
+
+0.9.3 (Nov 1st, 2006)
+* Updated project template to support full_stack option to make it easier to
+  use Pylons apps within larger WSGI stacks.
+* Added deprecation warnings to legacy objects and for 1.0 functionality that
+  will change.
+* Added cache decorator and Cheetah template functional tests. Patch and unit
+  tests provided by Climbus.
+* Fixed readline support in the stock interactive console paster shell.
+  Reported by Alex Conrad.
+* A controller's __after__ method will now be called after actions invoke
+  redirect_to (or raise any HTTPException). Reported by David Turner.
+* Fixed config to use myghty_data_dir instead of cache_dir setting if its
+  set as well. Reported by Shannon -jj Behrens.
+* Added traceback hiding so that more of the traceback relating to Pylons code
+  is removed from the default traceback making it easier to focus on the code
+  in an app that actually caused the problem. Closes #119.
+* Added ability to use '_' translation method directly from templates and in
+  the controller without having to use it under h._.
+* Added 's' and 'l' Myghty escaping flags to default project templates.
+  Suggested by Jamie Wilkinson. Closes #110.
+* Fixed SCGI bug with QUERY_STRING test when WSGI states it doesn't have to
+  exist. Reported by Riklaunim.
+* Added pylons_minimal template, prone to fine-tuning.
+* Added option for PylonsApp to take a globals object to avoid checking a
+  hardcoded path for a Globals object.
+* Removed old Helpers legacy object entirely, replaced pylons.h with proper
+  StackedObjectProxy. Cleaned up PylonsApp and PylonsBaseApp to accept a
+  helpers reference so that Pylons can be ignorant of where the helpers came
+  from.
+* Fixed bug with lang app_conf option being set improperly. Reported
+  by Laurent.
+* Fixed pylons.h to work proper with new and old-style helper imports.
+* Fixed render functions always passing disable_unicode=False to Myghty.
+
+0.9.2 (Sept. 7th, 2006)
+* Fixed problem with dashes in controller names, resolves #107.
+* Updated default ini file to use localhost from address. Refs #104.
+* Updated default development.ini to use a single cache_dir setting which
+  is the base dir that cache files, session files, and template caching will
+  be saved in. Config object now looks to cache_dir setting properly for
+  Myghty templates. Fixes #104.
+* Updated default template controller to provide better example of directly
+  serving Myghty templates.
+* Fixed legacy (0.8) controller methods' **ARGS (also m.request_args and
+  pylons.params) to be of the expected mixed dictionary instead of MultiDict.
+* Fixed _attach_locals not attaching g and cache objects.
+* Added g object to the shell. Works as long as the Pylons app can respond
+  to a path of '/'. The pylons.g variable will also be setup properly for
+  use in the shell.
+* Myghty template options are now passed properly to the template creation, and
+  allow_globals now works to add Myghty template globals.
+* Re-organized helpers, switched Helpers class to use static methods to reduce
+  code duplication.
+* Helpers cleanup:
+    - Old-style Helper object uses StackedObjectProxy just like the new
+      scheme, thus avoiding possible WSGI stack issues.
+    - New project templates use new-style Helpers scheme.
+    - Updated wsgiapp to utilize new Helpers cleanup style. The 'h' object
+      is now friendlier to use, and maps directly to a projects lib.helpers
+      file. No more wacky Helpers object proxying to it.
+    - Added translator global to __init__.py for use with new Helpers cleanup.
+    - Copied Helpers function methods directly into util so they can be used
+      stand-alone.
+    - Deprecated h.lang (for h.set_lang/h.get_lang)
+* Moved the 'default_charset' option from PylonsApp's constructor to
+  Config's.
+* Added 'error' controller route to the top of the Pylons template to avoid
+  the common issue people discover when removing the generic default route.
+* Changing validate decorator to have variable_decode option, which will
+  also run formencode's variable_decode function over the form input.
+* Switched to using Context obj classes instead of RequestLocal which is
+  being phased out.
+* Added an 'encode_variables' option to the validate decorator.
+* Switched all current_obj calls to _current_obj to avoid triggering
+  deprecation warnings.
+* Added is_xhr to Request object in Paste.
+* Bumping up dependency to latest Paste.
+* Switching back to prior controller import check, throwing a more detailed
+  error with a suggest fix should the user really want a URL with that name
+  in it. (refs #67)
+* Fixes bug with prior fix for #67. Wasn't properly testing the full package
+  name to include the current project which would incorrectly restrict
+  valid controller names (refs #67).
+* Fixed '_method_' checking to test in a more efficient manner.
+* Added deprecation warning for legacy mode activation. Not necessary to
+  update multiple files, as all of legacy mode is enabled via the Legacy
+  WSGI app. Fixes #89.
+* Fixed controller command to check controller name and refuse to create
+  controllers that have name clashes with existing modules that could be
+  imported. Reported (with patch) by Chuck Adams. Fixes #67.
+* Added capability for 'c' object to throw an exception when an attribute
+  is used that doesn't exist. Closes #84.
+* Fix for endless error document call when an error document controller
+  wants to throw a error that the error_mapper catches.
+
+0.9.1 (August 11th, 2006)
+* Fixed __all__ export typo in templating.py. Added example of render
+  with a template.
+* Fixed issue with set_lang not using proper CONFIG var.
+* Minor tweaks to update docs in pylons.helpers and move remaining legacy
+  code into legacy module. Updated wsgiapp to refer to new locations of
+  legacy compatibility objects.
+* The interactive debugger's 'full traceback' link is now only displayed
+  when the full traceback differs from the regular (includes hidden
+  frames).
+* Providing an optional text version of exception tracebacks and the
+  associated extra data within the interactive debugger.
+* The 'Debug at: http://hostname/_debug/view/XXXXX' URLs now display the
+  interactive debugger properly skinned.
+* Fixed issue in PasteScript with new controller sub-directories lacking a
+  __init__.py file. This fixes an import error when using the controller.
+  PasteScript dependency updated to fixed version. Reported by Artur Lew.
+* Removed lowercasing of the module name during resolver import.
+* Removed [full] recommendation from docs.
+
+0.9 (July 28th, 2006)
+* config file option 'debug' now defaults to false when undefined
+* Removed the components directory from the template
+* Updated paste.errordocuments support
+* Fix for multi-word controller names such that front_page /
+  FrontPageController can be used as a controller name. Patch contributed
+  by Timo Mihaljov.
+* Cleaned up imports in wsgiapp and new project to better reflect where
+  things really come from.
+* Removed unnecessary myghty usage from wsgiapp for url unescaping, now
+  uses urllib as the myghty function did.
+* Removing 'response' to import, sticking with Response as its more
+  consistent with the fact that Response is a class/factory and not an
+  instance like request, and the other lower-case objects.
+* Added redirect_to under pylons.helpers, and added import from helpers
+  directly into lib/base.py for use in controllers.
+* Consolidated legacy objects into legacy module.
+* Adding abort method that raises the appropriate exception for the status
+  code.
+* Removing form_fill, obsolete by the validate decorator.
+* Relocated 'params' object to only take effect in legacy mode.
+* Updated Pylons template to use WSGIController as the new default Controller.
+* Altered the wsgi dispatch to examine the controller, and instantiate it if
+  it's just a class. Otherwise, if the controller is a subclass of Controller
+  but not of WSGIController, it assumes its an older Controller class that
+  may return a WSGIResponse, and calls it appropriately.
+* Dispatch now fixes up environ to move 'path_info' Route var into the WSGI
+  PATH_INFO, and the rest is pushed into SCRIPT_NAME. This is for use with
+  other WSGI apps under controller mount points.
+* Added WSGIController which takes a normal WSGI interface call and returns
+  the appropriate WSGI response.
+* Added automatic copying of Route variables declared in an action's
+  function definition to the 'c' object.
+* WebHelpers' .js files are now automatically published under the
+  '/javascripts/' URL path. Individual WebHelpers' .js files can be
+  overridden by other .js files inside the project's 'public/javascripts'
+  directory
+* Added exception toss when a template engine doesn't exist.
+* Added alias option to Buffet to support aliasing more template engines
+  to other engine names
+* Buffet enhancements to support caching of any template with any template
+  engine
+* All render commands processed through Buffet
+* Backwards compatibility 'm' object for use with legacy projects
+* Added use of Beaker middleware for session and caching functionality
+* Fixed error traceback and updated template to use proper error images and
+  stylesheets.
+
+0.8.2 (**dev**)
+* Fixed default controller to allow for actions with - in them. The - will be
+  replaced with an underscore, while the original action name in the mapper
+  dict is unchanged. Patch by Thomas Sidwick.
+
+0.8.1 (May 10th, 2006)
+* Added REST decorators and re-arranged decorator layout to support more styles
+  of decorators for future expansion.
+* Fixed dependency requirement bug that had Pylons locked to simplejson 1.1
+  even though a newer version was out.

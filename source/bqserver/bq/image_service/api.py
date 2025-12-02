@@ -54,12 +54,12 @@ DESCRIPTION
 
 """
 import logging
-import urlparse
+import urllib.parse
 import functools
 from tg import config
 
 #from bq.util.http import *
-from controllers.service import ImageServiceController as LocalImageServer
+from .controllers.service import ImageServiceController as LocalImageServer
 from bq.core import identity
 from bq.exceptions import RequestError
 
@@ -97,7 +97,7 @@ class proxy_dispatch (object):
             log.debug ("proxy url %s" % method)
             if method in self.proxy.server.srv.services:
                 return functools.partial(self.push_method, method)
-            raise AttributeError, method
+            raise AttributeError(method)
 
         def get(self):
             fullurl = self.create_url()
@@ -153,7 +153,7 @@ class proxy_dispatch (object):
         return self.remote_dispatch(fullurl)
 
     def local_dispatch(self, fullurl, body=None):
-        path, params = urlparse.urlsplit (fullurl)[2:4]
+        path, params = urllib.parse.urlsplit (fullurl)[2:4]
         userId  = identity.get_username()
 
         try:
@@ -176,7 +176,7 @@ class proxy_dispatch (object):
 
             if data_token.hasFileName():
                 fname = data_token.outFileName
-                print "has ", fname
+                print("has ", fname)
 
             #Content-Disposition: attachment; filename=genome.jpeg;
             #if data_token.isImage():

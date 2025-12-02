@@ -15,15 +15,15 @@ import logging
 ################################################################################
 
 def safeunicode(s):
-    if isinstance(s, unicode):
+    if isinstance(s, str):
         return s
     if isinstance(s, str) is not True:
-        return unicode(s)
+        return str(s)
     try:
-        return unicode(s, 'latin1')
+        return str(s, 'latin1')
     except (UnicodeEncodeError,UnicodeDecodeError):
         try:
-            return unicode(s, 'utf8')
+            return str(s, 'utf8')
         except (UnicodeEncodeError,UnicodeDecodeError):
             pass
-    return unicode(s, 'utf8', errors='ignore')
+    return str(s, 'utf8', errors='ignore')

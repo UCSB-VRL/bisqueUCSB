@@ -16,7 +16,7 @@ files.sort()
 for fn in files:
     dataset_name = fn.replace('.xlsx', '')
     command = ['python', 'annotate.py', fn]
-    print '\n\nRunning %s'%dataset_name
+    print('\n\nRunning %s'%dataset_name)
     call(command)
 
 

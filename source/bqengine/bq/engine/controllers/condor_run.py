@@ -79,7 +79,7 @@ class CondorRunner (CommandRunner):
             postargs.append('-n')
         postargs.append ('mex_id=%s' % topmex.mex_id)
         postargs.append ('staging_path=%s' % topmex.staging_path)
-        postargs.extend ([ '%s=%s' % (k,v) for k,v in topmex.named_args.items()
+        postargs.extend ([ '%s=%s' % (k,v) for k,v in list(topmex.named_args.items())
                            if k!='mex_id' and k!='staging_path'])
         postargs.append('mex_url=%s' % topmex.mex_url)
         postargs.append('bisque_token=%s' % topmex.bisque_token)
@@ -111,7 +111,7 @@ class CondorRunner (CommandRunner):
             post_exec    = topmex.launcher,
             post_args    = " ".join (postargs),
             condor_submit= "\n".join(["%s=%s"%(k,v)
-                                      for k,v in self.sections['condor_submit'].items()])
+                                      for k,v in list(self.sections['condor_submit'].items())])
             )
         self.helper.prepare_submit(top_vars)
 

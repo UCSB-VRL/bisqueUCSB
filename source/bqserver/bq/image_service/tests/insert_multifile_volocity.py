@@ -19,10 +19,10 @@ else:
     import unittest
 import os
 import posixpath
-import urlparse
+import urllib.parse
 import time
 from lxml import etree
-import ConfigParser
+import configparser
 from bqapi import BQSession, BQCommError
 from bqapi.util import save_blob, localpath2url
 
@@ -31,7 +31,7 @@ from bqapi.util import save_blob, localpath2url
 ##################################################################
 
 
-config = ConfigParser.ConfigParser()
+config = configparser.ConfigParser()
 config.read('config.cfg')
 
 root = config.get('Host', 'root') or 'localhost:8080'
@@ -69,10 +69,10 @@ request = '%s</image>'%request
 #r = session.postxml(url, etree.fromstring(request), method='POST')
 r = save_blob(session, resource=request)
 if r is None or r.get('uri') is None:
-    print 'Upload failed'
+    print('Upload failed')
 else:
-    print 'id: %s'%r.get('resource_uniq')
-    print 'url: %s'%r.get('uri')
+    print('id: %s'%r.get('resource_uniq'))
+    print('url: %s'%r.get('uri'))
 
 
 
@@ -101,10 +101,10 @@ request = '%s</image>'%request
 
 r = save_blob(session, resource=request)
 if r is None or r.get('uri') is None:
-    print 'Upload failed'
+    print('Upload failed')
 else:
-    print 'id: %s'%r.get('resource_uniq')
-    print 'url: %s'%r.get('uri')
+    print('id: %s'%r.get('resource_uniq'))
+    print('url: %s'%r.get('uri'))
 
 
 request = '<image name="%s">'%'kif5b 8102010.mvd2#2'
@@ -132,10 +132,10 @@ request = '%s</image>'%request
 
 r = save_blob(session, resource=request)
 if r is None or r.get('uri') is None:
-    print 'Upload failed'
+    print('Upload failed')
 else:
-    print 'id: %s'%r.get('resource_uniq')
-    print 'url: %s'%r.get('uri')
+    print('id: %s'%r.get('resource_uniq'))
+    print('url: %s'%r.get('uri'))
 
 
 request = '<image name="%s">'%'kif5b 8102010.mvd2#3'
@@ -163,10 +163,10 @@ request = '%s</image>'%request
 
 r = save_blob(session, resource=request)
 if r is None or r.get('uri') is None:
-    print 'Upload failed'
+    print('Upload failed')
 else:
-    print 'id: %s'%r.get('resource_uniq')
-    print 'url: %s'%r.get('uri')
+    print('id: %s'%r.get('resource_uniq'))
+    print('url: %s'%r.get('uri'))
 
 request = '<image name="%s">'%'kif5b 8102010.mvd2#4'
 request = '%s<value>%s</value>'%(request, '%s#4'%localpath2url('f:/dima/develop/python/bq5irods/data/imagedir/admin/tests/multi_file/8102010-kif5b_control/kif5b 8102010.mvd2'))
@@ -193,7 +193,7 @@ request = '%s</image>'%request
 
 r = save_blob(session, resource=request)
 if r is None or r.get('uri') is None:
-    print 'Upload failed'
+    print('Upload failed')
 else:
-    print 'id: %s'%r.get('resource_uniq')
-    print 'url: %s'%r.get('uri')
+    print('id: %s'%r.get('resource_uniq'))
+    print('url: %s'%r.get('uri'))

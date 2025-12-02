@@ -24,7 +24,7 @@ if os.path.exists ('config/site.cfg'):
 
 db = tc.get('app:main', 'sqlalchemy.url')
 if db is None:
-    print "Please set sqlalchemy.url in site.cfg "
+    print("Please set sqlalchemy.url in site.cfg ")
 
 def check_upgrade(db):
     ' Reset version numbers to 0  when moving to 0.5.1'

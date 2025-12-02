@@ -60,7 +60,7 @@ class MultiVectorTestFeature(SimpleTestFeature):
     def calculate(self, resource):
         
         #initalizing
-        descriptor = [[i*x for x in xrange(64)] for i in xrange(20)]
+        descriptor = [[i*x for x in range(64)] for i in range(20)]
                 
         #initalizing rows for the table
         return [descriptor]

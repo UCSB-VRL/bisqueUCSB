@@ -62,7 +62,7 @@ from tg import config
 from six.moves import urllib
 
 #from bq.config.environment import load_environment
-from ConfigParser import ConfigParser
+from configparser import ConfigParser
 #from bq.util import http
 from bq.util.configfile import ConfigFile
 from bq.util.paths import config_path
@@ -87,7 +87,7 @@ usage = """
 """
 
 def error (msg):
-    print >>sys.stderr, msg
+    print(msg, file=sys.stderr)
 
 
 class module_admin(object):
@@ -146,7 +146,7 @@ class module_admin(object):
 
 
     def get_xml(self, url):
-        print "loading ", url
+        print("loading ", url)
         xml = self.session.fetchxml (url)
         return xml
 
@@ -176,13 +176,13 @@ class module_admin(object):
             if self.options.published:
                 for el in module_xml.getiterator(tag=etree.Element):
                     el.set ('permission', 'published')
-            xml = etree.tostring(module_xml)
+            xml = etree.tostring(module_xml, encoding='unicode')
             params = [ ('engine_uri', module_path) ]
             if self.module_uri:
                 params.append ( ('module_uri', self.module_uri) )
             url = "%s?%s" % (module_register, urllib.parse.urlencode(params))
             self.session.postxml (url, xml = xml)
-            print "Registered"
+            print("Registered")
 
     def register (self):
         if self.options.all:
@@ -190,7 +190,7 @@ class module_admin(object):
         else:
             module_paths = [ self.engine_path ]
         for m in module_paths:
-            print "registering %s" % m
+            print("registering %s" % m)
             self.register_one(m)
 
 
@@ -200,7 +200,7 @@ class module_admin(object):
         else:
             module_paths = [ self.engine_path ]
         for m in module_paths:
-            print "unregistering %s" % m
+            print("unregistering %s" % m)
             self.unregister_one(m)
 
 
@@ -216,14 +216,14 @@ class module_admin(object):
 
         self.session.fetchxml (module_unregister, ** dict (params))
 
-        print "UnRegistered"
+        print("UnRegistered")
 
     def list_engine(self):
         module_paths = self.get_modules(self.engine_path)
         if module_paths is None:
             module_paths = self.get_modules(self.engine_path + '/engine_service/')
         for module in module_paths or []:
-            print module
+            print(module)
 
 
     def list_server(self):
@@ -257,12 +257,12 @@ def pprinttable(rows):
     pattern = " | ".join(formats)
     hpattern = " | ".join(hformats)
     separator = "-+-".join(['-' * n for n in lens])
-    print hpattern % tuple(headers)
-    print separator
+    print(hpattern % tuple(headers))
+    print(separator)
     for line in rows:
-      print pattern % tuple(line)
+      print(pattern % tuple(line))
   elif len(rows) == 1:
     row = rows[0]
     hwidth = len(max(row._fields,key=lambda x: len(x)))
     for i in range(len(row)):
-      print "%*s = %s" % (hwidth,row._fields[i],row[i])
+      print("%*s = %s" % (hwidth,row._fields[i],row[i]))

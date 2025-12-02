@@ -51,7 +51,7 @@ import os
 import sys
 import logging
 import requests
-import urlparse
+import urllib.parse
 import datetime
 from bq.release import __VERSION__
 
@@ -79,22 +79,28 @@ class ArchiveStreamer():
         self.export_mexs = export_mexs
 
         filename = archiveName + self.archiver.getFileExtension()
+        # try:
+        #     disposition = 'attachment; filename="%s"'%filename.encode('ascii')
+        # except UnicodeEncodeError:
+        #     disposition = 'attachment; filename="%s"; filename*="%s"'%(filename.encode('utf8'), filename.encode('utf8'))
         try:
-            disposition = 'attachment; filename="%s"'%filename.encode('ascii')
+            disposition = f"attachment; filename*=UTF-8''{urllib.parse.quote(filename)}"
         except UnicodeEncodeError:
-            disposition = 'attachment; filename="%s"; filename*="%s"'%(filename.encode('utf8'), filename.encode('utf8'))
+            disposition = f'attachment; filename="{filename.encode("ascii")}"'
+            
+        log.info(f"---disposition: {disposition}")
         response.headers['Content-Type'] = self.archiver.getContentType()
         response.headers['Content-Disposition'] = disposition
 
     def stream(self):
-        log.debug("ArchiveStreamer: Begin stream %s" % request.url)
+        log.info("ArchiveStreamer: Begin stream %s" % request.url)
 
         flist = self.fileInfoList(self.fileList, self.datasetList, self.urlList, self.dirList)
         if self.export_meta is True:
             flist = self.writeSummary(flist, self.archiver)
 
         for finfo in flist:
-            log.debug ('archiving %s' % finfo)
+            log.info ('archiving %s' % finfo)
             self.archiver.beginFile(finfo)
             while not self.archiver.EOF():
                 yield self.archiver.readBlock(self.block_size)
@@ -102,7 +108,7 @@ class ArchiveStreamer():
 
         yield self.archiver.readEnding()
         self.archiver.close()
-        log.debug ("ArchiveStreamer: End stream %s" % request.url)
+        log.info ("ArchiveStreamer: End stream %s" % request.url)
 
     # ------------------------------------------------------------------------------------------
     # Utility functions
@@ -117,15 +123,15 @@ class ArchiveStreamer():
 
         index = 0
         for f in flist:
-            log.debug('writeSummary: %s', f)
+            log.info('writeSummary: %s', f)
             if f.get('dataset') is None and f.get('path') is None:
-                log.debug('writeSummary Adding: %s', f)
+                log.info('writeSummary Adding: %s', f)
                 v = etree.SubElement(summary, 'value', index='%s'%index, type='object')
                 v.text = f.get('outpath')
                 index += 1
 
         flist.append(dict( name      = '.bisque.xml',
-                           content   = etree.tostring(summary),
+                           content   = etree.tostring(summary, encoding='unicode'),
                            outpath   = '.bisque.xml'))
 
         return flist
@@ -133,10 +139,10 @@ class ArchiveStreamer():
 
     # Returns a list of fileInfo objects based on files' URIs
     def fileInfoList(self, fileList, datasetList, urlList, dirList):
-        log.debug('fileInfoList fileList: %s'%fileList)
-        log.debug('fileInfoList datasetList: %s'%datasetList)
-        log.debug('fileInfoList urlList: %s'%urlList)
-        log.debug('fileInfoList dirList: %s'%dirList)
+        log.info('fileInfoList fileList: %s'%fileList)
+        log.info('fileInfoList datasetList: %s'%datasetList)
+        log.info('fileInfoList urlList: %s'%urlList)
+        log.info('fileInfoList dirList: %s'%dirList)
         flist = []
         fileHash = {}   # Use a URI hash to look out for file repetitions
 
@@ -177,7 +183,7 @@ class ArchiveStreamer():
             # if resource is just an XML doc
             content = None
             if path is None:
-                content = etree.tostring(xml)
+                content = etree.tostring(xml, encoding='unicode')
                 name = '%s_%s'%(name, uniq)
                 xml = None
 
@@ -201,15 +207,15 @@ class ArchiveStreamer():
                      'outpath' : outpath,
                 }]
 
-            log.debug('fileInfo name: %s, path: %s, relpath: %s, outpath: %s', name, path, relpath, outpath)
-            log.debug('fileInfo files: %s', files)
+            log.info('fileInfo name: %s, path: %s, relpath: %s, outpath: %s', name, path, relpath, outpath)
+            log.info('fileInfo files: %s', files)
 
             # find minimum relative path
-            min_length = sys.maxint
+            min_length = sys.maxsize
             for f in files:
                 min_length = min(min_length, len(os.path.dirname(f)))
             minpath = files[0][:min_length+1]
-            log.debug('fileInfo minpath: %s', minpath)
+            log.info('fileInfo minpath: %s', minpath)
 
             # check if file disimbiguation is needed
             subpath = files[0][min_length+1:]
@@ -237,7 +243,7 @@ class ArchiveStreamer():
                     info['content'] = content
                 infos.append(info)
 
-            log.debug('fileInfo infos: %s', infos)
+            log.info('fileInfo infos: %s', infos)
             return infos
 
         def xmlInfo(finfo):
@@ -248,7 +254,7 @@ class ArchiveStreamer():
                 # need to modify the resource value to point to a local file
                 #file['xml'].set('value', os.path.basename(file['xml'].get('value', '')))
                 file['xml'].set('value', finfo['name'])
-                file['content'] = etree.tostring(file['xml'])
+                file['content'] = etree.tostring(file['xml'], encoding='unicode')
                 del file['path']
                 del file['xml']
                 return file
@@ -259,7 +265,7 @@ class ArchiveStreamer():
                 for v in file['xml'].xpath('value'):
                     v.text = finfo[i]['subpath']
                     i+=1
-                file['content'] = etree.tostring(file['xml'])
+                file['content'] = etree.tostring(file['xml'], encoding='unicode')
                 del file['path']
                 del file['xml']
                 return file
@@ -273,10 +279,10 @@ class ArchiveStreamer():
                               if name in request.headers)
 
             # test if URL is relative, httplib2 does not fetch relative
-            if urlparse.urlparse(url).scheme == '':
-                url = urlparse.urljoin(config.get('bisque.root'), url)
+            if urllib.parse.urlparse(url).scheme == '':
+                url = urllib.parse.urljoin(config.get('bisque.root'), url)
 
-            log.debug ('ArchiveStreamer: Sending %s with %s'  % (url, headers))
+            log.info ('ArchiveStreamer: Sending %s with %s'  % (url, headers))
             response = requests.get(url, headers=headers)
 
             #pylint: disable=no-member
@@ -286,18 +292,15 @@ class ArchiveStreamer():
             items = response.headers.get('content-disposition','').split(';')
             fileName = str(index) + '.'
 
-            log.debug('Respose headers: %s', response.headers)
-            log.debug('items: %s'%items)
+            log.info('Respose headers: %s', response.headers)
+            log.info('items: %s'%items)
 
             for item in items:
                 pair = item.split('=')
                 if (pair[0].lower().strip()=='filename'):
                     fileName = pair[1].strip('"\'')
                 if (pair[0].lower().strip()=='filename*'):
-                    try:
-                        fileName = pair[1].strip('"\'').decode('utf8')
-                    except UnicodeDecodeError:
-                        pass
+                    fileName = pair[1].strip('"\'')
 
             return  dict(name      = fileName,
                          content   = response.content,
@@ -356,7 +359,7 @@ class ArchiveStreamer():
 
                     # Insert dataset XML into file list
                     flist.append(dict( name      = name,
-                                       content   = etree.tostring(dataset),
+                                       content   = etree.tostring(dataset, encoding='unicode'),
                                        outpath   = name))
 
         # processing a list of directories

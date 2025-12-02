@@ -59,8 +59,8 @@ import posixpath
 import pkg_resources
 
 from collections import OrderedDict
-from urllib import urlencode
-import urlparse
+from urllib.parse import urlencode
+import urllib.parse
 from tg import config, expose, request
 from bq.core.lib.base import BaseController
 
@@ -115,7 +115,7 @@ class ServiceDirectory(object):
     def has_service(self, service_type = None, service_uri = None):
         """Check the existance of a service type and/or service url"""
         r = []
-        for ty, entry in self.services.items():
+        for ty, entry in list(self.services.items()):
             if service_type and ty != service_type:
                 continue
             for s in entry.instances:
@@ -170,10 +170,10 @@ def mount_services (root, enabled = None, disabled = None):
     mounted = []
     pairs   = []
     service_registry.root = root
-    for ty, entry in service_registry.get_services().items():
+    for ty, entry in list(service_registry.get_services().items()):
         if (not enabled or  ty in enabled) and ty not in disabled:
             if  hasattr(entry.module, "initialize"):
-                service_url = urlparse.urljoin (root , entry.name)
+                service_url = urllib.parse.urljoin (root , entry.name)
                 #service_url = '/' + entry.name
                 log.debug ('activating %s at %s' % (str(entry.name), service_url))
                 service = entry.module.initialize(service_url)
@@ -193,7 +193,7 @@ def mount_services (root, enabled = None, disabled = None):
 
 
 def start_services (root, enabled = None, disabled=None):
-    for ty, entry in service_registry.get_services().items():
+    for ty, entry in list(service_registry.get_services().items()):
         if (not enabled or ty in enabled) and ty not in disabled :
             for s in entry.instances:
                 if hasattr(s, 'start'):
@@ -201,8 +201,8 @@ def start_services (root, enabled = None, disabled=None):
 
 
 def urljoin(base,url, **kw):
-    join = urlparse.urljoin(base,url)
-    url = urlparse.urlparse(join)
+    join = urllib.parse.urljoin(base,url)
+    url = urllib.parse.urlparse(join)
     path = posixpath.normpath(url[2])
     #query = urlparse.parse_qs(url[4])
     if url[4]:
@@ -210,7 +210,7 @@ def urljoin(base,url, **kw):
     else:
         query = {}
     query.update ( urlencode(kw) )
-    return urlparse.urlunparse(
+    return urllib.parse.urlunparse(
         (url.scheme,url.netloc,path,url.params,query,url.fragment)
         )
 
@@ -226,9 +226,9 @@ class ServiceMixin(object):
             uri += '/'
         self.fulluri = uri
         #self.baseuri = uri
-        self.baseuri = urlparse.urlparse(uri).path
+        self.baseuri = urllib.parse.urlparse(uri).path
         log.debug ("creating %s at %s" % (self.service_type, self.baseuri))
-        urituple = urlparse.urlparse(uri)
+        urituple = urllib.parse.urlparse(uri)
         self.host, self.path = urituple.netloc , urituple.path
 
     def start (self):
@@ -246,7 +246,7 @@ class ServiceMixin(object):
         except TypeError:
             #log.warn ("TYPEERROR on request")
             host_url = ''
-        return urlparse.urljoin (host_url, self.baseuri)
+        return urllib.parse.urljoin (host_url, self.baseuri)
 
     uri = property (get_uri)
     url = property (get_uri)

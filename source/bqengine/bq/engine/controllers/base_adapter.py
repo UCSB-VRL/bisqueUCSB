@@ -67,7 +67,7 @@ def local_xml_copy(root):
     #path = '/tmp/%s%s' % (root.tag, id)
     path = os.path.join(tempfile.gettempdir(), "%s%s" % (root.tag, id))
     f = open (path, 'w')
-    f.write (etree.tostring (root))
+    f.write (etree.tostring (root), encoding='unicode')
     f.close()
     return path
 
@@ -134,7 +134,7 @@ class BaseAdapter(object):
 
         # Add the index
         for i, node in enumerate(input_nodes):
-            if 'index' in node.keys():
+            if 'index' in list(node.keys()):
                 continue
             node.set ('index', str(i))
 

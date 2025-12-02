@@ -1,4 +1,4 @@
-import urlparse
+import urllib.parse
 
 import furl
 
@@ -18,7 +18,7 @@ def urljoin(base, partial, **kw):
     updated.password = partial.username or updated.username
     updated.host     = partial.host or updated.host
     updated.port     = partial.port or updated.port
-    updated.path = urlparse.urljoin (str(updated.path), str(partial.path))
+    updated.path = urllib.parse.urljoin (str(updated.path), str(partial.path))
     updated.query.params  = partial.query.params or updated.query.params
     updated.query.params.update (kw)
     return updated.url

@@ -10,6 +10,9 @@ from bq.release import __VERSION__
 from bq.core import model
 from bq.util.paths import config_path, defaults_path
 from bq.util.bisquik2db import bisquik2db
+from pylons.util import ContextObj 
+from tg.request_local import context
+from webob import Request as WebObRequest
 
 import transaction
 import logging
@@ -23,11 +26,32 @@ def bootstrap(command, conf, vars):
     from sqlalchemy.exc import IntegrityError
     from  bq.data_service.model import Taggable, Tag, BQUser, ModuleExecution
 
+    # !!! old deprecated method
+    # registry = Registry()
+    # registry.prepare()
+    # registry.register(session, SessionObject({}))
+    # registry.register(request, Request.blank('/bootstrap'))
+    # request.identity = {}
+
+    # !!! new method
     registry = Registry()
     registry.prepare()
-    registry.register(session, SessionObject({}))
-    registry.register(request, Request.blank('/bootstrap'))
-    request.identity = {}
+
+    fake_request = Request.blank('/bootstrap')
+    fake_session = SessionObject({})
+
+    # Register them into the registry
+
+    ctx = ContextObj()
+    ctx.request = fake_request
+    ctx.session = fake_session
+    ctx.registry = registry
+
+    # Push it into the TG context stack
+    registry.register(context, ctx)
+    # registry.register(request, fake_request)
+    # registry.register(session, fake_session)
+    request.identity = {'repoze.who.userid': 'admin'}
 
     log.info('BEGIN boostrap')
     try:
@@ -40,24 +64,24 @@ def bootstrap(command, conf, vars):
         model.DBSession.flush()
 
         admin = model.User(
-            user_name = u"admin",
-            display_name = config.get('bisque.admin_display_name', u'Bisque admin'))
-        admin._email_address = config.get('bisque.admin_email', u'manager@somedomain.com')
-        admin.password = u'admin'
+            user_name = "admin",
+            display_name = config.get('bisque.admin_display_name', 'Bisque admin'))
+        admin._email_address = config.get('bisque.admin_email', 'manager@somedomain.com')
+        admin.password = 'admin'
         #    password = u'admin')
         #admin.password = u'admin'
         model.DBSession.add(admin)
 
-        for g in [ u'admins', u'managers' ] :
+        for g in [ 'admins', 'managers' ] :
             group = model.Group()
             group.group_name = g
-            group.display_name = u'Administrators Group'
+            group.display_name = 'Administrators Group'
             group.users.append(admin)
             model.DBSession.add(group)
 
         permission = model.Permission()
-        permission.permission_name = u'root'
-        permission.description = u'This permission give an administrative right to the bearer'
+        permission.permission_name = 'root'
+        permission.description = 'This permission give an administrative right to the bearer'
         permission.groups.append(group)
         model.DBSession.add(permission)
         #model.DBSession.flush()
@@ -65,11 +89,11 @@ def bootstrap(command, conf, vars):
         transaction.commit()
 
     except IntegrityError:
-        print 'Warning, there was a problem adding your auth data, it may have already been added:'
+        print('Warning, there was a problem adding your auth data, it may have already been added:')
         #import traceback
         #print traceback.format_exc()
         transaction.abort()
-        print 'Continuing with bootstrapping...'
+        print('Continuing with bootstrapping...')
 
 
     try:
@@ -95,7 +119,7 @@ def bootstrap(command, conf, vars):
                     system = bisquik2db (f)
                     system.permission = 'published'
             else:
-                print( "Couldn't find %s: using minimal default preferences" % system_prefs)
+                print(( "Couldn't find %s: using minimal default preferences" % system_prefs))
                 system = Taggable(resource_type = 'system')
                 version = Tag(parent = system)
                 version.name ='version'

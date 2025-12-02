@@ -23,5 +23,5 @@ def _mkdir(newdir):
         if tail:
             try:
                 os.mkdir(newdir)
-            except OSError, e:
+            except OSError as e:
                 log.warn ('mkdir: %s', str(e))

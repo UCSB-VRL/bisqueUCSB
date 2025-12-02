@@ -1,0 +1,200 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+<xi:include href="master.html" />
+
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
+  <title>Resend Verification Email - Bisque</title>
+  <link rel="icon" type="image/png" href="/core/images/bisque_icon.png" />
+  <style type="text/css">
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      margin: 0;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .resend-container {
+      max-width: 500px;
+      margin: 40px auto;
+      padding: 0;
+    }
+    .resend-form {
+      background: white;
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      border: 1px solid #ddd;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #333;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    .btn-primary {
+      background-color: #007bff;
+      color: white;
+      padding: 12px 30px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      width: 100%;
+    }
+    .btn-primary:hover {
+      background-color: #0056b3;
+    }
+    .btn-primary:disabled {
+      background-color: #6c757d;
+      cursor: not-allowed;
+    }
+    .logo-area {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .bisque-logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: #007bff;
+    }
+    .flash-messages {
+      margin-bottom: 20px;
+    }
+    .flash-message {
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+    .flash-message.success {
+      color: #155724;
+      background: #d4edda;
+      border: 1px solid #c3e6cb;
+    }
+    .flash-message.error {
+      color: #721c24;
+      background: #f8d7da;
+      border: 1px solid #f5c6cb;
+    }
+    .info-box {
+      background: #d1ecf1;
+      border: 1px solid #bee5eb;
+      color: #0c5460;
+      padding: 15px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="resend-container">
+    <div class="resend-form">
+      <div class="logo-area">
+        <div class="bisque-logo">Bisque</div>
+      </div>
+      
+      <!-- Flash messages section -->
+      <div class="flash-messages" py:if="tg.flash_obj.message">
+        <div class="flash-message success" py:if="tg.flash_obj.status == 'ok' or tg.flash_obj.status == 'success'">
+          ${tg.flash_obj.message}
+        </div>
+        <div class="flash-message error" py:if="tg.flash_obj.status == 'error'">
+          ${tg.flash_obj.message}
+        </div>
+      </div>
+      
+      <h2>Resend Verification Email</h2>
+      
+      <div class="info-box">
+        <strong>Need a new verification email?</strong><br/>
+        Enter your email address below and we'll send you a new verification link.
+        The new link will expire in 24 hours.
+      </div>
+      
+      <form id="resendForm" method="post" action="/registration/send_verification">
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" name="email" required="required" placeholder="your.email@example.edu" />
+        </div>
+        
+        <button type="submit" class="btn-primary" id="resendBtn">Send Verification Email</button>
+        
+        <div id="message" style="margin-top: 15px; display: none;"></div>
+      </form>
+      
+      <div style="margin-top: 20px; text-align: center;">
+        <p><a href="/registration/">Back to Registration</a> | <a href="/auth_service/login/">Sign In</a></p>
+      </div>
+    </div>
+  </div>
+  
+  <script type="text/javascript">
+  <![CDATA[
+    document.getElementById('resendForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      var email = document.getElementById('email').value;
+      var submitBtn = document.getElementById('resendBtn');
+      var messageDiv = document.getElementById('message');
+      
+      if (!email) {
+        showMessage('Please enter your email address', 'error');
+        return;
+      }
+      
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending...';
+      
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', '/registration/send_verification', true);
+      xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+      
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Send Verification Email';
+          
+          if (xhr.status === 200) {
+            try {
+              var result = JSON.parse(xhr.responseText);
+              if (result.status === 'success') {
+                showMessage(result.message, 'success');
+              } else {
+                showMessage(result.message || 'Failed to send verification email', 'error');
+              }
+            } catch (e) {
+              showMessage('An error occurred while processing your request', 'error');
+            }
+          } else {
+            showMessage('Failed to send verification email', 'error');
+          }
+        }
+      };
+      
+      xhr.send('email=' + encodeURIComponent(email));
+    });
+    
+    function showMessage(message, type) {
+      var messageDiv = document.getElementById('message');
+      messageDiv.textContent = message;
+      messageDiv.className = type === 'success' ? 'flash-message success' : 'flash-message error';
+      messageDiv.style.display = 'block';
+    }
+  ]]>
+  </script>
+</body>
+</html>

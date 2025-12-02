@@ -76,7 +76,7 @@ def json_to_dream3d(pipeline):
             if meta_key in ['Filter_Name', 'FilterVersion']:
                 step[meta_key] = pipeline[key]['__Meta__'][meta_key]
         for param in pipeline[key]['Parameters']:
-            step[param.keys()[0]] = param.values()[0]
+            step[list(param.keys())[0]] = list(param.values())[0]
         res[key] = step
     return json.dumps(res)
 
@@ -135,13 +135,13 @@ class ExporterDream3D (PipelineExporter):
     def _get_parameters(self, step, param_name):
         res = []
         for param in step['Parameters']:
-            if param.keys()[0] == param_name:
+            if list(param.keys())[0] == param_name:
                 res.append(param[param_name])
         return res
     
     def _set_parameter(self, step, param_name, param_value):
         for param in step['Parameters']:
-            if param.keys()[0] == param_name:
+            if list(param.keys())[0] == param_name:
                 param[param_name] = param_value
 
     def format(self, pipeline):

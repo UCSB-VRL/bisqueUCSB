@@ -81,7 +81,7 @@ def check_exec (path, fix = True):
     if os.access (path, os.X_OK):
         return
     if fix:
-        os.chmod (path, 0744)
+        os.chmod (path, 0o744)
 
 #def strtobool(x):
 #    return {"true": True, "false": False}.get(x.lower(), False)
@@ -570,12 +570,12 @@ class BaseRunner(object):
                 self.pool.stop()
 
             return 0
-        except ModuleEnvironmentError, e:
+        except ModuleEnvironmentError as e:
             self.log.exception( "Problem occured in module")
             raise RunnerException(str(e), self.mexes)
-        except RunnerException, e:
+        except RunnerException as e:
             raise
-        except Exception, e:
+        except Exception as e:
             self.log.exception ("Unknown exeception: %s" , str( e ))
             raise RunnerException(str(e), self.mexes)
 

@@ -37,7 +37,7 @@ class DimsOperation(BaseOperation):
         response = etree.Element ('response')
         if info is not None:
             image = etree.SubElement (response, 'image', resource_uniq='%s'%token.resource_id)
-            for k, v in info.iteritems():
+            for k, v in info.items():
                 #log.debug('%s: %s', k, v)
                 tag = etree.SubElement(image, 'tag', name=safeunicode(k), value=safeunicode(v))
-        return token.setXml(etree.tostring(response))
+        return token.setXml(etree.tostring(response, encoding='unicode'))

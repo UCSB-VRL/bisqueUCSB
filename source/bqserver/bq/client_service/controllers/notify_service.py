@@ -56,54 +56,73 @@ Services for the notifying users.
 import logging
 import smtplib
 import socket
-import turbomail
+
+
 
 
 from lxml import etree
 from tg import request,  expose, require , config
-from repoze.what import predicates
+# from repoze.what import predicates # !!! deprecated following is the alternative
+from tg import predicates
 
 
 from bq.core.service import ServiceController
 from bq.core import identity
 
 log = logging.getLogger('bq.notify')
-#admin_email = tg.config.get('bisque.admin_email')
+
+# Use unified email service instead of deprecated TurboMail
+try:
+    from bq.core.mail import get_email_service
+    EMAIL_SERVICE_AVAILABLE = True
+except ImportError:
+    log.warning("Unified email service not available, email notifications will not work")
+    EMAIL_SERVICE_AVAILABLE = False
 
 
-def send_mail(sender_email, recipients_email, subject, body ):
-    """Send an email with  info to the user.
-    """
+def send_mail(sender_email, recipients_email, subject, body):
+    """Send an email using the unified email service."""
+    
+    if not EMAIL_SERVICE_AVAILABLE:
+        log.warning("Email service not available, cannot send email notifications")
+        return False
 
-    #if not sender_email or not  admin_email:
-    #    log.exception('Configuration error: could not send error'
-    #      'because sender and/or admin email address is not set.')
-    #    raise RuntimeError
+    email_service = get_email_service()
+    if not email_service.is_available():
+        log.warning("Email service not configured, cannot send email notifications")
+        return False
 
     if not isinstance(recipients_email, list):
-        recipients_email = [  recipients_email ]
+        recipients_email = [recipients_email]
 
-    msg = turbomail.Message(sender_email, ",".join (recipients_email), subject)
-    msg.plain = body
     try:
-        log.debug ("Sending mail to %s %s" ,  recipients_email, subject)
-        turbomail.send(msg)
+        log.debug("Sending mail to %s: %s", recipients_email, subject)
+        
+        for recipient in recipients_email:
+            result = email_service.send_email(
+                to=recipient,
+                subject=subject,
+                body=body,
+                from_email=sender_email
+            )
+            
+            if not result['success']:
+                log.warning("Failed to send email to %s: %s", recipient, result['error'])
+                return False
+        
         return True
-    except turbomail.MailNotEnabledException:
-        log.warning("Failed sending %s with '%s' turbomail not enabled" , recipients_email,  subject)
-    except (smtplib.SMTPException, socket.error) as exc :
-        log.warning("Failed sending %s with '%s'" ,  recipients_email, subject, exc_info=True)
+        
+    except Exception as exc:
+        log.warning("Failed sending %s with '%s'", recipients_email, subject, exc_info=True)
+        return False
 
-    return False
 
 def send_invite(sender_email, recipient_email, subject, body):
     """Create a new user and send them an invitation
     returns the new BQuser
     """
-    log.debug ("Creating new user %s" , recipient_email)
+    log.debug("Creating new user %s", recipient_email)
     return send_mail(sender_email, recipient_email, subject, body)
-
-    #return newuser
 
 
 class NotifyServerController(ServiceController):
@@ -116,7 +135,7 @@ class NotifyServerController(ServiceController):
         etree.SubElement (entry, 'arguments', value = 'recipient,subject')
         etree.SubElement (entry, 'verb', value = 'POST')
         etree.SubElement (entry, 'body', value = 'required')
-        return etree.tostring (descr)
+        return etree.tostring (descr, encoding='unicode')
 
 
     @expose(content_type='text/xml')

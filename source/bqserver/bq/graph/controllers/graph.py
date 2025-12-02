@@ -9,7 +9,7 @@ from collections import namedtuple
 
 from pylons.i18n import ugettext as _, lazy_ugettext as l_
 from tg import expose, flash, request
-from repoze.what import predicates
+# from repoze.what import predicates #!!! not used
 from bq.core.service import ServiceController
 
 from bq import data_service
@@ -158,7 +158,7 @@ class graphController(ServiceController):
     def index(self, **kw):
         # nothing to do for now => return empty resource
         resource = etree.Element('resource')
-        return etree.tostring(resource)
+        return etree.tostring(resource, encoding='unicode')
 
     @expose(content_type="text/xml")
     def _default(self, *path, **kw):
@@ -185,7 +185,7 @@ class graphController(ServiceController):
         if extra == 'auth' or extra == 'tag':
             # no sharing etc and no tags
             response = etree.Element('resource', uri=request_url)
-            return etree.tostring (response)            
+            return etree.tostring (response, encoding='unicode')            
 
         big_types=('table', 'image', 'file')   # types with many instances (treat as identical for collapsing)
         nodes = set()
@@ -291,7 +291,7 @@ class graphController(ServiceController):
                         etree.SubElement (response, 'member', value = "%s:%s" % edge)
                     else:
                         log.error ("Skipping edge %s due to missing nodes", edge)
-        return etree.tostring (response)
+        return etree.tostring (response, encoding='unicode')
 
 def initialize(uri):
     """ Initialize the top level server for this microapp"""

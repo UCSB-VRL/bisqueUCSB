@@ -25,7 +25,7 @@ def clean_store(stores, options):
         top =  local['top'][7:]
         top = string.Template(top).safe_substitute(datadir = data_path())
         tops.append  (top)
-        print "Scanning ", top
+        print("Scanning ", top)
        #for root, dirs, files in local.walk():
         for root, dirs, files in os.walk(top):
             for f in files:
@@ -33,7 +33,7 @@ def clean_store(stores, options):
                 #    continue
                 filepath =  os.path.join(root, f)
                 localfiles.add(filepath)
-    print "file count ", len(localfiles)
+    print("file count ", len(localfiles))
 
     dbfiles = []
     resources_missing = []
@@ -62,20 +62,20 @@ def clean_store(stores, options):
             resources_missing.append ( ( f.resource_uniq, relpath) )
 
     dbfiles = set (dbfiles)
-    print "DB count", len(dbfiles)
+    print("DB count", len(dbfiles))
     missing = localfiles - dbfiles
-    print "deleting %s files" % len(missing)
+    print("deleting %s files" % len(missing))
     before = disk_usage(top)
     if not options.dryrun:
         for f in missing:
             os.remove(f)
     else:
-        print "would delete %s" % list(missing) [:20]
-        print "DBFILES:", list(dbfiles)[:20]
-        print "LOCALFILES", list(localfiles)[:20]
-        print "resource_missing in DB", resources_missing
+        print("would delete %s" % list(missing) [:20])
+        print("DBFILES:", list(dbfiles)[:20])
+        print("LOCALFILES", list(localfiles)[:20])
+        print("resource_missing in DB", resources_missing)
     after = disk_usage(top)
-    print "Reclaimed %s space" % sizeof_fmt(before.used - after.used)
+    print("Reclaimed %s space" % sizeof_fmt(before.used - after.used))
 
 
 def clean_images(options):
@@ -88,4 +88,4 @@ def clean_images(options):
 
 
     # Collect ALL files in file stores
-    clean_store([store for name, store in drivers.items() if store['mounturl'].startswith('file')], options)
+    clean_store([store for name, store in list(drivers.items()) if store['mounturl'].startswith('file')], options)

@@ -16,17 +16,22 @@ import os
 from datetime import datetime
 import sys
 
+import base64
+import hmac
+
 try:
-    from hashlib import sha1
+    # from hashlib import sha1
+    import hashlib # !!! In between upgrading to py3.10+ (Experimental) before was sha1
 except ImportError:
     sys.exit('ImportError: No module named hashlib\n'
              'If you are on python2.4 this library is not part of python. '
              'Please install it. Example: easy_install hashlib')
 
 import sqlalchemy as sa
-from sqlalchemy import Table, ForeignKey, Column, select
+from sqlalchemy import Table, ForeignKey, Column, select, text
 from sqlalchemy.types import Unicode, Integer, DateTime
-from sqlalchemy.orm import relation, synonym#, validates
+# from sqlalchemy.orm import relation, synonym#, validates # !!! before upgrading to py3.10+
+from sqlalchemy.orm import relationship, synonym # !!! In between upgrading to py3.10+ (Experimental)
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -50,14 +55,21 @@ def do_connect(dbapi_connection, connection_record):
         dbapi_connection.isolation_level = None
         log.debug ("SQLITE: Disable automatic transactions")
 
+# @event.listens_for(Engine, "begin")
+# def do_begin(conn):
+#     # emit our own BEGIN
+#     if config.get('sqlalchemy.url', '').startswith ("sqlite://"):
+#         #http://docs.sqlalchemy.org/en/rel_1_0/dialects/sqlite.html#transaction-isolation-level
+#         #conn.execute("BEGIN EXCLUSIVE")
+#         conn.execute("BEGIN ")
+#         log.debug ("SQLITE: Begin Transaction")
+
+# !!! new code to support python 3.10+ (Experimental)
 @event.listens_for(Engine, "begin")
 def do_begin(conn):
-    # emit our own BEGIN
-    if config.get('sqlalchemy.url', '').startswith ("sqlite://"):
-        #http://docs.sqlalchemy.org/en/rel_1_0/dialects/sqlite.html#transaction-isolation-level
-        #conn.execute("BEGIN EXCLUSIVE")
-        conn.execute("BEGIN ")
-        log.debug ("SQLITE: Begin Transaction")
+    if config.get('sqlalchemy.url', '').startswith("sqlite://"):
+        conn.execute(text("BEGIN"))
+        log.debug("SQLITE: Begin Transaction")
 
 # http://docs.sqlalchemy.org/en/latest/core/pooling.html#pool-disconnects-pessimistic
 # http://docs.sqlalchemy.org/en/latest/core/pooling.html#disconnect-handling-pessimistic
@@ -136,25 +148,61 @@ user_group_table = Table('user_group', metadata,
 class HashPassword():
     @staticmethod
     def create_password(password):
-        if isinstance(password, unicode):
-            password_8bit = password.encode('UTF-8')
-        else:
-            password_8bit = password
+        # if isinstance(password, str):
+        #     password_8bit = password.encode('UTF-8')
+        # else:
+        #     password_8bit = password
 
-        salt = sha1()
-        salt.update(os.urandom(60))
-        hash = sha1()
-        hash.update(password_8bit + salt.hexdigest())
-        hashed_password = salt.hexdigest() + hash.hexdigest()
+        # salt = sha1()
+        # salt.update(os.urandom(60))
+        # hash = sha1()
+        # hash.update(password_8bit + salt.hexdigest())
+        # hashed_password = salt.hexdigest() + hash.hexdigest()
+
+        # !!! In between upgrading to py3.10+ (Experimental) previously was sha1
+        if isinstance(password, str):
+            password = password.encode('utf-8')
+
+        salt = os.urandom(16)  # 128-bit salt
+        hash_bytes = hashlib.pbkdf2_hmac(
+            'sha256',              # Secure hash function
+            password,              # The password
+            salt,                  # The salt
+            100_000,               # Iteration count
+            dklen=32               # Hash length in bytes
+        )
+
+        # Encode salt and hash to base64 and return in the format: salt$hash
+        hashed_password = base64.b64encode(salt).decode() + '$' + base64.b64encode(hash_bytes).decode()
         return hashed_password
-
     @staticmethod
     def check_password(passval, password):
-        hash = sha1()
-        if isinstance(password, unicode):
+        # hash = sha1()
+        # if isinstance(password, str):
+        #     password = password.encode('utf-8')
+        # hash.update(password + str(passval[:40]))
+        # return passval[40:] == hash.hexdigest()
+
+        # !!! In between upgrading to py3.10+ (Experimental) previously was sha1
+        if isinstance(password, str):
             password = password.encode('utf-8')
-        hash.update(password + str(passval[:40]))
-        return passval[40:] == hash.hexdigest()
+
+        try:
+            salt_b64, hash_b64 = passval.split('$')
+            salt = base64.b64decode(salt_b64)
+            stored_hash = base64.b64decode(hash_b64)
+
+            test_hash = hashlib.pbkdf2_hmac(
+                'sha256',
+                password,
+                salt,
+                100_000,
+                dklen=32
+            )
+
+            return hmac.compare_digest(test_hash, stored_hash)
+        except Exception:
+            return False
 
 class FreeTextPassword ():
     @staticmethod
@@ -194,15 +242,17 @@ class Group(DeclarativeBase):
 
     #{ Relations
 
-    users = relation('User', secondary=user_group_table, backref='groups')
+    users = relationship('User', secondary=user_group_table, backref='groups') # !!! In between upgrading to py3.10+ (Experimental) previously was relation
 
     #{ Special methods
 
     def __repr__(self):
         return ('<Group: name=%s>' % self.group_name).encode('utf-8')
 
-    def __unicode__(self):
-        return self.group_name
+    # def __unicode__(self):
+    #     return self.group_name 
+    def __str__(self):
+        return self.group_name #!!! In between upgrading to py3.10+ (Experimental) previously was __unicode__
 
     #}
 
@@ -244,8 +294,10 @@ class User(DeclarativeBase):
         return ('<User: name=%r, email=%r, display=%r>' % (
                 self.user_name, self.email_address, self.display_name)).encode('utf-8')
 
-    def __unicode__(self):
-        return self.display_name or self.user_name
+    # def __unicode__(self):
+    #     return self.display_name or self.user_name
+    def __str__(self):
+        return self.display_name or self.user_name #!!! In between upgrading to py3.10+ (Experimental) previously was __unicode__
 
     #{ Getters and setters
 
@@ -279,7 +331,7 @@ class User(DeclarativeBase):
         # columns
         log.debug ("Setting %s password", password_type)
 
-        if not isinstance(password, unicode):
+        if not isinstance(password, str):
             password = password.decode('utf-8')
         self._password = password
         self.on_update()
@@ -305,11 +357,10 @@ class User(DeclarativeBase):
         :rtype: bool
 
         """
-
         password_type = config.get ('bisque.login.password', 'freetext')
         password_cls  = password_map.get(password_type, FreeTextPassword)
 
-        if isinstance(password, unicode):
+        if isinstance(password, str):
             password = password.encode('utf-8')
 
         return password_cls.check_password(self.password, password)
@@ -370,16 +421,18 @@ class Permission(DeclarativeBase):
 
     #{ Relations
 
-    groups = relation(Group, secondary=group_permission_table,
-                      backref='permissions')
+    groups = relationship(Group, secondary=group_permission_table,
+                      backref='permissions') # !!! In between upgrading to py3.10+ (Experimental) previously was relation
 
     #{ Special methods
 
     def __repr__(self):
         return ('<Permission: name=%r>' % self.permission_name).encode('utf-8')
 
-    def __unicode__(self):
-        return self.permission_name
+    # def __unicode__(self):
+    #     return self.permission_name
+    def __str__(self):
+        return self.permission_name #!!! In between upgrading to py3.10+ (Experimental) previously was __unicode__
 
     #}
 

@@ -52,7 +52,7 @@ DESCRIPTION
     RESTful resource with caching
 
 """
-from __future__ import with_statement
+
 import os
 import re
 #import md5
@@ -60,7 +60,7 @@ import hashlib
 import logging
 import tempfile
 
-from urlparse import urlparse
+from urllib.parse import urlparse
 from datetime import datetime
 from time import gmtime, strptime
 
@@ -135,39 +135,78 @@ re_url_scheme    = re.compile(r'^\w+://')
 re_slash         = re.compile(r'[/\:|]+')
 re_reserved      = re.compile(r'[<>"*]+')
 
+# def safename(filename, user):
+#     """Return a filename suitable for the cache.
+
+#     Strips dangerous and common characters to create a filename we
+#     can use to store the cache in.
+#     """
+
+#     try:
+#         if re_url_scheme.match(filename):
+#             if isinstance(filename,str):
+#                 filename = filename.decode('utf-8')
+#                 filename = filename.encode('ascii', 'xmlcharrefreplace')
+#             else:
+#                 filename = filename.encode('ascii', 'xmlcharrefreplace')
+#     except UnicodeError:
+#         pass
+#     if isinstance(filename,str):
+#         filename=filename.encode('utf-8')
+#     #filemd5 = md5.new(filename).hexdigest()
+#     filename = re_url_scheme.sub("", filename)
+#     filename = re_slash.sub(",", filename)
+#     filename = re_reserved.sub('-', filename)
+#     # This one is special to create cachenames that args can be seperate from requested path
+#     filename = filename.replace('?', '#')
+
+#     # limit length of filename
+#     if len(filename)>200:
+#         filename=filename[:200]
+#     if user is None: user = 0
+#     #return ",".join((str(user), filename, filemd5))
+#     return ",".join((str(user), filename))
+# !!! Alternatives, need further checking
 def safename(filename, user):
     """Return a filename suitable for the cache.
-
+    
     Strips dangerous and common characters to create a filename we
     can use to store the cache in.
     """
-
     try:
-        if re_url_scheme.match(filename):
-            if isinstance(filename,str):
-                filename = filename.decode('utf-8')
-                filename = filename.encode('ascii', 'xmlcharrefreplace')
-            else:
-                filename = filename.encode('ascii', 'xmlcharrefreplace')
+        # Check if filename is bytes and decode if necessary
+        if isinstance(filename, bytes):
+            filename = filename.decode('utf-8', 'ignore')  # Decode bytes to string, ignoring decoding errors
+            filename = filename.encode('ascii', 'xmlcharrefreplace').decode('ascii')  # Encode to ascii and decode back to string
     except UnicodeError:
         pass
-    if isinstance(filename,unicode):
-        filename=filename.encode('utf-8')
-    #filemd5 = md5.new(filename).hexdigest()
+
+    # Ensure filename is a string (convert from bytes if necessary)
+    if isinstance(filename, bytes):
+        filename = filename.decode('utf-8', 'ignore')
+
+    # Strip URL scheme (e.g., http:// or https://)
     filename = re_url_scheme.sub("", filename)
+    
+    # Replace slashes with commas
     filename = re_slash.sub(",", filename)
+    
+    # Replace reserved characters with '-'
     filename = re_reserved.sub('-', filename)
-    # This one is special to create cachenames that args can be seperate from requested path
+
+    # Replace '?' with '#' for path separation
     filename = filename.replace('?', '#')
 
-    # limit length of filename
-    if len(filename)>200:
-        filename=filename[:200]
-    if user is None: user = 0
-    #return ",".join((str(user), filename, filemd5))
+    # Limit filename length to 200 characters
+    if len(filename) > 200:
+        filename = filename[:200]
+
+    # Default to user 0 if user is None
+    if user is None:
+        user = 0
+
+    # Return the sanitized filename
     return ",".join((str(user), filename))
-
-
 
 def force_load(resource):
     "Force the loading the of resource from the database"
@@ -206,7 +245,8 @@ def etag_resource(resource):
     log.debug ('etag_resource %s', mtime)
     if mtime:
         # pylint: disable=E1103
-        return hashlib.md5 (str(mtime)).hexdigest()
+        # return hashlib.md5 (str(mtime)).hexdigest()
+        return hashlib.md5(str(mtime).encode('utf-8')).hexdigest() # !!! modern alternative
         # pylint: enable=E1103
     return None
 
@@ -252,52 +292,74 @@ class ResponseCache(BaseCache):
             names.append ( '0,%s' % resource.resource_uniq if resource else '' )
         return names
     def _resource_query_names(self, resource, user, *args):
-        resource_type = getattr(resource, 'resource_type', None) or (isinstance (resource, basestring) and resource) or ''
+        resource_type = getattr(resource, 'resource_type', None) or (isinstance (resource, str) and resource) or ''
         base = "%s,%s" % (user if user else '', resource_type)
         top = "%s#" % (user if user else 0)
         return [ top, base ] + [ "#".join ([base, arg]) for arg in args ]
 
     def save(self, url, headers, value, user):
         cachename = os.path.join(self.cachepath, self._cache_name(url, user))
-	if ",value" in cachename:
-	    log.debug (u'NO NO NOcache write %s to %s', url, cachename)
-	    return
-        headers = dict ([ (k,v) for k,v in headers.items() if k in self.known_headers])
-        log.debug (u'cache write %s to %s', url, cachename )
+        if ",value" in cachename:
+            log.debug ('NO NO NOcache write %s to %s', url, cachename)
+            return
+        headers = dict ([ (k,v) for k,v in list(headers.items()) if k in self.known_headers])
+        log.debug ('cache write %s to %s', url, cachename )
         clen = headers.get ('Content-Length', None)
         if not clen or clen=='0':
             headers['Content-Length'] = str (len (value))
+        # try:
+        #     with tempfile.NamedTemporaryFile (dir=os.path.dirname(cachename), delete=False) as f:
+        #         f.write (str (headers))
+        #         f.write ('\n\n')
+        #         f.write (value)
+        #         #copy_link (f.name, cachename)
+        #         if os.name == 'nt':
+        #             os.remove (cachename)
+        #         os.rename (f.name, cachename)
+        #         #dolink (f.name, cachename)
+
+        # except (OSError, IOError) as e:
+        #     if os.name == 'nt':
+        #         log.debug ("problem in cache save of %s", cachename)
+        #     else:
+        #         log.exception ("problem in cache save of %s", cachename)
+
+        # !!! This is a workaround for the above code (Need further checking)
         try:
-            with tempfile.NamedTemporaryFile (dir=os.path.dirname(cachename), delete=False) as f:
-                f.write (str (headers))
-                f.write ('\n\n')
-                f.write (value)
-                #copy_link (f.name, cachename)
+            with tempfile.NamedTemporaryFile(dir=os.path.dirname(cachename), delete=False) as f:
+                # Ensure headers are written as bytes
+                f.write(str(headers).encode('utf-8'))  # Convert headers string to bytes
+                f.write(b'\n\n')  # Write the newline as bytes (use b'' for byte string)
+                
+                # Check if 'value' is a bytes object; if not, encode it
+                if isinstance(value, str):
+                    f.write(value.encode('utf-8'))  # If it's a string, encode it to bytes
+                else:
+                    f.write(value)  # If it's already bytes, write directly
+
                 if os.name == 'nt':
-                    os.remove (cachename)
-                os.rename (f.name, cachename)
-                #dolink (f.name, cachename)
+                    os.remove(cachename)
+                os.rename(f.name, cachename)
 
         except (OSError, IOError) as e:
             if os.name == 'nt':
-                log.debug ("problem in cache save of %s", cachename)
+                log.debug("problem in cache save of %s", cachename)
             else:
-                log.exception ("problem in cache save of %s", cachename)
-
+                log.exception("problem in cache save of %s", cachename)
     def fetch(self, url,user):
         #log.debug ('cache fetch %s' % url)
         try:
             cachename = os.path.join(self.cachepath, self._cache_name(url, user))
-            log.debug (u'cache check %s', cachename)
+            log.info ('cache check %s', cachename)
             if os.path.exists (cachename):
                 with open(cachename) as f:
                     headers, cached = f.read().split ('\n\n', 1)
-                    log.debug (u'cache fetch serviced %s', url)
+                    log.debug ('cache fetch serviced %s', url)
                     headers = eval (headers)
                     return headers, cached
-        except ValueError,e:
+        except ValueError as e:
             pass
-        except IOError, e:
+        except IOError as e:
             pass
         return None, None
 
@@ -347,7 +409,7 @@ class ResponseCache(BaseCache):
                         pass
                     files.remove (cf)
                     log.debug ('cache remove %s' % cf)
-            except Exception, e:
+            except Exception as e:
                 log.exception ("while removing %s from %s", cf, files)
 
     def modified(self, url, user):
@@ -678,7 +740,7 @@ class Resource(ServiceController):
         user_id  = identity.get_user_id()
         usecache = asbool(kw.pop('cache', True))
         http_method = request.method.lower()
-        log.debug ('Request "%s" with %s?%s' , http_method, request.path,str(kw))
+        log.info ('Request "%s" with %s?%s' , http_method, request.path,str(kw))
         #log.debug ('Request "%s" ', path)
 
         #check the http method is supported.
@@ -700,6 +762,7 @@ class Resource(ServiceController):
             elif http_method == 'get':
 
                 resource = getattr(request.bisque,'parent', None)
+                log.info(f'---- get resource {resource}')
                 method_name = 'dir'
                 # if parent:
                 #     self.check_cache_header (http_method, parent)
@@ -753,11 +816,11 @@ class Resource(ServiceController):
         #classes children.
         if path:
             token = path.pop(0)
-            log.debug('Token: ' + str(token))
+            log.info('Token: ' + str(token))
             child = self.get_child_resource(token)
             if child is not None:
                 bisque.parent = resource
-                log.debug ("parent = %s" , str(resource))
+                log.info ("parent = %s" , str(resource))
                 #call down into the child resource.
                 return child._default(*path, **kw)
 
@@ -769,12 +832,11 @@ class Resource(ServiceController):
 #                    redirect(request.path + "/")
 
 
-
         #resource = self.server_cache.force_load(resource)
         self.check_cache_header(http_method, resource)
         method = getattr(self, method_name)
         #pylons.response.headers['Content-Type'] = 'text/xml'
-        log.debug ("Dispatch for %s", method_name)
+        log.info ("Dispatch for %s", method_name)
         try:
             if http_method in ('post', 'put'):
                 clen = int(request.headers.get('Content-Length', 0))
@@ -782,7 +844,7 @@ class Resource(ServiceController):
 
                 inputer = find_inputer (content_type)
                 if not inputer:
-                    log.debug ("Bad media type in post/put:%s" ,  content_type)
+                    log.info ("Bad media type in post/put:%s" ,  content_type)
                     abort(415, "Bad media type in post/put:%s" % content_type )
 
                 # xml arg is for backward compat

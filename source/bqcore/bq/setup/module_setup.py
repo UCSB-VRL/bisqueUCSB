@@ -22,7 +22,7 @@ class SetupError(Exception):
 
 def verbose_call (*args, **kw):
     if kw.pop('verbose',None):
-        print args
+        print(args)
     return check_call (*args, **kw)
 
 
@@ -39,7 +39,7 @@ def ensure_matlab(params):
     matlab_home = params['runtime.matlab_home']
     if matlab_home not in  os.environ['PATH']:
         os.environ['PATH'] = os.path.join(matlab_home,'bin') + os.pathsep + os.environ['PATH']
-        print "ADDING MATLAB TO PATH->", os.environ['PATH']
+        print("ADDING MATLAB TO PATH->", os.environ['PATH'])
 
 def mcc (command,  *largs, **kw):
     where = kw.pop('where', None)
@@ -49,12 +49,12 @@ def mcc (command,  *largs, **kw):
     mcc = ['mcc']
     mcc += largs
     mcc.append (command)
-    print " ".join (mcc)
+    print(" ".join (mcc))
     try:
         ret = call (mcc, shell = (os.name == "nt"))
     except OSError:
-        print "Couldn't execute command %s" % (" ".join(mcc))
-        print "Please check your matlab enviroment. In particular check if mcc is available and callable from the shell"
+        print("Couldn't execute command %s" % (" ".join(mcc)))
+        print("Please check your matlab enviroment. In particular check if mcc is available and callable from the shell")
         return False
     if where:
         os.chdir (cwd)
@@ -71,12 +71,12 @@ def mex_compile (command_list, where = None, **kw):
         os.chdir(where)
     mex = ['mex']
     mex.extend (command_list)
-    print " ".join (mex)
+    print(" ".join (mex))
     try:
         ret = call (mex, shell = (os.name == "nt"))
     except OSError:
-        print "Couldn't execute command %s" % (" ".join(mex))
-        print "Please check your matlab enviroment. In particular check if mcc is available and callable from the shell"
+        print("Couldn't execute command %s" % (" ".join(mex)))
+        print("Please check your matlab enviroment. In particular check if mcc is available and callable from the shell")
         return False
     if where:
         os.chdir (cwd)
@@ -146,7 +146,7 @@ def matlab_setup(main_path, files = [], bisque_deps = False, dependency_dir = "m
     ctf  = main_name + '.ctf'
     if not (needs_update (ctf, source) or needs_update(main, source)
             or needs_update(ctf, "+bq") or needs_update(ctf, "+bim")):
-        print "Skipping matlab compilation %s is newer than %s" % (ctf, source)
+        print("Skipping matlab compilation %s is newer than %s" % (ctf, source))
         return 0
 
     if  mcc(source, '-d', dependency_dir, '-m', '-C', '-R', '-nodisplay', '-R', '-nosplash', *rest):
@@ -157,7 +157,7 @@ def matlab_setup(main_path, files = [], bisque_deps = False, dependency_dir = "m
             os.unlink (ctf)
         shutil.copyfile(os.path.join(dependency_dir, ctf), ctf)
         shutil.rmtree (dependency_dir)
-        os.chmod (main, 0744)
+        os.chmod (main, 0o744)
         return 0
     return 1
 
@@ -192,7 +192,7 @@ def python_setup(scripts,  package_scripts =True, dependency_dir = 'pydist', par
     #site_config = read_config('site.cfg', "app:main")
     #filename = os.path.abspath(os.path.join(site_config['bisque.paths.default'], 'templates/python_launcher.tmpl').replace('\\', '/'))
     filename = find_config_path ('templates/python_launcher.tmpl', config_dir='config-defaults').replace('\\', '/')
-    print "TEMPLATE", filename
+    print("TEMPLATE", filename)
     for script in scripts:
         script_name = os.path.splitext(script)[0]
         data['script'] = os.path.join('.', dependency_dir, script_name, script_name)
@@ -202,10 +202,10 @@ def python_setup(scripts,  package_scripts =True, dependency_dir = 'pydist', par
             template = Template(filename=filename)
             with open(script_name, 'wb') as f:
                 f.write(template.render(script = data['script']))
-                os.chmod (script_name, 0744)
+                os.chmod (script_name, 0o744)
                 return 0
-        except Exception,e:
-            print ("Could not create python launcher script %s" % e)
+        except Exception as e:
+            print(("Could not create python launcher script %s" % e))
 
 
 def ensure_binary(exe):
@@ -233,7 +233,7 @@ def require(expression, params, throws = True):
             if not e(params):
                 valid = False
                 break
-        if isinstance(e, basestring):
+        if isinstance(e, str):
             if not bool(params.get(e, False)):
                 valid = False
                 break
@@ -255,7 +255,7 @@ def docker_setup (image, command, base_image=None, params=None):
     #print "PARAMS:", params
     module_config = read_config('runtime-module.cfg', "command")
     docker_params = read_config('runtime-bisque.cfg', "docker")
-    print "Docker ", docker_params
+    print("Docker ", docker_params)
 
     # Load and setup the the environment for storage in docker container
     from bq.engine.controllers.command_run import BaseRunner
@@ -268,8 +268,8 @@ def docker_setup (image, command, base_image=None, params=None):
     runner.process_config()
     runner.setup_environments(build=True)
     files = runner.mexes[0].files
-    files =  [ s.strip() for s in files.split(',')] if isinstance (files, basestring) else files
-    print "BUILDING", files
+    files =  [ s.strip() for s in files.split(',')] if isinstance (files, str) else files
+    print("BUILDING", files)
     runner.mexes[0].files = files
 
     docker_params =  runner.config
@@ -291,7 +291,7 @@ def docker_setup (image, command, base_image=None, params=None):
         image = "{}:{}".format (image, docker_default_tag)
 
 
-    image = "/".join (filter (lambda x:x, [ docker_hub, docker_user, image.lower() ]))
+    image = "/".join ([x for x in [ docker_hub, docker_user, image.lower() ] if x])
 
     created_docker = False
     if not os.path.exists ('Dockerfile'):
@@ -300,7 +300,7 @@ def docker_setup (image, command, base_image=None, params=None):
         dirs  = [ x for x in files if os.path.isdir(x) ]
         files = [ x for x in files if os.path.isfile(x) ]
         copies = []
-        print "FILES", files
+        print("FILES", files)
         if files:
             copies.append ( "COPY %s /module/" % " ".join (files) )
         for dr in dirs:
@@ -316,11 +316,11 @@ def docker_setup (image, command, base_image=None, params=None):
                                                                   maintainer=maintainer,
                                                                   copy = "\n".join (copies) ))
 
-    print "Calling", " ".join (['docker', 'build', '-q', '-t', image , '.'])
+    print("Calling", " ".join (['docker', 'build', '-q', '-t', image , '.']))
     check_call(['docker', 'build',  '-t',  image, '.'])
 
     if docker_hub:
-        print "Pushing %s " % ( image )
+        print("Pushing %s " % ( image ))
         if docker_user and docker_pass:
             check_call (['docker', 'login', '-u', docker_user, '-p', docker_pass, '-e', docker_email, docker_hub])
         check_call(['docker', 'push', image])
@@ -332,11 +332,11 @@ def read_config(filename, section= None):
     if not os.path.exists (filename):
         filename = find_config_path(filename)
 
-    print "READING", filename
+    print("READING", filename)
     conf =  ConfigFile(filename).get (section, asdict = True)
     config_dir = os.path.dirname (filename)
     conf['bisque.path.config'] = config_dir
-    print "CONFIG", config_dir
+    print("CONFIG", config_dir)
 
     return conf
 
@@ -345,7 +345,7 @@ def load_config(filename, section= None):
     if not os.path.exists (filename):
         filename = find_config_path(filename)
 
-    print "LOADING", filename
+    print("LOADING", filename)
     return ConfigFile(filename)
 
 

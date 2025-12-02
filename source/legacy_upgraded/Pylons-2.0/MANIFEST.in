@@ -1,0 +1,9 @@
+recursive-include pylons/templates *
+recursive-include pylons/media *
+recursive-include tests *
+recursive-include test_files *
+include CHANGELOG
+include LICENSE
+include UPGRADING
+recursive-exclude tests/test_units/session *
+global-exclude .DS_Store *.hgignore *.hgtags

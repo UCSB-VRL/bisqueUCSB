@@ -9,7 +9,7 @@ def setbasicauth(bisquehost, username, password):
     s = BQSession()
     s.init_cas (username, password, bisque_root=bisquehost, create_mex=False)
     r = s.c.post(bisquehost + "/auth_service/setbasicauth", data = { 'username': username, 'passwd': password})
-    print r.text
+    print(r.text)
 
 
 

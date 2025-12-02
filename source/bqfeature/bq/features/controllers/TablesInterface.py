@@ -6,7 +6,7 @@ import os
 import time
 import tables
 import logging
-import Queue
+import queue
 import numexpr
 import threading
 import gc
@@ -19,8 +19,8 @@ numexpr.set_num_threads(1) #make numexpr thread-safe
 from bq.util.locks import Locks
 from bq.util.mkdir import _mkdir
 #fs imports
-from PytablesMonkeyPatch import pytables_fix
-from exceptions import FeatureExtractionError, FeatureServiceError, FeatureExtractionError, InvalidResourceError
+from .PytablesMonkeyPatch import pytables_fix
+from .exceptions import FeatureExtractionError, FeatureServiceError, FeatureExtractionError, InvalidResourceError
 
 LOCKING_DELAY = .5 #secs
 FAILED_LOCK_ATTEMPTS = 10
@@ -164,11 +164,11 @@ class QueryPlan(object):
         """
         path = self.feature.localfile(hash)
         if path not in self.query_queue:  # checking the first few element on the hash
-            self.query_queue[path] = Queue.Queue()  # build queue since none were found
+            self.query_queue[path] = queue.Queue()  # build queue since none were found
         self.query_queue[path].put(hash)
 
     def keys(self):
-        return self.query_queue.keys()
+        return list(self.query_queue.keys())
 
     def __getitem__(self, key):
         return self.query_queue[key]
@@ -183,7 +183,7 @@ class Rows(object):
         self.feature = feature
 
     def keys(self):
-        return self.row_queue.keys()
+        return list(self.row_queue.keys())
 
     def __getitem__(self, key):
         return self.row_queue[key]
@@ -201,7 +201,7 @@ class Rows(object):
             log.debug('InvalidResourceError: %s:%s' % (e.code, e.message))
             raise FeatureExtractionError(feature_resource, e.code, e.message)
 
-        except StandardError as err:
+        except Exception as err:
             # creating a list of uri were the error occured
             log.exception('Calculation Error: URI:%s  %s Feature failed to be calculated' % (str(feature_resource) , self.feature.name))
             raise FeatureExtractionError(feature_resource, 500, 'Internal Server Error: Feature failed to be calculated')
@@ -217,7 +217,7 @@ class CachedRows(Rows):
         id = self.feature.hash_resource(feature_resource)
         results = self._calculate_row(feature_resource)
         try:
-            results = zip(*results)
+            results = list(zip(*results))
         except TypeError:
             results = [tuple([results])]
         rows = []
@@ -245,7 +245,7 @@ class CachedRows(Rows):
         path = self.feature.localfile(id)
         rows = self.construct_row(self.feature, request_resource.feature_resource)
         if path not in self.row_queue:  # checking the first few element on the hash
-            self.row_queue[path] = Queue.Queue()  # build queue since none were found
+            self.row_queue[path] = queue.Queue()  # build queue since none were found
         self.row_queue[path].put(rows)
         return
 
@@ -267,7 +267,7 @@ class WorkDirRows(Rows):
         if row is None:
             results = self._calculate_row(feature_resource)
             try:
-                results = zip(*results)
+                results = list(zip(*results))
             except TypeError:
                 results = [tuple([results])]
 
@@ -306,7 +306,7 @@ class WorkDirRows(Rows):
                error.resource.mask,
                error.resource.gobject,
                #[0 for i in xrange(feature.length)]
-               np.array([columns['feature'].dflt for i in xrange(feature.length)])
+               np.array([columns['feature'].dflt for i in range(feature.length)])
                ]
         for p in feature.parameter:
             row.append(columns[p].dflt)
@@ -330,7 +330,7 @@ class WorkDirRows(Rows):
                 error_flag = 1 #set that theres an error that needs to be raised
 
         if 'feature' not in self.row_queue:  # checking the first few element on the hash
-            self.row_queue['feature'] = Queue.Queue()  # build queue since none were found
+            self.row_queue['feature'] = queue.Queue()  # build queue since none were found
         self.row_queue['feature'].put((rows,status))  # the row is pushed into the queue
 
         if error_flag:
@@ -475,7 +475,7 @@ class CachedTables(Tables):
 
             @param: rows
         """
-        for filename in rows.keys():
+        for filename in list(rows.keys()):
             queue = rows[filename]
 
             def func(h5file):
@@ -484,7 +484,7 @@ class CachedTables(Tables):
                     row = queue.get()
                     query = 'idnumber=="%s"' % str(row[0][0])  # queries the hash to see if a feature has been already added
                     try:
-                        table.where(query).next() #if the list contains one element
+                        next(table.where(query)) #if the list contains one element
                         log.debug('Skipping %s - already found in table'%str(row[0][0]))
 
                     except StopIteration: #fails to get next
@@ -501,7 +501,7 @@ class CachedTables(Tables):
         """
             query for elements and return results
         """
-        for filename in query_queue.keys():
+        for filename in list(query_queue.keys()):
 
             def func(h5file):
                 query_results = []
@@ -531,7 +531,7 @@ class CachedTables(Tables):
 
             @return: generator([bool(if the query was found),hash],..)
         """
-        for filename in query_queue.keys():
+        for filename in list(query_queue.keys()):
             def func(h5file):
                 query_results = []
                 table = h5file.root.values
@@ -541,7 +541,7 @@ class CachedTables(Tables):
                     query = 'idnumber=="%s"' % str(hash)
 
                     try:
-                        table.where(query).next() #if the list contains one element
+                        next(table.where(query)) #if the list contains one element
                         query_results.append((True, hash))
                         log.debug('Find: query: %s -> Found!' % query)
                     except StopIteration: #fails to get next
@@ -611,7 +611,7 @@ class WorkDirTable(Tables):
             @return: generator([False, hash],..)
         """
         query_results = []
-        for filename in query_plan.keys():
+        for filename in list(query_plan.keys()):
             while not query_plan[filename].empty():
                 hash = query_plan[filename].get()
                 query_results.append((False, hash))
@@ -625,7 +625,7 @@ class WorkDirTable(Tables):
         def func(h5file):
             table = h5file.root.values
             status = h5file.root.status
-            for key in row_genorator.keys():
+            for key in list(row_genorator.keys()):
                 queue = row_genorator[key]
                 while not queue.empty():
                     rows,s = queue.get()
@@ -645,7 +645,7 @@ class WorkDirTable(Tables):
         def func(h5file):
             table = h5file.root.values
             status = h5file.root.status
-            return zip(table[:], status[:])
+            return list(zip(table[:], status[:]))
 
         return self.read_from_table(self.path, func)
 

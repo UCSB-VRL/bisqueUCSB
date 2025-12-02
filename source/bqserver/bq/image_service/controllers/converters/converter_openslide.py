@@ -15,8 +15,8 @@ import os.path
 from lxml import etree
 import re
 import tempfile
-import cStringIO as StringIO
-import ConfigParser
+import io as StringIO
+import configparser
 import math
 
 #from collections import OrderedDict
@@ -249,7 +249,7 @@ class ConverterOpenSlide(ConverterBase):
                 })
 
             # custom - any other tags in proprietary files should go further prefixed by the custom parent
-            for k,v in slide.properties.iteritems():
+            for k,v in slide.properties.items():
                 rd['custom/%s'%k.replace('.', '/')] = v
             slide.close()
 

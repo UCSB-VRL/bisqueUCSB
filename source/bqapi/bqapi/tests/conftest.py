@@ -24,7 +24,7 @@ def stores(config):
 
     files = []
     for name in [ x.strip() for x in config.store.files.split() ]:
-        print "Fetching", name
+        print("Fetching", name)
         files.append (LocalFile (name, fetch_file(name, samples, inputs)))
 
     return Bunch(samples=samples, inputs=inputs, results=results, files=files)

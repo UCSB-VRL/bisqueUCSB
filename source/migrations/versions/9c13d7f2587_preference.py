@@ -32,7 +32,7 @@ def upgrade():
     prefs = DBSession.query(Taggable).filter_by(resource_name = 'Preferences', resource_type='tag')
     for resource in prefs:
         resource.resource_type = 'preference'
-        print "updating %s -> %s" % (resource.id, resource.resource_uniq)
+        print("updating %s -> %s" % (resource.id, resource.resource_uniq))
     DBSession.commit()
     DBSession.close()
 

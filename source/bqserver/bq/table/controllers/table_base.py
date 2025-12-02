@@ -61,6 +61,7 @@ from collections import namedtuple, OrderedDict
 import re
 import types
 import copy
+from functools import reduce
 
 try:
     import ply.yacc as yacc
@@ -328,7 +329,7 @@ class TableQueryParser:
                       | STRVAL
         '''
         if len(p) == 3:
-            p[0] = (p[2] if p[1] == '+' or isinstance(p[2], basestring) else -p[2])
+            p[0] = (p[2] if p[1] == '+' or isinstance(p[2], str) else -p[2])
         else:
             p[0] = p[1]
 
@@ -338,12 +339,12 @@ class TableQueryParser:
         '''
         if len(p) == 4:
             p[3] = SelectorTuple(dimname=p[3].dimname or '__dim%s__' % (len(p[1])+1), dimvalues=p[3].dimvalues)
-            if p[3].dimname not in ['__dim2__', 'field'] and any(isinstance(v, basestring) for v in p[3].dimvalues):
+            if p[3].dimname not in ['__dim2__', 'field'] and any(isinstance(v, str) for v in p[3].dimvalues):
                 raise ParseError('values %s not allowed for dimension \'%s\'' % (p[3].dimvalues, p[3].dimname))
             p[0] = p[1] + [ p[3] ]
         else:
             p[1] = SelectorTuple(dimname=p[1].dimname or '__dim1__', dimvalues=p[1].dimvalues)
-            if p[1].dimname not in ['__dim2__', 'field'] and any(isinstance(v, basestring) for v in p[1].dimvalues):
+            if p[1].dimname not in ['__dim2__', 'field'] and any(isinstance(v, str) for v in p[1].dimvalues):
                 raise ParseError('values %s not allowed for dimension \'%s\'' % (p[1].dimvalues, p[1].dimname))
             p[0] = [ p[1] ]
 
@@ -458,7 +459,8 @@ class TableBase(object):
     # ------------- TODO: move to subclasses -------------
     def as_array(self):
         if isinstance(self.data, pd.core.frame.DataFrame):
-            return self.data.as_matrix()   # convert to numpy array
+            # return self.data.as_matrix()
+            return self.data.values   # convert to numpy array
         else:
             return self.data
 
@@ -486,9 +488,9 @@ class TableBase(object):
         Output:    TableBase subclass (may be different type from self)
         """
         if query_op is not None:
-            if query_op.keys()[0] == 'filter':
+            if list(query_op.keys())[0] == 'filter':
                 sels, cond = query_op['filter']
-            elif query_op.keys()[0] == 'agg':
+            elif list(query_op.keys())[0] == 'agg':
                 sels = query_op['agg']
 
         if sels is None and cond is None:
@@ -509,7 +511,7 @@ class TableBase(object):
             new_sels = []
             for sel in sels:
                 new_selectors = copy.deepcopy(sel.selectors)
-                for dim in xrange(keep_dims, len(self.get_shape())+1):
+                for dim in range(keep_dims, len(self.get_shape())+1):
                     if "__dim%s__"%dim not in [ single_sel.dimname for single_sel in sel.selectors ]:
                         new_selectors.append( SelectorTuple( dimname="__dim%s__"%dim, dimvalues=[0] ) )
                 new_sels.append(CellSelectionTuple(selectors=new_selectors, agg=sel.agg, alias=sel.alias))
@@ -532,14 +534,14 @@ class TableBase(object):
 
             # format and return result (convert into dataframe or numpy array)
             try:
-                peek = row_iter.next()
+                peek = next(row_iter)
                 if isinstance(peek, np.ndarray):
                     data = peek
                 else:
                     # set proper types
                     new_types = {}
-                    for ix in xrange(len(row_types)):
-                        new_types[peek.keys()[ix]] = row_types[ix]
+                    for ix in range(len(row_types)):
+                        new_types[list(peek.keys())[ix]] = row_types[ix]
                     data = pd.DataFrame(data=(x for x in itertools.chain([peek], row_iter)))
                     data = data.astype(dtype=new_types)
             except StopIteration:
@@ -558,7 +560,7 @@ class TableBase(object):
         offset = slices[0].start if slices is not None and len(slices)>0 and (sels is None or sels[0].agg is None) else 0
         if isinstance(data, np.ndarray):
             all_colnames = self.get_columns()
-            colnames = [all_colnames[i] if all_colnames is not None else str(i) for i in xrange(slices[1].start, slices[1].stop)] if len(slices)>1 else ['0']
+            colnames = [all_colnames[i] if all_colnames is not None else str(i) for i in range(slices[1].start, slices[1].stop)] if len(slices)>1 else ['0']
             #colnames = [str(i) for i in xrange(slices[1].start, slices[1].stop)] if len(slices)>1 else ['0']
             coltypes = [row_types[0]] * data.shape[1] if len(data.shape) > 1 else [row_types[0]]
         else:
@@ -597,7 +599,16 @@ class TableBase(object):
         return self.types
 
     def get_type(self, colname):
-        return self.get_types()[ self._convert_to_colnum(colname) ]
+        # return self.get_types()[ self._convert_to_colnum(colname) ]
+        colnum = self._convert_to_colnum(colname)
+        types = self.get_types()
+        log.info("get_type: colname=%s, colnum=%s, types_len=%s, headers_len=%s", 
+                  colname, colnum, len(types) if types else 'None', len(self.headers) if self.headers else 'None')
+        if types is None:
+            raise RuntimeError("No types available")
+        if colnum is None or colnum >= len(types):
+            raise IndexError("Column index %s out of range for types array of length %s" % (colnum, len(types)))
+        return types[colnum]
 
     def get_slices(self, sels, cond):
         slices = None
@@ -645,7 +656,7 @@ class TableBase(object):
                 if dim == 1:
                     if len(sel.dimvalues) == 0 or all([colname is None for colname in sel.dimvalues]):
                         # select all columns
-                        for ix in xrange(len(self.headers)):
+                        for ix in range(len(self.headers)):
                             if self.headers[ix] not in res:
                                 res.append(self.headers[ix])
                     elif len(sel.dimvalues) == 1:
@@ -659,7 +670,7 @@ class TableBase(object):
                         # start/stop column
                         startcolix = self._convert_to_colnum(sel.dimvalues[0]) or 0
                         stopcolix = self._convert_to_colnum(sel.dimvalues[1]) or len(self.headers)
-                        for ix in xrange(startcolix, stopcolix):
+                        for ix in range(startcolix, stopcolix):
                             if self.headers[ix] not in res:
                                 res.append(self.headers[ix])
         return res
@@ -668,11 +679,39 @@ class TableBase(object):
         raise NotImplementedError()
 
     def _convert_to_colnum(self, colname):
-        if colname is None or isinstance(colname, int):
+        # if colname is None or isinstance(colname, int):
+        if colname is None:
             return colname
-        for ix in xrange(len(self.headers)):
+        
+        # First, always check if the value exists as a header name (even if it's numeric)
+        for ix in range(len(self.headers)):
             if self.headers[ix] == colname:
                 return ix
+        
+        # If not found in headers and it's an integer, treat as direct index
+        if isinstance(colname, int):
+            if 0 <= colname < len(self.headers):
+                return colname
+            else:
+                raise RuntimeError("column index %s out of range (0-%s)" % (colname, len(self.headers)-1))
+        
+        # If it's a string that looks like a number, try to find it in headers first
+        # (this is important for Excel sheets with numeric column names)
+        try:
+            numeric_val = int(colname)
+            # Check if this numeric value exists as a header name
+            for ix in range(len(self.headers)):
+                if self.headers[ix] == numeric_val:
+                    return ix
+            # If not found as header name and within range, use as direct index
+            if 0 <= numeric_val < len(self.headers):
+                return numeric_val
+            else:
+                raise RuntimeError("column %s not found and index out of range (0-%s)" % (colname, len(self.headers)-1))
+        except ValueError:
+            # Not a numeric string, original behavior
+            pass
+            
         raise RuntimeError("column %s not found" % colname)
 
     def _or_slices(self, slices1, slices2):
@@ -713,9 +752,9 @@ class TableLike(TableBase):
             self.data = self.cb(slices)
             assert isinstance(self.data, pd.core.frame.DataFrame) or isinstance(self.data, tables.table.Table)
             # adjust slices to start from 0 since it is already sliced and remember offsets
-            for d in xrange(len(slices)):
+            for d in range(len(slices)):
                 offsets[d] = slices[d].start
-            slices = tuple([slice(0, slices[d].stop-slices[d].start) for d in xrange(len(slices))])
+            slices = tuple([slice(0, slices[d].stop-slices[d].start) for d in range(len(slices))])
 
         ###### translator for And/Or/Condition:
         #    => ( ((coord[0],), node.iloc[coord[0]]) for coord in np.argwhere((node[:]['H'] > 0) & (node[:]['L'] > 0)) )                 FOR TABLE (IF DataFrame)    OR
@@ -760,7 +799,7 @@ class TableLike(TableBase):
         if sels is None:
             # no selection, include all columns
             if isinstance(self.data, pd.core.frame.DataFrame):
-                sel_fct = lambda row: OrderedDict( (colname,row[colname]) for colname in row.keys() )
+                sel_fct = lambda row: OrderedDict( (colname,row[colname]) for colname in list(row.keys()) )
             else:
                 sel_fct = lambda row: OrderedDict( (colname,row[colname]) for colname in self.data.colnames )
             if want_cell_coord:
@@ -777,7 +816,7 @@ class TableLike(TableBase):
                 selix = 0
                 for sel in sels:
                     cols = self._selectors_to_columns(sel.selectors)
-                    for col_ix in xrange(len(cols)):
+                    for col_ix in range(len(cols)):
                         alias = sel.alias or cols[col_ix]
                         if alias in res:
                             alias = "%s_%s" % (alias, selix)
@@ -790,7 +829,7 @@ class TableLike(TableBase):
                 selix = 0
                 for sel in sels:
                     cols = self._selectors_to_columns(sel.selectors)
-                    for col_ix in xrange(len(cols)):
+                    for col_ix in range(len(cols)):
                         alias = sel.alias or cols[col_ix]
                         if alias in res:
                             alias = "%s_%s" % (alias, selix)
@@ -825,7 +864,7 @@ class TableLike(TableBase):
                 for sel in sels:
                     if isinstance(self.data, pd.core.frame.DataFrame):
                         cols = self._selectors_to_columns(sel.selectors)
-                        for col_ix in xrange(len(cols)):
+                        for col_ix in range(len(cols)):
                             alias = sel.alias or cols[col_ix]
                             if alias in res:
                                 alias = "%s_%s" % (alias, selix)
@@ -833,7 +872,7 @@ class TableLike(TableBase):
                             res_agg[alias] = sel.agg
                     else:
                         cols = self._selectors_to_columns(sel.selectors)
-                        for col_ix in xrange(len(cols)):
+                        for col_ix in range(len(cols)):
                             alias = sel.alias or cols[col_ix]
                             if alias in res:
                                 alias = "%s_%s" % (alias, selix)
@@ -844,7 +883,7 @@ class TableLike(TableBase):
                     row_iters_vals_map.setdefault(alias, []).append(res[alias])
                     row_iters_agg_map[alias] = res_agg[alias]
 
-            res = OrderedDict( (alias,_get_agg_fct(row_iters_agg_map[alias])(row_iters_vals_map[alias])) for alias in row_iters_vals_map.keys() )
+            res = OrderedDict( (alias,_get_agg_fct(row_iters_agg_map[alias])(row_iters_vals_map[alias])) for alias in list(row_iters_vals_map.keys()) )
             row_iter = ( res for x in [1] )  # wrap in generator
             # compute row types
             row_types = []
@@ -969,9 +1008,9 @@ class ArrayLike(TableBase):
             self.data = self.cb(slices)
             assert isinstance(self.data, tables.array.Array) or isinstance(self.data, np.ndarray)
             # adjust slices to start from 0 since it is already sliced and remember offsets
-            for d in xrange(len(slices)):
+            for d in range(len(slices)):
                 offsets[d] = slices[d].start
-            slices = tuple([slice(0, slices[d].stop-slices[d].start) for d in xrange(len(slices))])
+            slices = tuple([slice(0, slices[d].stop-slices[d].start) for d in range(len(slices))])
 
         ###### translator for And/Or/Condition:
         #    => ( (tuple(coord), node[tuple(coord)]) for coord in np.argwhere((node[Ellipsis] > 0.0) & mask_of_subset & (node[Ellipsis] > 0.0) & mask2_of_subset) )  FOR ARRAY
@@ -982,15 +1021,15 @@ class ArrayLike(TableBase):
         if filter_exp is None:
             if want_cell_coord:
                 # this is very slow for large arrays; avoid!
-                ranges = (xrange(slices[d].start, slices[d].stop) for d in xrange(len(self.data.shape)))
-                row_iter = ( (tuple([coord[d]+offsets[d] for d in xrange(len(coord))]), self.data[coord]) for coord in itertools.product(*ranges) )
+                ranges = (range(slices[d].start, slices[d].stop) for d in range(len(self.data.shape)))
+                row_iter = ( (tuple([coord[d]+offsets[d] for d in range(len(coord))]), self.data[coord]) for coord in itertools.product(*ranges) )
             else:
                 row_iter = ( self.data[slices] for x in [1] )
         else:
             # have condition
             if want_cell_coord:
                 # this is very slow for large arrays; avoid!
-                row_iter = ( (tuple([coord[d]+slices[d].start+offsets[d] for d in xrange(len(slices))]), self.data[slices][tuple(coord)]) for coord in np.argwhere(filter_exp) )
+                row_iter = ( (tuple([coord[d]+slices[d].start+offsets[d] for d in range(len(slices))]), self.data[slices][tuple(coord)]) for coord in np.argwhere(filter_exp) )
             else:
                 row_iter = ( np.where(filter_exp, self.data[slices], self._gen_nan_array(slices)) for x in [1] )
 
@@ -1026,7 +1065,7 @@ class ArrayLike(TableBase):
                     row_iters_vals_map.setdefault(alias, []).append(res[alias])
                     row_iters_agg_map[alias] = res_agg[alias]
 
-            res = OrderedDict( (alias,_get_agg_fct(row_iters_agg_map[alias])(row_iters_vals_map[alias])) for alias in row_iters_vals_map.keys() )
+            res = OrderedDict( (alias,_get_agg_fct(row_iters_agg_map[alias])(row_iters_vals_map[alias])) for alias in list(row_iters_vals_map.keys()) )
             row_iter = ( res for x in [1] )  # wrap in generator
             # compute row types
             row_types = []
@@ -1093,7 +1132,7 @@ class ArrayLike(TableBase):
     def _gen_mask(self, outer_slices, sel_slices):
         mask = np.ones([s.stop-s.start for s in outer_slices], dtype=bool)
         mask_slices = self._and_slices(outer_slices, sel_slices)
-        mask[[slice(mask_slices[dim].start-outer_slices[dim].start, mask_slices[dim].stop-outer_slices[dim].start) for dim in xrange(len(outer_slices))]] = False
+        mask[tuple(slice(mask_slices[dim].start-outer_slices[dim].start, mask_slices[dim].stop-outer_slices[dim].start) for dim in range(len(outer_slices)))] = False
         return mask
 
     def _gen_nan_array(self, slices):

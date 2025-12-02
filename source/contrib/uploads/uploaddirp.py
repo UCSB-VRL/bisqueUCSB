@@ -48,7 +48,7 @@ def main(argv):
 
     pool = multiprocessing.Pool(6, create_session, (user, passwd, root))
     files = os.listdir (direct)
-    print "Uploading ", files
+    print("Uploading ", files)
     resource_list = pool.map (sendimage_helper, [ (root, user, passwd, f) for f in os.listdir (direct) ])
 
 

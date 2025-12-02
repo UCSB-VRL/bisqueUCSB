@@ -2,10 +2,10 @@ import socket
 import functools
 import inspect
 import logging
-from urllib import urlencode
-from urlparse import urlunsplit, urlsplit, urljoin
+from urllib.parse import urlencode
+from urllib.parse import urlunsplit, urlsplit, urljoin
 
-from tg import expose, flash, require, url, request, response, redirect, config
+from tg import expose, flash, require, url, request, response, redirect, config, use_wsgi_app
 from lxml import etree
 from bq.core.lib.base import BaseController
 from bq.exceptions import ConfigurationError, IllegalOperation, RequestError
@@ -47,6 +47,12 @@ class ProxyController (BaseController):
         if not header['status'].startswith ('200'):
             log.debug ("request result %s \n %s" % (header, content))
             return ""
+        
+        # TurboGears 2.4+ requires WSGI apps to be wrapped with use_wsgi_app()
+        if hasattr(content, '__call__') and not isinstance(content, (str, bytes)):
+            log.debug("Proxied content is a WSGI app, wrapping with use_wsgi_app()")
+            return use_wsgi_app(content)
+        
         return content
 
 
@@ -95,7 +101,7 @@ class service_proxy (object):
                 method=httpmethod,
                 body = body
                 )
-        except socket.error, e:
+        except socket.error as e:
             log.exception("in request %s : %s" % (httpmethod, url))
             raise RequestError("Request Error %s" % url, (None, None))
 
@@ -111,7 +117,7 @@ def decode_etrees (a):
     """Return a list with all etree decoded"""
     def decode_etree (arg):
         if isinstance (arg, etree._Element):
-            return etree.tostring (arg)
+            return etree.tostring (arg, encoding='unicode')
         else:
             return arg
 
@@ -156,7 +162,7 @@ def exposexml(func):
         result =  func (*args, **kw)
         if isinstance (result, etree._Element):
             response.content_type = "text/xml"
-            result = etree.tostring (result)
+            result = etree.tostring (result, encoding='unicode')
         return result
     return wrapper
 
@@ -167,11 +173,11 @@ def exposexml(func):
 
 
 #from bisquik.util import urlnorm
-import urlparse
+import urllib.parse
 def fullpathurl(url):
-    parts = list(urlparse.urlparse (url))
+    parts = list(urllib.parse.urlparse (url))
     parts [2] = parts[2] if parts[2].endswith('/') else parts[2]+'/'
-    return urlparse.urlunparse(parts)
+    return urllib.parse.urlunparse(parts)
 
 #active_proxy = config.get('bisquik.proxy.on')
 #bisquik_root = fullpathurl(config.get('bisquik.root', ''))

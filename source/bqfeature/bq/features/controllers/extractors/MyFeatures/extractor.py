@@ -3,14 +3,14 @@
 """
 
 import logging
-from fftsd_extract import FFTSD as fftsd
+from .fftsd_extract import FFTSD as fftsd
 from lxml import etree
 from bqapi import BQServer
 import random
 from bq.features.controllers.utils import image2numpy, except_image_only, fetch_resource
 from bq.features.controllers import Feature
 from bq.features.controllers.exceptions import FeatureExtractionError
-from hog_extractor import histogram_of_oriented_gradients
+from .hog_extractor import histogram_of_oriented_gradients
 #from htd_extractor import homogenious_texture_descriptor
 
 log = logging.getLogger("bq.features.MyFeature")

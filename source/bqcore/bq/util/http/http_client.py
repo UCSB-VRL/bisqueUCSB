@@ -10,9 +10,9 @@ from tg import config
 
 from httplib2 import Http
 
-import sync_request
-import async_request
-import async_request_pool
+from . import sync_request
+from . import async_request
+from . import async_request_pool
 from .poster import encode
 from .poster import streaminghttp
 
@@ -69,13 +69,13 @@ def prepare_credentials (client, headers, userpass=None):
 
 
 def request(url, method="GET", body=None, headers = {},
-            async=False, callback=None, client=None, **kw):
+            _async=False, callback=None, client=None, **kw):
     """Create an http  request
 
     :param url:  The url for the request
     :param method: GET, PUT, POST, HEAD, DELETE
     :param body: body of post or put (maybe string, file or iterable)
-    :param async:
+    :param _async:
     :rtype response_headers, content
     """
     userpass = kw.pop('userpass', None)
@@ -84,7 +84,7 @@ def request(url, method="GET", body=None, headers = {},
             start()
         client = local_client
     prepare_credentials (client, headers, userpass=userpass)
-    if  async and async_request_pool.isrunning():
+    if  _async and async_request_pool.isrunning():
         response_tuple = async_request_pool.request(url,
                                                     callback = callback,
                                                     method = method,

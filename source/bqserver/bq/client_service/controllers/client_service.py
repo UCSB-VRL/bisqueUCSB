@@ -60,7 +60,7 @@ import logging
 
 import pkg_resources
 
-from urllib import urlencode
+from urllib.parse import urlencode
 from lxml import etree
 
 from pylons import app_globals
@@ -71,7 +71,7 @@ from webob import Request
 import tg
 from tg import expose, flash, redirect, require, request
 from tg import config, tmpl_context as c, session
-from repoze.what import predicates
+# from repoze.what import predicates # !!! deprecated and currently unused
 
 
 import bq
@@ -129,7 +129,7 @@ class ClientServer(ServiceController):
         server = etree.SubElement (response, 'tag', name='server')
 
         #etree.SubElement (server, 'tag', name='environment', value=config.get('server.environment'))
-        return etree.tostring(response)
+        return etree.tostring(response, encoding='unicode')
 
     @expose(template='bq.client_service.templates.welcome')
     def index(self, **kw):
@@ -177,7 +177,13 @@ class ClientServer(ServiceController):
                                             offset = im, limit = 1)[0]
                 #imageurl = self.viewlink(image.attrib['uri'])
                 thumbnail = '/image_service/image/%s?thumbnail=%s'%(image.get('resource_uniq'), thumb_size)
-
+                
+        # !!! temporary set this to None to render the default background
+        thumbnail = None
+        # TODO: will resolve the issue regarding taking the user uploaded image as the background
+        if thumbnail is None:
+            # No image found, use the default
+            thumbnail = 'bg.webp'
         redirect (base_url=thumbnail)
 
     @expose(template='bq.client_service.templates.browser')
@@ -411,7 +417,7 @@ class ClientServer(ServiceController):
 
         # bisque metadata for the new image file. Different from the OME_TIFF metadata
         metadata = etree.Element('resource', name=new_fname)
-        metadata = unicode(etree.tostring(metadata))
+        metadata = str(etree.tostring(metadata, encoding='unicode'))
 
         log.info('CKPT202-ckck-416-550pm')
         # store the array in bisque

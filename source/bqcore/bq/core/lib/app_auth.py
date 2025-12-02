@@ -1,4 +1,4 @@
-from urllib import quote_plus  #, urlencode
+from urllib.parse import quote_plus  #, urlencode
 import logging
 
 from webob import Request, Response
@@ -40,7 +40,7 @@ class AppAuthPlugin(object):
 
     # IChallenger
     def challenge(self, environ, status, app_headers, forget_headers):
-        log.debug ("APP CHALLENGE %s %s %s %s", environ.keys(), status, app_headers, forget_headers)
+        log.debug ("APP CHALLENGE %s %s %s %s", list(environ.keys()), status, app_headers, forget_headers)
         content_type = CONTENT_TYPE(environ)
         log.debug ("APP CONTENT %s", content_type)
         if any (content_type.startswith(v) for v in ('application/json', 'application/xml')):

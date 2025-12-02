@@ -19,7 +19,7 @@ else:
     import unittest
 
 import os
-import ConfigParser
+import configparser
 import time
 from bqapi import BQSession
 
@@ -43,7 +43,7 @@ def repeat(times):
                 t1 = time.time()
                 f(*args)
                 t2 = time.time()
-                print 'Run %s took %s seconds'%(i+1, str(t2-t1))
+                print('Run %s took %s seconds'%(i+1, str(t2-t1)))
         return callHelper
     return repeatHelper
 
@@ -55,7 +55,7 @@ class ImageServiceTestsOperational(ImageServiceTestBase):
 
     @classmethod
     def setUpClass(self):
-        config = ConfigParser.ConfigParser()
+        config = configparser.ConfigParser()
         config.read('config.cfg')
         self.root = config.get('Host', 'root') or 'localhost:8080'
         self.user = config.get('Host', 'user') or 'test'
@@ -71,11 +71,11 @@ class ImageServiceTestsOperational(ImageServiceTestBase):
     @repeat(10)
     def test_image_2k_upload_tile(self):
         # test upload
-        print '\nUploading %s\n'%image_2k
+        print('\nUploading %s\n'%image_2k)
         resource  = self.ensure_bisque_file(image_2k, image_2k_meta)
         self.assertIsNotNone(resource, msg='File could not be uploaded: %s'%image_2k)
         # test standard tile op
-        print 'Getting tiles for %s'%image_2k
+        print('Getting tiles for %s'%image_2k)
         filename = 'image.2k.tile.jpg'
         commands = [('slice', ',,1,1'), ('tile', '0,0,0,512'), ('depth', '8,f'), ('fuse', '255,255,255;:m'), ('format', 'jpeg')]
         meta_required = { 'format': 'JPEG',
@@ -95,12 +95,12 @@ class ImageServiceTestsOperational(ImageServiceTestBase):
     @repeat(10)
     def test_image_5k_upload_tile(self):
         # test upload
-        print '\nUploading %s\n'%image_5k
+        print('\nUploading %s\n'%image_5k)
         resource  = self.ensure_bisque_file(image_5k, image_5k_meta)
         self.assertIsNotNone(resource, msg='File could not be uploaded: %s'%image_5k)
 
         # test standard tile op
-        print 'Getting tiles for %s'%image_5k
+        print('Getting tiles for %s'%image_5k)
         filename = 'image.5k.tile.jpg'
         commands = [('slice', ',,1,1'), ('tile', '0,0,0,512'), ('depth', '8,f'), ('fuse', '255,255,255;:m'), ('format', 'jpeg')]
         meta_required = { 'format': 'JPEG',
@@ -120,7 +120,7 @@ class ImageServiceTestsOperational(ImageServiceTestBase):
     @repeat(10)
     def test_image_2k_upload_largemeta(self):
         # test upload
-        print '\nUploading %s\n'%image_2k
+        print('\nUploading %s\n'%image_2k)
         resource  = self.ensure_bisque_file(image_2k, image_2k_gobs)
         self.assertIsNotNone(resource, msg='File could not be uploaded: %s'%image_2k)
         # test removing the resource

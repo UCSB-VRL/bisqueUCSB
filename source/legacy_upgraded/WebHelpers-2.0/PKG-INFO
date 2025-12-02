@@ -1,0 +1,41 @@
+Metadata-Version: 2.4
+Name: WebHelpers
+Version: 2.0.0
+Summary: Web Helpers - Utility Functions for Web Applications
+Author: Wahid Sadique Koly (original authors: Mike Orr, Ben Bangert, Phil Jenvey)
+Author-email: contact@wskoly.xyz
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Internet :: WWW/HTTP :: Dynamic Content
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+License-File: LICENSE
+Requires-Dist: MarkupSafe>=2.0.1
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: license-file
+Dynamic: requires-dist
+Dynamic: summary
+
+
+Web Helpers is a library of helper functions intended to make writing 
+web applications easier. It's the standard function library for
+Pylons and TurboGears 2, but can be used with any web framework. It also
+contains a large number of functions not specific to the web, including text
+processing, number formatting, date calculations, container objects, etc.
+
+Version 2.0.0 updates the library to be compatible with Python 3.10+ and
+improves performance for SQLAlchemy paginate functionality.
+
+WebHelpers itself depends only on MarkupSafe, but certain helpers depend on
+third-party packages as described in the docs.
+
+The development version of WebHelpers is at
+https://github.com/wskoly/webhelpers (forked from the original Bitbucket repo)
+

@@ -1,7 +1,7 @@
 # stolen form pylons
 
 def asbool(obj):
-    if isinstance(obj, basestring):
+    if isinstance(obj, str):
         obj = obj.strip().lower()
         if obj in ['true', 'yes', 'on', 'y', 't', '1']:
             return True

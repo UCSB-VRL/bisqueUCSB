@@ -46,7 +46,7 @@ if os.name != 'nt':
         "Copy or make a symlink"
         try:
             os.symlink(source, dest)
-        except (OSError, AttributeError), e:
+        except (OSError, AttributeError) as e:
             log.debug ("Problem in link %s... trying copy" , e)
             if os.path.isdir(source):
                 shutil.copytree(source, dest)
@@ -74,6 +74,6 @@ else:
             # try linking
             try:
                 dolink(source, dest)
-            except (OSError, AttributeError), e:
+            except (OSError, AttributeError) as e:
                 log.debug ("Problem in link %s... trying copy" , e)
                 shutil.copy2(source, dest)

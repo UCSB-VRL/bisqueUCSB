@@ -32,7 +32,7 @@ def _replace_placeholders(myjson, tag, val):
         for jsonkey in myjson:
             if type(myjson[jsonkey]) in (list, dict):
                 _replace_placeholders(myjson[jsonkey], tag, val)
-            elif isinstance(myjson[jsonkey], basestring) and _matches_tag(myjson, jsonkey, tag):
+            elif isinstance(myjson[jsonkey], str) and _matches_tag(myjson, jsonkey, tag):
                 if myjson[jsonkey].startswith('@NUMPARAM'):
                     try:
                         myjson[jsonkey] = int(val)
@@ -77,7 +77,7 @@ class PipelineController(ServiceController):
         """Add your service description here """
         response = etree.Element ('resource', uri=self.baseuri)
         etree.SubElement(response, 'method', name='%sID'%self.baseuri, value='Return pipeline with ID.')
-        return etree.tostring(response)
+        return etree.tostring(response, encoding='unicode')
 
     def check_access(self, uniq):
         resource = data_service.resource_load (uniq = uniq)
@@ -107,7 +107,7 @@ class PipelineController(ServiceController):
         # load pipeline
         pipeline = None
         try:
-            for n, r in self.importers.plugins.iteritems():
+            for n, r in self.importers.plugins.items():
                 if '.' in resource.get('value', '') and resource.get('value').split('.')[-1].lower() not in r.ext:
                     # resource has filename with extension and extension does not match plugins supported extensions
                     continue

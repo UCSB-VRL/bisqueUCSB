@@ -1,9 +1,9 @@
 import os
 import re
-import urlparse
+import urllib.parse
 import logging
 import posixpath
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 
 from bq.util.mkdir import _mkdir
@@ -38,7 +38,7 @@ PARSE_NET = re.compile(r'^((?P<user>[^:]+):(?P<password>[\w.#^!;]+)?@)?(?P<host>
 
 class IrodsConnection(object):
     def __init__(self, url, user=None, host=None, port=None, password = None, zone=None):
-        irods_url = urlparse.urlparse(url)
+        irods_url = urllib.parse.urlparse(url)
         assert irods_url.scheme == 'irods'
         env = PARSE_NET.match(irods_url.netloc).groupdict()
         args = dict(
@@ -53,7 +53,7 @@ class IrodsConnection(object):
         path = ''
         zone = ''
         if irods_url.path:
-            path = urllib.unquote(irods_url.path).split('/')
+            path = urllib.parse.unquote(irods_url.path).split('/')
             if len(path):
                 zone = path[1]
             path = '/'.join(path)
@@ -64,10 +64,10 @@ class IrodsConnection(object):
 
         # Ensure all parameters are not None
         if not all (args.values()):
-            raise IrodsError("missing parameter %s", ",".join ( k for k,v in args.items() if v is None))
+            raise IrodsError("missing parameter %s", ",".join ( k for k,v in list(args.items()) if v is None))
 
         self.session = iRODSSession(**args)
-        self.irods_url = urlparse.urlunparse(list(self.irods_url)[:2] + ['']*4)
+        self.irods_url = urllib.parse.urlunparse(list(self.irods_url)[:2] + ['']*4)
 
     def open(self):
         pass
@@ -201,7 +201,7 @@ def irods_push_file(fileobj, url, cache, savelocal=True, **kw):
             with obj.open('w') as f:
                 localname = irods_cache_save(fileobj, ic.path, cache, f )
             return localname
-    except Exception, e:
+    except Exception as e:
         log.exception ("during push %s", url)
         raise IrodsError("can't write irods url %s" % url)
 
@@ -215,7 +215,7 @@ def irods_delete_file(url, cache, **kw):
                 os.remove (localname)
             log.debug( "irods_delete %s -> %s" , url, ic.path)
             ic.session.data_objects.unlink (ic.path)
-    except Exception, e:
+    except Exception as e:
         log.exception ("during delete %s", url)
         raise IrodsError("can't delete %s" % url)
 

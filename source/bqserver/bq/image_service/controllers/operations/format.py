@@ -129,28 +129,37 @@ class FormatOperation(BaseOperation):
 
             # first try first converter that supports this output format
             c = self.server.writable_formats[fmt]
-            #log.info('\n\n WRITABLE FORMAT %s \n\n', c)
+            log.info('Format %s: selected converter %s for format %s', token.resource_id, c.name, fmt)
             first_name = c.name
 
-            fmt_in = token.dims['format'].lower()
-            fmt_in_lst = list(fmt_in.split(','))
+            # For video formats, always use ffmpeg converter regardless of input format
             ffmpeg_formats_set = set(i[0].lower() for i in ffmpeg_formats)
+            if fmt.lower() in ffmpeg_formats_set:
+                log.info('Format %s: using ffmpeg for video format %s', token.resource_id, fmt)
+                ffmpeg_converter = self.server.converters.get('ffmpeg')
+                if ffmpeg_converter:
+                    r = ffmpeg_converter.convert(token, ofile, fmt, extra=extra)
+                else:
+                    log.error('Format %s: ffmpeg converter not available for format %s', token.resource_id, fmt)
+            else:
+                fmt_in = token.dims['format'].lower()
+                fmt_in_lst = list(fmt_in.split(','))
 
-            #if there are any operations to be run on the outputw
-            for single_fmt in fmt_in_lst:
-                if single_fmt in ffmpeg_formats_set:
-                    r = c.convert(token, ofile, single_fmt, extra=extra)
-                    break
+                #if there are any operations to be run on the output
+                for single_fmt in fmt_in_lst:
+                    if single_fmt in ffmpeg_formats_set:
+                        r = c.convert(token, ofile, single_fmt, extra=extra)
+                        break
 
-                elif c.name == ConverterImgcnv.name or queue_size < 1:
-                    r = c.convert(token, ofile, fmt, extra=extra)
-                    break
+                    elif c.name == ConverterImgcnv.name or queue_size < 1:
+                        r = c.convert(token, ofile, fmt, extra=extra)
+                        break
 
             # try using other converters directly
             if r is None:
                 log.debug('%s could not convert [%s] to [%s] format'%(first_name, ifile, fmt))
                 log.debug('Trying other converters directly')
-                for n,c in self.server.converters.iteritems():
+                for n,c in self.server.converters.items():
                     if n==first_name:
                         continue
                     if n == ConverterImgcnv.name or queue_size < 1:

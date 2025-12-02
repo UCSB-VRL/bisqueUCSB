@@ -4,8 +4,8 @@
 //var server = 'arno.ece.ucsb.edu:8080';
 //var fullurl = server  + '/bisquik';
 
-var svgns  = "http://www.w3.org/2000/svg";
-var xlinkns  = "http://www.w3.org/1999/xlink";
+var svgns = "http://www.w3.org/2000/svg";
+var xlinkns = "http://www.w3.org/1999/xlink";
 var xhtmlns = 'http://www.w3.org/1999/xhtml';
 
 // <![CDATA[
@@ -23,10 +23,10 @@ var xhtmlns = 'http://www.w3.org/1999/xhtml';
 //
 function callback(obj, method) {
     var thisobj = obj;
-    var thismeth = ( typeof method == "string") ? thisobj[method] : method;
+    var thismeth = (typeof method == "string") ? thisobj[method] : method;
     var thisextra = Array.prototype.slice.call(arguments, 2);
 
-    return function() {
+    return function () {
         if (!thismeth) return;
         var args = Array.prototype.slice.call(arguments);
         return thismeth.apply(thisobj, thisextra.concat(args));
@@ -45,12 +45,12 @@ function callback(obj, method) {
 // callback_app{end_args} .. append the fixed args instead of prepending
 function callback_app(obj, method) {
     var thisobj = obj;
-    var thismeth = ( typeof method == "string") ? thisobj[method] : method;
+    var thismeth = (typeof method == "string") ? thisobj[method] : method;
     var thisextra = Array.prototype.slice.call(arguments, 2);
 
-    return function() {
+    return function () {
         var args = Array.prototype.slice.call(arguments);
-        return thismeth.apply(thisobj, args.concat (thisextra));
+        return thismeth.apply(thisobj, args.concat(thisextra));
     };
 }
 
@@ -74,15 +74,15 @@ function callback_app(obj, method) {
 Ext.namespace('BQ.util');
 //var BQ = BQ || {}; // ensure BQ namespace
 
-BQ.util.do_xpath = function(node, expression, result_type) {
-	if (!node) return;
+BQ.util.do_xpath = function (node, expression, result_type) {
+    if (!node) return;
     result_type = result_type || XPathResult.ANY_TYPE;
     var xpe = new XPathEvaluator();
     var nsResolver = xpe.createNSResolver(!node.ownerDocument ? node.documentElement : node.ownerDocument.documentElement);
-    return xpe.evaluate( expression, node, nsResolver, result_type, null );
+    return xpe.evaluate(expression, node, nsResolver, result_type, null);
 };
 
-BQ.util.xpath_nodes = function(node, expression) {
+BQ.util.xpath_nodes = function (node, expression) {
     var result = BQ.util.do_xpath(node, expression, XPathResult.ORDERED_NODE_ITERATOR_TYPE);
     if (!result) return [];
     var found = [];
@@ -94,28 +94,28 @@ BQ.util.xpath_nodes = function(node, expression) {
 
 if (Ext.isIE) {
 
-// dima: need to replace the do_xpath in IE
-BQ.util.xpath_nodes = function(node, expression) {
-    return node.selectNodes(expression);
-};
+    // dima: need to replace the do_xpath in IE
+    BQ.util.xpath_nodes = function (node, expression) {
+        return node.selectNodes(expression);
+    };
 
 } // if IE
 
-BQ.util.xpath_node = function(node, expression) {
+BQ.util.xpath_node = function (node, expression) {
     var result = BQ.util.do_xpath(node, expression, XPathResult.ANY_UNORDERED_NODE_TYPE);
     if (result) {
         return result.singleNodeValue;
     }
 };
 
-BQ.util.xpath_string = function(node, expression) {
+BQ.util.xpath_string = function (node, expression) {
     var result = BQ.util.do_xpath(node, expression, XPathResult.STRING_TYPE);
     if (result) {
         return result.stringValue;
     }
 };
 
-BQ.util.xpath_number = function(node, expression) {
+BQ.util.xpath_number = function (node, expression) {
     var result = BQ.util.do_xpath(node, expression, XPathResult.NUMBER_TYPE);
     if (result) {
         return result.numberValue;
@@ -127,30 +127,30 @@ BQ.util.xpath_number = function(node, expression) {
   xhr
 *******************************************************************************/
 
-BQ.util.get_xhr_instance = function() {
-    var options = [function(){
+BQ.util.get_xhr_instance = function () {
+    var options = [function () {
         return new XMLHttpRequest();
-    }, function(){
+    }, function () {
         return new ActiveXObject('MSXML2.XMLHTTP.3.0');
-    }, function(){
+    }, function () {
         return new ActiveXObject('MSXML2.XMLHTTP');
-    }, function(){
+    }, function () {
         return new ActiveXObject('Microsoft.XMLHTTP');
-    }], i=0,
+    }], i = 0,
         len = options.length,
         xhr;
 
-    for(i=0; i<len; ++i) {
+    for (i = 0; i < len; ++i) {
         try {
             xhr = options[i];
             xhr();
             break;
-        } catch(e){}
+        } catch (e) { }
     }
     return xhr;
 };
 
-BQ.util.create_xhr = function() {
+BQ.util.create_xhr = function () {
     var xhr = BQ.util.get_xhr_instance()();
     if (xhr && xhr.a5) {
         return xhr.a5;
@@ -163,10 +163,10 @@ BQ.util.create_xhr = function() {
 parse strings
 *******************************************************************************/
 
-BQ.util.parseStringArrayFloat = function(s) {
+BQ.util.parseStringArrayFloat = function (s) {
     if (!s) return;
     s = s.split(',');
-    for (var i=0; i<s.length; ++i) {
+    for (var i = 0; i < s.length; ++i) {
         s[i] = parseFloat(s[i]);
     }
     return s;
@@ -175,19 +175,19 @@ BQ.util.parseStringArrayFloat = function(s) {
 // n - number
 // c - number of digits before .
 // d - number of digits after .
-BQ.util.formatFloat = function(n, c, d, sep) {
+BQ.util.formatFloat = function (n, c, d, sep) {
     var s = n.toFixed(d),
         p = s.indexOf('.'),
         sep = sep || ' ';
-    if (p>=0 && p<c) {
-        s = Array(c-p+1).join(sep) + s;
+    if (p >= 0 && p < c) {
+        s = Array(c - p + 1).join(sep) + s;
     }
     return s;
 };
 
 // n - number
 // c - number of digits padded with 0
-BQ.util.formatInt = function(n, len) {
+BQ.util.formatInt = function (n, len) {
     s = n.toString();
     if (s.length < len) {
         s = ('0000000000000000000000' + s).slice(-len);
@@ -195,17 +195,17 @@ BQ.util.formatInt = function(n, len) {
     return s;
 }
 
-BQ.util.clone = function(item, skiptemplate) {
+BQ.util.clone = function (item, skiptemplate) {
     var type,
         i,
         j,
         k,
-        N=0,
+        N = 0,
         clone,
         key,
         t,
-        as_is = {'doc':0, 'parent':0, 'xmlfields':0, 'shape':0, 'edit_parent': 0, },
-        ignore = {'parent':0, 'shape':0, 'doc':0, 'edit_parent': 0, };
+        as_is = { 'doc': 0, 'parent': 0, 'xmlfields': 0, 'shape': 0, 'edit_parent': 0, },
+        ignore = { 'parent': 0, 'shape': 0, 'doc': 0, 'edit_parent': 0, };
 
     if (item === null || item === undefined) {
         return item;
@@ -228,7 +228,7 @@ BQ.util.clone = function(item, skiptemplate) {
     if (type === '[object Array]') {
         N = item.length;
         clone = [];
-        for (i=0; i<N; ++i) {
+        for (i = 0; i < N; ++i) {
             t = BQ.util.clone(item[i], skiptemplate);
             if (t !== undefined && t !== null)
                 clone.push(t);
@@ -239,7 +239,7 @@ BQ.util.clone = function(item, skiptemplate) {
     } else if (type === '[object Object]' && item.constructor === Object) {
         clone = {};
         for (key in item) {
-            if (key in ignore ) {
+            if (key in ignore) {
                 delete clone[key];
             } else if (key in as_is) {
                 clone[key] = item[key];
@@ -275,15 +275,15 @@ BQ.util.clone = function(item, skiptemplate) {
   WebGL
 *******************************************************************************/
 
-BQ.util.isWebGlAvailable = function() {
-    if (typeof(BQ.util.webGlAvailable) !== 'undefined')
+BQ.util.isWebGlAvailable = function () {
+    if (typeof (BQ.util.webGlAvailable) !== 'undefined')
         return BQ.util.webGlAvailable;
     try {
-        var canvas = document.createElement( 'canvas' );
-        BQ.util.webGlAvailable = ( window.WebGLRenderingContext &&
-                    ( canvas.getContext( 'webgl' ) ||
-                      canvas.getContext( 'experimental-webgl' ) ) );
-    } catch(e) {
+        var canvas = document.createElement('canvas');
+        BQ.util.webGlAvailable = (window.WebGLRenderingContext &&
+            (canvas.getContext('webgl') ||
+                canvas.getContext('experimental-webgl')));
+    } catch (e) {
         BQ.util.webGlAvailable = false;
     }
     return BQ.util.webGlAvailable;
@@ -298,12 +298,11 @@ BQ.util.isWebGlAvailable = function() {
 // str = ellipsis("this is a test", 7, '...')
 // str = "this..."
 
-function ellipsis(value, len, eos)
-{
+function ellipsis(value, len, eos) {
     eos = eos || "...";
 
     if (value && value.length > len)
-        return value.substr(0, len-eos.length) + eos;
+        return value.substr(0, len - eos.length) + eos;
     return value;
 }
 
@@ -315,8 +314,7 @@ function removeAllChildren(element) {
 }
 
 // Test if the input object is empty
-function isEmptyObject(obj)
-{
+function isEmptyObject(obj) {
     return (!Ext.isDefined(obj)) ? true : Object.keys(obj).length === 0;
 }
 
@@ -339,8 +337,7 @@ function getY(obj) {
     return curtop;
 }
 
-function getObj(name)
-{
+function getObj(name) {
     return document.getElementById(name);
 }
 
@@ -348,7 +345,7 @@ function attribDict(node) {
     var d = {};
     var al = node.attributes;
     var i = 0;
-    for ( i = 0; i < al.length; i += 1) {
+    for (i = 0; i < al.length; i += 1) {
         d[al[i].name] = al[i].value;
     }
     return d;
@@ -356,7 +353,7 @@ function attribDict(node) {
 
 function attribInt(node, a) {
     var v = node.getAttribute(a);
-    return v ?  parseInt(v, 10): null;
+    return v ? parseInt(v, 10) : null;
 }
 
 function attribFloat(node, a) {
@@ -379,13 +376,13 @@ function printXML(node) {
         xml = "<" + node.tagName;
         at = node.attributes;
         if (at) {
-            for ( i = 0; i < at.length; i += 1) {
+            for (i = 0; i < at.length; i += 1) {
                 xml += " " + at[i].name + "=\"" + at[i].value + "\"";
             }
         }
         if (node.hasChildNodes) {
             xml += ">\t";
-            for ( m = node.firstChild; m !== null; m = m.nextSibling) {
+            for (m = node.firstChild; m !== null; m = m.nextSibling) {
                 xml += printXML(m);
                 //m.nodeName +  ";   " ;
             }
@@ -419,9 +416,9 @@ function makeRequest(url, callback, callbackdata, method, postdata, errorcb) {
                 }
             } else {
                 var consumed_status = {
-                    401 : undefined,
-                    403 : undefined,
-                    404 : undefined
+                    401: undefined,
+                    403: undefined,
+                    404: undefined
                 };
                 var error_short = ("There was a problem with the request:\n" + ajaxRequest.status + ":\t" + ajaxRequest.statusText + "\n");
                 var error_str = (error_short + ajaxRequest.responseText);
@@ -433,9 +430,9 @@ function makeRequest(url, callback, callbackdata, method, postdata, errorcb) {
 
                 if (ajaxCallbackError) {
                     ajaxCallbackError({
-                        request : ajaxRequest,
-                        message : error_str,
-                        message_short : error_short
+                        request: ajaxRequest,
+                        message: error_str,
+                        message_short: error_short
                     });
                     //throw(error_str);
                     return;
@@ -508,11 +505,11 @@ function xmlrequest(url, cb, method, postdata, errorcb) {
                 error_short += 'Message: ' + ajaxRequest.statusText + '\n';
                 var error_str = (error_short + ajaxRequest.responseText);
 
-                var consumed_status = {401 : undefined, 403 : undefined, 404 : undefined,};
+                var consumed_status = { 401: undefined, 403: undefined, 404: undefined, };
                 if (ajaxRequest.status === 401) {
                     //error_str = "You do not have permission for this operation\nAre you logged in?\n\n"+url;
                     window.location = "/auth_service/login?came_from=" + window.location;
-                }  else if (ajaxRequest.status === 403) {
+                } else if (ajaxRequest.status === 403) {
                     error_str = "You do not have permission for this operation:\n" + url;
                 } else if (ajaxRequest.status === 404) {
                     error_str = "Requested resource does not exist:\n" + url;
@@ -520,9 +517,9 @@ function xmlrequest(url, cb, method, postdata, errorcb) {
 
                 if (ajaxRequest.errorcallback) {
                     ajaxRequest.errorcallback({
-                        request : ajaxRequest,
-                        message : error_str,
-                        message_short : error_short
+                        request: ajaxRequest,
+                        message: error_str,
+                        message_short: error_short
                     });
                 }
 
@@ -572,13 +569,13 @@ function chainRequest(ajaxRequest, cb) {
     ajaxRequest.callback = chain;
 }
 
-if(typeof console == "undefined"){
+if (typeof console == "undefined") {
     window.console = {
-        log : function (){}
+        log: function () { }
     };
 }
 
-encodeParameters = function(obj) {
+encodeParameters = function (obj) {
     var params = new Array();
     for (key in obj) {
         if (obj[key]) {
@@ -589,9 +586,9 @@ encodeParameters = function(obj) {
 };
 
 if (!Array.prototype.reduce) {
-    Array.prototype.reduce = function(fun /*, initial*/) {
+    Array.prototype.reduce = function (fun /*, initial*/) {
         var len = this.length;
-        if ( typeof fun != "function")
+        if (typeof fun != "function")
             throw new TypeError();
 
         // no value to return if no initial value and an empty array
@@ -603,7 +600,7 @@ if (!Array.prototype.reduce) {
             var rv = arguments[1];
         } else {
             do {
-                if ( i in this) {
+                if (i in this) {
                     rv = this[i++];
                     break;
                 }
@@ -615,7 +612,7 @@ if (!Array.prototype.reduce) {
         }
 
         for (; i < len; i++) {
-            if ( i in this)
+            if (i in this)
                 rv = fun.call(null, rv, this[i], i, this);
         }
 
@@ -623,23 +620,30 @@ if (!Array.prototype.reduce) {
     };
 }
 if (!Array.prototype.forEach) {
-    Array.prototype.forEach = function(fun /*, thisp*/) {
+    Array.prototype.forEach = function (fun /*, thisp*/) {
         var len = this.length >>> 0;
-        if ( typeof fun != "function")
+        if (typeof fun != "function")
             throw new TypeError();
 
         var thisp = arguments[1];
         for (var i = 0; i < len; i++) {
-            if ( i in this)
+            if (i in this)
                 fun.call(thisp, this[i], i, this);
         }
     };
 }
 
-Array.prototype.find = function(searchStr) {
+Array.prototype.find = function (searchStr) {
     var returnArray = false;
     for (var i = 0; i < this.length; i++) {
-        if ( typeof (searchStr) == 'function') {
+        if (typeof (searchStr) == 'function') {
+            if (searchStr(this[i])) {
+                if (!returnArray) {
+                    returnArray = [];
+                }
+                returnArray.push(i);
+            }
+        } else if (searchStr instanceof RegExp) {
             if (searchStr.test(this[i])) {
                 if (!returnArray) {
                     returnArray = [];
@@ -659,7 +663,7 @@ Array.prototype.find = function(searchStr) {
 };
 
 if (!String.prototype.startswith) {
-    String.prototype.startswith = function(input) {
+    String.prototype.startswith = function (input) {
         return this.substr(0, input.length) === input;
     };
 };
@@ -669,7 +673,7 @@ function extend(child, supertype) {
 }
 
 function isdefined(variable) {
-    return ( typeof (window[variable]) == "undefined") ? false : true;
+    return (typeof (window[variable]) == "undefined") ? false : true;
 }
 
 // ]]>

@@ -7,7 +7,7 @@
 #   Fix Permission between database and Image server
 #   Fix Tag permissions for public images
 import os,sys
-import urlparse
+import urllib.parse
 #from sqlalchemy import create_engine
 #from sqlalchemy import Table, Column, Integer, String, Text, Index, MetaData, DateTime
 #from sqlalchemy.orm import mapper, create_session, scoped_session, sessionmaker
@@ -80,15 +80,15 @@ class Msg(object):
         self.messages =[]
     def dump(self, head):
         if self.messages:
-            print head + ":" + "\n".join (self.messages)
+            print(head + ":" + "\n".join (self.messages))
     def count (self, v, *params ):
         self.counts[v] = self.counts.get (v, 0) + 1
         self.count_items.setdefault(v, []).extend (params)
     def dump_counts(self):
-        for k,v in self.counts.items():
-            print "count of %s = %d" % (k, v)
+        for k,v in list(self.counts.items()):
+            print("count of %s = %d" % (k, v))
             if verbose:
-                print "items of %s = %s" % (k, str(self.count_items[k]))
+                print("items of %s = %s" % (k, str(self.count_items[k])))
 
 
 msg = Msg()
@@ -97,10 +97,10 @@ def ask(question):
     msg.dump("")
     msg.clear()
     if  fixall:
-        print question + "fixing"
+        print(question + "fixing")
         return True
 
-    a = raw_input( question + "(Y/N)" )
+    a = input( question + "(Y/N)" )
     if a=="" or a=="Y":
         return True
     return False
@@ -121,7 +121,7 @@ def flush():
         session.flush()
 
 def visit_all_files (callbacks, *l, **kw):
-    print "VISIT BLOBS"
+    print("VISIT BLOBS")
     count = 0
     for blob in session.query(Taggable).filter_by(resource_type = 'file'):
         msg.clear()
@@ -138,26 +138,26 @@ def visit_all_files (callbacks, *l, **kw):
 
 
 def find_misreferenced_blob(blob, host, fix):
-    host_tuple = urlparse.urlparse (host)
-    blob_tuple = urlparse.urlparse (blob.value)
+    host_tuple = urllib.parse.urlparse (host)
+    blob_tuple = urllib.parse.urlparse (blob.value)
     if host_tuple[1] != blob_tuple[1]:
         msg.log ("blob %d has incorrect host '%s' != '%s'" % (blob.id , blob_tuple[1],host_tuple[1]))
         if fix and ask ("replace host"):
             b = list(blob_tuple)
             b[1] = host_tuple[1]
-            blob.value = urlparse.urlunparse (b)
+            blob.value = urllib.parse.urlunparse (b)
 
 
 def move_blob_image_service(blob, host, **kw):
     "Change the old imgsrv address to image_service"
     #host_tuple = urlparse.urlparse (host)
-    b_tuple = urlparse.urlparse (blob.value)
+    b_tuple = urllib.parse.urlparse (blob.value)
     if b_tuple[2].startswith("/imgsrv"):
         msg.log("blob %d has old image_service" % blob.id)
         if  ask("imgsrv->image_service"):
             b = list(b_tuple)
             b[2] = b_tuple[2].replace("/imgsrv", "/image_service")
-            blob.value = urlparse.urlunparse (b)
+            blob.value = urllib.parse.urlunparse (b)
 
 
 
@@ -172,7 +172,7 @@ def find_unattached_bix_files(blob, host, fix):
 
 def visit_all_images (callbacks, start=0, **kw):
     """Visit all images and list and fix possible errors"""
-    print "VISIT IMAGES"
+    print("VISIT IMAGES")
     count = 0
     for image in session.query(Image).order_by(Image.id)[start:]:
         msg.clear()
@@ -204,17 +204,17 @@ def visit_all_images (callbacks, start=0, **kw):
     return True
 
 def fix_image_value(image,  host, old_host=None, **kw):
-    host_t = urlparse.urlparse(host)
-    image_t = list (urlparse.urlparse (image.value))
+    host_t = urllib.parse.urlparse(host)
+    image_t = list (urllib.parse.urlparse (image.value))
     if old_host:
-        oldhost_t = urlparse.urlparse(old_host)
+        oldhost_t = urllib.parse.urlparse(old_host)
 
     # Check if we have old_host and the src is old_host
     # otherwise check
     if (old_host and  image_t[1] == oldhost_t[1]) and  ask("image %d host %s -> %s" % (image.id, image_t[1], host_t[1]) ):
     #if or image_t[1] != host_t[1]:
         image_t [1] = host_t[1]
-        image.value = urlparse.urlunparse (image_t)
+        image.value = urllib.parse.urlunparse (image_t)
         msg.count ('image.src modified', image.id)
         #blob.uri = urlparse.urlunparse (image_t)
 
@@ -222,13 +222,13 @@ def fix_image_value(image,  host, old_host=None, **kw):
 def move_image_service(image,  host, old_host=None, **kw):
     "Change the old imgsrv address to image_service"
     #host_tuple = urlparse.urlparse (host)
-    image_tuple = urlparse.urlparse (image.resource_value)
+    image_tuple = urllib.parse.urlparse (image.resource_value)
     if image_tuple[2].startswith("/imgsrv"):
         msg.log("image %d has old image_service" % image.id)
         if  ask("imgsrv->image_service"):
             b = list(image_tuple)
             b[2] = image_tuple[2].replace("/imgsrv", "/image_service")
-            image.resource_value = urlparse.urlunparse (b)
+            image.resource_value = urllib.parse.urlunparse (b)
 
 
 def fix_tag_value(image, host, old_host=None, **kw):
@@ -240,7 +240,7 @@ def fix_tag_value(image, host, old_host=None, **kw):
             if S and S.startswith(old_host) and ask ('Tag value %s -> %s' %(S, host)):
                 #newhost = re.sub(r'http://[^/]*', host, S)
                 newhost = host + S[len(old_host):]
-                print "%s becomes  %s " %(S, newhost)
+                print("%s becomes  %s " %(S, newhost))
                 tg.value=newhost
                 msg.count ('replaced tag value', image.id)
 
@@ -310,9 +310,9 @@ if __name__ == "__main__":
 
     host = args[0]
 
-    print """YOU ARE ABOUT TO CHANGE %s
+    print("""YOU ARE ABOUT TO CHANGE %s
     ENSURE A Backup is available
-    """ % conf.get ('sqlalchemy.url')
+    """ % conf.get ('sqlalchemy.url'))
     if not ask("Continue"):
         sys.exit(0)
 
@@ -329,7 +329,7 @@ if __name__ == "__main__":
         host = host[:-1]
 
     if verbose>0:
-        print "Fixing bisquik database %s" % conf.get('sqlalchemy.url')
+        print("Fixing bisquik database %s" % conf.get('sqlalchemy.url'))
 
 
 
@@ -358,8 +358,8 @@ if __name__ == "__main__":
 
         close_sessions()
 
-    except Exception, e:
-        print "EXception %s" % e
+    except Exception as e:
+        print("EXception %s" % e)
         raise
     finally:
         msg.dump("Finishing")

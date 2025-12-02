@@ -1,0 +1,53 @@
+This directory contains helpers that aren't ready to put into the distribution.
+Some work but need API changes or documentation. Others fail their tests or
+don't work at all.
+
+baseN.py
+
+    Convert an int to any base using any alphabet. This can be used to encode
+    base64, or to compress large numbers into fewer digits.
+
+containers.py
+
+    Functions being considered for ``webhelpers.containers``.
+
+disabled_test_pylonslib_minify.py
+
+    Failing tests for ``webhelpers.pylonslib.minify``.  Need expertise to
+    tell whether these tests are valid or not.
+
+document.py
+
+    Beginning of a helper to generate a well-formed (X)HTML document with a 
+    minimum of inputs (body, optional head, optional head features).
+
+logging_optparse.py
+
+    An extension of Python's ``optparse`` module that adds standard logging
+    options, including a new trace level and SQLAlchemy engine logging.
+    The plan is to port it to the ``argparse`` module which is in PyPI and
+    will be standard in Python 2.7 and 3.2.
+
+multimedia.py
+
+    More multimedia helpers. These have various dependencies and file naming
+    conventions which may not be appropriate for WebHelpers.
+
+number_to_human_size.py
+
+    The ``number_to_human_size()`` helper from WebHelpers 0.6.4 rails helpers.
+    We're planning to offer a more comprehensive helper but haven't settled on
+    the API yet; 
+    see http://bitbucket.org/bbangert/webhelpers/issue/2/reinstate-number_to_human_size
+    In the meantime, you can copy this version to your application if
+    you need it.
+
+opener.py
+
+    A unified opener for regular or compressed files. Leaving as is to see if
+    we can make a better one in Python 3.
+
+sanitize_filename.py
+
+    Sanitize an arbitrary path (as from a file upload) to a safe filename.
+    

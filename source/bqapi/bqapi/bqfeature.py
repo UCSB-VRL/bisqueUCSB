@@ -4,10 +4,10 @@ from threading import Thread
 import socket
 import errno
 import tempfile
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import os
 from math import ceil
-import Queue
+import queue
 import logging
 import warnings
 from collections import namedtuple
@@ -62,9 +62,9 @@ class Feature(object):
         for (image, mask, gobject) in resource_list:
             sub = etree.SubElement(resource, 'feature')
             query = []
-            if image: query.append('image=%s' % urllib.quote(image))
-            if mask: query.append('mask=%s' % urllib.quote(mask))
-            if gobject: query.append('gobject=%s' % urllib.quote(gobject))
+            if image: query.append('image=%s' % urllib.parse.quote(image))
+            if mask: query.append('mask=%s' % urllib.parse.quote(mask))
+            if gobject: query.append('gobject=%s' % urllib.parse.quote(gobject))
             query = '&'.join(query)
             sub.attrib['uri'] = '%s?%s'%(url,query)
 
@@ -73,10 +73,10 @@ class Feature(object):
         if path is None:
             f = tempfile.NamedTemporaryFile(suffix='.h5', dir=tempfile.gettempdir(), delete=False)
             f.close()
-            session.c.push(url, content=etree.tostring(resource), headers={'Content-Type':'text/xml', 'Accept':'application/x-bag'}, path=f.name)
+            session.c.push(url, content=etree.tostring(resource, encoding='unicode'), headers={'Content-Type':'text/xml', 'Accept':'application/x-bag'}, path=f.name)
             return tables.open_file(f.name,'r')
         log.debug('Returning feature response to %s' % path)
-        return session.c.push(url, content=etree.tostring(resource), headers={'Content-Type':'text/xml', 'Accept':'application/x-bag'}, path=path)
+        return session.c.push(url, content=etree.tostring(resource, encoding='unicode'), headers={'Content-Type':'text/xml', 'Accept':'application/x-bag'}, path=path)
 
 
 
@@ -243,7 +243,7 @@ class ParallelFeature(Feature):
            @param: l - list
            @return: list of resource and sets the amount of parallel requests
         """
-        for i in xrange(0, len(l), chunk_size):
+        for i in range(0, len(l), chunk_size):
             yield l[i:i+chunk_size]
 
 
@@ -318,7 +318,7 @@ class ParallelFeature(Feature):
                                         status_table.append(temp_status_table[:])
                                         table.flush()
                                         status_table.flush()
-                        except StandardError as e:
+                        except Exception as e:
                             log.exception('Could not read hdf5 file')
                         finally:
                             log.debug('Clean up: removing %s' % temp_path)
@@ -329,8 +329,8 @@ class ParallelFeature(Feature):
                         log.debug('Ending HDF5 write thread')
                         break
 
-        write_queue = Queue.Queue()
-        request_queue = Queue.Queue()
+        write_queue = queue.Queue()
+        request_queue = queue.Queue()
 
         def request_factory(partial_resource_list):
             def request():

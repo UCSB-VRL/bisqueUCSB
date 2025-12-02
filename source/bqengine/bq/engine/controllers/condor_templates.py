@@ -165,7 +165,7 @@ class CondorTemplates(object):
         self.engines = load_engines(engine,  cfg)
         self.engine = self.engines[engine]
         self.template = {}
-        for x in CONDOR_TEMPLATES.keys():
+        for x in list(CONDOR_TEMPLATES.keys()):
             path = cfg.get (x)
             if path and os.path.exists(path):
                 self.template[x] = open (path).read()

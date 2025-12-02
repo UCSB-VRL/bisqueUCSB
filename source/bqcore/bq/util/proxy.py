@@ -30,9 +30,9 @@ TODO:
 
 """
 
-import httplib
-import urlparse
-import urllib
+import http.client
+import urllib.parse
+import urllib.request, urllib.parse, urllib.error
 import requests
 import logging
 import posixpath
@@ -60,7 +60,7 @@ class Proxy(object):
     def __init__(self, address, allowed_request_methods=(),
                  suppress_http_headers=()):
         self.address = address
-        self.parsed = urlparse.urlsplit(address)
+        self.parsed = urllib.parse.urlsplit(address)
         self.scheme = self.parsed[0].lower()
         self.host = self.parsed[1]
         self.path = self.parsed[2]
@@ -90,7 +90,7 @@ class Proxy(object):
         #conn = ConnClass(self.host)
 
         headers = {}
-        for key, value in environ.items():
+        for key, value in list(environ.items()):
             if key.startswith('HTTP_'):
                 key = key[5:].lower().replace('_', '-')
                 if key == 'host' or key in self.suppress_http_headers:
@@ -116,19 +116,19 @@ class Proxy(object):
         # x-forward-scheme was breaking in the proxy when https://bisque-site/ was fetch engine_service/_service over http
         # The address was always coming back as https://bisque-engine/_services
         # This code removes any mention of the forwards which seems to be the correct thing/
-        for k in headers.keys():
+        for k in list(headers.keys()):
             if k.startswith('x-forwarded'):
                 del headers[k]
 
 
         #log.debug('environ: %s', str(environ))
-        path_info = urllib.quote(environ['PATH_INFO'])
+        path_info = urllib.parse.quote(environ['PATH_INFO'])
         if self.path:
             request_path = path_info
             if request_path and request_path[0] == '/':
                 request_path = request_path[1:]
 
-            path = urlparse.urljoin(self.path, request_path)
+            path = urllib.parse.urljoin(self.path, request_path)
         else:
             path = path_info
         if environ.get('QUERY_STRING'):
@@ -237,9 +237,9 @@ class TransparentProxy(object):
         else:
             conn_scheme = self.force_scheme
         if conn_scheme == 'http':
-            ConnClass = httplib.HTTPConnection
+            ConnClass = http.client.HTTPConnection
         elif conn_scheme == 'https':
-            ConnClass = httplib.HTTPSConnection
+            ConnClass = http.client.HTTPSConnection
         else:
             raise ValueError(
                 "Unknown scheme %r" % scheme)
@@ -253,7 +253,7 @@ class TransparentProxy(object):
             conn_host = self.force_host
         conn = ConnClass(conn_host)
         headers = {}
-        for key, value in environ.items():
+        for key, value in list(environ.items()):
             if key.startswith('HTTP_'):
                 key = key[5:].lower().replace('_', '-')
                 headers[key] = value
@@ -276,7 +276,7 @@ class TransparentProxy(object):
 
         path = (environ.get('SCRIPT_NAME', '')
                 + environ.get('PATH_INFO', ''))
-        path = urllib.quote(path)
+        path = urllib.parse.quote(path)
         if 'QUERY_STRING' in environ:
             path += '?' + environ['QUERY_STRING']
         conn.request(environ['REQUEST_METHOD'],

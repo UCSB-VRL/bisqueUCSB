@@ -7,7 +7,7 @@ import logging
 import sys
 import inspect
 from datetime import datetime
-import ConfigParser
+import configparser
 
 from lxml import etree
 import pandas as pd
@@ -45,7 +45,7 @@ session = BQSession().init_mex(mex_url, bisque_token)
 # filename-row hash
 meta = {}
 data = pd.read_excel(fn)
-Ks = data.keys()
+Ks = list(data.keys())
 N = len(data['ImageName'])
 
 for i in range(N):
@@ -53,7 +53,7 @@ for i in range(N):
     m = {}
     for k in Ks:
         v = data[k][i]
-        if isinstance(v, basestring):
+        if isinstance(v, str):
             m[k] = v.strip(' ')
         else:
             m[k] = v
@@ -67,7 +67,7 @@ query_url = '/data_service/dataset?tag_query=@name:%s&offset=0&limit=10'%(datase
 q = session.fetchxml (query_url)
 ds = q.xpath('dataset')
 if len(ds)>1:
-    print 'Stopping: found more than one dataset with a given name: %s'%dataset_name
+    print('Stopping: found more than one dataset with a given name: %s'%dataset_name)
     sys.exit()
 dataset_url = ds[0].get('uri')
 
@@ -83,7 +83,7 @@ for m in images:
 
     image_name = image.get('name')
     if image_name not in meta:
-        print 'Image was not found in the local metadata: %s'%image_name
+        print('Image was not found in the local metadata: %s'%image_name)
         continue
     m = meta[image_name]
     imu = etree.Element ('image', uri=image_url)
@@ -156,16 +156,16 @@ for m in images:
             etree.SubElement (mt, 'tag', name='pixel_resolution_unit_y', value='m')
 
     if len(imu.xpath('//tag'))<1:
-        print 'No updates needed for: %s'%image_name
+        print('No updates needed for: %s'%image_name)
         continue
 
     #post the image back
-    print 'Image updated, storing %s to %s'%(image_name, image_url)
-    print etree.tostring(imu)
+    print('Image updated, storing %s to %s'%(image_name, image_url))
+    print(etree.tostring(imu))
 
     r = session.postxml(image_url, imu, method='POST')
     if r is None:
-        print 'Uploading update failed'
+        print('Uploading update failed')
     #print etree.tostring(r)
 
     #remove image cache

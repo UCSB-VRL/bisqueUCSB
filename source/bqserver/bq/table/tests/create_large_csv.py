@@ -20,7 +20,7 @@ import string
 import csv
 
 if len(sys.argv)<1:
-    print "usage: PATH"
+    print("usage: PATH")
     sys.exit()
 
 filename = sys.argv[1]

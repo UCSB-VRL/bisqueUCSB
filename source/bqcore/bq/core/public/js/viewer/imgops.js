@@ -19,6 +19,58 @@ ImgOperations.prototype = new ViewerPlugin();
 
 ImgOperations.prototype.create = function (parent) {
     this.parent = parent;
+    
+    // // Add Clear Cache button to the toolbar if available
+    // if (this.viewer.toolbar) {
+    //     this.clearCacheBtn = this.viewer.toolbar.add({
+    //         xtype: 'button',
+    //         text: 'Clear Cache',
+    //         tooltip: 'Clear cached data for this image',
+    //         handler: function() {
+    //             var resourceId = this.viewer.image.resource_uniq;
+    //             var url = '/image_service/' + resourceId + '/cleancache';
+    //             Ext.Ajax.request({
+    //                 url: url,
+    //                 method: 'GET',
+    //                 success: function(response) {
+    //                     Ext.Msg.alert('Success', 'Cache cleared for this image.');
+    //                     this.viewer.updateImage();
+    //                 },
+    //                 failure: function(response) {
+    //                     Ext.Msg.alert('Error', 'Failed to clear cache.');
+    //                 },
+    //                 scope: this
+    //             });
+    //         },
+    //         scope: this
+    //     });
+    //     this.viewer.toolbar.doLayout();
+    // } else {
+    //     // Fallback: add to the viewer panel
+    //     this.clearCacheBtn = Ext.create('Ext.button.Button', {
+    //         text: 'Clear Cache',
+    //         renderTo: parent,
+    //         style: 'position: absolute; top: 10px; right: 10px; z-index: 1000; background: yellow; border: 2px solid red;',
+    //         handler: function() {
+    //             var resourceId = this.viewer.image.resource_uniq;
+    //             var url = '/image_service/' + resourceId + '/cleancache';
+    //             Ext.Ajax.request({
+    //                 url: url,
+    //                 method: 'GET',
+    //                 success: function(response) {
+    //                     Ext.Msg.alert('Success', 'Cache cleared for this image.');
+    //                     this.viewer.updateImage();
+    //                 },
+    //                 failure: function(response) {
+    //                     Ext.Msg.alert('Error', 'Failed to clear cache.');
+    //                 },
+    //                 scope: this
+    //             });
+    //         },
+    //         scope: this
+    //     });
+    // }
+    
     return parent;
 };
 
@@ -35,7 +87,10 @@ ImgOperations.prototype.getParams = function () {
 };
 
 ImgOperations.prototype.updateView = function (view) {
-    if (!this.menu  && this.viewer.viewer_controls_surface) this.createMenu();
+    if (!this.menu) {
+        if (!this.viewer.viewer_controls_surface) this.viewer.viewer_controls_surface = this.viewer.imagediv;
+        this.createMenu();
+    }
     if (this.menu) {
         this.params = {};
 
@@ -108,6 +163,31 @@ ImgOperations.prototype.createMenu = function () {
         fusion_method = phys && parseInt(phys.ch)>3 ? this.default_fusion_method_4plus : this.default_fusion_method;
 
     this.createChannelMap();
+
+    // // Add Clear Cache button
+    // this.menu.add({
+    //     xtype: 'button',
+    //     text: 'Clear Cache',
+    //     cls: 'clear-cache-button',
+    //     handler: function() {
+    //         var resourceId = this.viewer.image.resource_uniq;
+    //         var url = '/image_service/' + resourceId + '/cleancache';
+    //         Ext.Ajax.request({
+    //             url: url,
+    //             method: 'GET',
+    //             success: function(response) {
+    //                 Ext.Msg.alert('Success', 'Cache cleared for this image.');
+    //                 // Optionally reload the viewer
+    //                 this.viewer.updateImage();
+    //             },
+    //             failure: function(response) {
+    //                 Ext.Msg.alert('Error', 'Failed to clear cache.');
+    //             },
+    //             scope: this
+    //         });
+    //     },
+    //     scope: this
+    // });
 
     this.menu.add({
         xtype: 'displayfield',

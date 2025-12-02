@@ -71,7 +71,8 @@ import logging
 import pkg_resources
 from pylons.i18n import ugettext as _, lazy_ugettext as l_
 from tg import expose, flash
-from repoze.what import predicates
+# from repoze.what import predicates # deprecated following is the alternative
+from tg import predicates
 
 
 
@@ -86,20 +87,22 @@ import shutil
 import tarfile
 import zipfile
 import logging
-import gdata.docs
-import gdata.docs.service
+
+# !!! need to replace with modern alternative
+# import gdata.docs
+# import gdata.docs.service
 
 try:
-    from cStringIO import StringIO
+    from io import StringIO
 except Exception:
-    from StringIO import StringIO
+    from io import StringIO
 
-from urllib import quote
+from urllib.parse import quote
 from lxml import etree
 
 import tg
 from tg import request, response, session, flash, require, abort
-from repoze.what import predicates
+# from repoze.what import predicates
 
 from bq.core.service import ServiceController
 from bq import data_service
@@ -192,40 +195,42 @@ class export_serviceController(ServiceController):
     @expose(template='bq.export_service.templates.to_gdocs_send')
     @require(predicates.not_anonymous())
     def to_gdocs_send (self, **kw):
-        if not 'google_id' in kw: return 'Google e-mail is needed'
-        if not 'google_password' in kw: return 'Google password is needed'
-        if not 'document_url' in kw: return 'Document to be exported is not provided'
+        # if not 'google_id' in kw: return 'Google e-mail is needed'
+        # if not 'google_password' in kw: return 'Google password is needed'
+        # if not 'document_url' in kw: return 'Document to be exported is not provided'
 
-        # get the document
-        google_id = str(kw['google_id'])
-        google_pass = str(kw['google_password'])
-        url = str(kw['document_url'])
+        # # get the document
+        # google_id = str(kw['google_id'])
+        # google_pass = str(kw['google_password'])
+        # url = str(kw['document_url'])
 
-        s = data_service.load(url+'?view=deep&format=csv')
-        #s = data_service.get_resource(url, view='deep', format='csv')
+        # s = data_service.load(url+'?view=deep&format=csv')
+        # #s = data_service.get_resource(url, view='deep', format='csv')
 
-        input_file = StringIO(s)
-        #log.debug('Google Docs input: ' + s )
+        # input_file = StringIO(s)
+        # #log.debug('Google Docs input: ' + s )
 
-        # upload to google docs
-        gd_client = gdata.docs.service.DocsService()
-        gd_client.email = str(google_id)
-        gd_client.password = str(google_pass)
-        gd_client.source = 'CBI_UCSB-Bisque-1'
-        try:
-            gd_client.ProgrammaticLogin()
-        except Exception:
-            return dict(error= str(sys.exc_value) )
+        # # upload to google docs
+        # gd_client = gdata.docs.service.DocsService()
+        # gd_client.email = str(google_id)
+        # gd_client.password = str(google_pass)
+        # gd_client.source = 'CBI_UCSB-Bisque-1'
+        # try:
+        #     gd_client.ProgrammaticLogin()
+        # except Exception:
+        #     return dict(error= str(sys.exc_info()[1]) )
 
-        m_file_handle = input_file
-        m_content_type = 'text/csv'
-        m_content_length = len(s)
-        m_file_name = quote(url)
-        m_title = 'Bisque data - '+url
+        # m_file_handle = input_file
+        # m_content_type = 'text/csv'
+        # m_content_length = len(s)
+        # m_file_name = quote(url)
+        # m_title = 'Bisque data - '+url
 
-        ms = gdata.MediaSource(file_handle = m_file_handle, content_type = m_content_type, content_length = m_content_length, file_name = m_file_name )
-        entry = gd_client.UploadSpreadsheet(ms, m_title)
-        return dict(error=None, google_url=str(entry.GetAlternateLink().href))
+        # ms = gdata.MediaSource(file_handle = m_file_handle, content_type = m_content_type, content_length = m_content_length, file_name = m_file_name )
+        # entry = gd_client.UploadSpreadsheet(ms, m_title)
+        # return dict(error=None, google_url=str(entry.GetAlternateLink().href))
+        #!!! need to convert the methods with modern alternatives
+        return dict(error=None, google_url='')
 
 
     #------------------------------------------------------------------
@@ -437,7 +442,7 @@ class ExporterKML (ExporterGeo):
         doc = etree.SubElement (kml, 'Document')
 
         self.convert_node(resource, doc)
-        return etree.tostring(kml)
+        return etree.tostring(kml, encoding='unicode')
 
     def convert_node(self, node, kml, cnvf=None):
         if node is None:

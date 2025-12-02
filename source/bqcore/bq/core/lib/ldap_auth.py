@@ -87,7 +87,7 @@ class LDAPAuthenticatorPluginExt(LDAPSearchAuthenticatorPlugin):
                 raise ValueError("Couldn't bind with supplied credentials")
         try:
             attributes = self.ldap_connection.search_s(*args)
-        except ldap.LDAPError, msg: #pylint: disable=no-member
+        except ldap.LDAPError as msg: #pylint: disable=no-member
             environ['repoze.who.logger'].warn('Cannot add metadata: %s' % msg)
             raise Exception("Cannot fetch metatdata %s" % msg)
         else:

@@ -21,12 +21,12 @@ else:
     import unittest
 
 import os
-import ConfigParser
+import configparser
 import time
 import shortuuid
 from lxml import etree
 from datetime import datetime
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 from bqapi import BQSession
 from bqapi import BQResource, BQImage
@@ -35,7 +35,7 @@ from bq.image_service.tests.tests_base import ImageServiceTestBase
 
 #TEST_PATH = u'tests_multifile_%s'%shortuuid.uuid()
 #TEST_PATH = u'tests_multifile_%s'%urllib.quote(datetime.now().isoformat())
-TEST_PATH = u'tests_multifile_%s'%urllib.quote(datetime.now().strftime('%Y%m%d%H%M%S%f'))
+TEST_PATH = 'tests_multifile_%s'%urllib.parse.quote(datetime.now().strftime('%Y%m%d%H%M%S%f'))
 
 package_bisque = {
     'file': 'bisque-20140804.143944.tar.gz',
@@ -141,7 +141,7 @@ class ImageServiceTestsThirdParty(ImageServiceTestBase):
 
     @classmethod
     def setUpClass(cls):
-        config = ConfigParser.ConfigParser()
+        config = configparser.ConfigParser()
         config.read('config.cfg')
 
         cls.root = config.get('Host', 'root') or 'localhost:8080'
@@ -822,7 +822,7 @@ class ImageServiceTestsThirdParty(ImageServiceTestBase):
         resource = package['last']
         name = "%s#%s"%(package['file'], len(package['items'])-1)
         self.assertEqual(resource.get('name'), name)
-        pathpart = '%s/%s#%s'%(TEST_PATH, urllib.quote(package['file']), len(package['items'])-1)
+        pathpart = '%s/%s#%s'%(TEST_PATH, urllib.parse.quote(package['file']), len(package['items'])-1)
         self.assertTrue(pathpart in resource.get('value'))
 
     def test_thumbnail_image_zeiss_czi (self):

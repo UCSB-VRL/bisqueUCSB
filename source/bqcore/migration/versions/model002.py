@@ -58,7 +58,7 @@ DESCRIPTION
 
 
 """
-import urlparse
+import urllib.parse
 from datetime import datetime
 
 import sqlalchemy
@@ -263,7 +263,7 @@ class EntitySingleton(type):
     def __call__(cls, name):
         #sess = current_session()
         sess = current_session
-        name = unicode(name)
+        name = str(name)
         hashkey =  name
         #hashkey = name
         try:
@@ -295,11 +295,10 @@ class EntitySingleton(type):
             cls.instances[hashkey] = instance
             return instance
 
-class UniqueName(object):
-    __metaclass__ = EntitySingleton
+class UniqueName(object, metaclass=EntitySingleton):
     def __init__(self, name):
         log.debug ("unique name:" + name)
-        self.name = unicode(name)
+        self.name = str(name)
 
     def __repr__(self):
         return 'UniqueName('+self.name+')'
@@ -334,7 +333,7 @@ def parse_uri(uri):
     @rtype:  A triplet (host, dbclass, id)
     @return: The parse resouece
     '''
-    url = urlparse.urlsplit(uri)
+    url = urllib.parse.urlsplit(uri)
     name, id = url[2].split('/')[-2:]
     return url[1], name, id
 
@@ -445,7 +444,7 @@ class Taggable(object):
 
     @validates('owner')
     def validate_owner (self, key, owner):
-        if isinstance(owner, basestring) and owner.startswith ('http'):
+        if isinstance(owner, str) and owner.startswith ('http'):
             return map_url (owner)
         return owner
 
@@ -516,7 +515,7 @@ class Tag(Taggable):
     xmltag = 'tag'
 
     def __str__(self):
-        return 'tag "%s":"%s"' % (unicode(self.name), unicode(self.value))
+        return 'tag "%s":"%s"' % (str(self.name), str(self.value))
 
     # Tag.name helper functions
     def getname(self):
@@ -550,7 +549,7 @@ class Tag(Taggable):
 
     # Tag.value helper functions
     def newval(self, v, i = 0):
-        if type(v) == str or type(v) == unicode:
+        if type(v) == str or type(v) == str:
             v = Value(i, s = v)
         elif type(v) == int or type(v) == float:
             v = Value(i, n = v)
@@ -570,7 +569,7 @@ class Tag(Taggable):
 
     def setvalue(self, v):
         if type(v) == list:
-            l = [ self.newval(v[i], i) for i in xrange(len(v)) ]
+            l = [ self.newval(v[i], i) for i in range(len(v)) ]
         else:
             l = [ self.newval(v, 0) ]
         self.values = l
@@ -615,7 +614,7 @@ class Value(object):
         elif self.valnum: value = self.valnum
         return value
     def setvalue(self, v):
-        if type(v) == str or type(v) == unicode:
+        if type(v) == str or type(v) == str:
             self.valstr = v
             self.valnum = None
             self.valobj = None
@@ -659,7 +658,7 @@ class Value(object):
 
 
     def __str__ (self):
-        return unicode( self.value )
+        return str( self.value )
 
 
 class Vertex(object):
@@ -1197,9 +1196,9 @@ def registration_hook(action, **kw):
 
 def db_setup():
     global admin_user, init_module, init_mex
-    admin_user = BQUser.query.filter(BQUser.user_name == u'admin').first()
+    admin_user = BQUser.query.filter(BQUser.user_name == 'admin').first()
     if not admin_user:
-        admin_user = BQUser.new_user(password=u'admin', email = u'admin')
+        admin_user = BQUser.new_user(password='admin', email = 'admin')
         init_module = Module ()
         init_mex = ModuleExecution ()
         DBSession.add (init_module)
@@ -1223,7 +1222,7 @@ def db_setup():
 
 def db_load():
     global admin_user, init_module, init_mex
-    admin_user = DBSession.query(BQUser).filter_by(user_name=u'admin').first()
+    admin_user = DBSession.query(BQUser).filter_by(user_name='admin').first()
     init_module= DBSession.query(Module).filter_by(name='initialize').first()
     init_mex   = DBSession.query(ModuleExecution).filter_by(module='initialize').first()
     log.info( "initalize mex = %s" % init_mex)

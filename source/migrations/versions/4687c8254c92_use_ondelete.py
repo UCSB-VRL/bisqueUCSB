@@ -22,9 +22,9 @@ def upgrade():
     for table in ('taggable', 'values', 'vertices', 'taggable_acl'):
         fks = insp.get_foreign_keys(table) 
         for fk in fks:
-            print "Dropping Constraint : %s" % fk
+            print("Dropping Constraint : %s" % fk)
             op.drop_constraint(fk['name'], table, "foreignkey")
-    print "Creating new foriegn keys"
+    print("Creating new foriegn keys")
     for table in ('taggable', 'values', 'vertices', ):
         op.create_foreign_key("%s_children_fk" % table, 
                               table, 'taggable', 
@@ -42,7 +42,7 @@ def upgrade():
 
 
 def downgrade():
-    print "Removing foreign keys"
+    print("Removing foreign keys")
     for table in ('taggable', 'values', 'vertices'):
         op.drop_constraint( "%s_children_fk" %table,  table, 'foreignkey')
         op.drop_constraint( "%s_document_fk" %table,  table, 'foreignkey')

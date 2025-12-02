@@ -76,7 +76,7 @@ def json_to_cellprofiler(pipeline):
         res += pipeline[str(step_id)]['__Label__']+':['+'|'.join([tag+':'+flags[tag] for tag in flags if not tag.startswith('__')])+']\n'
         log.debug("HEADERR: %s" % res)   #!!!
         for param in pipeline[str(step_id)]['Parameters']:
-            tag = param.keys()[0]
+            tag = list(param.keys())[0]
             res += '    '+tag+':'+param[tag]+'\n'
         res += '\n'
     return res
@@ -411,13 +411,13 @@ class ExporterCellProfiler (PipelineExporter):
     def _get_parameters(self, step, param_name):
         res = []
         for param in step['Parameters']:
-            if param.keys()[0] == param_name:
+            if list(param.keys())[0] == param_name:
                 res.append(param[param_name])
         return res
     
     def _set_parameter(self, step, param_name, param_value):
         for param in step['Parameters']:
-            if param.keys()[0] == param_name:
+            if list(param.keys())[0] == param_name:
                 param[param_name] = param_value
 
     def format(self, pipeline):

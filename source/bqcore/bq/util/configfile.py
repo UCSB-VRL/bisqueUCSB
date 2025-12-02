@@ -4,7 +4,7 @@
 
 import os
 import re
-import StringIO
+import io
 import string
 
 # Bracketed name i.e. [section]
@@ -20,15 +20,15 @@ class peekable(object):
         self.buffer = []
     def __iter__(self):
         return self
-    def next(self):
+    def __next__(self):
         if self.buffer:
             return self.buffer.pop(0)
         else:
-            return self.iter.next()
+            return next(self.iter)
     def peek(self, n, default=None):
         while n >= len(self.buffer):
             try:
-                self.buffer.append(self.iter.next())
+                self.buffer.append(next(self.iter))
             except StopIteration:
                 return default
         return self.buffer[n]
@@ -42,9 +42,9 @@ def filterfluff(lines):
         #line, sep, comment = l.partition ('#')
         line = line_re.sub('', l)
         while line.endswith("\\"):
-            line = line[:-1] + line_re.sub ('', lines.next())
+            line = line[:-1] + line_re.sub ('', next(lines))
         while lines.peek(0, '').startswith( (' ', '\t') ):
-            line = line[:] + line_re.sub ('', lines.next())
+            line = line[:] + line_re.sub ('', next(lines))
         line = line.strip()
         if line:
             yield line
@@ -67,7 +67,7 @@ class ConfigFile(object):
         # Each section in the hash is a list of single lines..
         self.sections = { GLOBAL_SECTION : [] }
         self.options = kw
-        if isinstance(config, basestring) and os.path.exists(config):
+        if isinstance(config, str) and os.path.exists(config):
             config = open(config)
         if hasattr(config, 'read'):
             self.read (config)
@@ -96,14 +96,14 @@ class ConfigFile(object):
         if the line root=%(local_path), then the env = { 'local_path' : '/home/' }
         """
         if line is not None and env is not None:
-            for k,v in env.items():
+            for k,v in list(env.items()):
                 line = line.replace ("%%(%s)" % k, v)
 
         if not section:
             section = GLOBAL_SECTION
         sections = section.split (',')
         if sections == ['*']:
-            sections = self.sections.keys()
+            sections = list(self.sections.keys())
 
         for section in sections:
             # Find the sections
@@ -163,7 +163,7 @@ class ConfigFile(object):
                 #line = not v and str(k) or "=".join([str(k),str(v)])
                 line = "=".join([str(k),str(nv)]) if nv else str(k)
                 self.edit_config(section, k, line, env)
-        for k,v in items.items():
+        for k,v in list(items.items()):
             line = "=".join([str(k),str(v)]) if v else str(k)
             self.edit_config(section, k, line, env)
 
@@ -193,7 +193,7 @@ class ConfigFile(object):
         """Given a dict of known keys, extract from the
         given section the associated values
         """
-        for key in dic.keys():
+        for key in list(dic.keys()):
             v = self.get( section, key)
             #print 'key: [%s] value: [%s]'%(str(key), str(v))
             if v is not None:
@@ -207,7 +207,7 @@ class ConfigFile(object):
         @type f: a string or file-like object
         @param f: Name or file to write to
         """
-        if isinstance(f, basestring):
+        if isinstance(f, str):
             f = open(f, 'wb')
         for section in self.section_order:
             if section != GLOBAL_SECTION:
@@ -219,7 +219,7 @@ class ConfigFile(object):
             f.write ("\n")
 
     def __str__(self):
-        s = StringIO.StringIO()
+        s = io.StringIO()
         self.write (s)
         return s.getvalue()
 
@@ -243,17 +243,17 @@ options1 = 2
 
 
 def test_edit():
-    f = StringIO.StringIO (configfile)
+    f = io.StringIO (configfile)
     c = ConfigFile()
     c.read (f)
-    print "------ read i the following ----- "
-    print c
-    print "------ edit the following ----- "
+    print("------ read i the following ----- ")
+    print(c)
+    print("------ edit the following ----- ")
     c.edit_config ('advanced', 'options1', 'options1 = 1', {})
-    print c
+    print(c)
 
 
-    print "------ edit the following ----- "
+    print("------ edit the following ----- ")
     c.edit_config ('advanced', 'options3', 'options3 = 2', {})
     c.edit_config ('test', 'options1', 'options1 = 2', {})
-    print c
+    print(c)

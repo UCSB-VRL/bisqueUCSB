@@ -292,7 +292,7 @@ class Moments(Feature.BaseFeature):
         im = image2numpy(resource.image, remap='gray')
         binary_im = np.uint8(im>0)
         m = cv2.moments(binary_im)
-        return m.values()
+        return list(m.values())
 
 
 class HuMoments(Feature.BaseFeature):

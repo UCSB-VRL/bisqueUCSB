@@ -119,13 +119,13 @@ def get_cmd_args(argv):
         zone = argv[2]
     elif len(argv) == 0:
         if len(host) == 0:
-            host = input("iRODS host: ")
+            host = eval(input("iRODS host: "))
             if len(host) == 0:
                 sys.stderr.write("iRODS host is not given\n")
                 sys.exit(1)
 
         if port <= 0:
-            _port = input("iRODS port [1247]: ")
+            _port = eval(input("iRODS port [1247]: "))
             if len(_port) > 0:
                 if int(_port) > 0:
                     port = int(_port)
@@ -133,7 +133,7 @@ def get_cmd_args(argv):
                 port = 1247
 
         if len(zone) == 0:
-            zone = input("iRODS zone: ")
+            zone = eval(input("iRODS zone: "))
             if len(zone) == 0:
                 sys.stderr.write("iRODS zone is not given\n")
                 sys.exit(1)
@@ -155,7 +155,7 @@ def get_cmd_args(argv):
         sys.exit(1)
     
     if len(admin_user) == 0:
-        admin_user = input("Admin username: ")
+        admin_user = eval(input("Admin username: "))
         if len(admin_user) == 0:
             sys.stderr.write("Admin username is not given\n")
             sys.exit(1)
@@ -166,7 +166,7 @@ def get_cmd_args(argv):
             sys.stderr.write("Admin password is not given\n")
             sys.exit(1)
     
-    new_user = input("New username: ")
+    new_user = eval(input("New username: "))
     if len(new_user) == 0:
         sys.stderr.write("New username is not given\n")
         sys.exit(1)

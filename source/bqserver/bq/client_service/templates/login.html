@@ -27,15 +27,39 @@ function redirect_login (url) {
 
 <div id="loginform" class="login">
 
-<form action="${tg.url('/auth_service/login_handler', came_from = came_from.encode('utf-8'), __logins = login_counter.encode('utf-8'))}" method="POST" id='login_form' class="loginfields">
+<form action="${tg.url('/auth_service/login_handler', params={'came_from': str(came_from), '__logins': str(login_counter)})}" method="POST" id="login_form" class="loginfields">
 
     <h2>Welcome Back to BisQue!</h2>
 
+    <!-- Firebase Social Authentication -->
+    <div class="firebase-providers" py:if="'firebase_google' in providers or 'firebase_facebook' in providers or 'firebase_github' in providers">
+        <div class="firebase-buttons">
+            <button py:if="'firebase_google' in providers" type="button" class="sigin_button firebase-btn" onclick="window.location.href='/auth_service/firebase_auth?provider=google&amp;came_from=${came_from}'">
+                <img src="/core/images/signin/google.svg" alt="Google" /> Continue with Google
+            </button>
+            <button py:if="'firebase_facebook' in providers" type="button" class="sigin_button firebase-btn" onclick="window.location.href='/auth_service/firebase_auth?provider=facebook&amp;came_from=${came_from}'">
+                <img src="/core/images/signin/facebook.svg" alt="Facebook" /> Continue with Facebook
+            </button>
+            <button py:if="'firebase_github' in providers" type="button" class="sigin_button firebase-btn" onclick="window.location.href='/auth_service/firebase_auth?provider=github&amp;came_from=${came_from}'">
+                <img src="/core/images/signin/github.svg" alt="GitHub" /> Continue with GitHub
+            </button>
+            <button py:if="'firebase_twitter' in providers" type="button" class="sigin_button firebase-btn" onclick="window.location.href='/auth_service/firebase_auth?provider=twitter&amp;came_from=${came_from}'">
+                <img src="/core/images/signin/twitter.svg" alt="Twitter" /> Continue with Twitter
+            </button>
+        </div>
+        
+        <div class="divider" py:if="'local' in providers">
+            <span>or</span>
+        </div>
+    </div>
+
     <div class="local" py:if="'local' in providers" >
-        <h2>Login</h2>
+        <h3>Sign in with your BisQue account</h3>
         <label for="loginusername">Username:<input type="text" id="loginusername" name="login" value="$username" class="text"></input></label>
         <label for="loginpassword">Password:<input type="password" id="loginpassword" name="password" class="text"></input></label>
-        <button type="submit" id="submit" class="sigin_button" value="Sign-in with Bisque"><img src="/core/images/signin/signin.svg" /></button>
+        <button type="submit" id="submit" class="sigin_button full-button-image" value="Sign-in with Bisque">
+            <img src="/core/images/signin/signin.svg" alt="Sign in with BisQue" />
+        </button>
 
         <div class="registration">
             <p><a href="/registration/">Register New User</a></p>
@@ -44,11 +68,13 @@ function redirect_login (url) {
     </div>
 
     <div class="remote" py:if="len(providers)>1 or 'local' not in providers">
-        <h2>External providers</h2>
+        <h3>External providers</h3>
         <?python
-        remote = [k for k in providers.keys() if k != 'local']
+        remote = [k for k in providers.keys() if k != 'local' and not k.startswith('firebase_')]
         ?>
-        <button py:for="p in remote" type="button" class="sigin_button" name="${p}" onclick="redirect_login('${providers[p]['url']}')" value="${providers[p]['text']}"><img src="${providers[p]['icon']}" /></button>
+        <button py:for="p in remote" type="button" class="sigin_button full-button-image" name="${p}" onclick="redirect_login('${providers[p]['url']}')" value="${providers[p]['text']}">
+            <img src="${providers[p]['icon']}" alt="${providers[p]['text']}" />
+        </button>
     </div>
 </form>
 

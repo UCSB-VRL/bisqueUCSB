@@ -9,7 +9,7 @@ import shlex
 import string
 import subprocess
 import re
-from module_env import BaseEnvironment, ModuleEnvironmentError
+from .module_env import BaseEnvironment, ModuleEnvironmentError
 
 class ScriptEnvironment(BaseEnvironment):
     """Run an external script for environment prep
@@ -38,8 +38,8 @@ class ScriptEnvironment(BaseEnvironment):
                 return s
             return "'" + s.replace("'", "'\"'\"'") + "'"
 
-        quoted = dict ([(k, quote(v)) for (k, v) in mex.named_args.items()])
-        quoted.update (dict ((k, quote(v)) for (k, v) in mex.items() if isinstance(v, basestring)))
+        quoted = dict ([(k, quote(v)) for (k, v) in list(mex.named_args.items())])
+        quoted.update (dict ((k, quote(v)) for (k, v) in list(mex.items()) if isinstance(v, str)))
         script = string.Template(mex.script).safe_substitute(quoted)
 
         script = shlex.split(script)

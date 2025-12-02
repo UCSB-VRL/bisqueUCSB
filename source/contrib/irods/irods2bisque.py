@@ -8,10 +8,10 @@ __date__      = "$Date$"
 __copyright__ = "Center for BioImage Informatics, University California, Santa Barbara"
 
 import httplib2
-import urlparse
+import urllib.parse
 import base64
 from optparse import OptionParser
-from urllib import  urlencode
+from urllib.parse import  urlencode
 from bq.util import irods_handler
 
 DEFAULT_URL = "irods://data.cyverse.org"
@@ -33,7 +33,7 @@ def irods_import(options, irods_url, bisque_url, auth):
         # Register one file an return
         url = bisque_url + '?url=' + irods_url
         if options.verbose:
-            print  "POSTING ", url
+            print("POSTING ", url)
         if not options.dryrun:
             http.request(url, headers = auth )
         return
@@ -41,12 +41,12 @@ def irods_import(options, irods_url, bisque_url, auth):
     for irods_file in entries:
         if irods_file.endswith('/'):
             if options.verbose:
-                print "Skipping directory", irods_file
+                print("Skipping directory", irods_file)
             continue
         if is_image (irods_file ):
             url = bisque_url + '?url=' + irods_file 
             if options.verbose:
-                print "POSTING ", url
+                print("POSTING ", url)
             if not options.dryrun:
                 http.request(url, headers = auth)
   
@@ -80,7 +80,7 @@ def main():
     if options.list:
         # If testing then just print the contents of the container
         entries = irods_handler.irods_fetch_dir(irods_url)
-        print "\n".join(entries)
+        print("\n".join(entries))
         return
     if not bisque_url:
         parser.error ('must have a destination bisque server')
@@ -93,7 +93,7 @@ def main():
     user = options.user
     password = options.password
     if not bisque_url.endswith(BISQUE_ADD_IMAGE):
-        bisque_url = urlparse.urljoin(bisque_url, BISQUE_ADD_IMAGE)
+        bisque_url = urllib.parse.urljoin(bisque_url, BISQUE_ADD_IMAGE)
     auth = {'authorization' : 'Basic '+base64.encodestring("%s:%s" % (user,password)).strip()}
 
     # make request

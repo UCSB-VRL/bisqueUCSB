@@ -46,8 +46,8 @@
 Excel table importer
 """
 
-__author__    = "Dmitry Fedorov <dima@dimin.net>"
-__version__   = "1.0"
+__author__    = "Dmitry Fedorov <dima@dimin.net>, Updated by Wahid Sadique Koly"
+__version__   = "2.0"
 __copyright__ = "Center for Bio-Image Informatics, University of California at Santa Barbara"
 
 # default imports
@@ -55,7 +55,11 @@ import os
 import sys
 import logging
 import pkg_resources
-from pylons.controllers.util import abort
+try:
+    from pylons.controllers.util import abort
+except ImportError:
+    # TurboGears 2 uses different import
+    from tg import abort
 
 from bq import blob_service
 
@@ -69,9 +73,10 @@ except ImportError:
     log.info('Numpy was not found but required for table service!')
 
 try:
-    import xlrd
+    import openpyxl
 except ImportError:
-    log.info('Xlrd was not found but required for Excel tables!')
+    openpyxl = None
+    log.warning('Openpyxl was not found but recommended for Excel (.xlsx) files!')
 
 try:
     import pandas as pd
@@ -99,9 +104,32 @@ def _get_headers_types(data, startcol=None, endcol=None):
 def get_cb_excel(t, path):
     def cb_excel(slices):
         # read only slices
-        data = pd.read_excel(t, path, skiprows=xrange(1,slices[0].start+1), parse_cols=range(slices[1].start, slices[1].stop))  # TODO: use chunked reading to handle large datasets
+        # First, get the number of columns in this specific sheet
+        sample_data = pd.read_excel(t, path, nrows=1)
+        max_cols = sample_data.shape[1]
+        
+        # Adjust column slice to not exceed available columns
+        col_start = min(slices[1].start, max_cols)
+        col_stop = min(slices[1].stop, max_cols)
+        
+        if col_start >= max_cols:
+            # If start is beyond available columns, return empty DataFrame
+            return pd.DataFrame()
+        
+        # Use usecols instead of deprecated parse_cols parameter
+        cols_to_read = list(range(col_start, col_stop)) if col_stop > col_start else None
+        
+        if cols_to_read:
+            data = pd.read_excel(t, path, skiprows=range(1,slices[0].start+1), usecols=cols_to_read)
+        else:
+            # If no valid columns to read, return empty DataFrame
+            data = pd.DataFrame()
+            
         # excel cannot read only a specified number of rows, select now
-        return data[0:slices[0].stop-slices[0].start]
+        if not data.empty:
+            return data[0:slices[0].stop-slices[0].start]
+        else:
+            return data
     return cb_excel
 
 #---------------------------------------------------------------------------------------
@@ -121,6 +149,7 @@ class TableExcel(TableLike):
     def __init__(self, uniq, resource, path, **kw):
         """ Returns table information """
         super(TableExcel, self).__init__(uniq, resource, path, **kw)
+        self.sheet_selected = False  # Flag to track if sheet selection has been performed
 
         if self.t is None:
             # try to load the resource binary
@@ -139,15 +168,28 @@ class TableExcel(TableLike):
 
     def info(self, **kw):
         """ Returns table information """
-        if self.data is None:
-            # load headers and types if empty
-            if self.tables is None:
-                try:
+        # Initialize Excel file and tables if not already done
+        if self.tables is None:
+            try:
+                # Use openpyxl for .xlsx files, default pandas engine for .xls files
+                file_ext = os.path.splitext(self.filename)[1].lower()
+                if file_ext == '.xlsx':
+                    if openpyxl is not None:
+                        self.t = pd.ExcelFile(self.filename, engine='openpyxl')
+                    else:
+                        # Fall back to pandas default engine
+                        self.t = pd.ExcelFile(self.filename)
+                else:
+                    # For .xls files, use pandas default engine
                     self.t = pd.ExcelFile(self.filename)
-                except Exception:
-                    raise RuntimeError("Excel file cannot be read")
-                self.tables = [ { 'path':name, 'type':'sheet' } for name in self.t.sheet_names ]
-    
+                    
+            except Exception as e:
+                log.error("Excel file cannot be read: %s", str(e))
+                raise RuntimeError("Excel file cannot be read: %s" % str(e))
+            self.tables = [ { 'path':name, 'type':'sheet' } for name in self.t.sheet_names ]
+
+        # Perform sheet selection logic only if not already done
+        if not self.sheet_selected:
             if len(self.tables)==1: # if only one sheet is present
                 self.subpath = self.tables[0]['path']
                 if len(self.path)>0 and self.path[0] == self.subpath:
@@ -156,9 +198,13 @@ class TableExcel(TableLike):
                 self.subpath = self.path.pop(0)
             else: # if no path is provided, use first sheet
                 self.subpath = self.tables[0]['path']
-    
+            
+            # Mark sheet selection as completed
+            self.sheet_selected = True
+
+        if self.data is None:
             data = pd.read_excel(self.t, self.subpath, nrows=1)
-            self.sizes = (sys.maxint, data.shape[1])  # pylint: disable=no-member
+            self.sizes = (sys.maxsize, data.shape[1])  # pylint: disable=no-member
             self.cb = get_cb_excel(self.t, self.subpath)  # for lazy fetching
         else:
             data = self.data
@@ -166,7 +212,12 @@ class TableExcel(TableLike):
             
         self.headers, self.types = _get_headers_types(data)
         log.debug('Excel types: %s, header: %s, sizes: %s', str(self.types), str(self.headers), str(self.sizes))
-        return { 'headers': self.headers, 'types': self.types, 'sizes': self.sizes }
+        
+        # Return table info with all available sheets
+        result = { 'headers': self.headers, 'types': self.types, 'sizes': self.sizes }
+        if self.tables is not None and len(self.tables) > 1:
+            result['tables'] = self.tables
+        return result
 
     def write(self, data, **kw):
         """ Write cells into a table"""
@@ -175,4 +226,132 @@ class TableExcel(TableLike):
     def delete(self, **kw):
         """ Delete cells from a table"""
         abort(501, 'Excel delete not implemented')
+
+
+
+# !!! Old codes, kept for reference
+# import os
+# import sys
+# import logging
+# import pkg_resources
+# from pylons.controllers.util import abort
+
+# from bq import blob_service
+
+# __all__ = [ 'TableExcel' ]
+
+# log = logging.getLogger("bq.table.import.excel")
+
+# try:
+#     import numpy as np
+# except ImportError:
+#     log.info('Numpy was not found but required for table service!')
+
+# try:
+#     import xlrd
+# except ImportError:
+#     log.info('Xlrd was not found but required for Excel tables!')
+
+# try:
+#     import pandas as pd
+# except ImportError:
+#     log.info('Pandas was not found but required for table service!')
+
+# from bq.table.controllers.table_base import TableLike
+
+
+# ################################################################################
+# # misc
+# ################################################################################
+
+# def extjs_safe_header(s):
+#     # need to keep original names; otherwise queries may not work
+#     #if isinstance(s, basestring):
+#     #    return s.replace('.', '_')
+#     return s
+
+# def _get_headers_types(data, startcol=None, endcol=None):
+#     headers = [extjs_safe_header(x) for x in data.columns.values.tolist()[slice(startcol, endcol, None)]] # extjs errors loading strings with dots
+#     types = [t.name for t in data.dtypes.tolist()[slice(startcol, endcol, None)]] #data.dtypes.tolist()[0].name
+#     return (headers, types)
+            
+# def get_cb_excel(t, path):
+#     def cb_excel(slices):
+#         # read only slices
+#         data = pd.read_excel(t, path, skiprows=range(1,slices[0].start+1), parse_cols=list(range(slices[1].start, slices[1].stop)))  # TODO: use chunked reading to handle large datasets
+#         # excel cannot read only a specified number of rows, select now
+#         return data[0:slices[0].stop-slices[0].start]
+#     return cb_excel
+
+# #---------------------------------------------------------------------------------------
+# # Importer: Excel
+# # TODO: identify if header is present
+# # TODO: only read the requested number of rows
+# #---------------------------------------------------------------------------------------
+
+# class TableExcel(TableLike):
+#     '''Formats tables into output format'''
+
+#     name = 'excel'
+#     version = '1.0'
+#     ext = ['xls', 'xlsx']
+#     mime_type = 'application/vnd.ms-excel'
+
+#     def __init__(self, uniq, resource, path, **kw):
+#         """ Returns table information """
+#         super(TableExcel, self).__init__(uniq, resource, path, **kw)
+
+#         if self.t is None:
+#             # try to load the resource binary
+#             b = blob_service.localpath(uniq, resource=resource) or abort (404, 'File not available from blob service')
+#             self.filename = b.path
+#             self.info()
+
+#     def get_queriable(self):
+#         return self
+    
+#     def close(self):
+#         """Close table"""
+#         if self.t is not None:
+#             log.debug("closing Excel file")
+#             self.t.close()
+
+#     def info(self, **kw):
+#         """ Returns table information """
+#         if self.data is None:
+#             # load headers and types if empty
+#             if self.tables is None:
+#                 try:
+#                     self.t = pd.ExcelFile(self.filename)
+#                 except Exception:
+#                     raise RuntimeError("Excel file cannot be read")
+#                 self.tables = [ { 'path':name, 'type':'sheet' } for name in self.t.sheet_names ]
+    
+#             if len(self.tables)==1: # if only one sheet is present
+#                 self.subpath = self.tables[0]['path']
+#                 if len(self.path)>0 and self.path[0] == self.subpath:
+#                     self.path.pop(0)
+#             elif len(self.path)>0 and self.path[0] in [tab['path'] for tab in self.tables]: # if path is provided for a sheet
+#                 self.subpath = self.path.pop(0)
+#             else: # if no path is provided, use first sheet
+#                 self.subpath = self.tables[0]['path']
+    
+#             data = pd.read_excel(self.t, self.subpath, nrows=1)
+#             self.sizes = (sys.maxsize, data.shape[1])  # pylint: disable=no-member
+#             self.cb = get_cb_excel(self.t, self.subpath)  # for lazy fetching
+#         else:
+#             data = self.data
+#             self.sizes = list(data.shape)
+            
+#         self.headers, self.types = _get_headers_types(data)
+#         log.debug('Excel types: %s, header: %s, sizes: %s', str(self.types), str(self.headers), str(self.sizes))
+#         return { 'headers': self.headers, 'types': self.types, 'sizes': self.sizes }
+
+#     def write(self, data, **kw):
+#         """ Write cells into a table"""
+#         abort(501, 'Excel write not implemented')
+
+#     def delete(self, **kw):
+#         """ Delete cells from a table"""
+#         abort(501, 'Excel delete not implemented')
 

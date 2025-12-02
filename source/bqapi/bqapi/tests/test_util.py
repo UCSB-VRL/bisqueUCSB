@@ -28,7 +28,7 @@ def image_uri(session, stores):
     """
         uploads an image
     """
-    resource = etree.Element ('resource', name=u'%s/%s'%(TEST_PATH, stores.files[0].name))
+    resource = etree.Element ('resource', name='%s/%s'%(TEST_PATH, stores.files[0].name))
     content = bqsession.postblob(store.files[0].location, xml=resource)
     return etree.XML(content)[0].attrib['uri']
 
@@ -38,7 +38,7 @@ def setup_fetchimageplanes():
         uploads an image
     """
     global image_uri
-    resource = etree.Element ('resource', name=u'%s/%s'%(TEST_PATH, filename1))
+    resource = etree.Element ('resource', name='%s/%s'%(TEST_PATH, filename1))
     content = bqsession.postblob(stores.files[0].location, xml=resource)
     image_uri = etree.XML(content)[0].attrib['uri']
 
@@ -53,7 +53,7 @@ def setup_fetchimagepixels():
         uploads an image
     """
     global image_uri
-    resource = etree.Element('resource', name=u'%s/%s'%(TEST_PATH, filename1))
+    resource = etree.Element('resource', name='%s/%s'%(TEST_PATH, filename1))
     content = bqsession.postblob(stores.files[0].location, xml=resource)
     image_uri = etree.XML(content)[0].attrib['uri']
 
@@ -67,8 +67,8 @@ def setup_fetchdataset():
     """
     global dataset_uri
     dataset = etree.Element('dataset', name='test')
-    for _ in xrange(4):
-        resource = etree.Element('resource', name=u'%s/%s'%(TEST_PATH, filename1))
+    for _ in range(4):
+        resource = etree.Element('resource', name='%s/%s'%(TEST_PATH, filename1))
         content = bqsession.postblob(stores.files[0].location, xml=resource)
         value=etree.SubElement(dataset,'value', type="object")
         value.text = etree.XML(content)[0].attrib['uri']
@@ -86,8 +86,8 @@ def setup_fetchDataset():
     """
     global dataset_uri
     dataset = etree.Element('dataset', name='test')
-    for _ in xrange(4):
-        resource = etree.Element ('resource', name=u'%s/%s'%(TEST_PATH, filename1))
+    for _ in range(4):
+        resource = etree.Element ('resource', name='%s/%s'%(TEST_PATH, filename1))
         content = bqsession.postblob(stores.files[0].location, xml=resource)
         value=etree.SubElement(dataset,'value', type="object")
         value.text = etree.XML(content)[0].attrib['uri']
@@ -105,7 +105,7 @@ def setup_saveimagepixels():
         uploads an image
     """
     global image_uri
-    resource = etree.Element('resource', name=u'%s/%s'%(TEST_PATH, filename1))
+    resource = etree.Element('resource', name='%s/%s'%(TEST_PATH, filename1))
     content = bqsession.postblob(stores.files[0].location, xml=resource)
     image_uri = etree.XML(content)[0].attrib['uri']
 
@@ -119,7 +119,7 @@ def setup_fetchImage():
         uploads an image
     """
     global image_uri
-    resource = etree.Element ('resource', name=u'%s/%s'%(TEST_PATH, filename1))
+    resource = etree.Element ('resource', name='%s/%s'%(TEST_PATH, filename1))
     content = bqsession.postblob(stores.files[0].location, xml=resource)
     image_uri = etree.XML(content)[0].attrib['uri']
 
@@ -140,7 +140,7 @@ def test_saveblob_1(session,stores):
     """
     try:
         result = save_blob(bqsession, localfile=stores.files[0].location)
-    except BQCommError, e:
+    except BQCommError as e:
         assert False, 'BQCommError: Status: %s'%e.status
     if result is None:
         assert False, 'XML Parsing error'
@@ -153,7 +153,7 @@ def test_saveblob_2(session,stores):
 
     try:
         result = save_blob(bqsession, localfile=stores.files[0].location)
-    except BQCommError, e:
+    except BQCommError as e:
         assert False, 'BQCommError: Status: %s'%e.status
     if result is None:
         assert False, 'XML Parsing error'
@@ -168,7 +168,7 @@ def test_fetchblob_1(session, stores, image_uri):
     """
     try:
         result = fetch_blob(bqsession, image_uri, dest=stores.results)
-    except BQCommError, e:
+    except BQCommError as e:
         assert False, 'BQCommError: Status: %s'%e.status
 
 
@@ -179,7 +179,7 @@ def test_fetchblob_2(session, image_uri):
     """
     try:
         result = fetch_blob(bqsession, image_uri, uselocalpath=True)
-    except BQCommError, e:
+    except BQCommError as e:
         assert False, 'BQCommError: Status: %s'%e.status
 
 
@@ -192,7 +192,7 @@ def test_fetchimageplanes_1():
     """
     try:
         result = fetch_image_planes(bqsession, image_uri, results_location, uselocalpath=False)
-    except BQCommError, e:
+    except BQCommError as e:
         assert False, 'BQCommError: Status: %s'%e.status
 
 
@@ -203,7 +203,7 @@ def test_fetchimageplanes_2():
     """
     try:
         result = fetch_image_planes(bqsession, image_uri, results_location,uselocalpath=True)
-    except BQCommError, e:
+    except BQCommError as e:
         assert False, 'BQCommError: Status: %s'%e.status
 
 
@@ -215,7 +215,7 @@ def test_fetchimagepixels_1():
     """
     try:
         result = fetch_image_pixels(bqsession, image_uri, results_location,uselocalpath=True)
-    except BQCommError, e:
+    except BQCommError as e:
         assert False, 'BQCommError: Status: %s'%e.status
 
 #@with_setup(setup_fetchimagepixels, teardown_fetchimagepixels)
@@ -225,7 +225,7 @@ def test_fetchimagepixels_2():
     """
     try:
         result = fetch_image_pixels(bqsession, image_uri, results_location,uselocalpath=True)
-    except BQCommError, e:
+    except BQCommError as e:
         assert False, 'BQCommError: Status: %s'%e.status
 
 
@@ -236,7 +236,7 @@ def test_fetchdataset():
     """
     try:
         result = fetch_dataset(bqsession, dataset_uri, results_location)
-    except BQCommError, e:
+    except BQCommError as e:
         assert False, 'BQCommError: Status: %s'%e.status
 
 
@@ -247,7 +247,7 @@ def test_fetchImage_1():
     """
     try:
         result = fetchImage(bqsession, image_uri, results_location)
-    except BQCommError, e:
+    except BQCommError as e:
         assert False, 'BQCommError: Status: %s'%e.status
 
 
@@ -258,7 +258,7 @@ def test_fetchImage_2():
     """
     try:
         result = fetchImage(bqsession, image_uri, results_location, uselocalpath=True)
-    except BQCommError, e:
+    except BQCommError as e:
         assert False, 'BQCommError: Status: %s'%e.status
 
 
@@ -270,7 +270,7 @@ def test_fetchDataset():
     """
     try:
         result = fetchDataset(bqsession, dataset_uri, results_location)
-    except BQCommError, e:
+    except BQCommError as e:
         assert False, 'BQCommError: Status: %s'%e.status
 
 
@@ -285,10 +285,10 @@ def test_saveimagepixels():
     <image name="%s">
         <tag name="my_tag" value="test"/>
     </image>
-    """%u'%s/%s'%(TEST_PATH, filename1)
+    """%'%s/%s'%(TEST_PATH, filename1)
     #bqimage = fromXml(etree.XML(xmldoc))
     bqimage = bqsession.factory.from_string (xmldoc)
     try:
         result = save_image_pixels(bqsession, stores.files[0].location, image_tags=bqimage)
-    except BQCommError, e:
+    except BQCommError as e:
         assert False, 'BQCommError: Status: %s'%e.status

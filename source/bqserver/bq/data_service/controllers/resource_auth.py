@@ -519,7 +519,7 @@ def match_user (user=None, user_uniq=None, email=None ):
             user_uniq = posixpath.basename (user_uniq)
             user = DBSession.query(BQUser).filter_by (resource_uniq = user_uniq).first()
         if  user is None and email:
-            user = DBSession.query(BQUser).filter_by(resource_value=unicode(email)).first()
+            user = DBSession.query(BQUser).filter_by(resource_value=str(email)).first()
     # did we find a user?
     if  user is not None:
         return (user, None)

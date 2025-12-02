@@ -24,5 +24,5 @@ if __name__ == '__main__':
     start = time.time()
     htd = histogram_of_oriented_gradients(im)
     end = time.time()
-    print htd
-    print 'Time: %s'%(end-start)
+    print(htd)
+    print('Time: %s'%(end-start))

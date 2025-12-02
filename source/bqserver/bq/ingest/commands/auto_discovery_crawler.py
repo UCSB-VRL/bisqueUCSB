@@ -56,12 +56,12 @@ import logging
 import logging.handlers
 import os, sys, traceback
 import time
-from StringIO import StringIO
-import ConfigParser
+from io import StringIO
+import configparser
 import getopt
 import boto
 from boto.s3 import Connection
-import httplib, urllib2
+import http.client, urllib.request, urllib.error, urllib.parse
 import base64
 
 LAST_POST = 0
@@ -71,13 +71,13 @@ LOG_FILENAME = 'auto_discovery_crawler.log'
 logger = None
 
 def usage():
-    print "Usage: auto_discovery_crawler -i <amazon_access_key_id> -k <amazon_secret_access_key> -u <bisque_username> -p <bisque_password> [ -b <s3_bucket> ] [-c <config_file] [-s <bisque_url>]"
-    print "\n\tIf no bucket is specified, the crawler will scan all buckets to which it has access."
-    print "\tDefault config file location is ~/.bisque_crawler.  Command-line args override any config file settings."
+    print("Usage: auto_discovery_crawler -i <amazon_access_key_id> -k <amazon_secret_access_key> -u <bisque_username> -p <bisque_password> [ -b <s3_bucket> ] [-c <config_file] [-s <bisque_url>]")
+    print("\n\tIf no bucket is specified, the crawler will scan all buckets to which it has access.")
+    print("\tDefault config file location is ~/.bisque_crawler.  Command-line args override any config file settings.")
     sys.exit()
 
 def read_config_file(config):
-    parser = ConfigParser.ConfigParser()
+    parser = configparser.ConfigParser()
     if parser.read(os.path.expanduser(config["config_file"])) == []:
         logger.info("Config file %s not found; using command-line params", config["config_file"])
         return config
@@ -95,12 +95,12 @@ def read_config_file(config):
     try: 
         if "bucket" not in config:
             config["bucket"] = parser.get("bisque_crawler", "bucket")
-    except ConfigParser.NoOptionError:
+    except configparser.NoOptionError:
         pass
     try:
         if "bisque_url" not in config:
             config["bisque_url"] = parser.get("bisque_crawler", "bisque_url")
-    except ConfigParser.NoOptionError:
+    except configparser.NoOptionError:
         pass
 
     return config
@@ -139,19 +139,19 @@ def scan_S3(config, local_url_cache):
 
 def post_to_bisque(config, key_list):
     authstring = base64.b64encode(config["bisque_user"] + ":" + config["bisque_pw"])
-    httplib.HTTPConnection.debuglevel = 1
+    http.client.HTTPConnection.debuglevel = 1
     try:
-        req = urllib2.Request(config['bisque_url'], urllib2.quote(key_list))
+        req = urllib.request.Request(config['bisque_url'], urllib.parse.quote(key_list))
         req.add_header('User-Agent', 'BisqueCrawler/0.1 http://http://www.bioimage.ucsb.edu/')
         req.add_header('Authorization', "Basic " + authstring)
-        opener = urllib2.build_opener()
+        opener = urllib.request.build_opener()
         data = opener.open(req).read() 
     except Exception as e:
         r = False
         logger.warning('Failed to post data: %s' % (e))
     else:
         r = True
-    httplib.HTTPConnection.debuglevel = 0
+    http.client.HTTPConnection.debuglevel = 0
     return r
 
 def post_to_bisque_if_due(config, new_url_list):
@@ -232,7 +232,7 @@ def main():
     if "access_key_id" not in config or "secret_access_key" not in config or "bisque_user" not in config or "bisque_pw" not in config:
         usage()
 
-    print config
+    print(config)
     while True:
         new_url_list += scan_S3(config, local_url_cache)
         r = post_to_bisque_if_due(config, new_url_list)

@@ -15,10 +15,10 @@ import subprocess
 
 def upgrade():
 
-    print "initializing authenticated stores"
+    print("initializing authenticated stores")
     r = subprocess.call (['bq-admin', 'stores', 'init'])
     if r!=0:
-        print "encountered an error during store initialization"
+        print("encountered an error during store initialization")
 
 
 def downgrade():

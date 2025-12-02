@@ -46,4 +46,4 @@ class LocalPathOperation(BaseOperation):
         #else:
         #    res = etree.Element ('resource')
 
-        return token.setXml( etree.tostring(res) )
+        return token.setXml( etree.tostring(res, encoding='unicode') )

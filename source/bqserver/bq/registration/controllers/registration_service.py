@@ -46,7 +46,6 @@ DESCRIPTION
 ===========
 
 """
-
 import pkg_resources
 import logging
 import os
@@ -91,7 +90,8 @@ def get_model():
     from bq.registration import model
     return model
 
-from tgext.registration2.controllers import UserRegistration as RegistrationController
+# from tgext.registration2.controllers import UserRegistration as RegistrationController
+from bq.registration.controllers.registration_controller import RegistrationController # !!! Minimal replacement for tgext.registration2 UserRegistration
 RegistrationController.service_type = "registration"
 
 __controller__ = RegistrationController

@@ -31,7 +31,7 @@ def create_soap_saml(ticket):
                                                )
                                  )
                        )
-    return etree.tostring(env, pretty_print=True)
+    return etree.tostring(env, pretty_print=True, encoding='unicode')
 
 def parse_soap_saml(xml):
     'parse response for validation and attributes'

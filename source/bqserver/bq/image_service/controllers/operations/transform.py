@@ -105,7 +105,7 @@ class TransformOperation(BaseOperation):
             raise ImageServiceException(400, 'transform: requested transform is not yet supported')
 
         dims = token.dims or {}
-        for n,v in transforms[transform]['require'].iteritems():
+        for n,v in transforms[transform]['require'].items():
             if v != dims.get(n):
                 raise ImageServiceException(400, 'transform: input image is incompatible, %s must be %s but is %s'%(n, v, dims.get(n)) )
 

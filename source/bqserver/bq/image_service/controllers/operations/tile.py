@@ -203,7 +203,7 @@ class TileOperation(BaseOperation):
                 return token.setImage(ofname, fmt=default_format, dims=info, hist=hist_name, input=ofname)
             else:
                 r = None
-                for n,c in self.server.converters.iteritems():
+                for n,c in self.server.converters.items():
                     if n == ConverterImgcnv.name: continue
                     if callable( getattr(c, "tile", None) ):
                         r = c.tile(token, ofname, level, tnx, tny, tsz)

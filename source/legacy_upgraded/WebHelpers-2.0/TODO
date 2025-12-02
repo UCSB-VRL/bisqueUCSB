@@ -1,0 +1,20 @@
+TODO
+%%%%
+
+WebHelpers 1.x is in a soft feature freeze, so only bugfixes and small changes
+are likely to be made in the foreseeable future.
+
+See also the bug list at http://bigbucket.org/bbangert/webhelpers .
+
+``webhelpers.html.grid`` needs better docs. The API could maybe use some
+improvement too.
+
+The "unfinished" directory in the WebHelpers source distribution contains
+potential future helpers which are not finished enough for release. These are
+not installed by the installer; they are available only in the source tarball.
+
+Port to Python 3.
+
+Too many strip_tags / sanitize / bleach functions.
+
+grid_demo: usage message shows "__main__" rather than package.module.

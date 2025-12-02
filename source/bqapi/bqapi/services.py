@@ -135,7 +135,7 @@ class BlobProxy (BaseServiceProxy):
         url = urllib.parse.urljoin( self.session.service_map['blob_service'], 'paths/insert' )
         params = {}
         resource = self._resource_element(args_srcpath=srcpath, args_resource_type=resource_type, args_tag_file=tag_file)
-        payload = etree.tostring (resource)
+        payload = etree.tostring (resource, encoding='unicode')
         if alias:
             params['user'] = alias
         r = self.post(url, data=payload, params=params, headers={'content-type': 'application/xml'})
@@ -210,7 +210,7 @@ class DatasetProxy (BaseServiceProxy):
         data = self.session.service('data_service')
         member = etree.Element('value', type='object')
         member.text = data.contruct (resource_uniq)
-        self.post (dataset_uniq, data=etree.tostring(member), render='etree')
+        self.post (dataset_uniq, data=etree.tostring(member, encoding='unicode'), render='etree')
 
     def delete_member (self, dataset_uniq, resource_uniq, **kw):
         """Delete a member..
@@ -224,7 +224,7 @@ class DatasetProxy (BaseServiceProxy):
         if len (members):
             for val in dataset.iter ('value'):
                 _ = val.attrib.pop ('index', 0)
-            return data.put (dataset_uniq, data = etree.tostring (dataset), render='etree')
+            return data.put (dataset_uniq, data = etree.tostring (dataset, encoding='unicode'), render='etree')
         return None
 
 
@@ -304,7 +304,7 @@ class ImageProxy(BaseServiceProxy):
 class ExportProxy(BaseServiceProxy):
     valid_param = set (['files', 'datasets', 'dirs', 'urls', 'users'])
     def fetch_export(self, **kw):
-        params = { key:val for key,val in kw.items() if key in self.valid_param and val is not None }
+        params = { key:val for key,val in list(kw.items()) if key in self.valid_param and val is not None }
         response = self.fetch ('stream', params = params, stream=kw.pop ('stream', True) )
         return response
     def fetch_export_local(self, localpath, stream=True, **kw):

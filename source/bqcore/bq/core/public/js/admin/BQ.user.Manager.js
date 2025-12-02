@@ -219,12 +219,22 @@ Ext.define('BQ.admin.UserTable', {
         }, {
             text: 'E-mail', dataIndex: 'email', sortable: true, flex:2,
         }, {
-            text: 'Display name', dataIndex: 'display_name', sortable: true, flex:2,
+            text: 'Full name', dataIndex: 'fullname', sortable: true, flex:2,
+            renderer: function(value, meta, record) {
+                // Fallback to display_name if fullname is not available (for legacy users)
+                return value || record.get('display_name') || '';
+            }
+        }, {
+            text: 'Research Area', dataIndex: 'research_area', sortable: true, flex:2, hidden: true,
+        }, {
+            text: 'Institution', dataIndex: 'institution_affiliation', sortable: true, flex:2, hidden: true,
+        }, {
+            text: 'Funding', dataIndex: 'funding_agency', sortable: true, flex:1, hidden: true,
         }],
         defaults: {
             renderer : function (value, meta, record) {
                 var value = value || '';
-                return '<div style="line-height:32px; text-align:center; height:32px; overflow:hidden; text-overflow:ellipsis">'+value+'</div>';
+                return '<div style="line-height:32px; text-align:center; height:32px; overflow:hidden; text-overflow:ellipsis" title="'+Ext.util.Format.htmlEncode(value)+'">'+Ext.util.Format.htmlEncode(value)+'</div>';
             }
         }
     },
@@ -293,6 +303,15 @@ Ext.define('BQ.admin.UserTable', {
                 iconCls : 'icon clear',
                 tooltip: 'Removes all data from selected user',
                 handler: this.deleteUserImagesMessage,
+                scope: this,
+            }, ' ', {
+                xtype: 'button',
+                text: 'Extended View',
+                iconCls: 'icon info',
+                tooltip: 'Toggle extended user information columns',
+                enableToggle: true,
+                pressed: false,
+                handler: this.toggleExtendedView,
                 scope: this,
             }, '->', {
                 xtype:'textfield',
@@ -385,6 +404,21 @@ Ext.define('BQ.admin.UserTable', {
             },{
                 name: 'display_name',
                 mapping: "tag[@name='display_name']/@value",
+            },{
+                name: 'fullname',
+                mapping: "tag[@name='fullname']/@value",
+            },{
+                name: 'username',
+                mapping: "tag[@name='username']/@value",
+            },{
+                name: 'research_area',
+                mapping: "tag[@name='research_area']/@value",
+            },{
+                name: 'institution_affiliation',
+                mapping: "tag[@name='institution_affiliation']/@value",
+            },{
+                name: 'funding_agency',
+                mapping: "tag[@name='funding_agency']/@value",
             }],
         });
 
@@ -428,33 +462,74 @@ Ext.define('BQ.admin.UserTable', {
     addUserWin : function() {
         var me = this;
         var userForm = Ext.create('Ext.form.Panel', {
-            //padding: '8px',
             padding: '20px',
             layout: 'anchor',
             border: false,
             defaultType: 'textfield',
+            autoScroll: true,
             items: [{
                 padding: '5px',
-                fieldLabel: 'User name',
+                fieldLabel: 'User name *',
                 name: 'username',
                 allowBlank: false,
+                anchor: '100%',
+                helpText: 'Unique username for login'
             },{
                 padding: '5px',
-                fieldLabel: 'Password',
+                fieldLabel: 'Email *',
+                name: 'email',
+                allowBlank: false,
+                vtype: 'email',
+                anchor: '100%',
+            },{
+                padding: '5px',
+                fieldLabel: 'Full Name *',
+                name: 'fullname',
+                allowBlank: false,
+                anchor: '100%',
+            },{
+                padding: '5px',
+                fieldLabel: 'Password *',
                 name: 'password',
                 inputType: 'password',
                 allowBlank: false,
-                //invalidText:
+                anchor: '100%',
+                minLength: 6,
             },{
                 padding: '5px',
-                fieldLabel: 'Display Name',
-                name: 'displayname',
+                fieldLabel: 'Research Area *',
+                name: 'research_area',
+                xtype: 'combobox',
                 allowBlank: false,
+                anchor: '100%',
+                store: [
+                    'Bioinformatics', 'Cell Biology', 'Developmental Biology', 'Ecology',
+                    'Genetics', 'Immunology', 'Materials Science', 'Microbiology',
+                    'Molecular Biology', 'Neuroscience', 'Pharmacology', 'Plant Biology',
+                    'Structural Biology', 'Other'
+                ],
+                editable: false,
+                queryMode: 'local',
             },{
                 padding: '5px',
-                fieldLabel: 'E-mail',
-                name: 'email',
+                fieldLabel: 'Institution Affiliation *',
+                name: 'institution_affiliation',
                 allowBlank: false,
+                anchor: '100%',
+            },{
+                padding: '5px',
+                fieldLabel: 'Funding Agency',
+                name: 'funding_agency',
+                xtype: 'combobox',
+                allowBlank: true,
+                anchor: '100%',
+                store: [
+                    'NIH', 'NSF', 'DOE', 'DoD', 'NASA', 'USDA',
+                    'Private_Foundation', 'Industry', 'International', 'Other', 'None'
+                ],
+                editable: false,
+                queryMode: 'local',
+                emptyText: 'Select funding agency (optional)'
             }],
         });
 
@@ -465,19 +540,18 @@ Ext.define('BQ.admin.UserTable', {
             title: 'Create New User',
             bodyStyle: 'background-color:#FFFFFF',
             layout : 'fit',
+            width: 450,
+            height: 500,
             items: userForm,
             scope: this,
             buttons: [{
-                //formBind: true, //only enabled once the form is valid
-                //disabled: true,
                 text: 'Submit',
                 handler: function() {
                     var form = userForm.getForm();
                     if (form.isValid()) {
-                        var values = form.getValues()
-                        me.addUser(values.username, values.password, values.displayname, values.email)
+                        var values = form.getValues();
+                        me.addUser(values);
                         win.close();
-
                     }
                 },
             },{
@@ -490,21 +564,59 @@ Ext.define('BQ.admin.UserTable', {
         win.show();
     },
 
-    addUser: function(username, password, display_name, email) {
+    addUser: function(userData) {
         var user = document.createElement("user");
-        user.setAttribute('name',username);
+        user.setAttribute('name', userData.username);
+        
+        // Password tag
         var passwordTag = document.createElement("tag");
         passwordTag.setAttribute('name','password');
-        passwordTag.setAttribute('value',password);
+        passwordTag.setAttribute('value', userData.password);
         user.appendChild(passwordTag);
+        
+        // Email tag
         var emailTag = document.createElement("tag");
         emailTag.setAttribute('name','email');
-        emailTag.setAttribute('value',email);
+        emailTag.setAttribute('value', userData.email);
         user.appendChild(emailTag);
+        
+        // Display name tag (using full name)
         var display_nameTag = document.createElement("tag");
         display_nameTag.setAttribute('name','display_name');
-        display_nameTag.setAttribute('value',display_name);
+        display_nameTag.setAttribute('value', userData.fullname);
         user.appendChild(display_nameTag);
+        
+        // Full name tag (new field)
+        var fullnameTag = document.createElement("tag");
+        fullnameTag.setAttribute('name','fullname');
+        fullnameTag.setAttribute('value', userData.fullname);
+        user.appendChild(fullnameTag);
+        
+        // Username tag (for BQUser compatibility)
+        var usernameTag = document.createElement("tag");
+        usernameTag.setAttribute('name','username');
+        usernameTag.setAttribute('value', userData.username);
+        user.appendChild(usernameTag);
+        
+        // Research area tag
+        var researchAreaTag = document.createElement("tag");
+        researchAreaTag.setAttribute('name','research_area');
+        researchAreaTag.setAttribute('value', userData.research_area);
+        user.appendChild(researchAreaTag);
+        
+        // Institution affiliation tag
+        var institutionTag = document.createElement("tag");
+        institutionTag.setAttribute('name','institution_affiliation');
+        institutionTag.setAttribute('value', userData.institution_affiliation);
+        user.appendChild(institutionTag);
+        
+        // Funding agency tag (if provided)
+        if (userData.funding_agency) {
+            var fundingTag = document.createElement("tag");
+            fundingTag.setAttribute('name','funding_agency');
+            fundingTag.setAttribute('value', userData.funding_agency);
+            user.appendChild(fundingTag);
+        }
 
         Ext.Ajax.request({
             url: '/admin/user',
@@ -666,6 +778,22 @@ Ext.define('BQ.admin.UserTable', {
         })
     },
 
+    toggleExtendedView: function(btn) {
+        var columns = this.getColumns();
+        var extendedColumns = ['research_area', 'institution_affiliation', 'funding_agency'];
+        
+        var showExtended = btn.pressed;
+        
+        Ext.each(columns, function(column) {
+            if (Ext.Array.contains(extendedColumns, column.dataIndex)) {
+                column.setVisible(showExtended);
+            }
+        });
+        
+        // Update button text
+        btn.setText(showExtended ? 'Basic View' : 'Extended View');
+    },
+
     reload : function() {
         if (this.userInfoPanel) {
             this.userInfoPanel.deselectUser();
@@ -782,6 +910,8 @@ Ext.define('BQ.admin.UserManager', {
             function(el, xmlResponse) {
                 var userName = xmlResponse.attributes['name'].value;
                 var record = me.userTable.store.findRecord('name', userName);
+                
+                // Update existing fields
                 var email = xmlResponse.querySelector('tag[name="email"]');
                 record.set('email', email ? email.attributes['value'].value: '');
                 var resource_uniq = xmlResponse.attributes['resource_uniq'];
@@ -790,6 +920,18 @@ Ext.define('BQ.admin.UserManager', {
                 record.set('profile_picture', profile_picture ?  profile_picture.attributes['value'].value : '');
                 var display_name = xmlResponse.querySelector('tag[name="display_name"]');
                 record.set('display_name', display_name ?  display_name.attributes['value'].value : '');
+                
+                // Update new registration fields
+                var fullname = xmlResponse.querySelector('tag[name="fullname"]');
+                record.set('fullname', fullname ? fullname.attributes['value'].value : '');
+                var username = xmlResponse.querySelector('tag[name="username"]');
+                record.set('username', username ? username.attributes['value'].value : '');
+                var research_area = xmlResponse.querySelector('tag[name="research_area"]');
+                record.set('research_area', research_area ? research_area.attributes['value'].value : '');
+                var institution_affiliation = xmlResponse.querySelector('tag[name="institution_affiliation"]');
+                record.set('institution_affiliation', institution_affiliation ? institution_affiliation.attributes['value'].value : '');
+                var funding_agency = xmlResponse.querySelector('tag[name="funding_agency"]');
+                record.set('funding_agency', funding_agency ? funding_agency.attributes['value'].value : '');
         });
 
         items.push(this.userTable);

@@ -55,7 +55,11 @@ import os
 import logging
 import pkg_resources
 import re
-from pylons.controllers.util import abort
+try:
+    from pylons.controllers.util import abort
+except ImportError:
+    # TurboGears 2 uses different import
+    from tg import abort
 
 from bq import blob_service
 

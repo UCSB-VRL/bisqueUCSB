@@ -214,3 +214,11 @@
     -moz-box-shadow: 0px 0px 8px 0px rgba(0, 153, 255, 1);
     box-shadow: 0px 0px 8px 0px rgba(0, 153, 255, 1);
 }
+
+/* CLean cache icon */
+.icon-clean-cache {
+    width: 24px;
+    background-image: url('/core/images/data-cleaning.png') !important;
+    background-repeat: no-repeat;
+    background-size: 20px;
+}

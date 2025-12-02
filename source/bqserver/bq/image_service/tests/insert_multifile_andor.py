@@ -19,10 +19,10 @@ else:
     import unittest
 import os
 import posixpath
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import time
 from lxml import etree
-import ConfigParser
+import configparser
 from bqapi import BQSession, BQCommError
 from bqapi.util import save_blob, localpath2url
 
@@ -31,7 +31,7 @@ from bqapi.util import save_blob, localpath2url
 ##################################################################
 
 
-config = ConfigParser.ConfigParser()
+config = configparser.ConfigParser()
 config.read('config.cfg')
 
 root = config.get('Host', 'root') or 'localhost:8080'
@@ -51,10 +51,10 @@ request = '%s</image>'%request
 #r = session.postxml(url, etree.fromstring(request), method='POST')
 r = save_blob(session, resource=request)
 if r is None or r.get('uri') is None:
-    print 'Upload failed'
+    print('Upload failed')
 else:
-    print 'id: %s'%r.get('resource_uniq')
-    print 'url: %s'%r.get('uri')
+    print('id: %s'%r.get('resource_uniq'))
+    print('url: %s'%r.get('uri'))
 
 
 
@@ -66,10 +66,10 @@ request = '%s</image>'%request
 #r = session.postxml(url, etree.fromstring(request), method='POST')
 r = save_blob(session, resource=request)
 if r is None or r.get('uri') is None:
-    print 'Upload failed'
+    print('Upload failed')
 else:
-    print 'id: %s'%r.get('resource_uniq')
-    print 'url: %s'%r.get('uri')
+    print('id: %s'%r.get('resource_uniq'))
+    print('url: %s'%r.get('uri'))
 
 
 
@@ -81,9 +81,9 @@ request = '%s</image>'%request
 #r = session.postxml(url, etree.fromstring(request), method='POST')
 r = save_blob(session, resource=request)
 if r is None or r.get('uri') is None:
-    print 'Upload failed'
+    print('Upload failed')
 else:
-    print 'id: %s'%r.get('resource_uniq')
-    print 'url: %s'%r.get('uri')
+    print('id: %s'%r.get('resource_uniq'))
+    print('url: %s'%r.get('uri'))
 
 

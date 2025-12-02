@@ -58,7 +58,8 @@ from collections import OrderedDict
 from datetime import datetime
 from lxml import etree
 from tg import expose, controllers, flash, url, response, request
-from repoze.what.predicates import is_user, in_group, Any, not_anonymous
+# from repoze.what.predicates import is_user, in_group, Any, not_anonymous # !!! was in python2
+from tg.predicates import is_user, in_group, Any, not_anonymous # !!! Modern alternative
 from bq.data_service.controllers.resource_query import RESOURCE_READ, RESOURCE_EDIT
 from pylons.controllers.util import abort
 
@@ -112,7 +113,7 @@ def mergeDocuments(current, new, **attrib):
 
     def merge(new, current):
         #merges the new docucument to the current one
-        for k in new.sub_node_dict.keys():
+        for k in list(new.sub_node_dict.keys()):
             if k in current.sub_node_dict:
                 #deals with the cases when the current needs to be merged with the new document
                 #case 1: both current and new are parent nodes
@@ -217,7 +218,7 @@ def to_etree(dictionary, **attrib):
         @return: etree
     """
     def build(dict, node):
-        for k in dict.keys():
+        for k in list(dict.keys()):
             if type(dict[k]) is TagValueNode:
                 subNode = etree.Element('tag', **dict[k].node_attrib)
                 for e in dict[k].sub_node:
@@ -248,7 +249,7 @@ def update_level(new_doc, current_doc, **attrib):
         """
             merges TagNameNode elements
         """
-        for nk in new.sub_node_dict.keys():
+        for nk in list(new.sub_node_dict.keys()):
             if nk in current.sub_node_dict: #set current node
                 if type(new.sub_node_dict[nk]) is TagNameNode and type(current.sub_node_dict[nk]) is TagNameNode:
                     #both new and current are TagNameNodes
@@ -443,11 +444,11 @@ class PreferenceController(ServiceController):
             if xpath:
                 system_preference = system_preference.xpath('/preference/%s'%xpath)
                 if len(system_preference)>0:
-                    return etree.tostring(system_preference[0])
+                    return etree.tostring(system_preference[0], encoding='unicode')
                 else:
                     abort(404)
             else:
-                return etree.tostring(system_preference)
+                return etree.tostring(system_preference, encoding='unicode')
 
         #check user preference
         user = self.get_current_user(view='full')
@@ -470,11 +471,11 @@ class PreferenceController(ServiceController):
             if xpath:
                 user_preference = user_preference.xpath('/preference/%s'%xpath)
                 if len(user_preference)>0:
-                    return etree.tostring(user_preference[0])
+                    return etree.tostring(user_preference[0], encoding='unicode')
                 else:
                     abort(404)
             else:
-                return etree.tostring(user_preference)
+                return etree.tostring(user_preference, encoding='unicode')
 
         #check resource preference
         resource = data_service.get_resource('/data_service/%s'%resource_uniq, view='full')
@@ -517,11 +518,11 @@ class PreferenceController(ServiceController):
             if xpath:
                 annotation_preference = annotation_preference.xpath('/preference/%s'%xpath)
                 if len(annotation_preference)>0:
-                    return etree.tostring(annotation_preference[0])
+                    return etree.tostring(annotation_preference[0], encoding='unicode')
                 else:
                     abort(404)
             else:
-                return etree.tostring(annotation_preference)
+                return etree.tostring(annotation_preference, encoding='unicode')
         #raise exception level not known
 
 
@@ -572,7 +573,7 @@ class PreferenceController(ServiceController):
         """
         """
         def strip(node):
-            for a in node.attrib.keys():
+            for a in list(node.attrib.keys()):
                 if a not in set(save_attrib):
                     del node.attrib[a]
             for n in node:
@@ -637,7 +638,7 @@ class PreferenceController(ServiceController):
             else: #not correct format and no xpath
                 abort(400)
 
-        return etree.tostring(resource)
+        return etree.tostring(resource, encoding='unicode')
 
 
     def system_put(self, body, xpath=None, **kw):
@@ -696,7 +697,7 @@ class PreferenceController(ServiceController):
             else: #not correct format and no xpath
                 abort(400)
 
-        return etree.tostring(resource)
+        return etree.tostring(resource, encoding='unicode')
 
     def system_reset(self, xpath=None, **kw):
         """

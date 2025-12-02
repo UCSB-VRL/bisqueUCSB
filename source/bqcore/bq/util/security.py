@@ -9,7 +9,7 @@ def bq_challenge_decider(environ, status, headers):
     if 'WWW-Authenticate' in h_dict:
         return False
     ct = h_dict.get('Content-Type', None)
-    print "CHALLENGE HEADERS", ct
+    print(("CHALLENGE HEADERS", ct))
     return  'xml' not in ct
 
 

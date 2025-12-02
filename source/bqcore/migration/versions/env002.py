@@ -9,7 +9,7 @@ if os.path.exists ('config/site.cfg'):
     tc.read(open('config/site.cfg'))
 db = tc.get('app:main', 'sqlalchemy.url')
 if db is None:
-    print "Please set sqlalchemy.url in site.cfg "
+    print("Please set sqlalchemy.url in site.cfg ")
 
 
 
@@ -34,4 +34,4 @@ mapper = session_mapper (DBSession)
 if engine:
     metadata.bind = engine
     DBSession.configure(bind=engine)
-    print "attached to", engine
+    print("attached to", engine)

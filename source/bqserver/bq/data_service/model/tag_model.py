@@ -59,14 +59,15 @@ DESCRIPTION
 
 """
 import subprocess
-import urlparse
+import urllib.parse
 import sqlalchemy
 from datetime import datetime
 
 from sqlalchemy import Table, Column, ForeignKey, Index
 from sqlalchemy import Integer, String, DateTime, Unicode, Float, Boolean
 from sqlalchemy import Text, UnicodeText
-from sqlalchemy.orm import relation, class_mapper, object_mapper, validates, backref, synonym
+# from sqlalchemy.orm import relation, class_mapper, object_mapper, validates, backref, synonym
+from sqlalchemy.orm import relationship, class_mapper, object_mapper, validates, backref, synonym # !!! In between conversion to python3
 from sqlalchemy.orm import foreign, remote
 from sqlalchemy import exc
 from sqlalchemy.sql import and_, case
@@ -92,7 +93,7 @@ from bq.core.permission import PUBLIC, PRIVATE, perm2code, perm2str
 from bq.util.memoize import memoized
 from bq.util.hash import make_uniq_code
 
-from irods_user import BisQueIrodsIntegration#from bq.MS import module_service
+from .irods_user import BisQueIrodsIntegration#from bq.MS import module_service
 #session.mex = None
 
 
@@ -258,7 +259,7 @@ def parse_uri(uri):
     @rtype:  A triplet (host, dbclass, id)
     @return: The parse resouece
     '''
-    url = urlparse.urlsplit(uri)
+    url = urllib.parse.urlsplit(uri)
     name, id = url[2].split('/')[-2:]
     return url[1], name, id
 
@@ -363,7 +364,7 @@ class Taggable(object):
 
     @validates('owner')
     def validate_owner (self, key, owner):
-        if isinstance(owner, basestring) and owner.startswith ('http'):
+        if isinstance(owner, str) and owner.startswith ('http'):
             log.warn ("validating owner  %s" , str(owner))
             return map_url (owner)
         return owner
@@ -523,7 +524,7 @@ class Tag(Taggable):
     xmltag = 'tag'
 
     def __str__(self):
-        return 'tag "%s":"%s"' % (unicode(self.name), unicode(self.value))
+        return 'tag "%s":"%s"' % (str(self.name), str(self.value))
 
     # def clear(self, what=None):
     #     '''Clear values from tag'''
@@ -556,7 +557,7 @@ class Value(object):
         elif self.valnum: value = self.valnum
         return value
     def setvalue(self, v):
-        if type(v) == str or type(v) == unicode:
+        if type(v) == str or type(v) == str:
             self.valstr = v
             self.valnum = None
             self.valobj = None
@@ -800,10 +801,14 @@ mapper( Value, values,
         #'resource_parent_id' : values.c.parent_id,
         #'parent' : relation (Taggable,
         #                 primaryjoin =(taggable.c.id == values.c.parent_id)),
-        'objref' : relation(Taggable, uselist=False,
-                            primaryjoin=(values.c.valobj==taggable.c.id),
-                            enable_typechecks=False
-                            ),
+        # 'objref' : relation(Taggable, uselist=False,
+        #                     primaryjoin=(values.c.valobj==taggable.c.id),
+        #                     enable_typechecks=False
+        #                     ),
+        'objref' : relationship(Taggable, uselist=False,
+                             primaryjoin=(values.c.valobj==taggable.c.id),
+                             enable_typechecks=False
+                             ), # !!! In between conversion to python3
         #'document' : relation(Taggable, uselist=False,lazy=True,
         #                      primaryjoin=(values.c.document_id==taggable.c.id),
         #                      enable_typechecks=False,
@@ -824,12 +829,21 @@ mapper(TaggableAcl, taggable_acl,)
 ############################
 # Taggable mappers
 
-taggable_discr = case (
-    [(taggable.c.resource_type=='image', "image"),
-     (taggable.c.resource_type=='tag', "tag"),
-     (taggable.c.resource_type=='gobject', "gobject")],
-     else_ = "taggable"
-    )
+# taggable_discr = case(
+#     [(taggable.c.resource_type=='image', "image"),
+#      (taggable.c.resource_type=='tag', "tag"),
+#      (taggable.c.resource_type=='gobject', "gobject")],
+#      else_ = "taggable"
+#     )
+
+# !!! In between conversion to python3
+taggable_discr = case(
+    (taggable.c.resource_type == 'image', "image"),
+    (taggable.c.resource_type == 'tag', "tag"),
+    (taggable.c.resource_type == 'gobject', "gobject"),
+    else_="taggable"
+)
+
 
 
 mapper( Taggable, taggable,
@@ -845,13 +859,13 @@ mapper( Taggable, taggable,
     #                       #remote_side=[taggable.c.resource_parent_id, taggable.c.resource_type],
     #                       primaryjoin= and_(remote(taggable.c.resource_parent_id)==taggable.c.id,
     #                                         remote(taggable.c.resource_type) == 'gobject')),
-
-    'acl'  : relation(TaggableAcl, lazy=True, cascade="all, delete-orphan", passive_deletes=True,
+    # !!! In between conversion to python3 before was relation
+    'acl'  : relationship(TaggableAcl, lazy=True, cascade="all, delete-orphan", passive_deletes=True,
                       primaryjoin = (TaggableAcl.taggable_id == taggable.c.document_id),
                       foreign_keys=[TaggableAcl.taggable_id],
-                      backref = backref('resource', enable_typechecks=False, remote_side=[taggable.c.document_id])),
+                      backref = backref('resource', enable_typechecks=False, remote_side=[taggable.c.document_id])), 
 
-    'children' : relation(Taggable, lazy=True, cascade="all, delete-orphan", passive_deletes=True,
+    'children' : relationship(Taggable, lazy=True, cascade="all, delete-orphan", passive_deletes=True,
                           enable_typechecks = False,
                           primaryjoin = (taggable.c.id == taggable.c.resource_parent_id),
                           order_by = taggable.c.resource_index,
@@ -859,8 +873,8 @@ mapper( Taggable, taggable,
                           backref = backref('parent', enable_typechecks=False, remote_side = [taggable.c.id]),
                           ),
 
-    'childrenq' : relation(Taggable, lazy='dynamic', viewonly=True,
-                           enable_typechecks = False,
+    'childrenq' : relationship(Taggable, lazy='dynamic', viewonly=True,
+                        #    enable_typechecks = False,
                            primaryjoin = (taggable.c.id == taggable.c.resource_parent_id),
                            #remote_side = [taggable.c.resource_parent_id],
 
@@ -868,14 +882,14 @@ mapper( Taggable, taggable,
     #                       #collection_class = ordering_list ('resource_index')
                           ),
 
-    'values' : relation(Value,  lazy=True, cascade="all, delete-orphan", passive_deletes=True,
+    'values' : relationship(Value,  lazy=True, cascade="all, delete-orphan", passive_deletes=True,
                         order_by=[values.c.indx],
                         collection_class = ordering_list ('indx'),
                         primaryjoin =(taggable.c.id == values.c.resource_parent_id),
                         backref = backref('parent', enable_typechecks = False, remote_side=[taggable.c.id])
                         #foreign_keys=[values.c.parent_id]
                         ),
-    'vertices':relation(Vertex, lazy=True, cascade="all, delete-orphan", passive_deletes=True,
+    'vertices':relationship(Vertex, lazy=True, cascade="all, delete-orphan", passive_deletes=True,
                         order_by=[vertices.c.indx],
                         collection_class = ordering_list ('indx'),
                         primaryjoin =(taggable.c.id == vertices.c.resource_parent_id),
@@ -890,7 +904,7 @@ mapper( Taggable, taggable,
 
     # The following primarily create a valid .document for Taggable, vertex, and value
 
-    'docnodes': relation(Taggable, lazy=True,
+    'docnodes': relationship(Taggable, lazy=True,
                          cascade = "all, delete-orphan", passive_deletes=True,
                          enable_typechecks = False,
                          primaryjoin = (taggable.c.id == taggable.c.document_id),
@@ -899,14 +913,14 @@ mapper( Taggable, taggable,
                          post_update = True,
                          ),
 
-     'docvalues' : relation (Value, lazy=True,
+     'docvalues' : relationship(Value, lazy=True,
                              cascade = "all, delete-orphan", passive_deletes=True,
                           enable_typechecks = False,
                           primaryjoin = (taggable.c.id == values.c.document_id),
                           backref = backref('document', #post_update=True,
                                             enable_typechecks=False, remote_side=[taggable.c.id]),
                           ),
-     'docvertices' : relation (Vertex, lazy=True,
+     'docvertices' : relationship(Vertex, lazy=True,
                                cascade = "all, delete-orphan", passive_deletes=True,
                           enable_typechecks = False,
                           primaryjoin = (taggable.c.id == vertices.c.document_id),
@@ -930,11 +944,11 @@ mapper(BQUser,  inherits=Taggable,
        polymorphic_on = taggable.c.resource_type,
        polymorphic_identity = 'user',
        properties = {
-        'tguser' : relation(User, uselist=False,
+        'tguser' : relationship(User, uselist=False,
             primaryjoin=(User.user_name == taggable.c.resource_name),
             foreign_keys=[User.user_name]),
 
-        'owns' : relation(Taggable, lazy=True,
+        'owns' : relationship(Taggable, lazy=True,
                           cascade = "all, delete-orphan", passive_deletes=True,
                           post_update = True,
                           enable_typechecks=False,
@@ -942,7 +956,7 @@ mapper(BQUser,  inherits=Taggable,
                           backref = backref('owner', post_update=True, remote_side=[taggable.c.id]),
                           ),
 
-        'user_acls': relation(TaggableAcl,  lazy=True, cascade="all, delete-orphan",
+        'user_acls': relationship(TaggableAcl,  lazy=True, cascade="all, delete-orphan",
                               passive_deletes = True,
                               primaryjoin= (taggable.c.id == taggable_acl.c.user_id),
                               backref = backref('user', enable_typechecks=False),
@@ -961,7 +975,7 @@ mapper(ModuleExecution,  inherits=Taggable,
        polymorphic_identity = 'mex',
        properties = {
         #"status":synonym("resource_value"), # map_column=True) ,
-        'owns' : relation(Taggable,
+        'owns' : relationship(Taggable,
                           lazy = True,
                           cascade = "all, delete-orphan", passive_deletes=True,
                           #cascade = None,
@@ -1002,19 +1016,36 @@ def bquser_callback (tg_user, operation, **kw):
             #log.info ('---> created BQUSER', tg_user.user_name, tg_user.email_address)
             
             try:
-                log.info('created an iRODS user with password %s' , str(tg_user.password))
-                irods_integ = BisQueIrodsIntegration()
-                irods_integ.load_from_env()
-                irods_integ.create_user(str(tg_user.user_name), str(tg_user.password))
-                log.info ('created an iRODS user %s for BQUSER %s' , (tg_user.user_name, u.name))
+                # Check if iRODS integration is configured before attempting
+                import os
+                irods_host = os.environ.get('BISQUE_IRODS_HOST', '')
+                if not irods_host:
+                    log.info('iRODS integration skipped: BISQUE_IRODS_HOST environment variable not set')
+                else:
+                    log.info('Creating iRODS user account for %s', tg_user.user_name)
+                    irods_integ = BisQueIrodsIntegration()
+                    irods_integ.load_from_env()
+                    irods_integ.create_user(str(tg_user.user_name), str(tg_user.password))
+                    log.info('Successfully created iRODS user %s for BQUSER %s', tg_user.user_name, u.name)
             except Exception as e:
-                log.exception ("An exception occured during iRODS account creation: %s" , str(e))
+                log.warning("iRODS account creation failed for user %s: %s", tg_user.user_name, str(e))
+                log.debug("Full iRODS integration traceback:", exc_info=True)
+            
             try:
-                subprocess.call(["mc", "admin", "user", "add", "ucsb", str(tg_user.user_name), str(tg_user.email_address)])
-                subprocess.call(["mc", "admin", "group", "add", "ucsb", 'bisque', str(tg_user.user_name)])
-                subprocess.call(["mc", "mb", "ucsb/{}".format(str(tg_user.user_name))])
+                # Check if MinIO mc command is available before attempting
+                import shutil
+                mc_path = shutil.which('mc')
+                if not mc_path:
+                    log.info('MinIO S3 integration skipped: mc command not found in PATH')
+                else:
+                    log.info('Creating MinIO S3 user account for %s', tg_user.user_name)
+                    subprocess.call(["mc", "admin", "user", "add", "ucsb", str(tg_user.user_name), str(tg_user.email_address)])
+                    subprocess.call(["mc", "admin", "group", "add", "ucsb", 'bisque', str(tg_user.user_name)])
+                    subprocess.call(["mc", "mb", "ucsb/{}".format(str(tg_user.user_name))])
+                    log.info('Successfully created MinIO S3 user %s for BQUSER %s', tg_user.user_name, u.name)
             except Exception as e:
-                log.exception ("An exception occured during MINIO S3 account creation: %s" , str(e))
+                log.warning("MinIO S3 account creation failed for user %s: %s", tg_user.user_name, str(e))
+                log.debug("Full MinIO integration traceback:", exc_info=True)
         return
 
 
@@ -1116,15 +1147,26 @@ def dbtype_from_name(table):
                 return (table, mapper_.class_)
     return (table, Taggable)
 
+# !!! Deprecated
+# @memoized
+# def dbtype_from_tag(tag):
+#     ''' Given a tag,
+#     Return a tuple of table name and the most specific database type
+#     '''
+#     for mapper_ in  list(sqlalchemy.orm._mapper_registry):
+#         #logger.debug ("map"+str(mapper_.local_table))
+#         if hasattr(mapper_.class_, 'xmltag') and mapper_.class_.xmltag == tag:
+#             return (tag, mapper_.class_)
+#     return (tag, Taggable)
+# !!! new approach
+from sqlalchemy.orm.mapper import _all_registries
 @memoized
 def dbtype_from_tag(tag):
-    ''' Given a tag,
-    Return a tuple of table name and the most specific database type
-    '''
-    for mapper_ in  list(sqlalchemy.orm._mapper_registry):
-        #logger.debug ("map"+str(mapper_.local_table))
-        if hasattr(mapper_.class_, 'xmltag') and mapper_.class_.xmltag == tag:
-            return (tag, mapper_.class_)
+    for reg in _all_registries():
+        for mapper_ in reg.mappers:
+            cls = mapper_.class_
+            if hasattr(cls, 'xmltag') and cls.xmltag == tag:
+                return (tag, cls)
     return (tag, Taggable)
 
 

@@ -32,10 +32,10 @@ def upgrade():
         pref_csv   = csv.writer (pref_file)
         row = results.fetchone()
         if row:
-            pref_csv.writerow (row.keys())
-            pref_csv.writerow (row.values())
+            pref_csv.writerow (list(row.keys()))
+            pref_csv.writerow (list(row.values()))
         for row in results:
-            pref_csv.writerow (row.values())
+            pref_csv.writerow (list(row.values()))
 
     #conn = op.get_bind()
     conn.execute (
@@ -55,10 +55,10 @@ def upgrade():
         parent_csv   = csv.writer (parent_file)
         row =  results.fetchone()
         if row:
-            parent_csv.writerow (row.keys())
-            parent_csv.writerow (row.values())
+            parent_csv.writerow (list(row.keys()))
+            parent_csv.writerow (list(row.values()))
         for row in results:
-            parent_csv.writerow (row.values())
+            parent_csv.writerow (list(row.values()))
     conn.execute (
         """
         delete from taggable where resource_parent_id is null and resource_uniq is null;

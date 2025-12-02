@@ -64,8 +64,8 @@ SOFTWARE.
 # also update in setup.py
 __version__ = "1.1.2"
 
-from urlparse import urlparse, urlunparse
-from string import lower
+from urllib.parse import urlparse, urlunparse
+# from string import lower # !!! not valid in python 3
 import re
 
 class InvalidUrl(Exception):
@@ -125,7 +125,7 @@ def unquote_safe(s, unsafe_list):
     # note: this build utf8 raw strings ,then does a .decode('utf8') at the end.
     # as a result it's doing .encode('utf8') on each block of the string as it's processed.
     res = _utf8(s).split('%')
-    for i in xrange(1, len(res)):
+    for i in range(1, len(res)):
         item = res[i]
         try:
             raw_chr = _hextochr[item[:2]]
@@ -138,7 +138,7 @@ def unquote_safe(s, unsafe_list):
             res[i] = '%' + item
         except UnicodeDecodeError:
             # note: i'm not sure what this does
-            res[i] = unichr(int(item[:2], 16)) + item[2:]
+            res[i] = chr(int(item[:2], 16)) + item[2:]
     o = "".join(res)
     return _unicode(o)
 
@@ -151,7 +151,8 @@ def norm(url):
 
 def norm_tuple(scheme, authority, path, parameters, query, fragment):
     """given individual url components, return its normalized form"""
-    scheme = lower(scheme)
+    # scheme = lower(scheme)
+    scheme = scheme.lower() # !!! python 3 
     if not scheme:
         raise InvalidUrl('missing URL scheme')
     authority = norm_netloc(scheme, authority)
@@ -179,7 +180,7 @@ def norm_path(scheme, path):
         return '/'
     return path
 
-MAX_IP=0xffffffffL
+MAX_IP=0xffffffff
 def int2ip(ipnum):
     assert isinstance(ipnum, int)
     if MAX_IP < ipnum or ipnum < 0:
@@ -211,7 +212,8 @@ def norm_netloc(scheme, netloc):
     #if '.' not in host and not (host[0] == '[' and host[-1] == ']'):
     #    raise InvalidUrl('host %r is not valid' % host)
 
-    authority = lower(host)
+    # authority = lower(host)
+    authority = host.lower()
     if 'xn--' in authority:
         subdomains = [_idn(subdomain) for subdomain in authority.split('.')]
         authority = '.'.join(subdomains)
@@ -233,7 +235,7 @@ def _idn(subdomain):
 
 
 def _utf8(value):
-    if isinstance(value, unicode):
+    if isinstance(value, str):
         return value.encode("utf-8")
     assert isinstance(value, str)
     return value
@@ -242,5 +244,5 @@ def _utf8(value):
 def _unicode(value):
     if isinstance(value, str):
         return value.decode("utf-8")
-    assert isinstance(value, unicode)
+    assert isinstance(value, str)
     return value

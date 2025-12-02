@@ -53,7 +53,7 @@ DESCRIPTION
 
 import traceback, sys
 from time import strptime
-from StringIO import StringIO
+from io import StringIO
 from datetime import datetime, time, date
 from lxml import etree
 
@@ -174,7 +174,7 @@ class BIXImporter(object):
             #  Should check if we have local changes (redirect to DS)
             log.debug ("update image" + etree.tostring(self.resource))
             data_service.update (self.resource)
-        except BIXError, e:
+        except BIXError as e:
             log.error ("Exception" + e)
         except Exception:
             log.exception ("BixImport")
@@ -206,19 +206,19 @@ class BIXImporter(object):
         '''return parsed datetime.. attributes of v must be compatible
         with datetime
         '''
-        return str(datetime(**dict([ (x,int(y)) for x,y in v.attrib.items() ])))
+        return str(datetime(**dict([ (x,int(y)) for x,y in list(v.attrib.items()) ])))
 
     def parse_date(self, v):
         '''return parsed datetime.. attributes of v must be compatible
         with datetime
         '''
-        return str(date(**dict([ (x,int(y)) for x,y in v.attrib.items() ])))
+        return str(date(**dict([ (x,int(y)) for x,y in list(v.attrib.items()) ])))
 
     def parse_time(self, v):
         '''return parsed datetime.. attributes of v must be compatible
         with datetime
         '''
-        return str(time(**dict([ (x,int(y)) for x,y in v.attrib.items() ])))
+        return str(time(**dict([ (x,int(y)) for x,y in list(v.attrib.items()) ])))
 
 
     #####
@@ -362,4 +362,4 @@ if __name__ == '__main__':
 
     et = etree.parse(sys.argv[1])
     for item in et.getroot().getiterator('item'):
-        print item
+        print(item)

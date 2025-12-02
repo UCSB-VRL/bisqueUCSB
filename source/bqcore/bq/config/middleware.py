@@ -9,11 +9,13 @@ import pkg_resources
 #from paste.cascade import Cascade
 from paste.registry import RegistryManager
 
-from bq.config.app_cfg import base_config
+from bq.config.app_cfg import BisqueAppConfig, base_config
 from bq.config.environment import load_environment
 from bq.core.controllers import root
 from bq.util.paths import site_cfg_path
 from bq.util.proxy import Proxy
+
+log = logging.getLogger(__name__)
 from tg.configuration import config
 from .direct_cascade import DirectCascade
 
@@ -102,6 +104,11 @@ def make_app(global_conf, full_stack=True, **app_conf):
     global bisque_app
 
     app = make_base_app(global_conf, full_stack=True, **app_conf)
+    
+    log.info("CALLING add_auth_middleware")
+    # Add repoze.who authentication middleware
+    app = base_config.add_auth_middleware(app, app_conf.get('skip_authentication', False))
+    log.info("add_auth_middleware COMPLETED")
 
     #from repoze.profile.profiler import AccumulatingProfileMiddleware
 
@@ -121,6 +128,9 @@ def make_app(global_conf, full_stack=True, **app_conf):
     app = ProxyApp(app)
     bisque_app = app
     app = LogWSGIErrors(app, logging.getLogger('bq.middleware'), logging.ERROR)
+
+    app = BisqueAppConfig().setup_sqlalchemy(app) # !!! added this to manually add sqlalchemy middleware
+    app = BisqueAppConfig().add_static_file_middleware(app) # !!! added this to manually add static file middleware
 
     # Call the loader in the root controller
     log.info ("wsgi - Application : complete")

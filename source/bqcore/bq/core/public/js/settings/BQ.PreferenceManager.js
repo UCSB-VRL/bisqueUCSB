@@ -31,6 +31,14 @@ Ext.define('BQ.preference.Tagger', {
             return
         }
 
+        // For user level preferences, always use /preference/user regardless of resource_uniq
+        if (this.level == 'user') {
+            return {
+                'resource': '/preference/user',
+                'level': this.level
+            };
+        }
+
         // assume it is a resource URI otherwise
         if (this.level=='resource' && !resource_uniq) {
             BQ.ui.error('set resource without resource uniq')

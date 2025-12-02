@@ -3,14 +3,8 @@
 
 
 ########### REQUIRED PLUGINS ################
-[plugin:friendlyform]
-use = repoze.who.plugins.friendlyform:FriendlyFormPlugin
-login_form_url= /auth_service/login
-login_handler_path= /auth_service/login_handler
-logout_handler_path = /auth_service/logout_handler
-post_login_url = /auth_service/post_login
-post_logout_url = /auth_service/post_logout
-rememberer_name = auth_tkt
+# No web form plugins needed - TurboGears handles web auth
+# Only API authentication plugins below
 
 [plugin:auth_tkt]
 use = repoze.who.plugins.auth_tkt:make_plugin
@@ -23,6 +17,7 @@ secret = images
 
 [plugin:basicauth]
 use = repoze.who.plugins.basicauth:make_plugin
+realm = BisQue
 
 [plugin:sqlauth]
 # An SQLAlchemy authorization plugin
@@ -35,6 +30,12 @@ use = bq.core.lib.mex_auth:make_plugin
 
 [plugin:autoregister]
 use = bq.core.lib.autoreg:AutoRegister
+
+# Firebase Authentication Plugin (optional)
+# Uncomment to enable Firebase social authentication
+[plugin:firebase_auth]
+use = bq.core.lib.firebase_auth:make_plugin
+auto_register = autoregister
 
 
 ################# OPTIONAL PLUGINS #######################
@@ -122,23 +123,18 @@ challenge_decider = bq.core.lib.challenge_decider:bisque_challenge_decider
 
 [identifiers]
 plugins =
-# plugin order matters: friendlyform on logout_handler send httpunathorized
-    friendlyform;browser
+# Only API authentication - no web forms 
     auth_tkt
     basicauth
     mexauth
-#    appauth;json
-#    openid
-#    cas_auth
-# Cas must be last because openid replaces logout with redirect /post_logout
+    firebase_auth
 
 [challengers]
 plugins =
-# Cas must be first challenger (as openid always send challenge to google)
+# Only API challenges - no web redirects
 #    cas_auth
-#    openid
+#    openid  
 #    appauth;json
-    friendlyform;browser
     basicauth
 
 [authenticators]
@@ -148,6 +144,7 @@ plugins =
     mexauth
 #    cas_auth
 #    openid_auth
+    firebase_auth
 
 
 [mdproviders]

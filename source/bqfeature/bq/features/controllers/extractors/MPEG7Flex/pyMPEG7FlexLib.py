@@ -290,7 +290,7 @@ def extractDCD(im, mask = np.array([]), normalize=True, variance=False, spatial=
     else:
         dcdlength = 4 * length[0]
     if dcdlength>300:
-        print 'Warning: not all the values to the DCD, buffer was exceeded'
+        print('Warning: not all the values to the DCD, buffer was exceeded')
 
     if spatial:
         return results[:dcdlength], spatial_output
@@ -453,8 +453,8 @@ if __name__=='__main__':
     mask=cv2.imread('mask.png',cv2.CV_LOAD_IMAGE_GRAYSCALE)
     start = time.time()
     feature = extractDCD(im)#, mask=mask)
-    print feature
+    print(feature)
     #invert mask
     #mask==0
     end=time.time()
-    print 'time elapsed: %s'%str(end-start)
+    print('time elapsed: %s'%str(end-start))

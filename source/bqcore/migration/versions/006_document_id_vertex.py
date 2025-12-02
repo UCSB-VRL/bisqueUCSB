@@ -88,25 +88,25 @@ def upgrade(migrate_engine):
     maptables(meta)
     DBSession.configure(bind=migrate_engine)
 
-    print "Values"
+    print("Values")
     for c, v in enumerate (DBSession.query(Value)):
         if c % (1024*10) == 0:
-            print '.',
+            print('.', end=' ')
         if v.document_id is not None:
             continue
         p = DBSession.query(Taggable).get (v.resource_parent_id)
         v.document_id = p.document_id
-        print p.document_id
+        print(p.document_id)
 
-    print "Vertex"
+    print("Vertex")
     for c, v in enumerate (DBSession.query(Vertex)):
         if c % (1024*10) == 0:
-            print '.',
+            print('.', end=' ')
         if v.document_id is not None:
             continue
         p = DBSession.query(Taggable).get (v.resource_parent_id)
         v.document_id = p.document_id
-        print p.document_id
+        print(p.document_id)
 
     transaction.commit()
 

@@ -52,7 +52,7 @@ DESCRIPTION
 
 """
 import logging
-from StringIO import StringIO
+from io import StringIO
 import csv
 import mimeparse
 
@@ -145,8 +145,16 @@ def format_csv (tree, view=None):
                 stack.append ( (sub, element) )
     return buffer.getvalue()
 
-def input_csv (inpf, **kw):
-    pass
+# def input_csv (inpf, **kw):
+#     pass
+# !!! before was unimplemented
+def input_csv (inpf, inplen=None, **kw):
+    """Parse CSV input and return XML tree"""
+    # For now, return a simple empty response tree
+    # TODO: Implement proper CSV to XML conversion if needed
+    root = etree.Element("response")
+    return root
+
 
 
 FORMATTERS = { 'xml' : (format_xml, 'text/xml' ),
@@ -171,14 +179,14 @@ def find_formatter (format=None, accept_header=None, **kw):
     # Parse accept header until acceptable is found
     if accept_header is None:
         accept_header = "application/xml"
-    accept_header  = mimeparse.best_match (CONTENT_TYPE_CONVERTERS.keys(), accept_header)
+    accept_header  = mimeparse.best_match (list(CONTENT_TYPE_CONVERTERS.keys()), accept_header)
     converter =  CONTENT_TYPE_CONVERTERS.get (accept_header, NO_CONV)[0]
     return (converter, accept_header)
 
 def find_formatter_type (accept_header=None, **kw):
     if accept_header is None:
         accept_header = "application/xml"
-    accept_header  = mimeparse.best_match (CONTENT_TYPE_CONVERTERS.keys(), accept_header)
+    accept_header  = mimeparse.best_match (list(CONTENT_TYPE_CONVERTERS.keys()), accept_header)
     type_ =  CONTENT_TYPE_CONVERTERS.get (accept_header, NO_CONV)[2]
     return type_
 

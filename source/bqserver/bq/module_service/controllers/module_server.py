@@ -77,7 +77,7 @@ import socket
 import copy
 import time
 import logging
-import urlparse
+import urllib.parse
 #import urllib
 import itertools
 import csv
@@ -94,7 +94,8 @@ from pylons.controllers.util import abort
 from tg import controllers, expose, config, request, override_template
 from tg import require
 # pylint: disable=E0611,F0401
-from repoze.what.predicates import not_anonymous
+# from repoze.what.predicates import not_anonymous # !!! deprecated following is the alternative
+from tg.predicates import not_anonymous
 #from tgext.asyncjob import asyncjob_perform, asyncjob_timed_query
 
 
@@ -114,6 +115,7 @@ from bq.data_service.controllers.resource_query import RESOURCE_READ, RESOURCE_E
 from bq.data_service.controllers.resource import Resource
 from bq.data_service import resource_controller
 from bq.data_service.model import  ModuleExecution
+from functools import reduce
 
 
 log = logging.getLogger('bq.module_server')
@@ -176,7 +178,7 @@ class MexDelegate (Resource):
             if is_uniq_code(token):
                 return data_service.resource_load ( uniq = token)
             return data_service.resource_load(ident=int(token))
-        except ValueError, e:
+        except ValueError as e:
             abort (404)
         except Exception:
             log.exception ('While loading:')
@@ -199,12 +201,12 @@ class MexDelegate (Resource):
     def new(self, factory, xml, **kw):
         log.info ("MEX NEW")
         mex = xml
-        if isinstance (xml, basestring):
+        if isinstance (xml, str):
             mex = etree.XML (xml)
         if mex.tag == "request":
             mex = mex[0]
         mex = self.create_mex(mex)
-        response = etree.tostring(mex)
+        response = etree.tostring(mex, encoding='unicode')
         tg.response.headers['Content-Type'] = 'text/xml'
         return response
 
@@ -236,13 +238,13 @@ class MexDelegate (Resource):
         #return self.delegate.modify (resource, xml, **kw)
         log.info('MEX MODIFY %s', tg.request.url)
         mex = xml
-        if isinstance (xml, basestring):
+        if isinstance (xml, str):
             mex = etree.XML (xml)
         mex = check_mex(mex)
         mex = data_service.update(mex, view=view)
         self.remap_uri (mex)
         tg.response.headers['Content-Type'] = 'text/xml'
-        return etree.tostring (mex)
+        return etree.tostring (mex, encoding='unicode')
 
     @expose()
     @require(not_anonymous())
@@ -252,14 +254,14 @@ class MexDelegate (Resource):
         """
         #mex = data_service.get_resource(resource, view=view)
 
-        parts = urlparse.urlparse (tg.request.url)
+        parts = urllib.parse.urlparse (tg.request.url)
         path = "/".join (parts.path.split ('/')[3:])
         #remove the /module_servce/mex from the path
         mex = data_service.load (path, astree=True, view=view, **kw)
 
         self.remap_uri (mex)
         tg.response.headers['Content-Type'] = 'text/xml'
-        return etree.tostring (mex)
+        return etree.tostring (mex, encoding='unicode')
 
     @expose()
     @require(not_anonymous())
@@ -269,14 +271,14 @@ class MexDelegate (Resource):
         """
         log.info('MEX APPEND %s', tg.request.url)
         mex = xml
-        if isinstance (xml, basestring):
+        if isinstance (xml, str):
             mex = etree.XML(xml)
         mex = check_mex(mex)
         mex = data_service.update(mex, view=view)
         #mex =  data_service.append_resource (resource, xml, **kw)
         self.remap_uri (mex)
         tg.response.headers['Content-Type'] = 'text/xml'
-        return etree.tostring (mex)
+        return etree.tostring (mex, encoding='unicode')
 
 
     @expose(content_type="text/xml")
@@ -297,7 +299,7 @@ def read_xml_body():
 
 
 def create_mex(module, name, mex = None, **kw):
-    if isinstance(module, basestring):
+    if isinstance(module, str):
         module = data_service.get_resource(module, view='deep')
     inputs = module.xpath('./tag[@name="inputs"]')
     formal_inputs = inputs and inputs[0]
@@ -365,8 +367,8 @@ def create_mex(module, name, mex = None, **kw):
     # Find an iterable tags (that match name and type) in the mex inputs, add them mex_tags
     mex_inputs = mex.xpath('./tag[@name="inputs"]')[0]
     mex_tags = {}   # iterable_input name :  [ mex_xml_node1, mex_xml2 ]
-    for iter_tag, iter_d in iters.items():
-        for iter_type in iter_d.keys():
+    for iter_tag, iter_d in list(iters.items()):
+        for iter_type in list(iter_d.keys()):
             log.debug ("checking name=%s type=%s" , iter_tag, iter_type)
             resource_tag = mex_inputs.xpath('.//tag[@name="%s" and @type="%s" and @value]' % (iter_tag, iter_type))
             if len(resource_tag):
@@ -378,13 +380,13 @@ def create_mex(module, name, mex = None, **kw):
     # [ [(tag1, val1), (tag1, val2), ...], [(tag2, valx), (tag2, valy), ...], ... ]
     all_iterables = []
     # for each iterable found in the mex inputs, check the resource type
-    for iter_tag, iterable in mex_tags.items():
+    for iter_tag, iterable in list(mex_tags.items()):
         resource_value = iterable.get('value')
         resource_type = iterable.get('type')
         resource_iterexpr = iters[iter_tag][resource_type]
         if resource_type == 'list':
             # list type: value is comma-separated list itself
-            members = csv.reader([resource_value], skipinitialspace=True).next()
+            members = next(csv.reader([resource_value], skipinitialspace=True))
             if '...' in members:
                 if members[0] != '...' and members[1] == '...' and members[2] != '...':
                     # case "a, ..., z"
@@ -499,7 +501,7 @@ def create_mex(module, name, mex = None, **kw):
     for single_step_params in all_step_params:
         subinputs = copy.deepcopy(mex_inputs)
         # replace the iterated params
-        for iter_tag, value in single_step_params.iteritems():
+        for iter_tag, value in single_step_params.items():
             resource_tag = subinputs.xpath('.//tag[@name="%s"]' % iter_tag)[0]
             if isinstance(value, etree._Element):
                 elem = etree.SubElement(resource_tag.getparent(), 'tag', name=iter_tag)
@@ -590,9 +592,9 @@ def POST_mex (service_uri, mex, username):
     mex_token = "%(user)s:%(uniq)s" % dict(user=username, uniq=mex_uniq)
     log.info("DISPATCH: POST %s  with %s for %s" , service_uri,  mex_token, mex_url )
 
-    body = etree.tostring(mex)
+    body = etree.tostring(mex, encoding='unicode')
     try:
-        resp, content = http.xmlrequest(urlparse.urljoin(service_uri ,"execute"), "POST",
+        resp, content = http.xmlrequest(urllib.parse.urljoin(service_uri ,"execute"), "POST",
                                         body = body,
                                         headers = {'Mex': mex_uniq,
                                                    'Authorization' : "Mex %s" % mex_token})
@@ -704,7 +706,7 @@ class ServiceDelegate(controllers.WSGIAppController):
         log.debug ("Scheduled %s exception(%s)" , str(req), str(req.exception))
         #req = tg.app_globals.pool.wait_for(req)
 
-        return etree.tostring (mex)
+        return etree.tostring (mex, encoding='unicode')
 
     @expose(content_type='text/xml')
     def kill(self, *args, **kw):
@@ -718,7 +720,7 @@ class ServiceDelegate(controllers.WSGIAppController):
         mex_token = "%(user)s:%(uniq)s" % dict(user=get_username(), uniq=mex_uniq)
 
         try:
-            resp, content = http.xmlrequest(urlparse.urljoin(self.service_url, "kill/"+mex_uniq), "POST",
+            resp, content = http.xmlrequest(urllib.parse.urljoin(self.service_url, "kill/"+mex_uniq), "POST",
                                             headers = {'Mex': mex_uniq,
                                                        'Authorization' : "Mex %s" % mex_token})
         except socket.error:
@@ -884,9 +886,9 @@ class ModuleServer(ServiceController):
 
         resource = etree.Element('resource', uri = self.uri)
         services =  self.load_services(**kw)
-        for service in services.values():
+        for service in list(services.values()):
             resource.append(service.module)
-        return etree.tostring (resource)
+        return etree.tostring (resource, encoding='unicode')
 
 
     @expose(template='bq.module_service.templates.register')
@@ -932,7 +934,7 @@ class ModuleServer(ServiceController):
             #xml =  self.engine._default (**kw)
             #update service list
             self.service_list  = self.load_services(wpublic='1')
-            return etree.tostring(module)
+            return etree.tostring(module, encoding='unicode')
         abort(400)
 
 
@@ -983,7 +985,7 @@ class ModuleServer(ServiceController):
             if module.tag == 'module':
                 module.attrib['value'] = '' #needs to be changed in .06
                 module = data_service.update(module, **kw)
-                return etree.tostring(module)
+                return etree.tostring(module, encoding='unicode')
             else:
                 log.info("Resource not a module")
                 abort(400, "Resource not a module")
@@ -997,7 +999,7 @@ class ModuleServer(ServiceController):
 
     def execute(self, module_uri, **kw):
         mex = etree.Element ('mex', module = module_uri)
-        for k,v in kw.items():
+        for k,v in list(kw.items()):
             # KGK: Filter by module items?
             etree.SubElement(mex, 'tag', name=k, value=v)
         log.info ("EXECUTE %s" , etree.tostring (mex))
@@ -1011,7 +1013,7 @@ class ModuleServer(ServiceController):
     def services(self):
         log.info("service list")
         x = d2xml (self.servicelist())
-        return etree.tostring(x)
+        return etree.tostring(x, encoding='unicode')
 
     def begin_internal_mex(self, name='session', value='active', mex_type = "session"):
         mex = etree.Element('mex', name=name, value=value, hidden='true', type=mex_type)
@@ -1064,7 +1066,7 @@ class EngineResource (Resource):
             response.append(service)
 
         tg.response.headers['Content-Type'] = 'text/xml'
-        return etree.tostring (response)
+        return etree.tostring (response, encoding='unicode')
 
     def load(self, token, **kw):
         """
@@ -1185,7 +1187,7 @@ class EngineResource (Resource):
             #     service = data_service.update(service)
             #     log.info("service update %s" % etree.tostring(service))
 
-        return etree.tostring (module)
+        return etree.tostring (module, encoding='unicode')
 
     def modify(self, resource, xml, **kw):
         """
@@ -1199,7 +1201,7 @@ class EngineResource (Resource):
         fetches the resource, and returns a representation of the resource.
         """
         if resource:
-            return etree.tostring (resource)
+            return etree.tostring (resource, encoding='unicode')
 
     def append(self, resource, xml, **kw):
         """ Register a new engine resource

@@ -1,12 +1,12 @@
 #!/usr/bin/python
 import os
 import sys
-import urlparse
+import urllib.parse
 import logging
 import argparse
 #from StringIO import StringIO
 
-from ConfigParser import SafeConfigParser
+from configparser import SafeConfigParser
 import requests
 import requests_toolbelt
 
@@ -49,8 +49,8 @@ def upload(dest, filename, userpass, tags=None):
     response = requests.post (dest, data=m, auth = requests.auth.HTTPBasicAuth(*userpass),verify=False,
                               headers={'Content-Type': m.content_type})
     if response.status_code != 200:
-        print "error while copying %s: Server response %s" % (filename, response.headers)
-        print "saving error information to ", filename , "-transfer.err"
+        print(("error while copying %s: Server response %s" % (filename, response.headers)))
+        print(("saving error information to ", filename , "-transfer.err"))
         open(filename + "-transfer.err",'wb').write(response.content)
         return
     return response.content
@@ -91,7 +91,7 @@ def main():
 
     config = SafeConfigParser()
     config.add_section('main')
-    for k,v in DEFAULTS.items():
+    for k,v in list(DEFAULTS.items()):
         config.set('main', k,v)
 
     config.read (['.bisque', os.path.expanduser('~/.bisque'), '/etc/bisque/bisque_config'])
@@ -113,13 +113,13 @@ def main():
 
     args = parser.parse_args()
 
-    print args
+    print(args)
 
     if  DESTINATION not in args.dest: # and not dest.endswith(DESTINATION):
-        args.dest = urlparse.urljoin (args.dest, DESTINATION)
+        args.dest = urllib.parse.urljoin (args.dest, DESTINATION)
 
-    dest_tuple = list(urlparse.urlsplit(args.dest))
-    args.dest =  urlparse.urlunsplit(dest_tuple)
+    dest_tuple = list(urllib.parse.urlsplit(args.dest))
+    args.dest =  urllib.parse.urlunsplit(dest_tuple)
     if args.debug:
         logging.getLogger().setLevel(logging.DEBUG)
 
@@ -162,13 +162,13 @@ def main():
                     filename = os.path.join(root, name)
                     if isimagefile (filename):
                         if args.verbose:
-                            print "transfering %s" % (filename)
+                            print(("transfering %s" % (filename)))
                         upload(args.dest, filename, userpass, tags)
         elif os.path.isfile(path):
             if isimagefile (path):
                 response = upload(args.dest, path, userpass, tags)
                 if args.verbose:
-                    print response
+                    print(response)
     sys.exit(0)
 
 

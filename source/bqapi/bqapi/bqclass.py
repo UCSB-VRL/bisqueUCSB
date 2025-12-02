@@ -490,7 +490,7 @@ class BQVertex (BQNode):
         self.x=x; self.y=y; self.z=z; self.t=t
 
     def fromObj(self, **kw):
-        for k,v in kw.items():
+        for k,v in list(kw.items()):
             if k in self.xmlfields:
                 setattr(self,k,v)
 
@@ -728,7 +728,7 @@ class BQFactory (object):
     def to_string (self, node):
         if isinstance (node, BQNode):
             node = self.to_etree(node)
-        return etree.tostring(node)
+        return etree.tostring(node, encoding='unicode')
 
     @classmethod
     def string2etree(self, xmlstring):
@@ -805,7 +805,7 @@ def model_fields(dbo, baseuri=None):
 
         # Put value in attribute dictionary
         if attr_val is not None and attr_val!='':
-            if isinstance(attr_val, basestring):
+            if isinstance(attr_val, str):
                 attrs[fn] = attr_val
             else:
                 attrs[fn] = str(attr_val) #unicode(attr_val,'utf-8')

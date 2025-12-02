@@ -67,6 +67,7 @@ e1.bisque.static_files = false
 [app:main]
 # pylons/paster config
 use = egg:bqcore
+make_body_seekable = true
 full_stack = true
 #filter-with = linesman
 
@@ -83,9 +84,10 @@ bisque.welcome_message = Welcome to the Bisque database
 #bisque.background_query = welcome_background:
 #bisque.background_resource  =
 #set environment to development for test/debug (option debug below must be false for this to effective)
-#bisque.js_environment = development
+# temporarily set to development
+# bisque.js_environment = development
 bisque.js_environment = production
-#bisque.static_files = true
+# bisque.static_files = true
 
 
 
@@ -119,6 +121,7 @@ bisque.blob_service.subtransaction = true
 # Ordered list of stores .. path is created based on template
 # bisque.blob_service.stores = irods1,s3,local
 bisque.blob_service.stores=local
+bisque.blob_service.cache_max_age = 3628800
 bisque.stores.local.mounturl = file://$datadir/imagedir/$user/
 bisque.stores.local.top = file://$datadir/imagedir/
 
@@ -154,6 +157,7 @@ bisque.stores.local.top = file://$datadir/imagedir/
 # Image Service
 #bisque.image_service.work_dir  = ./data/workdir
 bisque.image_service.imgcnv.omp_num_threads = 4
+bisque.image_service.cache_max_age = 3628800
 
 # Import service
 bisque.import_service.upload_dir = ./data/uploads
@@ -199,6 +203,43 @@ bisque.login.local.url = /auth_service/login
 bisque.login.local.icon = /core/images/signin/signin_bisque.png
 bisque.login.local.type = internal
 
+# Firebase Authentication Configuration (requires Firebase project setup)
+# To enable Firebase auth:
+# 1. Create a Firebase project at https://console.firebase.google.com/
+# 2. Enable Authentication and configure providers
+# 3. Download service account key and place in config directory
+# 4. Update the configuration below with your Firebase project details
+
+# Firebase core configuration
+bisque.firebase.project_id = firebase_project_id
+bisque.firebase.web_api_key = firebase_web_api_key
+bisque.firebase.service_account_key = /source/bisque-auth-firebase-adminsdk-fbsvc-96be8d73bb.json # service account json
+
+# Firebase Provider Configurations (uncomment to enable)
+# Google Authentication (no extra setup required)
+bisque.login.firebase_google.text = Continue with Google
+bisque.login.firebase_google.url = /auth_service/firebase_auth?provider=google
+bisque.login.firebase_google.icon = /core/images/signin/google.svg
+bisque.login.firebase_google.type = firebase
+
+# Facebook Authentication (requires Facebook App)
+#bisque.login.firebase_facebook.text = Continue with Facebook
+#bisque.login.firebase_facebook.url = /auth_service/firebase_auth?provider=facebook
+#bisque.login.firebase_facebook.icon = /core/images/signin/facebook.svg
+#bisque.login.firebase_facebook.type = firebase
+
+# GitHub Authentication (requires GitHub OAuth App)
+bisque.login.firebase_github.text = Continue with GitHub
+bisque.login.firebase_github.url = /auth_service/firebase_auth?provider=github
+bisque.login.firebase_github.icon = /core/images/signin/github.svg
+bisque.login.firebase_github.type = firebase
+
+# Twitter Authentication (requires Twitter App)
+#bisque.login.firebase_twitter.text = Continue with Twitter
+#bisque.login.firebase_twitter.url = /auth_service/firebase_auth?provider=twitter
+#bisque.login.firebase_twitter.icon = /core/images/signin/twitter.svg
+#bisque.login.firebase_twitter.type = firebase
+
 # User traffic tracking
 # You can use google (http://www.google.com/analytics/)  or piwik (http://piwik.org/), etc.
 #bisque.tracking = piwik.html
@@ -242,26 +283,114 @@ beaker.cache.lock_dir = data/beakerlock
 #beaker.cache.url = 127.0.0.1:11211
 #
 
-# Paster  Error Config
-error_subject_prefix = Bisque Error:
-error_message = An Unexpected exception:
-error_email_from = bisque_admin@localhost
-email_to = bisque_admin@localhost
-smtp_server = localhost
+# Paster Error Config (DEPRECATED - use unified email config below)
+# error_subject_prefix = Bisque Error:
+# error_message = An Unexpected exception:
+# error_email_from = bisque_admin@localhost
+# email_to = bisque_admin@localhost
+# smtp_server = localhost
 
 
-# TGExt.Registration2 Config
-registration_config = %(here)s/registration.cfg
-registration.site_name = Bisque
-registration.mail.admin_email = admin@nowhere.com
-registration.host = http://localhost:8080
-registration.mail.smtp_server = localhost
+# TGExt.Registration2 Config (DEPRECATED - Legacy)
+# registration_config = %(here)s/registration.cfg
+# registration.site_name = Bisque
+# registration.mail.admin_email = admin@nowhere.com
+# registration.host = http://localhost:8080
+# registration.mail.smtp_server = localhost
 
-# TurboMail Config
-mail.on = false
-mail.smtp.server = localhost
-mail.manager = immediate
-mail.transport = smtp
+# Legacy Email Verification Configuration (DEPRECATED - use unified config below)
+# Enable or disable email verification for new user registrations
+# registration.email_verification.enabled = false
+
+# SMTP Configuration for Email Verification (DEPRECATED)
+# These settings are used when email verification is enabled
+# registration.email_verification.smtp.host = localhost
+# registration.email_verification.smtp.port = 25
+# registration.email_verification.smtp.username = 
+# registration.email_verification.smtp.password = 
+# registration.email_verification.smtp.use_tls = false
+# registration.email_verification.smtp.from_email = noreply@localhost
+# registration.email_verification.smtp.from_name = Bisque System
+
+# Email verification token expiration (in hours) (DEPRECATED)
+# registration.email_verification.token_expiry_hours = 24
+
+#####################################
+# UNIFIED EMAIL/SMTP CONFIGURATION
+#####################################
+# Modern unified email service configuration for ALL Bisque components
+# This replaces legacy TurboMail and scattered SMTP configurations
+# All email functionality (registration, notifications, admin, etc.) uses this config
+
+# SMTP Server Configuration
+bisque.smtp.host = localhost
+bisque.smtp.port = 587
+bisque.smtp.username = 
+bisque.smtp.password = 
+bisque.smtp.tls = true
+bisque.smtp.ssl = false
+bisque.smtp.timeout = 30
+
+# Email Settings
+bisque.mail.from_email = noreply@localhost
+bisque.mail.from_name = Bisque System
+
+# Email Verification for Registration
+bisque.registration.email_verification.enabled = false
+
+# Environment variables can also be used (recommended for Docker/production):
+# BISQUE_SMTP_HOST, BISQUE_SMTP_PORT, BISQUE_SMTP_USER, BISQUE_SMTP_PASSWORD
+# BISQUE_SMTP_TLS, BISQUE_SMTP_SSL, BISQUE_MAIL_FROM, BISQUE_ADMIN_EMAIL
+# BISQUE_EMAIL_VERIFICATION_ENABLED
+
+#####################################
+# LEGACY CONFIGURATIONS (deprecated)
+#####################################
+# The configurations below are deprecated and will be removed in future versions.
+# Please use the unified configuration above.
+
+# Example unified configurations for common SMTP providers:
+# 
+# Gmail:
+# bisque.smtp.host = smtp.gmail.com
+# bisque.smtp.port = 587
+# bisque.smtp.username = your-email@gmail.com
+# bisque.smtp.password = your-app-password
+# bisque.smtp.tls = true
+# bisque.mail.from_email = noreply@yourdomain.com
+# bisque.registration.email_verification.enabled = true
+#
+# Outlook/Hotmail:
+# bisque.smtp.host = smtp-mail.outlook.com
+# bisque.smtp.port = 587
+# bisque.smtp.username = your-email@outlook.com
+# bisque.smtp.password = your-password
+# bisque.smtp.tls = true
+# bisque.registration.email_verification.enabled = true
+#
+# AWS SES:
+# bisque.smtp.host = email-smtp.us-east-1.amazonaws.com
+# bisque.smtp.port = 587
+# bisque.smtp.username = your-ses-access-key
+# bisque.smtp.password = your-ses-secret-key
+# bisque.smtp.tls = true
+# bisque.registration.email_verification.enabled = true
+
+# Legacy Email Verification Configuration (DEPRECATED - use unified config above)
+# registration.email_verification.enabled = false
+# registration.email_verification.smtp.host = localhost
+# registration.email_verification.smtp.port = 25
+# registration.email_verification.smtp.username = 
+# registration.email_verification.smtp.password = 
+# registration.email_verification.smtp.use_tls = false
+# registration.email_verification.smtp.from_email = noreply@localhost
+# registration.email_verification.smtp.from_name = Bisque System
+
+# Legacy TurboMail Config (DEPRECATED - use unified config above)
+# mail.on = false
+# mail.smtp.server = localhost
+# mail.manager = immediate
+# mail.transport = smtp
 
 # SQLAlchemy
 sqlalchemy.url = sqlite:///data/bisque.db
@@ -287,7 +416,7 @@ bisque.profiler.path = __profiler__
 # WARNING: *THE LINE BELOW MUST BE UNCOMMENTED ON A PRODUCTION ENVIRONMENT*
 # Debug mode will enable the interactive debugging tool, allowing ANYONE to
 # execute malicious code after an exception is raised.
-set debug = false
+set debug = true
 
 # if you are using Mako and want to be able to reload
 # the mako template from disk during the development phase

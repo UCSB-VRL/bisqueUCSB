@@ -1,7 +1,7 @@
 """ Base class defining command line converter API
 """
 
-from __future__ import with_statement
+
 
 __author__    = "Dmitry Fedorov"
 __version__   = "0.1"
@@ -182,7 +182,7 @@ class ConverterBase(object):
                  'pixel_resolution_unit_x', 'pixel_resolution_unit_y', 'pixel_resolution_unit_z' ]
 
         #return {k:v for k,v in rd.iteritems() if k in core}
-        return dict ( (k,v) for k,v in rd.iteritems() if k in core)
+        return dict ( (k,v) for k,v in rd.items() if k in core)
 
     #######################################
     # Conversion

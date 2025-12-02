@@ -52,7 +52,7 @@ DESCRIPTION
 """
 import logging
 import itertools
-import urlparse
+import urllib.parse
 import time
 import copy
 import io
@@ -86,9 +86,9 @@ class BQParseException(BQException):
 
 def unicode_safe(u):
     try:
-        return unicode(u, "utf-8")
+        return str(u, "utf-8")
     except TypeError:
-        return unicode(u)
+        return str(u)
 
 
 
@@ -225,14 +225,12 @@ class ResourceFactory(object):
         else:
             if xmlname=="resource":
                 xmlname = xmlnode.get ('resource_type')
-
             tag, type_ = dbtype_from_tag(xmlname)
             node = type_(xmlname, parent=parent)
             if tag == 'mex':
                 node.mex = node
             if tag == 'user':
                 node.user = node
-
         # pylint: disable=no-member
         log.debug  ('factory.new %s -> %s document(%s)' , xmlname, node, node.document_id)
         return node
@@ -392,7 +390,7 @@ def model_fields(dbo, baseuri=None):
     '''
     attrs = {}
     try:
-        dbo_fields = object_mapper (dbo)._props.keys()
+        dbo_fields = list(object_mapper (dbo)._props.keys())
     except sqlalchemy.orm.exc.UnmappedInstanceError:
         # This occurs when the object is a fake DB objects
         # The dictionary is sufficient
@@ -407,10 +405,10 @@ def model_fields(dbo, baseuri=None):
         else:
             attr_val = getattr(dbo, fn, None)
         if attr_val is not None: # and attr_val!='':
-            if isinstance(attr_val, basestring):
+            if isinstance(attr_val, str):
                 attrs[fn] = attr_val
             else:
-                attrs[fn] = unicode(attr_val) #unicode(attr_val,'utf-8')
+                attrs[fn] = str(attr_val) #unicode(attr_val,'utf-8')
     return attrs
 
 
@@ -421,7 +419,7 @@ def xmlelement(dbo, parent, baseuri, view, **kw):
     if not kw:
         kw = model_fields (dbo, baseuri)
         if 'clean' in view:
-            kw = dict([ (k,v) for k,v in kw.items() if k in clean_fields])
+            kw = dict([ (k,v) for k,v in list(kw.items()) if k in clean_fields])
 
     if 'primary' in view:
         kw['primary'] = str(dbo.id) if hasattr(dbo,'id') else ''
@@ -493,7 +491,8 @@ def resource2nodes(dbo, parent=None, view=[], baseuri=None,  qfilter=None, **kw)
         nodes[node.id]   = xmlnode(node, None, baseuri, view)
         parents[node.id] = (node.resource_parent_id, node.resource_index)
     # pull out items sorted by resource_index (k, (parent, index) )
-    for node_id, (parent_id, _) in sorted (parents.items(), key=lambda x : x[1][1]):
+    # for node_id, (parent_id, _) in sorted (list(parents.items()), key=lambda x : x[1][1]):
+    for node_id, (parent_id, _) in sorted(list(parents.items()), key=lambda x: (x[1][1] is not None, x[1][1])): # !!! added a null check
         try:
             # attached xml nodes in position
             if parent_id is not None:
@@ -554,7 +553,7 @@ def resource2tree(dbo, parent=None, view=None, baseuri=None, nodes= {}, doc_id =
 
 def db2tree(dbo, parent=None, view=None, baseuri=None, progressive=False, **kw):
     "Convert a Database Object into ElementTree representation"
-    if isinstance(view, basestring):
+    if isinstance(view, str):
         # pylint:disable=E1103
         view = [ x.strip() for x in view.split(',') if len (x.strip()) ]
     view = view or []
@@ -629,9 +628,9 @@ def db2node(dbo, parent, view, baseuri, nodes, doc_id, **kw):
         q = dbo.childrenq
         #q = dbo.children
         # apply limit offsets
-        if kw.has_key('offset'):
+        if 'offset' in kw:
             q = q.offset (int(kw.pop('offset')))
-        if kw.has_key('limit'):
+        if 'limit' in kw:
             q = q.limit (int(kw.pop('limit')))
         # add immediate children
         _ = [ xmlnode(x, node, view=view, baseuri=baseuri) for x in q ]
@@ -718,7 +717,7 @@ def parse_bisque_uri(uri):
     @return: The parse resource
     '''
     # (scheme, host, path, ...)
-    url = urlparse.urlsplit(uri)
+    url = urllib.parse.urlsplit(uri)
     if url.scheme not in ('http', 'https', ''):
         return None, None, None, None
     # /service_name/ [ id or or class ]*
@@ -791,7 +790,7 @@ converters = OrderedDict( (
     ) )
 
 def try_converters (value):
-    for ty_, converter in converters.items():
+    for ty_, converter in list(converters.items()):
         try:
             v = converter(value)
             if v is not None:
@@ -864,7 +863,7 @@ def updateDB(root=None, parent=None, resource = None, factory = ResourceFactory,
                 #####
                 # Assign attributes
                 resource.ts = ts
-                for k,v in attrib.items():
+                for k,v in list(attrib.items()):
                     #log.debug ("%s attr %s:%s" % (resource, k, v))
                     if getattr(resource, k, v) != v:
                         setattr(resource, k, unicode_safe(v))
@@ -894,7 +893,7 @@ def updateDB(root=None, parent=None, resource = None, factory = ResourceFactory,
             else:
                 log.debug ("other node %s" , obj.tag)
 
-    except Exception, e:
+    except Exception as e:
         log.exception("during parse of %s " % (etree.tostring(root, pretty_print=True)))
         raise e
     return  last_resource
@@ -940,7 +939,7 @@ def bisquik2db(doc= None, parent=None, resource = None, xmlschema=None, replace=
     '''
     if hasattr(doc,'read'):
         doc = etree.parse(doc)
-    if isinstance(doc, basestring):
+    if isinstance(doc, str):
         doc = etree.parse(io.BytesIO(doc))
 
     #log.debug ("Bisquik2db parent: %s" %  parent)

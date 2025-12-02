@@ -18,7 +18,7 @@ if sys.version_info  < ( 2, 7 ):
 else:
     import unittest
 import os
-import ConfigParser
+import configparser
 from bqapi import BQSession, BQCommError
 
 from bq.image_service.tests.tests_base import ImageServiceTestBase
@@ -42,7 +42,7 @@ class ImageServiceTestsUnicode(ImageServiceTestBase):
 
     @classmethod
     def setUpClass(self):
-        config = ConfigParser.ConfigParser()
+        config = configparser.ConfigParser()
         config.read('config.cfg')
 
         self.root = config.get('Host', 'root') or 'localhost:8080'

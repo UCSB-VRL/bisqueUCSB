@@ -271,7 +271,7 @@ class SliceOperation(BaseOperation):
 
             # if desired converter failed, perform exhaustive conversion
             if r is None:
-                for n,c in self.server.converters.iteritems():
+                for n,c in self.server.converters.items():
                     if n in [ConverterImgcnv.name, dims.get('converter')]: continue
                     r = c.slice(token, ofname, z=(z1,z2), t=(t1,t2), roi=(x1,x2,y1,y2), fmt=default_format, intermediate=intermediate)
                     if r is not None:

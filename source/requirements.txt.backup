@@ -1,0 +1,99 @@
+clear# all editable package are relative to source
+-e ./bqcore
+-e ./bqserver
+-e ./bqapi
+-e ./bqengine
+-e ./bqfeature
+ 
+-e ./legacy_upgraded/Pylons-2.0
+-e ./legacy_upgraded/Minimatic-2.0
+-e ./legacy_upgraded/WebError-2.0
+-e ./legacy_upgraded/WebHelpers-2.0
+-e ./legacy_upgraded/paste-103.10.1 # modified paste to address some issues
+
+alembic==1.15.2
+Beaker==1.13.0
+beautifulsoup4==4.13.4
+blosc2==3.3.2
+boto==2.49.0
+certifi==2025.4.26
+charset-normalizer==3.4.2
+crank==0.8.1
+cssutils==2.11.1
+decorator==5.2.1
+defusedxml==0.7.1
+FormEncode==2.1.1
+furl==2.1.4
+future==1.0.0
+gdata==2.0.18
+Genshi==0.7.9
+greenlet==3.2.2
+httplib2==0.22.0
+idna==3.10
+irods==0.0.1
+linesman==0.3.2
+lxml==5.4.0
+Mako==1.3.10
+MarkupSafe==3.0.2
+python-mimeparse==2.0.0
+more-itertools==10.7.0
+msgpack==1.1.0
+ndindex==1.9.2
+networkx==1.7
+nose==1.3.7
+numexpr==2.10.2
+numpy==2.2.5
+ordereddict==1.1
+orderedmultidict==1.0.1
+packaging==25.0
+pandas==2.2.3
+PasteDeploy==3.1.0
+PasteScript==3.7.0
+pillow==11.2.1
+platformdirs==4.3.8
+ply==3.11
+prettytable==3.16.0
+psutil==7.0.0
+py-cpuinfo==9.0.0
+Pygments==2.19.1
+pygraphviz==1.14
+Pylons==2.0.0
+pyparsing==3.2.3
+python-dateutil==2.9.0.post0
+python-irodsclient==3.1.0
+pytz==2025.2
+repoze.lru==0.7
+repoze.tm2==2.2.0
+repoze.who==3.1.0
+requests==2.32.3
+requests-toolbelt==1.0.0
+Routes==2.5.1
+shortuuid==1.0.13
+simplejson==3.20.1
+six==1.17.0
+soupsieve==2.7
+speaklater==1.3
+SQLAlchemy==2.0.40
+tables==3.10.1
+Tempita==0.6.0
+tifffile==2025.3.30
+transaction==5.0
+TurboGears2==2.5.0
+tw2.core==2.3.0
+tw2.forms==2.2.6
+typing_extensions==4.13.2
+tzdata==2025.2
+urllib3==2.4.0
+waitress==3.0.2
+wcwidth==0.2.13
+WebOb==1.8.9
+WebTest==3.0.4
+Werkzeug==3.1.3
+zope.interface==7.2
+zope.sqlalchemy==3.1
+# new requirements
+portalocker==3.1.1
+pydicom==3.0.1
+#excel files
+openpyxl==3.1.4
+xlrd==2.0.1 #for old xls files

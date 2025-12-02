@@ -51,8 +51,8 @@ import optparse
 import os
 import sys
 import logging
-import urlparse
-import urllib
+import urllib.parse
+import urllib.request, urllib.parse, urllib.error
 import datetime
 from lxml import etree
 from paste.deploy import appconfig
@@ -82,7 +82,7 @@ usage = """
 """
 
 def error (msg):
-    print >>sys.stderr, msg
+    print(msg, file=sys.stderr)
 
 
 class module_admin(object):
@@ -132,24 +132,24 @@ class module_admin(object):
 
 
     def get_xml(self, url):
-        print "loading ", url
+        print("loading ", url)
         resp, xml = http.xmlrequest(url)
         if resp['status'] != '200':
-            print "Can't access %s" %url
-            print resp
+            print("Can't access %s" %url)
+            print(resp)
             return None
         try:
             xml =   etree.XML(xml)
             return xml
         except Exception:
-            print "Problem parsing"
+            print("Problem parsing")
             log.exception("During parsing of %s " % xml)
         return None
 
     def get_modules(self, engine_path):
         'list module urls  at engine given path path'
         engine_path = norm(engine_path + '/')
-        modules = self.get_xml( url = urlparse.urljoin(engine_path, '_services'))
+        modules = self.get_xml( url = urllib.parse.urljoin(engine_path, '_services'))
         if modules is None:
             return error ('Cannot read modules from engine: %s' % engine_path)
         return  [ m.get('value') for m in modules ]
@@ -157,8 +157,8 @@ class module_admin(object):
     def register_one(self, module_path):
         bisque_root = self.root
         module_path = norm(module_path + '/')
-        module_register = norm (urlparse.urljoin(bisque_root, "module_service/register_engine") + '/')
-        module_xml = self.get_xml( url = urlparse.urljoin(module_path, 'definition'))
+        module_register = norm (urllib.parse.urljoin(bisque_root, "module_service/register_engine") + '/')
+        module_xml = self.get_xml( url = urllib.parse.urljoin(module_path, 'definition'))
         if module_xml is None:
             error ("cannot read definition from %s!  Is engine address correct?")
         name = module_xml.get('name')
@@ -172,20 +172,20 @@ class module_admin(object):
             if self.options.published:
                 for el in module_xml.getiterator(tag=etree.Element):
                     el.set ('permission', 'published')
-            xml = etree.tostring(module_xml)
+            xml = etree.tostring(module_xml, encoding='unicode')
             params = [ ('engine_uri', module_path) ]
             if self.module_uri:
                 params.append ( ('module_uri', self.module_uri) )
-            url = "%s?%s" % (module_register, urllib.urlencode(params))
+            url = "%s?%s" % (module_register, urllib.parse.urlencode(params))
             resp, content = http.xmlrequest (url, method='POST', body=xml, userpass=self.credentials)
 
             if resp.status == '401':
-                print "You do not have permission to register (provide credentials)"
+                print("You do not have permission to register (provide credentials)")
             elif resp['status'] != '200':
-                print "An error occurred:"
-                print content
+                print("An error occurred:")
+                print(content)
                 return
-            print "Registered"
+            print("Registered")
 
     def register (self):
         if self.options.all:
@@ -193,7 +193,7 @@ class module_admin(object):
         else:
             module_paths = [ self.engine_path ]
         for m in module_paths:
-            print "registering %s" % m
+            print("registering %s" % m)
             self.register_one(m)
 
 
@@ -203,41 +203,41 @@ class module_admin(object):
         else:
             module_paths = [ self.engine_path ]
         for m in module_paths:
-            print "unregistering %s" % m
+            print("unregistering %s" % m)
             self.unregister_one(m)
 
 
     def unregister_one(self, module_path):
         bisque_root = self.root
         module_path = norm(module_path + '/')
-        module_unregister = norm (urlparse.urljoin(bisque_root, "module_service/unregister_engine") + '/')
+        module_unregister = norm (urllib.parse.urljoin(bisque_root, "module_service/unregister_engine") + '/')
 
         module_name = module_path.split('/')[-2]
         params = [ ('engine_uri', module_path) ]
         if self.module_uri:
             params.append ( ('module_uri', self.module_uri) )
-        url = "%s?%s" % (module_unregister, urllib.urlencode(params))
+        url = "%s?%s" % (module_unregister, urllib.parse.urlencode(params))
         resp, content = http.xmlrequest (url, method='GET', userpass=self.credentials)
         if resp.status == '401':
-            print "You do not have permission to register (provide credentials)"
+            print("You do not have permission to register (provide credentials)")
         elif resp['status'] != '200':
-            print "An error occurred:"
-            print content
+            print("An error occurred:")
+            print(content)
             return
-        print "UnRegistered"
+        print("UnRegistered")
 
     def list_engine(self):
         module_paths = self.get_modules(self.engine_path)
         if module_paths is None:
             module_paths = self.get_modules(self.engine_path + '/engine_service/')
         for module in module_paths or []:
-            print module
+            print(module)
 
 
     def list_server(self):
         from collections import namedtuple
         Row = namedtuple ('Row', ('name', 'engine', 'module'))
-        server_modules = self.get_xml( url = urlparse.urljoin(self.root, 'module_service'))
+        server_modules = self.get_xml( url = urllib.parse.urljoin(self.root, 'module_service'))
         if server_modules is None:
             error ("No modules registered at %s. Is this a bisque server?" % self.root)
 
@@ -265,12 +265,12 @@ def pprinttable(rows):
     pattern = " | ".join(formats)
     hpattern = " | ".join(hformats)
     separator = "-+-".join(['-' * n for n in lens])
-    print hpattern % tuple(headers)
-    print separator
+    print(hpattern % tuple(headers))
+    print(separator)
     for line in rows:
-      print pattern % tuple(line)
+      print(pattern % tuple(line))
   elif len(rows) == 1:
     row = rows[0]
     hwidth = len(max(row._fields,key=lambda x: len(x)))
     for i in range(len(row)):
-      print "%*s = %s" % (hwidth,row._fields[i],row[i])
+      print("%*s = %s" % (hwidth,row._fields[i],row[i]))

@@ -1055,6 +1055,50 @@ Ext.define('Bisque.Resource.Image.Page', {
                 my_box.show()
             },
 	    })
+
+        viewer_menu_items.push({
+                xtype: 'tbseparator'
+            });
+        
+        viewer_menu_items.push({
+            xtype: 'button',
+            itemId: 'clear_cache',
+            text: 'Clear Cache',
+            tooltip: 'Clear cached data for this image',
+            iconCls: 'icon-clean-cache',
+            iconAlign: 'left',
+            handler: function() {
+                var resourceId = this.resource.resource_uniq;
+                var url = '/image_service/' + resourceId + '/cleancache';
+                Ext.Ajax.request({
+                    url: url,
+                    method: 'GET',
+                    success: function(response) {
+                        Ext.Msg.show({
+                            title: 'Success',
+                            msg: 'Cache cleared for this image.',
+                            buttons: Ext.Msg.OK,
+                            fn: function(btn) {
+                                if (btn === 'ok') {
+                                    // Refresh the viewer if available
+                                    if (this.viewerContainer && this.viewerContainer.viewer) {
+                                        this.viewerContainer.viewer.updateImage();
+                                    }
+                                    // Refresh the entire window
+                                    window.location.reload();
+                                }
+                            },
+                            scope: this
+                        });
+                    },
+                    failure: function(response) {
+                        Ext.Msg.alert('Error', 'Failed to clear cache.');
+                    },
+                    scope: this
+                });
+            },
+            scope: this
+        })
         
         this.toolbar.insert(5, ['-']);
         this.toolbar.insert(5, viewer_menu_items);

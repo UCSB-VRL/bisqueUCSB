@@ -15,7 +15,7 @@ class AttrDict(dict):
         return value
 
     def __getstate__(self):
-        return self.items()
+        return list(self.items())
 
     def __setstate__(self, items):
         for key, val in items:

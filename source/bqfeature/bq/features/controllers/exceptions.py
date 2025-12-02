@@ -39,3 +39,4 @@ class InvalidResourceError(Exception):
         self.resource_url = resource_url
         self.code = error_code
         self.message = error_message
+        

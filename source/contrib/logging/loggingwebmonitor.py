@@ -49,12 +49,12 @@ as expected.
 
 import os
 import sys
-import cPickle
+import pickle
 import logging
 import logging.handlers
 import logging.config
-import SocketServer
-import BaseHTTPServer
+import socketserver
+import http.server
 import struct
 import threading
 import datetime
@@ -112,7 +112,7 @@ class MostRecentHandler(logging.Handler):
 
 # taken from the logging package documentation by Vinay Sajip
 
-class LogRecordStreamHandler(SocketServer.StreamRequestHandler):
+class LogRecordStreamHandler(socketserver.StreamRequestHandler):
     'Handler for a streaming logging request'
 
     def handle(self):
@@ -133,7 +133,7 @@ class LogRecordStreamHandler(SocketServer.StreamRequestHandler):
             self.handleLogRecord(record)
 
     def unPickle(self, data):
-        return cPickle.loads(data)
+        return pickle.loads(data)
 
     def handleLogRecord(self, record):
         # if a name is specified, we use the named logger rather than the one
@@ -150,7 +150,7 @@ class LogRecordStreamHandler(SocketServer.StreamRequestHandler):
         logger.handle(record)
 
 
-class LoggingReceiver(SocketServer.ThreadingTCPServer):
+class LoggingReceiver(socketserver.ThreadingTCPServer):
     'Simple TCP socket-based logging receiver'
     allow_reuse_address = True
 
@@ -159,13 +159,13 @@ class LoggingReceiver(SocketServer.ThreadingTCPServer):
     def __init__(self, host=LOGHOST, port=None, handler=LogRecordStreamHandler):
         if port is None:
             port = logging.handlers.DEFAULT_TCP_LOGGING_PORT
-        SocketServer.ThreadingTCPServer.__init__(self, (host, port), handler)
+        socketserver.ThreadingTCPServer.__init__(self, (host, port), handler)
 
 
 # idea and page layout taken from python-loggingserver by doug.farrell
 # http://code.google.com/p/python-loggingserver/
 
-class LogginWebMonitorRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
+class LogginWebMonitorRequestHandler(http.server.BaseHTTPRequestHandler):
 
     datefmt = '%Y-%m-%d %H:%M:%S'
     formatter = logging.Formatter(
@@ -298,7 +298,7 @@ table.vtable tr th.heading {
             return 404, None, None
         except Exception:
             import traceback
-            print >>sys.stderr, 'While handling %r:' % path
+            print('While handling %r:' % path, file=sys.stderr)
             traceback.print_exc(file=sys.stderr)
             return 500, None, None
 
@@ -322,9 +322,9 @@ table.vtable tr th.heading {
                     (escape(record.levelname.lower()), ''.join(cells)))
             except Exception:
                 import traceback
-                print >>sys.stderr, 'While generating %r:' % record
+                print('While generating %r:' % record, file=sys.stderr)
                 traceback.print_exc(file=sys.stderr)
-        records = u'\n'.join(items)
+        records = '\n'.join(items)
         d = dict(starttime=starttime,
                  uptime=uptime,
                  logrecordstotal=logrecordstotal,
@@ -335,21 +335,21 @@ table.vtable tr th.heading {
         pass
 
 
-class LoggingWebMonitor(BaseHTTPServer.HTTPServer):
+class LoggingWebMonitor(http.server.HTTPServer):
     'A simple web page for displaying logging records'
 
     def __init__(self, host=WEBHOST, port=None, handler=LogginWebMonitorRequestHandler):
         if port is None:
             port = logging.handlers.DEFAULT_TCP_LOGGING_PORT + 1
-        BaseHTTPServer.HTTPServer.__init__(self, (host, port), handler)
+        http.server.HTTPServer.__init__(self, (host, port), handler)
         self.starttime = datetime.datetime.now()
 
 
-if not hasattr(SocketServer.TCPServer, 'shutdown'):
+if not hasattr(socketserver.TCPServer, 'shutdown'):
 
     # pre 2.6
 
-    _original_get_request = SocketServer.TCPServer.get_request
+    _original_get_request = socketserver.TCPServer.get_request
 
     def serve_forever(self):
         while not self.quit:
@@ -400,18 +400,18 @@ def main():
     webmonitor.mostrecent = mostrecent
     thr_webmonitor = threading.Thread(target=webmonitor.serve_forever)
     thr_webmonitor.daemon = True
-    print '%s started at %s' % (webmonitor.__class__.__name__, webmonitor.server_address)
+    print('%s started at %s' % (webmonitor.__class__.__name__, webmonitor.server_address))
     thr_webmonitor.start()
 
     try:
         recv = LoggingReceiver()
-    except socket.error, e:
-        print "Couldn't start"
+    except socket.error as e:
+        print("Couldn't start")
         recv = LoggingReceiver()
 
     thr_recv = threading.Thread(target=recv.serve_forever)
     thr_recv.daemon = True
-    print '%s started at %s' % (recv.__class__.__name__, recv.server_address)
+    print('%s started at %s' % (recv.__class__.__name__, recv.server_address))
     thr_recv.start()
 
 
@@ -424,7 +424,7 @@ def main():
         thr_webmonitor.join()
 
     def terminate(signal, frame):
-        print "TERMINATED"
+        print("TERMINATED")
         shutdown()
         sys.exit(0)
 

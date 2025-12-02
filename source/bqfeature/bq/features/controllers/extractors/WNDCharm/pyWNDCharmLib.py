@@ -494,4 +494,4 @@ if __name__ == '__main__':
     start=time.time()
     feature=extractChebyshevFourierCoefficients(im)
     end=time.time()
-    print 'time elapsed: %s'%str(end-start)
+    print('time elapsed: %s'%str(end-start))

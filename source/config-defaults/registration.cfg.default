@@ -48,10 +48,23 @@ registration.lost_password_policy = 'reset'
 # code is only single threaded will not exit certain controllers until
 # the email is sent.
 
+# Legacy TGExt.Registration2 settings (for reference only)
 registration.mail.smtp_server = 'localhost'  #e.g. 'mail.example.com'
 registration.mail.smtp_server_port = 25
 registration.mail.smtp_server_username = None
 registration.mail.smtp_server_password = None
+
+# NOTE: For the modern Bisque registration system with email verification,
+# configure email verification settings in your main site.cfg file using:
+#
+#   registration.email_verification.enabled = true
+#   registration.email_verification.smtp.host = smtp.gmail.com
+#   registration.email_verification.smtp.port = 587
+#   registration.email_verification.smtp.username = your-email@gmail.com
+#   registration.email_verification.smtp.password = your-app-password
+#   registration.email_verification.smtp.use_tls = true
+#
+# See site.cfg.default for complete examples and documentation.
 
 
 # This email address is used as the From address for all emails, as well

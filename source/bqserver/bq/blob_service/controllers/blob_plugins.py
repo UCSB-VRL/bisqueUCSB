@@ -152,12 +152,16 @@ class ResourcePluginManager(object):
         files = walk_deep(self.path_plugins)
         for f in files:
             module_name = os.path.splitext(os.path.basename(f))[0]
-            o = imp.load_source(module_name, f)
-            for n,item in inspect.getmembers(o):
-                if inspect.isclass(item) and issubclass(item, ResourcePlugin):
-                    if item.name != 'ResourcePlugin':
-                        log.debug('Adding plugin: %s'%item.name)
-                        self.plugins.append(item())
+            # !!! wrapped in a try catch block
+            try:
+                o = imp.load_source(module_name, f)
+                for n,item in inspect.getmembers(o):
+                    if inspect.isclass(item) and issubclass(item, ResourcePlugin):
+                        if item.name != 'ResourcePlugin':
+                            log.debug('Adding plugin: %s'%item.name)
+                            self.plugins.append(item())
+            except Exception:
+                log.exception('Could not load: %s'%module_name)
         log.info('Resource plugins: %s', [str(p) for p in self.plugins])
 
     def guess_type(self, filename):

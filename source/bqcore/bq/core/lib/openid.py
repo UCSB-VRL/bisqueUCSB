@@ -20,14 +20,14 @@ class OpenIDAuth(object):
 
         if registration:
             name = user_name
-            if identity.has_key('repoze.who.plugins.openid.firstname'):
+            if 'repoze.who.plugins.openid.firstname' in identity:
                 name = identity["repoze.who.plugins.openid.firstname"][0]
 
-            if identity.has_key('repoze.who.plugins.openid.lastname'):
+            if 'repoze.who.plugins.openid.lastname' in identity:
                 name = "%s %s" % (name, identity["repoze.who.plugins.openid.lastname"][0])
 
             email = 'unknown@nowhere.org'
-            if identity.has_key('repoze.who.plugins.openid.email'):
+            if 'repoze.who.plugins.openid.email' in identity:
                 email =  identity["repoze.who.plugins.openid.email"][0]
             return registration.register_user(user_name, values = {
                     'display_name' : name,
@@ -43,7 +43,7 @@ class OpenIDAuth(object):
         if environ['repoze.who.logger'] is not None:
             self.log =  environ['repoze.who.logger']
 
-        if identity.has_key("repoze.who.plugins.openid.email"):
+        if "repoze.who.plugins.openid.email" in identity:
             self.log.info('authenticated email: %s ' %identity['repoze.who.plugins.openid.email'])
             userid =  identity["repoze.who.plugins.openid.email"]
             name,address = userid[0].split('@')
@@ -56,13 +56,13 @@ class OpenIDAuth(object):
 
             return name
 
-        if identity.has_key("repoze.who.plugins.openid.userid"):
+        if "repoze.who.plugins.openid.userid" in identity:
             self.log.info('authenticated : %s ' %identity['repoze.who.plugins.openid.userid'])
             return identity["repoze.who.plugins.openid.userid"]
 
     def as_user_values( self, values, identity ):
         """Given sreg values, convert to User properties"""
-        for id_key,sreg_key in self.key_map.items():
+        for id_key,sreg_key in list(self.key_map.items()):
             value = values.get( sreg_key )
             if value is not None:
                 identity[id_key] = value

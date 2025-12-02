@@ -186,7 +186,7 @@ class _HelpAction(argparse._HelpAction):
         # but better save than sorry
         for subparsers_action in subparsers_actions:
             # get all subparsers and print help
-            for choice, subparser in subparsers_action.choices.items():
+            for choice, subparser in list(subparsers_action.choices.items()):
                 six.print_("Subparser '{}'".format(choice))
                 six.print_(subparser.format_help())
 
@@ -197,7 +197,7 @@ def main():
 
     config = SafeConfigParser()
     config.add_section('main')
-    for k,v in DEFAULTS.items():
+    for k,v in list(DEFAULTS.items()):
         config.set('main', k,v)
 
     config.read (['.bisque', os.path.expanduser('~/.bisque'), '/etc/bisque/bisque_config'])

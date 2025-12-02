@@ -47,9 +47,9 @@ def upgrade():
         if converted_docs % 1024 ==0:
             DBSession.commit ()
             commits += 1
-            print >>sys.stderr, ".",
+            print(".", end=' ', file=sys.stderr)
             if commits % 10 :
-                print >> sys.stderr
+                print(file=sys.stderr)
 
     DBSession.commit ()
     DBSession.close()

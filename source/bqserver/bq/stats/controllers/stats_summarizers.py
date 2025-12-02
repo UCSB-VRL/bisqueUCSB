@@ -73,7 +73,7 @@ from lxml import etree
 import sys
 import logging
 import math
-from urllib import quote
+from urllib.parse import quote
 
 log = logging.getLogger('bisquik.SS.summarizers')
 
@@ -108,7 +108,7 @@ def are_all_numbers(v):
     for n in v:
         if isinstance(n, float): continue
         elif isinstance(n, int): continue
-        elif isinstance(n, long): continue
+        elif isinstance(n, int): continue
         elif isinstance(n, complex): continue
         elif n is None: continue
         else: return False
@@ -258,7 +258,7 @@ try:
             return { self.name:v_in }
 
 
-except ImportError, e:
+except ImportError as e:
     pass
 
 

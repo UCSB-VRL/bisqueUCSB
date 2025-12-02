@@ -1,0 +1,586 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xml:lang="en" lang="en"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+<xi:include href="master.html" />
+
+<head>
+  <title>User Approvals - BisQue Admin</title>
+
+  <!-- DataTables CSS -->
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" />
+  
+  <!-- Fix for templates that do not create html in the body -->
+  <style type="text/css">
+    /* ExtJS 4 Style Theme */
+    #content { margin: 0px; }
+    body {
+      background-color: #f5f5f5;
+      font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 13px;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+    .pending-registrations {
+      padding: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* Panel styling - ExtJS 4 style */
+    .card {
+      margin-bottom: 20px;
+      border: 1px solid #d0d0d0;
+      border-radius: 3px;
+      background-color: #fff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .card-header {
+      background: linear-gradient(to bottom, #f9f9f9, #e8e8e8);
+      padding: 10px 15px;
+      border-bottom: 1px solid #d0d0d0;
+      font-weight: bold;
+      color: #333;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .card-body {
+      padding: 15px;
+    }
+
+    /* Button styling - ExtJS 4 style */
+    .btn {
+      padding: 6px 12px;
+      border: 1px solid transparent;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: normal;
+      text-align: center;
+      vertical-align: middle;
+      margin-right: 5px;
+      transition: all 0.15s ease-in-out;
+    }
+    .btn-success {
+      background-color: #3892d3;
+      border-color: #3892d3;
+      color: #fff;
+    }
+    .btn-success:hover {
+      background-color: #2d7cb8;
+      border-color: #2d7cb8;
+    }
+    .btn-danger {
+      background-color: #d32f2f;
+      border-color: #d32f2f;
+      color: #fff;
+    }
+    .btn-danger:hover {
+      background-color: #b71c1c;
+      border-color: #b71c1c;
+    }
+    .btn-secondary {
+      background-color: #f5f5f5;
+      border-color: #d0d0d0;
+      color: #333;
+    }
+    .btn-secondary:hover {
+      background-color: #e8e8e8;
+      border-color: #b0b0b0;
+    }
+    .btn-outline-primary {
+      background-color: transparent;
+      border-color: #3892d3;
+      color: #3892d3;
+    }
+    .btn-outline-primary:hover {
+      background-color: #3892d3;
+      color: #fff;
+    }
+
+    /* Table styling - ExtJS 4 grid style */
+    .table {
+      background-image: none;
+      width: 100%;
+      border-collapse: collapse;
+      border: 1px solid #d0d0d0;
+      background-color: #fff;
+    }
+    .table th {
+      background: linear-gradient(to bottom, #f9f9f9, #e8e8e8);
+      border: 1px solid #d0d0d0;
+      padding: 8px 12px;
+      font-weight: bold;
+      color: #333;
+      text-align: left;
+      font-size: 13px;
+    }
+    .table td {
+      border: 1px solid #d0d0d0;
+      padding: 8px 12px;
+      font-size: 13px;
+      color: #333;
+    }
+    .table tbody tr:nth-child(even) {
+      background-color: #fafafa;
+    }
+    .table tbody tr:hover {
+      background-color: #e8f4fd;
+    }
+
+    /* Status badges - ExtJS 4 style */
+    .status-pending {
+      color: #333;
+      background-color: #fff3cd;
+      border: 1px solid #ffeaa7;
+      padding: 3px 8px;
+      border-radius: 3px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    .status-approved {
+      color: #155724;
+      background-color: #d4edda;
+      border: 1px solid #c3e6cb;
+      padding: 3px 8px;
+      border-radius: 3px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    .status-rejected {
+      color: #721c24;
+      background-color: #f8d7da;
+      border: 1px solid #f5c6cb;
+      padding: 3px 8px;
+      border-radius: 3px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    /* Typography */
+    h1 {
+      color: #333;
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      padding: 0;
+    }
+    h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    /* Header actions */
+    .header-actions {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+    }
+
+    /* DataTables specific styling - Override Bootstrap */
+    .dataTables_wrapper .dataTables_length,
+    .dataTables_wrapper .dataTables_filter,
+    .dataTables_wrapper .dataTables_info,
+    .dataTables_wrapper .dataTables_paginate {
+      font-size: 13px !important;
+      color: #333 !important;
+      margin: 10px 0 !important;
+    }
+    .dataTables_wrapper .dataTables_length select,
+    .dataTables_wrapper .dataTables_filter input {
+      border: 1px solid #d0d0d0 !important;
+      border-radius: 3px !important;
+      padding: 4px 6px !important;
+      font-size: 13px !important;
+      background-color: #fff !important;
+    }
+    .dataTables_wrapper .dataTables_filter input:focus {
+      outline: none !important;
+      border-color: #3892d3 !important;
+      box-shadow: 0 0 0 2px rgba(56, 146, 211, 0.2) !important;
+    }
+
+    /* Fix pagination buttons - remove bullet points with !important */
+    .dataTables_wrapper .dataTables_paginate {
+      padding-top: 0 !important;
+    }
+    .dataTables_wrapper .dataTables_paginate ul {
+      list-style: none !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      display: flex !important;
+      align-items: center !important;
+    }
+    .dataTables_wrapper .dataTables_paginate li {
+      margin: 0 2px !important;
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+      padding: 4px 8px !important;
+      margin: 0 !important;
+      border: 1px solid #d0d0d0 !important;
+      border-radius: 3px !important;
+      background: #f5f5f5 !important;
+      color: #333 !important;
+      cursor: pointer !important;
+      font-size: 13px !important;
+      transition: all 0.15s ease-in-out !important;
+      text-decoration: none !important;
+      display: inline-block !important;
+      line-height: 1.4 !important;
+      min-width: 28px !important;
+      text-align: center !important;
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+      background: #e8e8e8 !important;
+      border-color: #b0b0b0 !important;
+      text-decoration: none !important;
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+      background: #3892d3 !important;
+      border-color: #3892d3 !important;
+      color: #fff !important;
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button.disabled {
+      background: #f9f9f9 !important;
+      color: #999 !important;
+      cursor: default !important;
+      opacity: 0.6 !important;
+    }
+
+    /* Sorting indicators - Override DataTables defaults */
+    .dataTables_wrapper table thead th {
+      background-image: none !important;
+      position: relative !important;
+      cursor: pointer !important;
+    }
+    .dataTables_wrapper table thead th.sorting:after,
+    .dataTables_wrapper table thead th.sorting_asc:after,
+    .dataTables_wrapper table thead th.sorting_desc:after,
+    .dataTables_wrapper table thead th.sorting:before,
+    .dataTables_wrapper table thead th.sorting_asc:before,
+    .dataTables_wrapper table thead th.sorting_desc:before {
+      content: '' !important;
+      position: absolute !important;
+      right: 8px !important;
+      top: 50% !important;
+      transform: translateY(-50%) !important;
+      width: 0 !important;
+      height: 0 !important;
+      border-left: 4px solid transparent !important;
+      border-right: 4px solid transparent !important;
+      opacity: 0.5 !important;
+    }
+    .dataTables_wrapper table thead th.sorting:after {
+      border-top: 4px solid #999 !important;
+      border-bottom: none !important;
+      top: 40% !important;
+    }
+    .dataTables_wrapper table thead th.sorting_asc:after {
+      border-bottom: 4px solid #3892d3 !important;
+      border-top: none !important;
+      top: 60% !important;
+      opacity: 1 !important;
+    }
+    .dataTables_wrapper table thead th.sorting_desc:after {
+      border-top: 4px solid #3892d3 !important;
+      border-bottom: none !important;
+      top: 40% !important;
+      opacity: 1 !important;
+    }
+
+    /* Icon buttons with tooltips */
+    .btn-icon {
+      padding: 6px 8px;
+      border: 1px solid transparent;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: normal;
+      text-align: center;
+      vertical-align: middle;
+      margin-right: 5px;
+      transition: all 0.15s ease-in-out;
+      position: relative;
+      display: inline-block;
+      width: 32px;
+      height: 28px;
+      line-height: 16px;
+    }
+    .btn-icon:hover {
+      transform: translateY(-1px);
+    }
+    .btn-icon:before {
+      font-size: 14px;
+      font-weight: bold;
+    }
+    .btn-icon-success {
+      background-color: #3892d3;
+      border-color: #3892d3;
+      color: #fff;
+    }
+    .btn-icon-success:hover {
+      background-color: #2d7cb8;
+      border-color: #2d7cb8;
+    }
+    .btn-icon-success:before {
+      content: '✓';
+    }
+    .btn-icon-danger {
+      background-color: #d32f2f;
+      border-color: #d32f2f;
+      color: #fff;
+    }
+    .btn-icon-danger:hover {
+      background-color: #b71c1c;
+      border-color: #b71c1c;
+    }
+    .btn-icon-danger:before {
+      content: '×';
+    }
+    
+    /* Tooltip styles */
+    .tooltip {
+      position: relative;
+      display: inline-block;
+    }
+    .tooltip .tooltip-text {
+      visibility: hidden;
+      width: 120px;
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      border-radius: 3px;
+      padding: 5px;
+      position: absolute;
+      z-index: 1;
+      bottom: 125%;
+      left: 50%;
+      margin-left: -60px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      font-size: 12px;
+    }
+    .tooltip:hover .tooltip-text {
+      visibility: visible;
+      opacity: 1;
+    }
+    .tooltip .tooltip-text::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      margin-left: -5px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: #333 transparent transparent transparent;
+    }
+  </style>
+
+  <script type="text/javascript" id="config">
+      BQ.Server.toolbar_opts = { 'browse': false };
+  </script>
+</head>
+
+<body>
+  <div class="pending-registrations">
+    <h1>User Approvals</h1>
+    
+    <div class="card">
+      <div class="card-header">
+        <h3>Users Awaiting Verification</h3>
+        <div class="header-actions">
+          <a href="/admin/domain_management" class="btn btn-secondary">Manage Domains</a>
+          <button class="btn btn-secondary" onclick="refreshRegistrations()">Refresh</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div id="registrationTableContainer">
+          <table class="table" id="registrationTable">
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Full Name</th>
+                <th>Request Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    //<![CDATA[
+    // Pending registrations functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      loadPendingRegistrations();
+    });
+
+    function loadPendingRegistrations() {
+      fetch('/admin/pending_list')
+        .then(function(response) { return response.json(); })
+        .then(function(data) {
+          if (data.status === 'success') {
+            displayRegistrations(data.registrations);
+          } else {
+            Ext.Msg.alert('Error', 'Error loading pending registrations: ' + data.message);
+          }
+        })
+        .catch(function(error) {
+          console.error('Error:', error);
+          Ext.Msg.alert('Error', 'Error loading pending registrations');
+        });
+    }
+
+    function displayRegistrations(registrations) {
+      // Destroy existing DataTable if it exists
+      if (window.registrationDataTable) {
+        window.registrationDataTable.destroy();
+      }
+      
+      // Prepare data for DataTables
+      var tableData = [];
+      for (var i = 0; i < registrations.length; i++) {
+        var reg = registrations[i];
+        
+        var statusSpan = document.createElement('span');
+        statusSpan.className = 'status-' + (reg.status || 'pending');
+        statusSpan.textContent = reg.status || 'pending';
+        
+        var actions = '';
+        if (reg.status === 'pending') {
+          actions = '<div class="tooltip"><button class="btn-icon btn-icon-success approve-btn" data-user-id="' + reg.id + '" title="Approve Registration"></button><span class="tooltip-text">Approve Registration</span></div> ' +
+                   '<div class="tooltip"><button class="btn-icon btn-icon-danger reject-btn" data-user-id="' + reg.id + '" title="Reject Registration"></button><span class="tooltip-text">Reject Registration</span></div>';
+        } else {
+          actions = '<span>No actions available</span>';
+        }
+        
+        tableData.push([
+          reg.email || '',
+          reg.full_name || '',
+          reg.created_date ? new Date(reg.created_date).toLocaleDateString() : '',
+          statusSpan.outerHTML,
+          actions
+        ]);
+      }
+      
+      // Initialize DataTable
+      window.registrationDataTable = $('#registrationTable').DataTable({
+        data: tableData,
+        columns: [
+          { title: 'Email' },
+          { title: 'Full Name' },
+          { title: 'Request Date' },
+          { title: 'Status', orderable: false },
+          { title: 'Actions', orderable: false }
+        ],
+        responsive: true,
+        pageLength: 10,
+        language: {
+          emptyTable: 'No pending registrations'
+        }
+      });
+      
+      // Add event delegation for approve/reject buttons
+      $('#registrationTable').off('click', '.approve-btn, .reject-btn');
+      $('#registrationTable').on('click', '.approve-btn', function(e) {
+        e.preventDefault();
+        var userId = $(this).data('user-id');
+        approveRegistration(userId);
+      });
+      
+      $('#registrationTable').on('click', '.reject-btn', function(e) {
+        e.preventDefault();
+        var userId = $(this).data('user-id');
+        rejectRegistration(userId);
+      });
+    }
+
+    function approveRegistration(registrationId) {
+      console.log('Approving registration ID:', registrationId);
+      
+      Ext.Msg.confirm('Confirm Approval', 'Are you sure you want to approve this registration?', function(btn) {
+        if (btn === 'yes') {
+          fetch('/admin/registration_approve', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({registration_id: registrationId})
+          })
+          .then(function(response) { 
+            console.log('Approve response:', response);
+            return response.json(); 
+          })
+          .then(function(result) {
+            console.log('Approve result:', result);
+            if (result.status === 'success') {
+              Ext.Msg.alert('Success', 'Registration approved successfully');
+              loadPendingRegistrations();
+            } else {
+              Ext.Msg.alert('Error', 'Error approving registration: ' + result.message);
+            }
+          })
+          .catch(function(error) {
+            console.error('Error:', error);
+            Ext.Msg.alert('Error', 'Error approving registration');
+          });
+        }
+      });
+    }
+
+    function rejectRegistration(registrationId) {
+      console.log('Rejecting registration ID:', registrationId);
+      
+      Ext.Msg.confirm('Confirm Rejection', 'Are you sure you want to reject this registration? The user will be completely deleted from the database.', function(btn) {
+        if (btn === 'yes') {
+          fetch('/admin/registration_reject', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              registration_id: registrationId
+            })
+          })
+          .then(function(response) { 
+            console.log('Reject response:', response);
+            return response.json(); 
+          })
+          .then(function(result) {
+            console.log('Reject result:', result);
+            if (result.status === 'success') {
+              Ext.Msg.alert('Success', 'Registration rejected successfully');
+              loadPendingRegistrations();
+            } else {
+              Ext.Msg.alert('Error', 'Error rejecting registration: ' + result.message);
+            }
+          })
+          .catch(function(error) {
+            console.error('Error:', error);
+            Ext.Msg.alert('Error', 'Error rejecting registration');
+          });
+        }
+      });
+    }
+
+    function refreshRegistrations() {
+      loadPendingRegistrations();
+    }
+    //]]>
+  </script>
+  
+  <!-- jQuery and DataTables JS -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+</body>
+</html>

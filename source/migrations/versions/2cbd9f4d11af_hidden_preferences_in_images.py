@@ -41,7 +41,7 @@ def upgrade():
     )
     for pref in prefs:
         pref.hidden = True
-        print "updating %s "   % (pref.uri)
+        print("updating %s "   % (pref.uri))
     DBSession.commit()
     DBSession.close()
 

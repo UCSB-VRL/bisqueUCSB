@@ -55,5 +55,5 @@ def execone(params):
                                cwd    = rundir,
                                env    = env,
                                )
-    except Exception, e:
+    except Exception as e:
         return 1

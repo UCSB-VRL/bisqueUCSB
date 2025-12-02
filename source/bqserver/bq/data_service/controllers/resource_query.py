@@ -167,7 +167,7 @@ def t_TAGVAL(t):
 def t_error(t):
     #global report_errors
     if report_errors:
-        print "Illegal character '%s'" % t.value[0]
+        print("Illegal character '%s'" % t.value[0])
     t.lexer.skip(1)
 
 #lex.lex()
@@ -276,7 +276,8 @@ def p_term_tagvaltype(p):
     else:
         tagfilter = (tag.c.document_id == taggable.c.id)
 
-    p[0] = exists([tag.c.id]).where(tagfilter)
+    # p[0] = exists([tag.c.id]).where(tagfilter)
+    p[0] = exists(select(tag.c.id).where(tagfilter)) # !!! modern way to handle above line of code
 
     #log.debug ("SQL %s" % p[0])
 
@@ -331,7 +332,7 @@ def p_empty(p):
 
 
 def p_error(p):
-    print "Syntax error at token", p
+    print("Syntax error at token", p)
     #yacc.errok()
 
 #  We generate the table once and leave it in generated.  This should be
@@ -418,10 +419,10 @@ def prepare_tag_expr (query, tag_query=None):
             return query
         lexer = lex.lex()
         parser = yacc.yacc(outputdir = data_path(), debug = 0)
-        log.debug ("parsing '%s'  " , tag_query)
+        log.info ("parsing '%s'  " , tag_query)
         #expr = parser.parse (tag_query, lexer=lexer, debug=log)
         expr = parser.parse (tag_query, lexer=lexer, debug = 0)
-        log.debug ("parsed '%s' -> %s " , tag_query, str(expr))
+        log.info ("parsed '%s' -> %s " , tag_query, str(expr))
         query = query.filter(expr)
     return query
 
@@ -441,7 +442,7 @@ def prepare_type (resource_type):
     if isinstance (resource_type, tuple):
         types = [ resource_type ]
         name, dbtype = resource_type
-    elif isinstance(resource_type, basestring):
+    elif isinstance(resource_type, str):
         if resource_type == 'value':
             name, dbtype = 'value', Value
         elif resource_type == 'vertex':
@@ -579,7 +580,7 @@ class fobject(object):
             return [ cls.fromdict (x) for x in d ]
         if isinstance(d, dict):
             o = fobject(xmltag = d.pop('xmltag') )
-            for k,v in d.items():
+            for k,v in list(d.items()):
                 o.__dict__[k] = cls.fromdict(v)
             return o
         return str(d)
@@ -640,16 +641,16 @@ def tags_special(dbtype, query, params):
             query =query.filter (*filters)
             query =query.group_by(*columns).order_by(*columns)
             #log.debug ("FILTER %s" , str( query))
-            q = [ fobject(resource_type=dbclass.xmltag, **(dict ((name_map[k], v) for k,v in attr._asdict().items()))) for  attr in query]
+            q = [ fobject(resource_type=dbclass.xmltag, **(dict ((name_map[k], v) for k,v in list(attr._asdict().items())))) for  attr in query]
             #q = []
             results.extend (q)
         return results
 
     # OLD versions
-    if any (filt in params for filt in filter_map.keys()):
+    if any (filt in params for filt in list(filter_map.keys())):
         results = []
         sq1 = query.with_labels().subquery()
-        for filt in filter_map.keys():
+        for filt in list(filter_map.keys()):
             if filt not in params:
                 continue
             fv  = params.pop (filt, None)
@@ -665,7 +666,7 @@ def tags_special(dbtype, query, params):
             # tag_values: fobject (resource_type='tag', name = tv, value = v.resource_value, resource_value = v.resource_value)
             # gob_names:  fobject (resource_type='gobject', type = tv, name = v.resource_name)
             # gob_type :  fobject (resource_type='gobject' , type=tg.resource_user_type )
-            q = [ fobject(resource_type=dbtyp.xmltag, **(dict ((name_map[k], v) for k,v in attr._asdict().items()))) for  attr in sq3]
+            q = [ fobject(resource_type=dbtyp.xmltag, **(dict ((name_map[k], v) for k,v in list(attr._asdict().items())))) for  attr in sq3]
             results.extend (q)
         return results
     return None
@@ -781,14 +782,14 @@ def tags_special(dbtype, query, params):
 
 
 
-    if params.has_key('name') and dbtype == Tag:
+    if 'name' in params and dbtype == Tag:
         ### Find tags with name
         ## Equiv .../tag[@name=param]
         sq1 = query.with_labels().subquery()
         return DBSession.query(Tag).filter(
             and_(Tag.document_id == sq1.c.taggable_document_id,
                  Tag.resource_name == params.pop('name')))
-    if params.has_key('value') and dbtype == Tag:
+    if 'value' in params and dbtype == Tag:
         ### Find tags with name
         ## Equiv .../tag[@value=param]
         return DBSession.query(Tag).filter(
@@ -822,7 +823,7 @@ def tags_special(dbtype, query, params):
 def prepare_attributes (query, dbtype, attribs):
     """Filter on attributes"""
     # handle any legal attributes in kw
-    for ky,v in attribs.items():
+    for ky,v in list(attribs.items()):
         #log.debug ("extra " + str(k) +'=' + str(v))
         k = ky.lstrip('@')
         k = LEGAL_ATTRIBUTES.get(k)
@@ -835,7 +836,10 @@ def prepare_attributes (query, dbtype, attribs):
                 v = sv.id
             query = query.filter (getattr (dbtype, k) == v)
             continue
-
+        # !!! this is a special case for resource_unid, temporary fix, without it system is causing issues
+        if k == 'resource_unid':
+            query = query.filter (getattr (dbtype, k) == v)
+            continue
         if k and hasattr(dbtype, k):
             # for un-repeated attributes i.e. ts<= & ts >=
             if not hasattr(v, '__iter__'):
@@ -844,6 +848,7 @@ def prepare_attributes (query, dbtype, attribs):
             for val  in v:
                 val  = val.strip('"\'')
                 op, val = ATTR_EXPR.match(val).groups()
+
                 if k in ('ts', 'created'):
                     try:
                         if '.' not in val:
@@ -855,7 +860,7 @@ def prepare_attributes (query, dbtype, attribs):
                     except ValueError:
                         log.error('bad time: %s' , val)
                         continue
-                log.debug ("adding attribute search %s %s op=%s %s" ,  str(dbtype), k, op,  val)
+                log.info ("adding attribute search %s %s op=%s %s" ,  str(dbtype), k, op,  val)
                 if op == '>=':
                     query =query.filter( getattr(dbtype, k) >= val)
                 elif op == '>':
@@ -903,13 +908,13 @@ def resource_query(resource_type,
     name, dbtype, query = prepare_type(resource_type)
     #log.debug ("type (%s,%s) query =  %s", name, dbtype, str(query))
 
-    log.debug ("query type:%s tag_query:%s order:%s parent:%s attributes:%s" , str(dbtype), tag_query, tag_order, str(parent), str(kw))
+    # log.info("query type:%s tag_query:%s order:%s parent:%s attributes:%s" , str(dbtype), tag_query, tag_order, str(parent), str(kw))
     query = prepare_parent( (name, dbtype), query, parent)
 
     # This converts an request for values to the actual
     # objects represented by those values;  :o
     if dbtype == Value:
-        log.debug ("VALUE QUERY %s" , str( query))
+        log.info("VALUE QUERY %s" , str( query))
         sq1 = query.with_labels().subquery()
         query = DBSession.query (Taggable).filter (Taggable.id == sq1.c.values_valobj)
         wpublic = 1
@@ -918,10 +923,10 @@ def resource_query(resource_type,
         query = prepare_permissions(query, user_id, with_public = wpublic, action=action)
         #query = prepare_readable_docs(query, user_id, with_public = wpublic)
     else:
-        log.debug ("skipping permissions")
+        log.info ("skipping permissions")
 
     ## Extra attributes
-    if kw.has_key('hidden'):
+    if 'hidden' in kw:
         query = query.filter(Taggable.resource_hidden == asbool(kw.pop('hidden')))
     else:
         query = query.filter(Taggable.resource_hidden == None)
@@ -950,9 +955,9 @@ def resource_query(resource_type,
                                      for k in tv.split(',')]))
 
     # These must be last @ SQLAlchemy issues
-    if kw.has_key('offset'):
+    if 'offset' in kw:
         query = query.offset (int(kw.pop('offset')))
-    if kw.has_key('limit'):
+    if 'limit' in kw:
         query = query.limit (int(kw.pop('limit')))
 
     #log.debug ("query = %s" % query)
@@ -1006,7 +1011,7 @@ def match_user (user_url =None, email =None ):
     if user_url:
         user = DBSession.query(BQUser).get (int (user_url.rsplit('/', 1)[1]))
     if not user and email:
-        user = DBSession.query(BQUser).filter_by(resource_value=unicode(email)).first()
+        user = DBSession.query(BQUser).filter_by(resource_value=str(email)).first()
     if  user is not None:
         #log.debug ('Found user %s', str(user.user_name)
         return (user, False)
@@ -1120,7 +1125,7 @@ def resource_auth (resource, action=RESOURCE_READ, newauth=None, notify=True, in
                     except ValueError:
                         user = DBSession.query(BQUser).filter_by (resource_uniq= (user_url.rsplit('/', 1)[1])).first()
                 if not user and email:
-                    user = DBSession.query(BQUser).filter_by(resource_value=unicode(email)).first()
+                    user = DBSession.query(BQUser).filter_by(resource_value=str(email)).first()
 
                 if user  and is_admin(user):
                     # admins should never be added to acl for now.. no reason.
@@ -1175,7 +1180,7 @@ def resource_auth (resource, action=RESOURCE_READ, newauth=None, notify=True, in
                 log.debug ('AUTH: user  %s invalidate %s ',  user.id, invalidate)
                 # Find acl or create
                 try:
-                    acl = (a for a in resource.acl if a.user == user).next()
+                    acl = next((a for a in resource.acl if a.user == user))
                 except StopIteration:
                     # Not found
                     acl = TaggableAcl()

@@ -1,0 +1,14 @@
+[Host]
+root: http://localhost:8080
+user: test
+password: test
+
+[Store]
+location: http://hammer.ece.ucsb.edu/~bisque/test_data/images/
+local_location: SampleData
+results_location: Results
+
+#simple rgb image
+filename1: flowers_24bit_nointr.png
+
+[nosetests]

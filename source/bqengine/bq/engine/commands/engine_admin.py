@@ -52,8 +52,8 @@ import os
 import posixpath
 import sys
 import logging
-import urlparse
-import urllib
+import urllib.parse
+import urllib.request, urllib.parse, urllib.error
 import datetime
 from paste.deploy import appconfig
 from tg import config
@@ -66,7 +66,7 @@ except ImportError:
 
 
 #from bq.config.environment import load_environment
-from ConfigParser import ConfigParser
+from configparser import ConfigParser
 #from bq.util import http
 from bq.util.configfile import ConfigFile
 from bq.util.paths import config_path
@@ -90,7 +90,7 @@ usage = """
 """
 
 def error (msg):
-    print >>sys.stderr, msg
+    print(msg, file=sys.stderr)
 
 
 
@@ -112,7 +112,7 @@ class engine_admin(object):
         bq = BQSession().init_mex (mex_url = self.mex_url, token = self.mex_token)
 
         module_url = bq.mex.type
-        print "MODULE", module_url
+        print("MODULE", module_url)
         module_xml = bq.fetchxml(module_url, view='deep')
 
         m = ModuleRunner()

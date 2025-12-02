@@ -1,4 +1,4 @@
-from PyWNDCharmFeatureList import feature_list
+from .PyWNDCharmFeatureList import feature_list
 from bq.features.controllers import Feature #import base class
 from bq.features.controllers.utils import image2numpy, except_image_only, calculation_lock
 import numpy as np

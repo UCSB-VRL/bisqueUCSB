@@ -1,4 +1,4 @@
-from urllib import quote_plus  #, urlencode
+from urllib.parse import quote_plus  #, urlencode
 import logging
 
 import requests
@@ -193,7 +193,7 @@ class CASPlugin(object):
     def _validate_simple(self, environ, identity):
         request = Request(environ)
 
-        if identity.has_key('repoze.who.plugins.cas.ticket'):
+        if 'repoze.who.plugins.cas.ticket' in identity:
             service_url = request.url
             validate_url = '%s?service=%s&ticket=%s' % (
                 self.cas_validate_url,
@@ -213,7 +213,7 @@ class CASPlugin(object):
         from .cas_saml import create_soap_saml, parse_soap_saml
 
         request = Request(environ)
-        if identity.has_key('repoze.who.plugins.cas.ticket'):
+        if 'repoze.who.plugins.cas.ticket' in identity:
             service_url = request.url
             ticket = identity['repoze.who.plugins.cas.ticket']
             url = "%s?TARGET=%s" % (self.cas_saml_validate, service_url)
@@ -229,7 +229,7 @@ class CASPlugin(object):
             log.debug ("RECEIVED %s %s" , response.headers, response.content)
             found = parse_soap_saml(response.content)
             if response.status_code == requests.codes.ok and found:  #pylint: disable=no-member
-                for k,v in found.items():
+                for k,v in list(found.items()):
                     identity['repoze.who.plugins.cas.%s' % k] = v
                 return found['user_id']
 
@@ -266,13 +266,13 @@ class CASPlugin(object):
             name  = user_name
             email = '%s@nowhere.org' % name
 
-            if identity.has_key('repoze.who.plugins.cas.firstName'):
+            if 'repoze.who.plugins.cas.firstName' in identity:
                 name = identity["repoze.who.plugins.cas.firstName"]
 
-            if identity.has_key('repoze.who.plugins.cas.lastName'):
+            if 'repoze.who.plugins.cas.lastName' in identity:
                 name = "%s %s" % (name, identity["repoze.who.plugins.cas.lastName"])
 
-            if identity.has_key('repoze.who.plugins.cas.email'):
+            if 'repoze.who.plugins.cas.email' in identity:
                 email =  identity["repoze.who.plugins.cas.email"]
 
             validate_method = getattr (plugin, self.validate_method)

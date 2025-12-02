@@ -86,7 +86,7 @@ class ProcessToken(object):
         self.queue       = []
         self.dryrun      = dryrun
         if files is not None and self.meta is not None:
-            if len(files)>1 and len(set(['image_num_z','image_num_t','image_num_c']).intersection(self.meta.keys()))>0:
+            if len(files)>1 and len(set(['image_num_z','image_num_t','image_num_c']).intersection(list(self.meta.keys())))>0:
                 self.input = files
 
     def setData (self, data_buf, content_type):

@@ -66,7 +66,7 @@ def local_xml_copy(root):
     #path = '/tmp/%s%s' % (root.tag, id)
     path = os.path.join(tempfile.gettempdir(), "%s%s" % (root.tag, id))
     f = open (path, 'w')
-    f.write (etree.tostring (root))
+    f.write (etree.tostring (root, encoding='unicode'))
     f.close()
     return path
 
@@ -136,7 +136,7 @@ class MexParser(object):
                 continue
             node.set ('index', str(i))
 
-        input_nodes.sort (lambda n1,n2: cmp(int(n1.get('index')), int(n2.get('index'))))
+        input_nodes.sort(key=lambda n: int(n.get('index')))
         return input_nodes
 
 

@@ -1,4 +1,4 @@
-import logging, StringIO
+import logging, io
 
 _log = logging.getLogger('bq.util.bqrender')
 
@@ -18,7 +18,7 @@ def elem_to_pesterfish(elem):
         d['attributes']=elem.attrib
     children=elem.getchildren()
     if children:
-        d['children']=map(elem_to_pesterfish, children)
+        d['children']=list(map(elem_to_pesterfish, children))
     if elem.tail:
         d['tail']=elem.tail
     return d
@@ -26,7 +26,7 @@ def elem_to_pesterfish(elem):
 
 def render_bq(template_name, template_vars, **kwargs):
     # turn vars into an xml string.
-    st = StringIO.StringIO()
+    st = io.StringIO()
     root = etree.Element (template_name)
 
     def writeElem( obj, node):
@@ -57,10 +57,10 @@ def render_bq(template_name, template_vars, **kwargs):
     # main part of function
     try:
         node = etree.Element (template_name)
-        if template_vars.has_key(template_name):
+        if template_name in template_vars:
             writeElem(template_vars[template_name], node)
-        return etree.tostring(node)
+        return etree.tostring(node, encoding='unicode')
         _log.debug("render_bq %s", st.getvalue() )
-    except Exception,ex:
+    except Exception as ex:
         _log.exception("")
     return st.getvalue()

@@ -1,0 +1,522 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+<xi:include href="master.html" />
+
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
+  <title>Edit Profile - Bisque</title>
+  <link rel="icon" type="image/png" href="/core/images/bisque_icon.png" />
+  <style type="text/css">
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      margin: 0;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .profile-container {
+      max-width: 700px;
+      margin: 40px auto;
+      background: #EEEEEE;
+      padding: 10px 40px 40px 15px;
+      border-radius: 25px;
+      -moz-border-radius: 5px;
+    }
+    .profile-form {
+      background: white;
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      border: 1px solid #ddd;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #333;
+    }
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    .form-group input[readonly] {
+      background-color: #f8f9fa;
+      color: #6c757d;
+    }
+    .read-only-field {
+      padding: 10px;
+      background-color: #f8f9fa;
+      border: 1px solid #e9ecef;
+      border-radius: 4px;
+      color: #495057;
+      font-size: 14px;
+    }
+    .required {
+      color: red;
+    }
+    .btn-primary {
+      background-color: #007bff;
+      color: white;
+      padding: 12px 30px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-right: 10px;
+    }
+    .btn-primary:hover {
+      background-color: #0056b3;
+    }
+    .btn-secondary {
+      background-color: #6c757d;
+      color: white;
+      padding: 12px 30px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .btn-secondary:hover {
+      background-color: #545b62;
+    }
+    .error-message {
+      color: #dc3545;
+      background: #f8d7da;
+      border: 1px solid #f5c6cb;
+      padding: 10px;
+      border-radius: 4px;
+      margin-top: 10px;
+      display: none;
+    }
+    .success-message {
+      color: #155724;
+      background: #d4edda;
+      border: 1px solid #c3e6cb;
+      padding: 10px;
+      border-radius: 4px;
+      margin-top: 10px;
+      display: none;
+    }
+    .info-message {
+      color: #0c5460;
+      background: #d1ecf1;
+      border: 1px solid #bee5eb;
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
+    .flash-message {
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
+    .flash-message.success {
+      color: #155724;
+      background: #d4edda;
+      border: 1px solid #c3e6cb;
+    }
+    .flash-message.error {
+      color: #721c24;
+      background: #f8d7da;
+      border: 1px solid #f5c6cb;
+    }
+    .help-text {
+      font-size: 12px;
+      color: #666;
+      margin-top: 5px;
+    }
+    .section-header {
+      font-size: 18px;
+      font-weight: bold;
+      color: #333;
+      margin-top: 30px;
+      margin-bottom: 15px;
+      border-bottom: 2px solid #007bff;
+      padding-bottom: 5px;
+    }
+    .section-header:first-child {
+      margin-top: 0;
+    }
+    h2 {
+      color: #333;
+      margin-bottom: 10px;
+    }
+    .logo-area {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .bisque-logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: #007bff;
+    }
+    .profile-info {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
+    .profile-info strong {
+      color: #333;
+    }
+    .toggle-password {
+      margin-top: 15px;
+    }
+    .toggle-password a {
+      color: #007bff;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    .toggle-password a:hover {
+      text-decoration: underline;
+    }
+    .password-section {
+      display: none;
+      margin-top: 20px;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 4px;
+      border: 1px solid #dee2e6;
+    }
+  </style>
+</head>
+
+<body>
+    <div class="profile-container">
+        <div class="logo-area">
+          <div class="bisque-logo">Edit User Profile</div>
+        </div>
+        
+        <!-- Flash messages section -->
+        <div class="flash-messages" py:if="tg.flash_obj.message">
+            <div class="flash-message success" py:if="tg.flash_obj.status == 'ok' or tg.flash_obj.status == 'success'">
+                ${tg.flash_obj.message}
+            </div>
+            <div class="flash-message error" py:if="tg.flash_obj.status == 'error'">
+                ${tg.flash_obj.message}
+            </div>
+        </div>
+        
+        <!-- Account status notice -->
+        <div py:if="email_verification_enabled" class="info-message">
+            <strong>Account Status:</strong> Email verification is enabled. Your account verification status is shown below.
+        </div>
+        <div py:if="not email_verification_enabled and email_verification_status" class="info-message" 
+             style="color: #856404; background: #fff3cd; border: 1px solid #ffeaa7;">
+            <strong>Note:</strong> Email verification is currently disabled.
+        </div>
+        
+        <div class="profile-form">
+            <!-- Account Information Section -->
+            <div class="profile-info">
+                <strong>Account Information:</strong><br/>
+                Username: <strong>${user.username}</strong><br/>
+                Email: <strong>${user.email}</strong><br/>
+                Account Created: <strong>${user.account_created}</strong><br/>
+                Email Verified: <strong py:if="user.verified">Yes</strong><strong py:if="not user.verified">No</strong>
+            </div>
+            
+            <form id="profileForm" method="post" action="/registration/update_user">
+                
+                <!-- Basic Information Section -->
+                <div class="section-header">Basic Information</div>
+                
+                <div class="form-group">
+                    <label>Current Email Address</label>
+                    <div class="read-only-field">${user.email}</div>
+                    <div class="help-text">Email address cannot be changed. Contact an administrator if you need to update it.</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="fullname">Full Name <span class="required">*</span></label>
+                    <input type="text" id="fullname" name="fullname" required="required" 
+                           value="${user.fullname}" placeholder="Your full name" />
+                </div>
+                
+                <!-- Academic Information Section -->
+                <div class="section-header">Academic Information</div>
+                
+                <div class="form-group">
+                    <label for="research_area">Research Area <span class="required">*</span></label>
+                    <select id="research_area" name="research_area" required="required">
+                        <option value="">Select your research area</option>
+                        <option value="Bioinformatics" py:attrs="{'selected': 'selected' if user.research_area == 'Bioinformatics' else None}">Bioinformatics</option>
+                        <option value="Cell Biology" py:attrs="{'selected': 'selected' if user.research_area == 'Cell Biology' else None}">Cell Biology</option>
+                        <option value="Developmental Biology" py:attrs="{'selected': 'selected' if user.research_area == 'Developmental Biology' else None}">Developmental Biology</option>
+                        <option value="Ecology" py:attrs="{'selected': 'selected' if user.research_area == 'Ecology' else None}">Ecology</option>
+                        <option value="Genetics" py:attrs="{'selected': 'selected' if user.research_area == 'Genetics' else None}">Genetics</option>
+                        <option value="Immunology" py:attrs="{'selected': 'selected' if user.research_area == 'Immunology' else None}">Immunology</option>
+                        <option value="Materials Science" py:attrs="{'selected': 'selected' if user.research_area == 'Materials Science' else None}">Materials Science</option>
+                        <option value="Microbiology" py:attrs="{'selected': 'selected' if user.research_area == 'Microbiology' else None}">Microbiology</option>
+                        <option value="Molecular Biology" py:attrs="{'selected': 'selected' if user.research_area == 'Molecular Biology' else None}">Molecular Biology</option>
+                        <option value="Neuroscience" py:attrs="{'selected': 'selected' if user.research_area == 'Neuroscience' else None}">Neuroscience</option>
+                        <option value="Pharmacology" py:attrs="{'selected': 'selected' if user.research_area == 'Pharmacology' else None}">Pharmacology</option>
+                        <option value="Plant Biology" py:attrs="{'selected': 'selected' if user.research_area == 'Plant Biology' else None}">Plant Biology</option>
+                        <option value="Structural Biology" py:attrs="{'selected': 'selected' if user.research_area == 'Structural Biology' else None}">Structural Biology</option>
+                        <option value="Other" py:attrs="{'selected': 'selected' if user.research_area == 'Other' else None}">Other</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="institution_affiliation">Institution Affiliation <span class="required">*</span></label>
+                    <input type="text" id="institution_affiliation" name="institution_affiliation" required="required" 
+                           value="${user.institution_affiliation}" placeholder="University or organization name" />
+                </div>
+                
+                <div class="form-group">
+                    <label for="funding_agency">Funding Agency</label>
+                    <select id="funding_agency" name="funding_agency">
+                        <option value="">Select funding agency (optional)</option>
+                        <option value="NIH" py:attrs="{'selected': 'selected' if user.funding_agency == 'NIH' else None}">National Institutes of Health (NIH)</option>
+                        <option value="NSF" py:attrs="{'selected': 'selected' if user.funding_agency == 'NSF' else None}">National Science Foundation (NSF)</option>
+                        <option value="DOE" py:attrs="{'selected': 'selected' if user.funding_agency == 'DOE' else None}">Department of Energy (DOE)</option>
+                        <option value="DoD" py:attrs="{'selected': 'selected' if user.funding_agency == 'DoD' else None}">Department of Defense (DoD)</option>
+                        <option value="NASA" py:attrs="{'selected': 'selected' if user.funding_agency == 'NASA' else None}">National Aeronautics and Space Administration (NASA)</option>
+                        <option value="USDA" py:attrs="{'selected': 'selected' if user.funding_agency == 'USDA' else None}">United States Department of Agriculture (USDA)</option>
+                        <option value="Private_Foundation" py:attrs="{'selected': 'selected' if user.funding_agency == 'Private_Foundation' else None}">Private Foundation</option>
+                        <option value="Industry" py:attrs="{'selected': 'selected' if user.funding_agency == 'Industry' else None}">Industry</option>
+                        <option value="International" py:attrs="{'selected': 'selected' if user.funding_agency == 'International' else None}">International Agency</option>
+                        <option value="Other" py:attrs="{'selected': 'selected' if user.funding_agency == 'Other' else None}">Other</option>
+                        <option value="None" py:attrs="{'selected': 'selected' if user.funding_agency == 'None' else None}">No Funding</option>
+                    </select>
+                </div>
+                
+                <!-- Password Change Section -->
+                <div class="toggle-password">
+                    <a href="#" onclick="togglePasswordSection(); return false;">Click here to change password</a>
+                </div>
+                
+                <div id="password-section" class="password-section">
+                    <div class="section-header">Change Password</div>
+                    
+                    <div class="form-group">
+                        <label for="new_password">New Password</label>
+                        <input type="password" id="new_password" name="new_password" 
+                               placeholder="Enter new password (leave blank to keep current)" />
+                        <div class="help-text">Must be at least 6 characters long. Leave blank to keep current password.</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirm_password">Confirm New Password</label>
+                        <input type="password" id="confirm_password" name="confirm_password" 
+                               placeholder="Confirm new password" />
+                    </div>
+                </div>
+                
+                <!-- Submit Buttons -->
+                <div style="margin-top: 30px;">
+                    <button type="submit" class="btn-primary">Update Profile</button>
+                    <a href="/client_service/" class="btn-secondary">Cancel</a>
+                </div>
+                
+                <div id="error-message" class="error-message"></div>
+                <div id="success-message" class="success-message"></div>
+            </form>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        //<![CDATA[
+        function togglePasswordSection() {
+            var section = document.getElementById('password-section');
+            var toggleLink = document.querySelector('.toggle-password a');
+            
+            if (section.style.display === 'none' || section.style.display === '') {
+                section.style.display = 'block';
+                toggleLink.textContent = "Click here to hide password section";
+                console.log('Password section shown');
+            } else {
+                section.style.display = 'none';
+                toggleLink.textContent = "Click here to change password";
+                console.log('Password section hidden');
+            }
+        }
+        
+        // Enhanced profile form with AJAX submission
+        document.getElementById('profileForm').addEventListener('submit', function(e) {
+            var newPassword = document.getElementById('new_password').value;
+            var confirmPassword = document.getElementById('confirm_password').value;
+            
+            // Password validation if changing password
+            if (newPassword) {
+                if (newPassword.length < 6) {
+                    e.preventDefault();
+                    showError("Password must be at least 6 characters long");
+                    return false;
+                }
+                
+                if (newPassword !== confirmPassword) {
+                    e.preventDefault();
+                    showError("Passwords do not match");
+                    return false;
+                }
+            }
+            
+            // Try AJAX first
+            e.preventDefault();
+            
+            var formData = new FormData(this);
+            var data = {};
+            var entries = formData.entries();
+            var entry = entries.next();
+            
+            while (!entry.done) {
+                data[entry.value[0]] = entry.value[1];
+                entry = entries.next();
+            }
+            
+            // Submit via AJAX to JSON endpoint
+            var submitBtn = document.querySelector('.btn-primary');
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Updating...";
+            
+            // Convert data to URL encoded format
+            var urlEncodedData = [];
+            for (var key in data) {
+                if (data.hasOwnProperty(key)) {
+                    urlEncodedData.push(encodeURIComponent(key) + '=' + encodeURIComponent(data[key]));
+                }
+            }
+            var bodyData = urlEncodedData.join('&');
+            
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/registration/update_user', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.setRequestHeader('Accept', 'application/json');
+            
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = "Update Profile";
+                    
+                    if (xhr.status === 200) {
+                        try {
+                            var result = JSON.parse(xhr.responseText);
+                            if (result.status === 'success') {
+                                showSuccess(result.message);
+                                // Clear password fields on success
+                                document.getElementById('new_password').value = '';
+                                document.getElementById('confirm_password').value = '';
+                                document.getElementById('password-section').style.display = 'none';
+                            
+                            // Aggressive user cache clearing and reload
+                            setTimeout(function() {
+                                // Method 1: Clear all BQUser cache
+                                if (typeof BQUser !== 'undefined' && BQUser.users) {
+                                    BQUser.users = {};
+                                    console.log('Cleared BQUser cache');
+                                }
+                                
+                                // Method 2: Try to get current user URI from multiple sources
+                                var userUri = null;
+                                if (typeof BQSession !== 'undefined' && BQSession.current_session) {
+                                    userUri = BQSession.current_session.user_uri;
+                                }
+                                if (!userUri && typeof BQ !== 'undefined' && BQ.user) {
+                                    userUri = BQ.user.uri;
+                                }
+                                
+                                console.log('Current user URI:', userUri);
+                                
+                                if (userUri) {
+                                    // Force reload user with cache-busting parameter
+                                    var cacheBustUri = userUri + '?view=full&_=' + Date.now();
+                                    BQFactory.request({
+                                        uri: cacheBustUri,
+                                        cb: function(updatedUser) {
+                                            console.log('Updated user loaded:', updatedUser);
+                                            
+                                            // Update all possible user references
+                                            if (typeof BQSession !== 'undefined' && BQSession.current_session) {
+                                                BQSession.current_session.user = updatedUser;
+                                                if (BQSession.current_session.setUser) {
+                                                    BQSession.current_session.setUser(updatedUser);
+                                                }
+                                            }
+                                            
+                                            if (typeof BQ !== 'undefined') {
+                                                BQ.user = updatedUser;
+                                                
+                                                // Fire gotuser event to update the toolbar
+                                                if (BQ.Application && BQ.Application.fireEvent) {
+                                                    BQ.Application.fireEvent('gotuser', updatedUser);
+                                                    console.log('Fired gotuser event');
+                                                }
+                                            }
+                                        },
+                                        errorcb: function(error) {
+                                            console.error('Failed to reload user:', error);
+                                            // Fallback: just reload the page to get fresh data
+                                            setTimeout(function() {
+                                                window.location.reload();
+                                            }, 1000);
+                                        }
+                                    });
+                                } else {
+                                    console.log('No user URI found, reloading page');
+                                    // Fallback: reload the page
+                                    setTimeout(function() {
+                                        window.location.reload();
+                                    }, 1000);
+                                }
+                                }, 500); // Small delay to ensure server has processed the update
+                            } else {
+                                showError(result.message || "Update failed. Please try again.");
+                            }
+                        } catch (e) {
+                            // If AJAX fails, fall back to form submission
+                            document.getElementById('profileForm').submit();
+                        }
+                    } else {
+                        // If AJAX fails, fall back to form submission
+                        document.getElementById('profileForm').submit();
+                    }
+                }
+            };
+            
+            xhr.onerror = function() {
+                // If AJAX fails, fall back to form submission
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Update Profile";
+                document.getElementById('profileForm').submit();
+            };
+            
+            xhr.send(bodyData);
+        });
+        
+        function showError(message) {
+            var errorDiv = document.getElementById('error-message');
+            var successDiv = document.getElementById('success-message');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            successDiv.style.display = 'none';
+            
+            // Scroll to error message
+            errorDiv.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+        
+        function showSuccess(message) {
+            var errorDiv = document.getElementById('error-message');
+            var successDiv = document.getElementById('success-message');
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            errorDiv.style.display = 'none';
+            
+            // Scroll to success message
+            successDiv.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+        //]]>
+    </script>
+</body>
+</html>

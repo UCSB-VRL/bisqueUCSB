@@ -58,7 +58,8 @@ import sys
 import math
 import inspect
 import logging
-from urllib import quote
+from urllib.parse import quote
+from functools import reduce
 
 log = logging.getLogger('bisquik.API')
 
@@ -155,7 +156,7 @@ class BQValue (BQNode):
                 val.text = v
 
     def toString(self):
-        return u','.join(  self.values )
+        return ','.join(  self.values )
 
 
 class BQTag (BQNode):

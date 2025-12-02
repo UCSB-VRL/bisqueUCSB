@@ -2,6 +2,8 @@
 /*  */
 /**************************************************************************/
 
+/* Remove the original conflicting styles */
+/*
 .login {
   width: 650px;
   height: 330px;
@@ -16,21 +18,26 @@
   font-size: 40px;
   margin: 0px 0px 0px 0px;
   color: #4d5356;
-  /*text-shadow: #AAAAAA 2px 2px 5px;*/
+  text-shadow: #AAAAAA 2px 2px 5px;
   position: absolute;
 }
+*/
 
+/* Improve label styling for better layout */
 .login label {
-  display:block;
-  margin-bottom: 15px;
-  margin-top: 10px;
-  width: 250px;
+    display: block;
+    margin-bottom: 15px;
+    margin-top: 10px;
+    width: 100%;
 }
 
-.login label>input {
-  margin-left: 20px;
-  width: 150px;
-  float: right;
+.login label > input {
+    margin-left: 10px;
+    width: 200px;
+    float: right;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
 }
 
 .login input[type=submit] {
@@ -45,6 +52,15 @@
     display:block;
 }
 
+/* Remove original conflicting local styles */
+/*
+.login .local {
+    padding: 5px 0px 0px 0px;
+    margin: 80px 0px 0px 10px;
+    float: left;
+    width: 300px;
+}
+
 .login .remote {
     width: 250px;
     float: left;
@@ -52,13 +68,7 @@
     padding: 5px 15px 15px 30px;
     margin: 80px 0px 0px 0px;
 }
-
-.login .local {
-    padding: 5px 0px 0px 0px;
-    margin: 80px 0px 0px 10px;
-    float: left;
-    width: 300px;
-}
+*/
 
 .login .local h2, .login .remote h2 {
     font-size: 18px;
@@ -97,9 +107,185 @@
 }
 
 .login .sigin_button#submit {
-    margin-top: 10px;
+    margin-top: 30px;
 }
 
 .login .sigin_button img {
-    width: 200px;
+    width: 24px;
+    height: 24px;
+    margin-right: 12px;
+    vertical-align: middle;
+}
+
+/* Full button images (PNG files with embedded text) */
+.login .sigin_button img[src$=".png"] {
+    width: 100%;
+    height: auto;
+    margin-right: 0;
+    display: block;
+}
+
+/* Full button SVG images (like signin.svg with embedded text) */
+.login .sigin_button img[src$="signin.svg"] {
+    width: 100%;
+    height: auto;
+    margin-right: 0;
+    display: block;
+    max-width: 240px;  /* Reasonable max width for SVG button */
+}
+
+/* Buttons containing full button images should not have padding and text */
+.login .sigin_button:has(img[src$=".png"]) {
+    padding: 0;
+    border: none;
+    background: transparent;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;  /* Add vertical spacing */
+}
+
+/* Buttons containing SVG full button images */
+.login .sigin_button:has(img[src$="signin.svg"]) {
+    padding: 0;
+    border: none;
+    background: transparent;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;  /* Add vertical spacing */
+}
+
+/* Alternative selector for older browsers that don't support :has() */
+.login .sigin_button.full-button-image {
+    padding: 0;
+    border: none;
+    background: transparent;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;  /* Add vertical spacing */
+}
+
+.login .sigin_button.full-button-image img {
+    width: 100%;
+    height: auto;
+    margin: 0 auto;
+    display: block;
+    max-width: 240px;  /* Reasonable max width for signin button */
+}
+
+/* Firebase Authentication Styles */
+.firebase-providers {
+    width: 100%;
+    margin-bottom: 20px;
+    padding: 0;
+    clear: both;
+}
+
+.firebase-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.firebase-btn {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 20px;
+    border: 1px solid #ddd;
+    background: white;
+    color: #333;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    width: 100%;
+}
+
+.firebase-btn:hover {
+    background-color: #f5f5f5;
+    border-color: #999;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.firebase-btn img {
+    width: 24px;
+    height: 24px;
+    margin-right: 12px;
+}
+
+.divider {
+    text-align: center;
+    margin: 20px 0;
+    position: relative;
+}
+
+.divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #ddd;
+}
+
+.divider span {
+    background: #EEEEEE;
+    padding: 0 15px;
+    color: #666;
+    font-size: 14px;
+    position: relative;
+    z-index: 1;
+}
+
+/* Adjust local section - override original */
+.login .local {
+    padding: 0px !important;
+    margin: 20px 0px !important;
+    float: none !important;
+    width: 100% !important;
+    clear: both;
+}
+
+.login .local h3 {
+    font-size: 16px;
+    margin: 0px 0px 15px 0px;
+    color: #737373;
+    text-shadow: none;
+}
+
+/* Remove conflicting float styles */
+.login .remote {
+    display: none; /* Hide remote section if it exists */
+}
+
+/* Main container adjustment - override original */
+.login {
+    width: 400px !important;
+    height: auto !important;
+    margin: 80px auto 100px auto !important;
+    background: #EEEEEE;
+    padding: 20px 30px 30px 30px !important;
+    border-radius: 25px;
+    -moz-border-radius: 5px;
+}
+
+/* Fix main title positioning */
+.login h2 {
+    font-size: 24px !important;
+    margin: 0px 0px 20px 0px !important;
+    color: #4d5356;
+    position: relative !important;
+    text-align: center;
 }

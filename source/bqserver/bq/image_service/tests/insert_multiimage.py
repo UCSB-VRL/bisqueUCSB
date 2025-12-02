@@ -19,10 +19,10 @@ else:
     import unittest
 import os
 import posixpath
-import urlparse
+import urllib.parse
 import time
 from lxml import etree
-import ConfigParser
+import configparser
 from bqapi import BQSession, BQCommError
 from bqapi.util import save_blob, localpath2url
 
@@ -36,7 +36,7 @@ request_xml = '<image name="{NAME}" value="{PATH}#{SERIES}" />'
 ##################################################################
 
 
-config = ConfigParser.ConfigParser()
+config = configparser.ConfigParser()
 config.read('config.cfg')
 
 root = config.get('Host', 'root') or 'localhost:8080'
@@ -46,14 +46,14 @@ pswd = config.get('Host', 'password') or 'test'
 session = BQSession().init_local(user, pswd,  bisque_root=root, create_mex=False)
 
 
-url = urlparse.urljoin(root, url_import)
+url = urllib.parse.urljoin(root, url_import)
 request = request_xml.replace('{NAME}', 'cx-11.sld#3')
 request = request.replace('{PATH}', localpath2url('f:/dima/develop/python/bq5irods/data/imagedir/admin/tests/multi_image/Slidebook/cx-11.sld'))
 request = request.replace('{SERIES}', '3')
 
 r = save_blob(session, resource=request)
 if r is None or r.get('uri') is None:
-    print 'Upload failed'
+    print('Upload failed')
 else:
-    print 'id: %s'%r.get('resource_uniq')
-    print 'url: %s'%r.get('uri')
+    print('id: %s'%r.get('resource_uniq'))
+    print('url: %s'%r.get('uri'))

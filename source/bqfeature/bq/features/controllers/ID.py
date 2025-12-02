@@ -11,7 +11,7 @@ import uuid
 import logging
 log = logging.getLogger("bq.features")
 from .var import FEATURES_TABLES_FILE_DIR
-import Feature
+from . import Feature
 
 
 class ID(Feature.BaseFeature):

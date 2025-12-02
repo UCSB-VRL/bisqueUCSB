@@ -155,7 +155,7 @@ import sys
 import logging
 import inspect
 from datetime import datetime
-import urllib
+import urllib.request, urllib.parse, urllib.error
 #import cStringIO as StringIO
 #from urllib import quote
 #from urllib import unquote
@@ -242,7 +242,7 @@ class TableController(ServiceController):
         """Add your service description here """
         response = etree.Element ('resource', uri=self.baseuri)
         etree.SubElement(response, 'method', name='%s/ID[/PATH1/PATH2/...][/RANGE][/COMMAND:PARS]'%self.baseuri, value='Executes operations for a given table ID.')
-        return etree.tostring(response)
+        return etree.tostring(response, encoding='unicode')
 
     @expose()
     def _default(self, *args, **kw):
@@ -262,11 +262,104 @@ class TableController(ServiceController):
                 abort(401)
         return resource
 
+    # def get_table(self, path, **kw):
+    #     """find export plugin and run export"""
+    #     log.info ("STARTING table (%s): %s", datetime.now().isoformat(), request.url)
+    #     path = path.split('/')
+    #     path = [urllib.parse.unquote(p) for p in path if len(p)>0]
+    #     log.debug("Path: %s", path)
+
+    #     # load table
+    #     table = None
+    #     try:
+    #         # /table/ID[/PATH1/PATH2/...](/FILTERCOND | /COMMAND:PARS)*
+    #         # Example:
+    #         #   /table/ID[/PATH1/PATH2/{[:,"temperature"] >= 0 and [:,"temperature"] < 30}/agg:AVG(:,"humidity")/format:csv
+    #         if len(path)<1:
+    #             abort(400, 'Element ID is required as a first parameter, ex: /table/00-XXXXX/format:xml' )
+    #         uniq = path.pop(0)
+
+    #         # check permissions
+    #         resource = self.check_access(uniq)
+    #         log.debug('Resource: %s', etree.tostring(resource))
+
+    #         for n, r in self.importers.plugins.items():
+    #             #if '.' in resource.get('value', '') and resource.get('value').split('.')[-1].lower() not in r.ext:
+    #             ext =  os.path.splitext (resource.get('value', ''))[-1].lstrip('.').lower()
+    #             if ext and ext not in r.ext:
+    #                 # resource has filename with extension and extension does not match plugins supported extensions
+    #                 # (this is to prevent trying to read some binary format with CSV for example)
+    #                 # TODO: better try CSV at the end for this reason
+    #                 continue
+    #             try:
+    #                 log.debug("trying format %s", str(n))
+    #                 table = r(uniq, resource, path, url=request.url).get_queriable()
+    #             except Exception as ex:
+    #                 log.debug("failed with error %s", str(ex))
+    #                 table = None
+    #                 continue # continue with next format
+    #             if table is not None and table.isloaded():
+    #                 break;
+    #         if table is None:
+    #             log.error ("Table %s could not be read. Format not recognized", uniq)
+    #             abort(501, 'Table cannot be read. Format not recognized')
+    #         log.debug('Inited table: %s',str(table))
+
+    #         # operations consuming the rest of the path            
+    #         i = 0
+    #         a = table.path[i] if len(table.path)>i else None
+    #         while a is not None:
+    #             log.debug("table op %s" % a)
+    #             a = a.split(':',1)
+    #             op,arg = a if len(a)>1 else a + [None]
+    #             if op in self.operations.plugins and self.operations.plugins[op] is not None:
+    #                 table.path.pop(0)
+    #                 table_new = self.operations.plugins[op]().execute(table, arg)
+    #                 table.close()
+    #                 table = table_new
+    #             elif op in self.operations.plugins and self.operations.plugins[op] is None:
+    #                 # skip "special ops" for now
+    #                 i += 1
+    #             else:
+    #                 # op unknown => assume it is 'filter' for backward compatibility
+    #                 table.path.pop(0)
+    #                 table_new = self.operations.plugins['filter']().execute(table, op+':'+arg if arg is not None else op)
+    #                 table.close()
+    #                 table = table_new
+    #             a = table.path[i] if len(table.path)>i else None
+                
+    #         # force read the latest here
+    #         table_new = table.read()
+    #         table.close()
+    #         table = table_new
+    #         log.debug('Processed table: %s', str(table))
+
+    #         # export
+    #         out_format = get_arg(table, 'format:', defval='format:xml', **kw).replace('format:', '')
+    #         out_info   = is_arg(table, 'info')
+    #         log.debug('Format: %s, Info: %s', out_format, out_info)
+    #         if out_format in self.exporters.plugins:
+    #             if out_info is True:
+    #                 r = self.exporters.plugins[out_format]().info(table)
+    #             else:
+    #                 r = self.exporters.plugins[out_format]().export(table)
+    #             return r
+    #         abort(400, 'Requested export format (%s) is not supported'%out_format )
+
+    #     except RuntimeError as exc:
+    #         abort(400, 'Error in query: %s'%str(exc))
+
+    #     finally:
+    #         # close any open table
+    #         if table is not None:
+    #             table.close()
+    #         log.info ("FINISHED (%s): %s", datetime.now().isoformat(), request.url)
+
     def get_table(self, path, **kw):
         """find export plugin and run export"""
         log.info ("STARTING table (%s): %s", datetime.now().isoformat(), request.url)
         path = path.split('/')
-        path = [urllib.unquote(p) for p in path if len(p)>0]
+        path = [urllib.parse.unquote(p) for p in path if len(p)>0]
         log.debug("Path: %s", path)
 
         # load table
@@ -281,63 +374,89 @@ class TableController(ServiceController):
 
             # check permissions
             resource = self.check_access(uniq)
-            log.debug('Resource: %s', etree.tostring(resource))
+            log.info('Resource: %s', etree.tostring(resource))
 
-            for n, r in self.importers.plugins.iteritems():
+            for n, r in self.importers.plugins.items():
                 #if '.' in resource.get('value', '') and resource.get('value').split('.')[-1].lower() not in r.ext:
                 ext =  os.path.splitext (resource.get('value', ''))[-1].lstrip('.').lower()
+                log.info("Testing importer %s for extension %s (supported: %s)", n, ext, r.ext)
                 if ext and ext not in r.ext:
                     # resource has filename with extension and extension does not match plugins supported extensions
                     # (this is to prevent trying to read some binary format with CSV for example)
                     # TODO: better try CSV at the end for this reason
+                    log.info("Skipping importer %s: extension %s not in supported extensions %s", n, ext, r.ext)
                     continue
                 try:
-                    log.debug("trying format %s", str(n))
+                    log.info("trying format %s", str(n))
                     table = r(uniq, resource, path, url=request.url).get_queriable()
                 except Exception as ex:
-                    log.debug("failed with error %s", str(ex))
+                    log.info("failed with error %s", str(ex))
                     table = None
                     continue # continue with next format
                 if table is not None and table.isloaded():
-                    break;
+                    log.info("Successfully loaded table with importer %s", n)
+                    break
             if table is None:
                 log.error ("Table %s could not be read. Format not recognized", uniq)
                 abort(501, 'Table cannot be read. Format not recognized')
-            log.debug('Inited table: %s',str(table))
+            log.info('Inited table: %s',str(table))
 
             # operations consuming the rest of the path            
             i = 0
             a = table.path[i] if len(table.path)>i else None
             while a is not None:
-                log.debug("table op %s" % a)
-                a = a.split(':',1)
-                op,arg = a if len(a)>1 else a + [None]
-                if op in self.operations.plugins and self.operations.plugins[op] is not None:
+                log.info("table op %s" % a)
+                log.info("table before operation: %s", str(table)[:200] + "..." if len(str(table)) > 200 else str(table))
+                
+                # Check if this looks like a range specification (contains digits, commas, colons, or semicolons)
+                # Range patterns: "0:100", "0;100", "0:100,5:10", "0;100,5;10", etc.
+                import re
+                range_pattern = re.compile(r'^[\d:;,\s]*$')
+                is_range = range_pattern.match(a) and (',' in a or ':' in a or ';' in a)
+                
+                if is_range:
+                    # This is a range specification, treat it as a filter operation
+                    log.info("Detected range specification: %s", a)
                     table.path.pop(0)
-                    table_new = self.operations.plugins[op]().execute(table, arg)
+                    table_new = self.operations.plugins['filter']().execute(table, a)
                     table.close()
                     table = table_new
-                elif op in self.operations.plugins and self.operations.plugins[op] is None:
-                    # skip "special ops" for now
-                    i += 1
+                    log.info("table after range operation: %s", str(table)[:200] + "..." if len(str(table)) > 200 else str(table))
                 else:
-                    # op unknown => assume it is 'filter' for backward compatibility
-                    table.path.pop(0)
-                    table_new = self.operations.plugins['filter']().execute(table, op+':'+arg if arg is not None else op)
-                    table.close()
-                    table = table_new
+                    # Normal operation processing
+                    a_split = a.split(':',1)
+                    op,arg = a_split if len(a_split)>1 else a_split + [None]
+                    if op in self.operations.plugins and self.operations.plugins[op] is not None:
+                        log.info("Executing operation: %s with arg: %s", op, arg)
+                        table.path.pop(0)
+                        table_new = self.operations.plugins[op]().execute(table, arg)
+                        table.close()
+                        table = table_new
+                        log.info("table after operation %s: %s", op, str(table)[:200] + "..." if len(str(table)) > 200 else str(table))
+                    elif op in self.operations.plugins and self.operations.plugins[op] is None:
+                        # skip "special ops" for now
+                        log.info("Skipping special operation: %s", op)
+                        i += 1
+                    else:
+                        # op unknown => assume it is 'filter' for backward compatibility
+                        log.info("Unknown operation %s, treating as filter", op)
+                        table.path.pop(0)
+                        table_new = self.operations.plugins['filter']().execute(table, op+':'+arg if arg is not None else op)
+                        table.close()
+                        table = table_new
+                        log.info("table after filter operation: %s", str(table)[:200] + "..." if len(str(table)) > 200 else str(table))
                 a = table.path[i] if len(table.path)>i else None
                 
             # force read the latest here
             table_new = table.read()
             table.close()
             table = table_new
-            log.debug('Processed table: %s', str(table))
+            log.info('Processed table: %s', str(table))
 
             # export
             out_format = get_arg(table, 'format:', defval='format:xml', **kw).replace('format:', '')
             out_info   = is_arg(table, 'info')
-            log.debug('Format: %s, Info: %s', out_format, out_info)
+            log.info('Format: %s, Info: %s', out_format, out_info)
             if out_format in self.exporters.plugins:
                 if out_info is True:
                     r = self.exporters.plugins[out_format]().info(table)
@@ -354,8 +473,6 @@ class TableController(ServiceController):
             if table is not None:
                 table.close()
             log.info ("FINISHED (%s): %s", datetime.now().isoformat(), request.url)
-
-
 
 #---------------------------------------------------------------------------------------
 # bisque init stuff

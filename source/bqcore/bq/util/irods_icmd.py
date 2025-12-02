@@ -1,11 +1,11 @@
 import os
 import re
-import urlparse
+import urllib.parse
 import shutil
 import atexit
 import logging
 import subprocess
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 from bq.util.mkdir import _mkdir
 from bq.util.paths import data_path
@@ -41,7 +41,7 @@ class IrodsConnection(object):
 
 
     def __init__(self, url, user=None, host=None, port=None, password = None, zone=None):
-        irods_url = urlparse.urlparse(url)
+        irods_url = urllib.parse.urlparse(url)
         assert irods_url.scheme == 'irods'
         env = PARSE_NET.match(irods_url.netloc).groupdict()
 
@@ -57,7 +57,7 @@ class IrodsConnection(object):
         path = ''
         zone = ''
         if irods_url.path:
-            path = urllib.unquote(irods_url.path).split('/')
+            path = urllib.parse.unquote(irods_url.path).split('/')
             if len(path):
                 zone = path[1]
             path = '/'.join(path)
@@ -67,7 +67,7 @@ class IrodsConnection(object):
                                                                  self.env['irodsZone'],
                                                                  self.env['irodsUserName']))
         self.env ['irodsAuthFileName'] = self.auth_file
-        self.irods_url = urlparse.urlunparse(list(irods_url)[:2] + ['']*4)
+        self.irods_url = urllib.parse.urlunparse(list(irods_url)[:2] + ['']*4)
 
 
     def open(self):

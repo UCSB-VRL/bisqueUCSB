@@ -52,7 +52,7 @@ DESCRIPTION
 
 """
 import logging
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 import sqlalchemy
 from pylons.controllers.util import abort
@@ -148,7 +148,7 @@ class BisquikResource(resource.Resource):
             if is_uniq_code(token):
                 return resource_load (self.resource_type, uniq = token)
             return resource_load(self.resource_type, ident=int(token))
-        except ValueError, e:
+        except ValueError as e:
             abort (404)
         except Exception:
             log.exception ('While loading:')
@@ -235,14 +235,14 @@ class BisquikResource(resource.Resource):
             parent = False
         user_id = identity.get_user_id()
         if parent is None and view!='count':
-            if not isinstance (view, basestring):
+            if not isinstance (view, str):
                 abort (400, "Illegal view parameter %s" % view)
             viewmap = { None: 1000000, 'short':1000000, 'full' : 10000, 'deep' : 1000 }
             maxlimit = viewmap.get (view, 10000)
             limit = kw.pop ('limit', None) or maxlimit
             limit = min(int(limit), maxlimit)
             kw['limit'] = str(limit)
-            log.debug ("limiting top level to %s", limit)
+            log.info ("limiting top level to %s", limit)
         else:
             limit = None
 
@@ -252,9 +252,9 @@ class BisquikResource(resource.Resource):
                           format=format, wpublic=wpublic)
         #params.update ( [(k, unicode(v).encode('utf8') ) for k,v in newparams.items() if v ])
         params.update ( newparams)
-        params = dict ( [(k, unicode(v).encode('utf8') ) for k,v in params.items() if v  ])
+        params = dict ( [(k, str(v).encode('utf8') ) for k,v in list(params.items()) if v  ])
 
-        request_uri = "%s?%s" % ( request.path, urllib.urlencode (params))
+        request_uri = "%s?%s" % ( request.path, urllib.parse.urlencode (params))
 
         if view=='count':
             limit=None
@@ -279,12 +279,14 @@ class BisquikResource(resource.Resource):
                                         #limit = limit,
                                         **kw)
             response = etree.Element('resource', uri=request_uri)
+            # log.info(f"---- response: {etree.tostring(response)}")
             db2tree (resources,
                      parent=response,
                      view=view,
                      baseuri = self.uri,
                      progressive=progressive,
                      **kw)
+            # log.info(f"---- response after dbtree: {etree.tostring(response)} resources: {resources}")
 
 
         accept_header = tg.request.headers.get ('accept')

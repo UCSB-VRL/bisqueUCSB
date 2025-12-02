@@ -1,0 +1,4 @@
+#!/bin/sh -e
+mkdir -p _build/html _build/doctrees
+PYTHONPATH=.. sphinx-build -b html -d _build/doctrees  . _build/html
+echo "The build is finished; HTML files are in _build/html ."

@@ -1,0 +1,21 @@
+# Pip requirements to build WebHelpers documentation and run tests.
+
+MarkupSafe>=2.0.1
+
+# Required for tests
+Nose
+Routes
+WebOb
+
+# Optional for testing paginate with SQLAlchemy queries
+#SQLAlchemy
+
+# Required for generating HTML documentation
+Sphinx
+
+# Optional enhancement for certain helpers
+Unidecode
+
+# Required by webhelpers.media.get_dimensions_pil()
+# (To avoid installing this, use webhelpers.media.get_dimensions() instead.)
+#Imaging

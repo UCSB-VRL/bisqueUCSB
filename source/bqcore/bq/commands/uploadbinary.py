@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # Script to upload external files to the binary server
 #
-import os, re, urllib2, hashlib, inspect, sys
+import os, re, urllib.request, urllib.error, urllib.parse, hashlib, inspect, sys
 
 BASE= "https://biodev.ece.ucsb.edu/binaries/upload/"
 
@@ -14,10 +14,10 @@ def _sha1hash(data):
 
 
 def upload_file(url, filename, user='', passwd='', opts=None):
-    pm = urllib2.HTTPPasswordMgrWithDefaultRealm()
+    pm = urllib.request.HTTPPasswordMgrWithDefaultRealm()
     pm.add_password(None, 'biodev.ece.ucsb.edu', user, passwd)
-    print ('Uploading %s to %s (%s Kb)\n' % (filename, url, os.path.getsize(filename) / 1024))
-    auth = urllib2.HTTPBasicAuthHandler(pm)
+    print(('Uploading %s to %s (%s Kb)\n' % (filename, url, os.path.getsize(filename) / 1024)))
+    auth = urllib.request.HTTPBasicAuthHandler(pm)
     try:
         if not opts.dryrun:
             handle = open(filename, 'rb')
@@ -27,10 +27,10 @@ def upload_file(url, filename, user='', passwd='', opts=None):
                     'architecture' : opts.arch }
             # XXX support proxies; look at httprepo.httprepository.__init__
             # or http://www.hackorama.com/python/upload.shtml
-            resp = urllib2.build_opener(urllib2.HTTPRedirectHandler, MultipartPostHandler, auth).open(url, data).close()
+            resp = urllib.request.build_opener(urllib.request.HTTPRedirectHandler, MultipartPostHandler, auth).open(url, data).close()
 
             if resp is not None:
-                print resp.read()
+                print(resp.read())
             #print str( resp.info())
             handle.close()
 
@@ -41,14 +41,14 @@ def upload_file(url, filename, user='', passwd='', opts=None):
 
         return "%s-%s" % (sha1, filename)
 
-    except IOError, err:
+    except IOError as err:
         raise Abort('Problem uploading %s to %s (try it manually using a web browser): %s\n' % (filename, url, err))
 
 
 # --- FROM http://odin.himinbi.org/MultipartPostHandler.py ---
 # (with some bug fixes!)
-import urllib
-import urllib2
+import urllib.request, urllib.parse, urllib.error
+import urllib.request, urllib.error, urllib.parse
 import mimetools, mimetypes
 import os, stat
 
@@ -60,15 +60,15 @@ class Callable:
 #  assigning a sequence.
 doseq = 1
 
-class MultipartPostHandler(urllib2.BaseHandler):
-    handler_order = urllib2.HTTPHandler.handler_order - 10 # needs to run first
+class MultipartPostHandler(urllib.request.BaseHandler):
+    handler_order = urllib.request.HTTPHandler.handler_order - 10 # needs to run first
 
     def http_request(self, request):
         data = request.get_data()
         if data is not None and type(data) != str:
             v_files = []
             v_vars = []
-            for(key, value) in data.items():
+            for(key, value) in list(data.items()):
                 try:
                     value.name
                     v_files.append((key, value))
@@ -76,13 +76,13 @@ class MultipartPostHandler(urllib2.BaseHandler):
                     v_vars.append((key, value))
 
             if len(v_files) == 0:
-                data = urllib.urlencode(v_vars, doseq)
+                data = urllib.parse.urlencode(v_vars, doseq)
             else:
                 boundary, data = self.multipart_encode(v_vars, v_files)
                 contenttype = 'multipart/form-data; boundary=%s' % boundary
                 if(request.has_header('Content-Type')
                    and request.get_header('Content-Type').find('multipart/form-data') != 0):
-                    print "Replacing %s with %s" % (request.get_header('content-type'), 'multipart/form-data')
+                    print("Replacing %s with %s" % (request.get_header('content-type'), 'multipart/form-data'))
                 request.add_unredirected_header('Content-Type', contenttype)
 
             request.add_data(data)
@@ -143,7 +143,7 @@ def main():
         parser.error ("You must upload at least one file")
 
 
-    print "Uploading to %s" % opts.destination
+    print("Uploading to %s" % opts.destination)
     uploaded = []
     for filename in args:
         if os.path.exists(filename):
@@ -153,8 +153,8 @@ def main():
                                 opts)
             uploaded.append (fname)
 
-    print "Please add the following files to EXTERNAL_FILES:"
-    print "\n".join (uploaded)
+    print("Please add the following files to EXTERNAL_FILES:")
+    print("\n".join (uploaded))
 
 
 if __name__ == "__main__":

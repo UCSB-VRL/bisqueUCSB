@@ -11,8 +11,8 @@ import os.path
 from lxml import etree
 import re
 import tempfile
-import cStringIO as StringIO
-import ConfigParser
+import io as StringIO
+import configparser
 #from collections import OrderedDict
 from bq.util.compat import OrderedDict
 import bq.util.io_misc as misc
@@ -47,15 +47,15 @@ def parse_format(l):
 
 def safeRead(config, section, option, defval=None):
     try:
-        return config.get(section, option)
-    except (ConfigParser.NoSectionError, ConfigParser.NoOptionError):
+        return config.get(section, option, raw=True)
+    except (configparser.NoSectionError, configparser.NoOptionError):
         return defval
 
 def safeReadAndSet(config, section, option, d, key, defval=None):
     v = defval
     try:
-        v = config.get(section, option)
-    except (ConfigParser.NoSectionError, ConfigParser.NoOptionError):
+        v = config.get(section, option, raw=True)
+    except (configparser.NoSectionError, configparser.NoOptionError):
         pass
     if v is not None:
         d[key] = v
@@ -194,7 +194,7 @@ class ConverterImaris(ConverterBase):
         elif os.name == 'posix':
             nulldevice = '/dev/null'
 
-        command = [cls.CONVERTERCOMMAND, '-i', ifnm, '-m', '-l', nulldevice, '-ii', '%s'%series]
+        command = [cls.CONVERTERCOMMAND, '-i', ifnm, '-m', '-l', nulldevice, '-ii', f'{series}']
         command.extend( cls.extension(token, **kw) ) # extend if timeout or meta are present
         meta = cls.run_read(ifnm, command)
 
@@ -207,7 +207,7 @@ class ConverterImaris(ConverterBase):
         params = ''
         try:
             p = misc.between(BLOCK_START, BLOCK_END, meta)
-            meta = meta.replace('%s%s%s'%(BLOCK_START, p, BLOCK_END), '', 1)
+            meta = meta.replace(f'{BLOCK_START}{p}{BLOCK_END}', '', 1)
             params = p
         except UnboundLocalError:
             return {}
@@ -218,34 +218,51 @@ class ConverterImaris(ConverterBase):
         ########################################
         rd = {}
         try:
-            mee = etree.fromstring(meta)
-        except etree.XMLSyntaxError:
+            # Handle encoding declaration issue in Python 3
+            if hasattr(meta, 'strip') and hasattr(meta, 'encode'):
+                # Always convert string-like objects to bytes for lxml compatibility
+                mee = etree.fromstring(meta.encode('utf-8'))
+            else:
+                mee = etree.fromstring(meta)
+        except (etree.XMLSyntaxError, ValueError):
             try:
-                mee = etree.fromstring(meta, parser=etree.XMLParser(encoding='iso-8859-1'))
-            except (etree.XMLSyntaxError, LookupError):
+                # Handle encoding declaration in fallback parsers too
+                if hasattr(meta, 'strip') and hasattr(meta, 'encode'):
+                    mee = etree.fromstring(meta.encode('iso-8859-1', errors='ignore'), parser=etree.XMLParser(encoding='iso-8859-1'))
+                else:
+                    mee = etree.fromstring(meta, parser=etree.XMLParser(encoding='iso-8859-1'))
+            except (etree.XMLSyntaxError, LookupError, ValueError):
                 try:
-                    mee = etree.fromstring(meta, parser=etree.XMLParser(encoding='utf-16'))
-                except (etree.XMLSyntaxError, LookupError):
+                    # Handle encoding declaration for utf-16 parser
+                    if hasattr(meta, 'strip') and hasattr(meta, 'encode'):
+                        mee = etree.fromstring(meta.encode('utf-16', errors='ignore'), parser=etree.XMLParser(encoding='utf-16'))
+                    else:
+                        mee = etree.fromstring(meta, parser=etree.XMLParser(encoding='utf-16'))
+                except (etree.XMLSyntaxError, LookupError, ValueError):
                     try:
-                        mee = etree.fromstring(meta, parser=etree.XMLParser(recover=True))
+                        # Handle encoding declaration for recovery parser
+                        if hasattr(meta, 'strip') and hasattr(meta, 'encode'):
+                            mee = etree.fromstring(meta.encode('utf-8', errors='ignore'), parser=etree.XMLParser(recover=True))
+                        else:
+                            mee = etree.fromstring(meta, parser=etree.XMLParser(recover=True))
                     except etree.XMLSyntaxError:
                         log.error ("Unparsable %s", meta)
                         return {}
 
         if '<FileInfo2>' in meta: # v7
             rd['image_num_series'] = misc.safeint(misc.xpathtextnode(mee, '/FileInfo2/NumberOfImages'), 1)
-            imagenodepath = '/FileInfo2/Image[@mIndex="%s"]'%series
+            imagenodepath = f'/FileInfo2/Image[@mIndex="{series}"]'
         else: # v8
             rd['image_num_series'] = misc.safeint(misc.xpathtextnode(mee, '/MetaData/NumberOfImages'), 1)
-            imagenodepath = '/MetaData/Image[@mIndex="%s"]'%series
+            imagenodepath = f'/MetaData/Image[@mIndex="{series}"]'
 
         rd['image_series_index'] = series
-        rd['date_time'] = misc.xpathtextnode(mee, '%s/ImplTimeInfo'%imagenodepath).split(';', 1)[0]
-        #rd['format']    = misc.xpathtextnode(mee, '%s/BaseDescription'%imagenodepath).split(':', 1)[1].strip(' ')
-        rd['format']    = misc.xpathtextnode(mee, '%s/BaseDescription'%imagenodepath) #.split(':', 1)[1].strip(' ')
+        rd['date_time'] = misc.xpathtextnode(mee, f'{imagenodepath}/ImplTimeInfo').split(';', 1)[0]
+        #rd['format']    = misc.xpathtextnode(mee, f'{imagenodepath}/BaseDescription').split(':', 1)[1].strip(' ')
+        rd['format']    = misc.xpathtextnode(mee, f'{imagenodepath}/BaseDescription') #.split(':', 1)[1].strip(' ')
 
         # dims
-        dims = misc.xpathtextnode(mee, '%s/BaseDimension'%imagenodepath).split(' ')
+        dims = misc.xpathtextnode(mee, f'{imagenodepath}/BaseDimension').split(' ')
         try:
             rd['image_num_x'] = misc.safeint(dims[0])
             rd['image_num_y'] = misc.safeint(dims[1])
@@ -269,15 +286,15 @@ class ConverterImaris(ConverterBase):
             'double': ('floating point', 64),
         }
         try:
-            t = pixeltypes[misc.xpathtextnode(mee, '%s/ImplDataType'%imagenodepath).lower()]
+            t = pixeltypes[misc.xpathtextnode(mee, f'{imagenodepath}/ImplDataType').lower()]
             rd['image_pixel_format'] = t[0]
             rd['image_pixel_depth']  = t[1]
         except KeyError:
             pass
 
         # resolution
-        extmin = [misc.safefloat(i) for i in misc.xpathtextnode(mee, '%s/ImplExtendMin'%imagenodepath).split(' ')]
-        extmax = [misc.safefloat(i) for i in misc.xpathtextnode(mee, '%s/ImplExtendMax'%imagenodepath).split(' ')]
+        extmin = [misc.safefloat(i) for i in misc.xpathtextnode(mee, f'{imagenodepath}/ImplExtendMin').split(' ')]
+        extmax = [misc.safefloat(i) for i in misc.xpathtextnode(mee, f'{imagenodepath}/ImplExtendMax').split(' ')]
         rd['pixel_resolution_x'] = (extmax[0]-extmin[0])/rd['image_num_x']
         rd['pixel_resolution_y'] = (extmax[1]-extmin[1])/rd['image_num_y']
         rd['pixel_resolution_z'] = (extmax[2]-extmin[2])/rd['image_num_z']
@@ -294,7 +311,7 @@ class ConverterImaris(ConverterBase):
         #params = misc.xpathtextnode(mee, '%s/ImplParameters'%imagenodepath)
         # use index 0 since we fetch meta data with imageindex argument
         sp = StringIO.StringIO(params)
-        config = ConfigParser.ConfigParser()
+        config = configparser.ConfigParser()
         try:
             config.readfp(sp)
         except Exception:
@@ -304,32 +321,33 @@ class ConverterImaris(ConverterBase):
         # custom - any tags in proprietary files should go further prefixed by the custom parent
         for section in config.sections():
             for option in config.options(section):
-                rd['custom/%s/%s'%(section,option)] = config.get(section, option)
+                # Use raw=True to prevent interpolation errors with % characters
+                rd[f'custom/{section}/{option}'] = config.get(section, option, raw=True)
 
         # Image parameters
         safeReadAndSet(config, 'Image', 'numericalaperture', rd, 'numerical_aperture')
 
         # channel names, colors and other info
         for c in range(rd['image_num_c']):
-            section = 'Channel %s'%c
-            path    = 'channels/channel_%.5d'%c
+            section = f'Channel {c}'
+            path    = f'channels/channel_{c:05d}'
 
             name = safeRead(config, section, 'Name') or ''
             dye  = safeRead(config, section, 'Dye name') or safeRead(config, section, 'Fluor')
             if dye is not None:
-                name = '%s (%s)'%(name, dye)
+                name = f'{name} ({dye})'
             if len(name)>0:
-                rd['channel_%s_name'%c] = name
+                rd[f'channel_{c}_name'] = name
 
             rgb = safeRead(config, section, 'Color')
             if rgb is not None:
-                rd['channel_color_%s'%c] = ','.join([str(int(misc.safefloat(i)*255)) for i in rgb.split(' ')])
+                rd[f'channel_color_{c}'] = ','.join([str(int(misc.safefloat(i)*255)) for i in rgb.split(' ')])
 
             # new channel format
             if len(name)>0:
-                rd['%s/name'%path] = name
+                rd[f'{path}/name'] = name
             if rgb is not None:
-                rd['%s/color'%path] = ','.join(rgb.split(' '))
+                rd[f'{path}/color'] = ','.join(rgb.split(' '))
             safeReadAndSet(config, section, 'ColorOpacity',            rd, '%s/opacity'%path)
             safeReadAndSet(config, section, 'Fluor',                   rd, '%s/fluor'%path)
             safeReadAndSet(config, section, 'GammaCorrection',         rd, '%s/gamma'%path)
@@ -414,7 +432,7 @@ class ConverterImaris(ConverterBase):
                  'pixel_resolution_unit_x', 'pixel_resolution_unit_y', 'pixel_resolution_unit_z' ]
 
         #return {k:v for k,v in rd.iteritems() if k in core}
-        return dict( (k,v)  for k,v in rd.iteritems() if k in core )
+        return dict( (k,v)  for k,v in rd.items() if k in core )
 
     #######################################
     # Conversion

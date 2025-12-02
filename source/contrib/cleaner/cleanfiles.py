@@ -91,7 +91,7 @@ def main():
     dirnames = [arg.rstrip('/') for arg in args]
 
     if options.dryrun:
-        print options
+        print(options)
 
     if options.logini:
         logging.config.fileConfig (options.logini)
