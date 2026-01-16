@@ -302,6 +302,16 @@ RUN gunzip argo-linux-amd64.gz
 # Make binary executable
 RUN chmod +x argo-linux-amd64 && mv ./argo-linux-amd64 /usr/local/bin/argo
 
+# Install kubectl ( to interact with k3s cluster or argo server setup on your server)
+RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" 
+RUN chmod +x kubectl  && mv kubectl /usr/local/bin/
+
+# Set the default kubeconfig path (but file will be mounted at runtime)
+ENV KUBECONFIG=/root/.kube/k3s_client.yaml
+
+# Create the kubeconfig directory
+RUN mkdir -p /root/.kube
+
 ########################################################################################
 
 ENTRYPOINT ["/builder/run-bisque.sh"]

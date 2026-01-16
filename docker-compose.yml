@@ -11,6 +11,7 @@ services:
     ports:
       - "${BISQUE_PORT:-8080}:8080"
     volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
       # Preserve configuration directory
       - bisque_config:/source/config
       # Preserve data directory (uploaded files, database, etc.)
@@ -25,7 +26,7 @@ services:
       - bisque_staging:/source/staging
     environment:
       # Server configuration
-      - BISQUE_SERVER=${BISQUE_SERVER:-http://0.0.0.0:8080}
+      - BISQUE_SERVER=${BISQUE_SERVER:-http://vrl-4090.ece.ucsb.edu:8080}
       - BISQUE_ADMIN_EMAIL=${BISQUE_ADMIN_EMAIL:-admin@yourdomain.com}
       - BISQUE_ADMIN_ID=${BISQUE_ADMIN_ID:-admin}
       - BISQUE_ORGANIZATION=${BISQUE_ORGANIZATION:-Your Organization}
@@ -42,6 +43,9 @@ services:
     # depends_on:
     #   postgres:
     #     condition: service_healthy
+    extra_hosts:
+      - "vrl-4090.ece.ucsb.edu:127.0.0.1"   # resolve vrl hostname to container loopback so in-container calls hit the service
+      - "host.docker.internal:host-gateway"
     networks:
       - bisque-net
 

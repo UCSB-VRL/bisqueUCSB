@@ -15,25 +15,71 @@ from .attrdict import AttrDict
 log = logging.getLogger('bq.engine_service.docker_env')
 
 DOCKER_RUN="""#!/bin/bash
+set -euo pipefail
 set -x
 
-#mkdir -p ./output_files
-${DOCKER_LOGIN}
-${DOCKER_PULL}
-CONTAINER=$$(docker create --network=host ${DOCKER_IMAGE}  $@)
-${DOCKER_INPUTS}
-docker start $CONTAINER
-MODULE_RETURN=$$(docker wait  $CONTAINER)
-docker logs $CONTAINER
-${DOCKER_OUTPUTS}
-# docker will not copy to existing directory .. so create a new one and copy from that
-docker cp $CONTAINER:/module/ output_files
-mv -fuv ./output_files/* .
-#rsync -av ./output_files/ .
-rm -rf ./output_files/*/
-docker rm $CONTAINER
-exit $MODULE_RETURN
+mex=$(echo "$MEX_ID" | tr '[:upper:]' '[:lower:]')
+
+cat > params.yaml <<EOF
+image: "${DOCKER_IMAGE}"
+args: "$(printf '%q ' "$@")"
+EOF
+
+if [[ -z "${ARGO_TOKEN:-}" ]]; then
+  echo "Creating Argo token..."
+  export ARGO_TOKEN="$(kubectl create token argo -n argo)"
+fi
+
+argo submit --log \
+  --from workflowtemplate/bqflow-module-template \
+  --parameter-file params.yaml \
+  --token "$ARGO_TOKEN" \
+  --generate-name "${mex}-"
 """
+
+DOCKER_RUN_GPU="""#!/bin/bash
+set -euo pipefail
+set -x
+
+mex=$(echo "$MEX_ID" | tr '[:upper:]' '[:lower:]')
+
+cat > params.yaml <<EOF
+image: "${DOCKER_IMAGE}"
+args: "$(printf '%q ' "$@")"
+EOF
+
+if [[ -z "${ARGO_TOKEN:-}" ]]; then
+  echo "Creating Argo token..."
+  export ARGO_TOKEN="$(kubectl create token argo -n argo)"
+fi
+
+argo submit --log \
+  --from workflowtemplate/bqflow-module-gpu-template \
+  --parameter-file params.yaml \
+  --token "$ARGO_TOKEN" \
+  --generate-name "${mex}-"
+"""
+
+# DOCKER_RUN="""#!/bin/bash
+# set -x
+
+# #mkdir -p ./output_files
+# ${DOCKER_LOGIN}
+# ${DOCKER_PULL}
+# CONTAINER=$$(docker create --network=host ${DOCKER_IMAGE}  $@)
+# ${DOCKER_INPUTS}
+# docker start $CONTAINER
+# MODULE_RETURN=$$(docker wait  $CONTAINER)
+# docker logs $CONTAINER
+# ${DOCKER_OUTPUTS}
+# # docker will not copy to existing directory .. so create a new one and copy from that
+# docker cp $CONTAINER:/module/ output_files
+# mv -fuv ./output_files/* .
+# #rsync -av ./output_files/ .
+# rm -rf ./output_files/*/
+# docker rm $CONTAINER
+# exit $MODULE_RETURN
+# """
 
 # !!! Can use `CONTAINER=$$(docker create --network=host ${DOCKER_IMAGE}  $@)` to enable host networking if needed
 # !!! instead of `CONTAINER=$$(docker create ${DOCKER_IMAGE}  $@)`
@@ -69,6 +115,7 @@ class DockerEnvironment(BaseEnvironment):
         runner.load_section ('docker', runner.bisque_cfg)
         runner.load_section ('docker', runner.module_cfg)
         self.enabled = asbool(runner.config.get ('docker.enabled', False))
+        self.module_exec_env = runner.config.get('exec_env', '')
         log.debug("Docker enabled: %s", self.enabled)
         
         self.docker_params = AttrDict()
@@ -183,7 +230,7 @@ class DockerEnvironment(BaseEnvironment):
             log.debug("Final docker_outputs for this mex: %s", docker_outputs)
             
             docker = self.create_docker_launcher(mex.rundir, mex.mex_id,
-                                                 docker_image, docker_login, docker_pull, docker_inputs, docker_outputs)
+                                                 docker_image, docker_login, docker_pull, docker_inputs, docker_outputs, self.module_exec_env)
             log.debug("Created docker launcher at: %s", docker)
             
             if mex.executable:
@@ -228,7 +275,8 @@ class DockerEnvironment(BaseEnvironment):
                                docker_login,
                                docker_pull,
                                docker_inputs,
-                               docker_outputs,):
+                               docker_outputs,
+                               module_exec_env):
         log.debug("=== CREATE_DOCKER_LAUNCHER START ===")
         log.debug("Destination: %s", dest)
         log.debug("Mex ID: %s", mex_id)
@@ -236,7 +284,11 @@ class DockerEnvironment(BaseEnvironment):
         log.debug("Docker inputs: %s", docker_inputs)
         log.debug("Docker outputs: %s", docker_outputs)
         
-        docker_run = DOCKER_RUN
+        if module_exec_env=='use_gpu':
+            log.info('executing module on gpu %s', module_exec_env)
+            docker_run = DOCKER_RUN_GPU
+        else:
+            docker_run = DOCKER_RUN
         content = string.Template(docker_run)
         
         inputs_str = "\n".join("docker cp %s %s:/module/%s" % (f, "$CONTAINER", f) for f in docker_inputs)

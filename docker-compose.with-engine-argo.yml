@@ -4,20 +4,24 @@
 # Kept host networking for ease of interservice communication
 # Added both Postgres and MySQL services for database flexibility
 services:
-  bisque:
+  vrl-4090.ece.ucsb.edu:
     build: 
       context: .
       dockerfile: Dockerfile
-    image: ${IMAGE_TAG:-bisque-ucsb:latest}
+    image: ${IMAGE_TAG:-bisque-ucsb-argo:latest}
     container_name: ${CONTAINER_NAME:-bisque-server}
     networks:
       - bisque-net
     extra_hosts:
       - "vrl-4090.ece.ucsb.edu:127.0.0.1"   # resolve vrl hostname to container loopback so in-container calls hit the service
+      # - "host.docker.internal:host-gateway"
+      # - "vrl-4090.ece.ucsb.edu:172.18.0.1" # get using :  docker network inspect bisque-network --format '{{(index .IPAM.Config 0).Gateway}}'
       - "host.docker.internal:host-gateway"
     volumes:
       # Docker socket for running modules in containers
       - /var/run/docker.sock:/var/run/docker.sock
+      # Mount kubeconfig file to interact with k3s cluster or argo server
+      - /home/charvi/bisque_workspace/BisQue-continual-learning/k3s.yaml:/root/.kube/k3s_client.yaml 
       # Preserve configuration directory
       - bisque_config:/source/config
       # Preserve data directory (uploaded files, database, etc.)
@@ -41,10 +45,11 @@ services:
       BISQUE_DBURL: "${BISQUE_DBURL:-postgresql://postgres:postgres@postgres:5432/bisque}"
       # Use 127.0.0.1 instead of localhost for MySQL to force TCP connection (not socket)
       # - BISQUE_DBURL=${BISQUE_DBURL:-mysql://bisque:bisque@127.0.0.1:3306/bisque}
+      KUBECONFIG: /root/.kube/k3s_client.yaml
     restart: unless-stopped
     ports:
-      - "128.111.185.111:8080:8080"
-      - "128.111.185.111:27000:27000"
+      - "8080:8080"
+      - "27000:27000"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/image_service/formats"]
       interval: 30s
