@@ -541,6 +541,8 @@ def check_mex(mex):
 
 
 from tg import  session, request
+from tg.request_local import Request as TGRequest, context as tg_context
+from tg.wsgiapp import RequestLocals
 from paste.registry import Registry
 from beaker.session import Session, SessionObject
 from pylons.controllers.util import Request
@@ -635,16 +637,27 @@ def POST_error (mex_url, username, resp, content):
                       name="error_message",
                       value="Problem in dispatch:%s:%s" % (resp['status'], getattr(resp,'reason','Unavailable')))
     log.debug ("MexError: %s " , etree.tostring(mextree))
-    # Need to setup current user who is running mex/
-    registry = Registry()
-    registry.prepare()
-    registry.register(session, SessionObject({}))
-    registry.register(request, Request.blank('/'))
-    request.identity  = {}
-    transaction.begin()
-    set_current_user (username)
-    bisquik2db(mextree)
-    transaction.commit()
+    # Need to setup current user who is running mex in background thread
+    # Set up TurboGears context for this thread (TG 2.4+ compatible)
+    req = TGRequest.blank('/')
+    req.environ['paste.cookies'] = ([], '')
+    req.identity = {}
+
+    locals_obj = RequestLocals()
+    locals_obj.request = req
+    locals_obj.response = None
+    locals_obj.tmpl_context = None
+    locals_obj.app_globals = None
+    locals_obj.session = {}
+
+    tg_context._push_object(locals_obj)
+    try:
+        transaction.begin()
+        set_current_user (username)
+        bisquik2db(mextree)
+        transaction.commit()
+    finally:
+        tg_context._pop_object()
 
 def POST_over (request, result):
     log.debug ('CLEANING workers %s -> %s', str(request), str(result))
