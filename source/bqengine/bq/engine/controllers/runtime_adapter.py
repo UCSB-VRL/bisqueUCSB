@@ -56,6 +56,7 @@ import logging
 #from StringIO import StringIO
 import subprocess
 
+import tg
 #from tg import config
 from lxml import etree
 
@@ -69,6 +70,28 @@ from .base_adapter import BaseAdapter
 
 #MODULE_BASE = config.get('bisque.engine_service.local_modules', bisque_path('modules'))
 log = logging.getLogger('bq.engine_service.adapters.runtime')
+
+
+def get_mex_token():
+    """Get mex token from identity or directly from Authorization header.
+
+    The engine service may not have auth middleware enabled, so fall back
+    to parsing the header directly.
+    """
+    token = identity.mex_authorization_token()
+    if token:
+        return token
+
+    # Fallback: parse Authorization header directly
+    # Format: "Mex user:token"
+    try:
+        auth_header = tg.request.headers.get('Authorization', '')
+        if auth_header.lower().startswith('mex '):
+            return auth_header[4:].strip()
+    except (TypeError, AttributeError):
+        pass
+
+    return None
 
 
 
@@ -157,7 +180,7 @@ class RuntimeAdapter(BaseAdapter):
                    module_dir = module_dir,
                    mex_tree=mex,
                    module_tree=module,
-                   bisque_token = identity.mex_authorization_token(),
+                   bisque_token = get_mex_token(),
                    pool = pool)
             #process = Popen(command_line, cwd=module_dir, stdout=PIPE, stderr=PIPE)
             #stdout,stderr = process.communicate()

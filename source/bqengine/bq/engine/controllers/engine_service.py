@@ -567,6 +567,11 @@ class EngineModuleResource(BaseController):
     #@require(not_anonymous(msg='You need to log-in to run a module'))
     def execute(self, entrypoint = 'main'):
         log.debug("execute %s" , self.name)
+        # Debug: Log incoming headers to diagnose auth token issues
+        log.info("DEBUG HEADERS: Authorization=%s", tg.request.headers.get('Authorization'))
+        log.info("DEBUG HEADERS: Mex=%s", tg.request.headers.get('Mex'))
+        log.info("DEBUG ENVIRON: HTTP_AUTHORIZATION=%s", tg.request.environ.get('HTTP_AUTHORIZATION'))
+        log.info("DEBUG ENVIRON: HTTP_MEX=%s", tg.request.environ.get('HTTP_MEX'))
         mex = read_xml_body()
         if mex is not None:
             #log.info ("New execution of %s" , mex.get('name'))
