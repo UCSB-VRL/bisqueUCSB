@@ -381,18 +381,18 @@ class BisqueAppConfig(AppConfig):
                 def __init__(self, app, who_app):
                     self.app = app
                     self.who_app = who_app
-                
+
                 def __call__(self, environ, start_response):
                     auth_header = environ.get('HTTP_AUTHORIZATION', '')
-                    
-                    # Use API authentication for Basic Auth or MEX auth or any API endpoint
-                    # Everything else goes to TurboGears (web interface with session auth)
-                    if (auth_header.lower().startswith('basic ') or 
-                        auth_header.lower().startswith('mex ') or
-                        environ.get('PATH_INFO', '').startswith('/module_service/')):
+
+                    # Use API authentication only when explicit auth header is present
+                    # (Basic Auth or MEX auth). Browser users with session cookies
+                    # should go through TurboGears which handles session authentication.
+                    if (auth_header.lower().startswith('basic ') or
+                        auth_header.lower().startswith('mex ')):
                         return self.who_app(environ, start_response)
                     else:
-                        # Use TurboGears for all web interface requests
+                        # Use TurboGears for all web interface requests (session auth)
                         return self.app(environ, start_response)
             
             who_app = PluggableAuthenticationMiddleware(
