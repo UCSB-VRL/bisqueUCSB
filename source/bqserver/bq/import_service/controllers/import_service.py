@@ -1176,7 +1176,10 @@ class import_serviceController(ServiceController):
         # try to annotate DICOM files
         filename = uf.localpath()
         if needs_guessing and filename is not None:
-            ConverterImgcnv.meta_dicom(filename, xml=uf.resource)
+            try:
+                ConverterImgcnv.meta_dicom(filename, xml=uf.resource)
+            except Exception as exc:
+                log.warning('Skipping DICOM metadata during upload for %s: %s', filename, exc)
 
         # no processing required
         log.info('process intags: %s', intags)

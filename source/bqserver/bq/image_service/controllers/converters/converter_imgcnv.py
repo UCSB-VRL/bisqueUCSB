@@ -936,7 +936,7 @@ class ConverterImgcnv(ConverterBase):
 		for f in files:
 			try:
 				# Modern pydicom file reading
-				ds = pydicom.dcmread(f, force=True)
+				ds = pydicom.dcmread(f)
 			except Exception:
 				blobs.append(f)
 				continue
@@ -1036,16 +1036,17 @@ class ConverterImgcnv(ConverterBase):
 					except (ValueError, Exception):
 						pass
 
+		tmp = None
 		try:
 			_, tmp = misc.start_nounicode_win(ifnm, [])
-			ds = pydicom.dcmread(tmp or ifnm, force=True)
-		except Exception:
-			misc.end_nounicode_win(tmp)
+			ds = pydicom.dcmread(tmp or ifnm, stop_before_pixels=True)
+			encoding = dicom_init_encoding(ds)
+			recurse_tree(ds, xml, encoding=encoding)
+		except Exception as exc:
+			log.warning('Skipping DICOM metadata for %s: %s', ifnm, exc)
 			return
-		
-		encoding = dicom_init_encoding(ds)
-		recurse_tree(ds, xml, encoding=encoding)
-		misc.end_nounicode_win(tmp)
+		finally:
+			misc.end_nounicode_win(tmp)
 
 	#######################################
 	# Most important DICOM metadata
@@ -1103,41 +1104,42 @@ class ConverterImgcnv(ConverterBase):
 			if len(value) > 0:
 				etree.SubElement(parent, 'tag', name=name, value=value, type=typ)
 
+		tmp = None
 		try:
 			_, tmp = misc.start_nounicode_win(ifnm, [])
-			ds = pydicom.dcmread(tmp or ifnm, force=True)
-		except Exception:
-			misc.end_nounicode_win(tmp)
+			ds = pydicom.dcmread(tmp or ifnm, stop_before_pixels=True)
+
+			encoding = dicom_init_encoding(ds)
+
+			# Extract key DICOM tags
+			append_tag(ds, ('0010', '0020'), xml, encoding=encoding)  # Patient ID
+			try:
+				append_tag(ds, ('0010', '0010'), xml, name='Patient\'s First Name', safe=False, fmt=lambda x: x.split('^', 1)[1], encoding=encoding)
+				append_tag(ds, ('0010', '0010'), xml, name='Patient\'s Last Name', safe=False, fmt=lambda x: x.split('^', 1)[0], encoding=encoding)
+			except Exception:
+				append_tag(ds, ('0010', '0010'), xml, encoding=encoding)
+			
+			append_tag(ds, ('0010', '0040'), xml, encoding=encoding)  # Patient's Sex
+			append_tag(ds, ('0010', '1010'), xml, encoding=encoding)  # Patient's Age
+			append_tag(ds, ('0010', '0030'), xml, fmt=dicom_parse_date)  # Patient's Birth Date
+			append_tag(ds, ('0012', '0062'), xml, encoding=encoding)  # Patient Identity Removed
+			append_tag(ds, ('0008', '0020'), xml, fmt=dicom_parse_date)  # Study Date
+			append_tag(ds, ('0008', '0030'), xml, fmt=dicom_parse_time)  # Study Time
+			append_tag(ds, ('0008', '0060'), xml, encoding=encoding)  # Modality
+			append_tag(ds, ('0008', '1030'), xml, encoding=encoding)  # Study Description
+			append_tag(ds, ('0008', '103e'), xml, encoding=encoding)  # Series Description
+			append_tag(ds, ('0008', '0080'), xml, encoding=encoding)  # Institution Name
+			append_tag(ds, ('0008', '0090'), xml, encoding=encoding)  # Referring Physician's Name
+			append_tag(ds, ('0008', '0008'), xml)  # Image Type
+			append_tag(ds, ('0008', '0012'), xml, fmt=dicom_parse_date)  # Instance Creation Date
+			append_tag(ds, ('0008', '0013'), xml, fmt=dicom_parse_time)  # Instance Creation Time
+			append_tag(ds, ('0008', '1060'), xml, encoding=encoding)  # Name of Physician(s) Reading Study
+			append_tag(ds, ('0008', '2111'), xml, encoding=encoding)  # Derivation Description
+		except Exception as exc:
+			log.warning('Skipping parsed DICOM metadata for %s: %s', ifnm, exc)
 			return
-
-		encoding = dicom_init_encoding(ds)
-
-		# Extract key DICOM tags
-		append_tag(ds, ('0010', '0020'), xml, encoding=encoding)  # Patient ID
-		try:
-			append_tag(ds, ('0010', '0010'), xml, name='Patient\'s First Name', safe=False, fmt=lambda x: x.split('^', 1)[1], encoding=encoding)
-			append_tag(ds, ('0010', '0010'), xml, name='Patient\'s Last Name', safe=False, fmt=lambda x: x.split('^', 1)[0], encoding=encoding)
-		except Exception:
-			append_tag(ds, ('0010', '0010'), xml, encoding=encoding)
-		
-		append_tag(ds, ('0010', '0040'), xml, encoding=encoding)  # Patient's Sex
-		append_tag(ds, ('0010', '1010'), xml, encoding=encoding)  # Patient's Age
-		append_tag(ds, ('0010', '0030'), xml, fmt=dicom_parse_date)  # Patient's Birth Date
-		append_tag(ds, ('0012', '0062'), xml, encoding=encoding)  # Patient Identity Removed
-		append_tag(ds, ('0008', '0020'), xml, fmt=dicom_parse_date)  # Study Date
-		append_tag(ds, ('0008', '0030'), xml, fmt=dicom_parse_time)  # Study Time
-		append_tag(ds, ('0008', '0060'), xml, encoding=encoding)  # Modality
-		append_tag(ds, ('0008', '1030'), xml, encoding=encoding)  # Study Description
-		append_tag(ds, ('0008', '103e'), xml, encoding=encoding)  # Series Description
-		append_tag(ds, ('0008', '0080'), xml, encoding=encoding)  # Institution Name
-		append_tag(ds, ('0008', '0090'), xml, encoding=encoding)  # Referring Physician's Name
-		append_tag(ds, ('0008', '0008'), xml)  # Image Type
-		append_tag(ds, ('0008', '0012'), xml, fmt=dicom_parse_date)  # Instance Creation Date
-		append_tag(ds, ('0008', '0013'), xml, fmt=dicom_parse_time)  # Instance Creation Time
-		append_tag(ds, ('0008', '1060'), xml, encoding=encoding)  # Name of Physician(s) Reading Study
-		append_tag(ds, ('0008', '2111'), xml, encoding=encoding)  # Derivation Description
-
-		misc.end_nounicode_win(tmp)
+		finally:
+			misc.end_nounicode_win(tmp)
 
 try:
 	ConverterImgcnv.init()
@@ -2076,7 +2078,7 @@ except Exception as e:
 # 		for f in files:
 # 			try:
 # 				# Modern pydicom file reading
-# 				ds = pydicom.dcmread(f, force=True)
+# 				ds = pydicom.dcmread(f)
 # 			except Exception:
 # 				blobs.append(f)
 # 				continue
