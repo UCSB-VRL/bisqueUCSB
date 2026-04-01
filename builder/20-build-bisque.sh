@@ -21,8 +21,9 @@ echo "Python version: $(python --version)"
 echo "Python path: $(which python)"
 echo "Pip version: $(pip --version)"
 
-# Upgrade pip and setuptools for Python 3
-python -m pip install --upgrade pip setuptools wheel
+# Upgrade pip and wheel, but pin setuptools to keep pkg_resources available
+python -m pip install --upgrade pip wheel
+python -m pip install setuptools==80.9.0
 
 # Install external dependencies from requirements.txt
 pip install -r requirements.txt
@@ -73,7 +74,7 @@ ls -la ${VENV}/bin/ | grep -E "(bq|python)"
 
 if [ -f "${VENV}/bin/bq-admin" ]; then
     echo "bq-admin found at ${VENV}/bin/bq-admin"
-    ${VENV}/bin/bq-admin --help > /dev/null 2>&1 || { 
+    ${VENV}/bin/bq-admin --help || { 
         echo "bq-admin exists but not working properly"
         pip show bqcore
         exit 1
