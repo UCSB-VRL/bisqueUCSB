@@ -24,15 +24,15 @@ Usage:
     )
 """
 
+import logging
 import os
 import smtplib
-import logging
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-from email.mime.base import MIMEBase
 from email import encoders
+from email.mime.base import MIMEBase
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from email.utils import formataddr, formatdate
-from typing import List, Optional, Dict, Any
+from typing import Any, Dict, List, Optional
 
 try:
     from tg import config

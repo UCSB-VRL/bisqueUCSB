@@ -11,10 +11,10 @@ Features:
 - Optional email verification (configurable)
 """
 
-import os
-import logging
-import secrets
 import hashlib
+import logging
+import os
+import secrets
 from datetime import datetime, timedelta, timezone
 
 try:
@@ -85,9 +85,11 @@ class EmailVerificationService:
     def _is_verification_enabled(self):
         """Check if email verification is enabled in configuration"""
         # Check environment variable first (for Docker/container deployments)
-        # env_enabled = os.environ.get('BISQUE_EMAIL_VERIFICATION_ENABLED', 'false').lower()
-        # if env_enabled in ['true', '1', 'yes', 'on']:
-        #     return True
+        env_enabled = os.environ.get(
+            "BISQUE_EMAIL_VERIFICATION_ENABLED", "false"
+        ).lower()
+        if env_enabled in ["true", "1", "yes", "on"]:
+            return True
 
         # Check main Bisque configuration
         config_enabled = config.get(
@@ -361,8 +363,8 @@ class EmailVerificationService:
     def generate_password_reset_token(self, email, username):
         """Generate a password reset token"""
         try:
-            import secrets
             import hashlib
+            import secrets
             from datetime import datetime, timezone
 
             # Generate a secure token with timestamp
@@ -413,7 +415,7 @@ class EmailVerificationService:
 
             # Verify timestamp is not too old
             try:
-                from datetime import datetime, timezone, timedelta
+                from datetime import datetime, timedelta, timezone
 
                 token_timestamp = int(timestamp_str)
                 current_timestamp = int(datetime.now(timezone.utc).timestamp())
@@ -525,8 +527,8 @@ The Bisque Team
         """Reset a user's password"""
         try:
             # Get the TurboGears user associated with this BQUser
-            from bq.core.model.auth import User
             from bq.core.model import DBSession
+            from bq.core.model.auth import User
 
             # Find the TG user by username
             username = bq_user.resource_name

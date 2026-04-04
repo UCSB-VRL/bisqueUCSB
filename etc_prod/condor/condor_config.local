@@ -1,0 +1,37 @@
+CONDOR_HOST = claw.ece.ucsb.edu
+COLLECTOR_NAME = CBI UCSB
+
+##  This macro determines what daemons the condor_master will start and keep its watchful eyes on.
+##  The list is a comma or space separated list of subsystem names
+#DAEMON_LIST = COLLECTOR, MASTER, NEGOTIATOR, SCHEDD, STARTD
+DAEMON_LIST = MASTER, SCHEDD, SHARED_PORT
+
+##  When something goes wrong with condor at your site, who should get
+##  the email?
+CONDOR_ADMIN          = admin@biodev.ece.ucsb.edu
+#UID_DOMAIN            = ece.ucsb.edu
+#TRUST_UID_DOMAIN      = TRUE
+#FILESYSTEM_DOMAIN     = barrel.ece.ucsb.edu
+
+ALLOW_READ            = 172.*,10.*, 128.111.*, *.ece.ucsb.edu, *.cs.ucsb.edu
+ALLOW_WRITE           = 172.*,10.*, 128.111.*, *.ece.ucsb.edu, *.cs.ucsb.edu
+ALLOW_ADMINISTRATOR   = 172.*,10.*, 128.111.*
+ALLOW_CONFIG          = 172.*,10.*, 128.111.*
+ALLOW_NEGOTIATOR      = 172.*,10.*, 128.111.*
+ALLOW_DAEMON          = 172.*,10.*, 128.111.*
+
+# Use CCB with shared port so outside units can talk to
+USE_SHARED_PORT = TRUE
+#SHARED_PORT_ARGS = -p 9886
+UPDATE_COLLECTOR_WITH_TCP = TRUE
+#CCB_ADDRESS = $(COLLECTOR_HOST)
+#PRIVATE_NETWORK_NAME = CBIDOCKER
+BIND_ALL_INTERFACES = TRUE
+
+START = True
+PREEMPT = False
+SUSPEND = False
+KILL = False
+WANT_SUSPEND = False
+WANT_VACATE= False
+CONTINUE= True

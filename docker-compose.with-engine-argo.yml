@@ -31,7 +31,7 @@ services:
       # Preserve public directory (uploaded files accessible via web)
       - bisque_public:/source/public
       # Optional: Mount modules directory if you want to persist custom modules
-      - bisque_modules:/source/modules
+      # - bisque_modules:/source/modules
       # Optional: Preserve staging directory for uploads
       - bisque_staging:/source/staging
     environment:
@@ -42,7 +42,7 @@ services:
       BISQUE_ORGANIZATION: "${BISQUE_ORGANIZATION:-Your Organization}"
       BISQUE_TITLE: "${BISQUE_TITLE:-BisQue Image Repository}"
       # Optional database override
-      BISQUE_DBURL: "${BISQUE_DBURL:-postgresql://postgres:postgres@postgres:5432/bisque}"
+      BISQUE_DBURL: "${BISQUE_DBURL:-postgresql://bisque:bisqueVRL@postgres:5432/bisque}"
       # Use 127.0.0.1 instead of localhost for MySQL to force TCP connection (not socket)
       # - BISQUE_DBURL=${BISQUE_DBURL:-mysql://bisque:bisque@127.0.0.1:3306/bisque}
       KUBECONFIG: /root/.kube/k3s_client.yaml
@@ -70,8 +70,8 @@ services:
       - bisque-net
     environment:
       POSTGRES_DB: bisque
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: bisque
+      POSTGRES_PASSWORD: bisqueVRL
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
@@ -110,8 +110,8 @@ volumes:
     driver: local
   bisque_public:
     driver: local
-  bisque_modules:
-    driver: local
+  # bisque_modules:
+  #   driver: local
   bisque_staging:
     driver: local
   postgres_data:

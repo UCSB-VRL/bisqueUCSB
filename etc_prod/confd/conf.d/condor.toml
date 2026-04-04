@@ -1,0 +1,9 @@
+[template]
+src = "condor_config.local.tmpl"
+dest = "/etc/condor/condor_config.local"
+owner = "condor"
+mode = "0644"
+keys = [
+  "/condor/daemons",
+  "/condor/manager/host",
+]

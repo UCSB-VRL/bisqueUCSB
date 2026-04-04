@@ -1,0 +1,8 @@
+[template]
+src = "nginx.tmpl"
+dest = "/etc/nginx/nginx.conf"
+owner = "root"
+mode = "0644"
+keys = [
+  "/bisque/user",
+]

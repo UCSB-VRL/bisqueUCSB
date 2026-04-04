@@ -1,0 +1,36 @@
+# Supervisor config for bisque
+[program:h1_uwsgi]
+user={{getv "/bisque/user"}}
+directory=/source
+#environment=BISQUE=/source/bqenv
+environment=BISQUE=/usr/lib/bisque
+command=/source/virtrun  uwsgi --ini-paste /source/config/h1_uwsgi.cfg
+exitcodes=0,2
+stdout_logfile=/dev/stdout
+stdout_logfile_maxbytes=0
+redirect_stderr = true
+
+[program:e1_uwsgi]
+user={{getv "/bisque/user"}}
+#environment=BISQUE=/source/bqenv
+environment=BISQUE=/usr/lib/bisque
+directory=/source/
+command=/source/virtrun uwsgi --ini-paste /source/config/e1_uwsgi.cfg
+exitcodes=0,2
+stdout_logfile=/dev/stdout
+stdout_logfile_maxbytes=0
+redirect_stderr = true
+
+[program:nginx]
+command=/usr/sbin/nginx
+priority=900
+stdout_logfile=/dev/stdout
+stdout_logfile_maxbytes=0
+stderr_logfile=/dev/stderr
+stderr_logfile_maxbytes=0
+username={{getv "/bisque/user"}}
+autorestart=true
+
+
+[group:bisque]
+programs = h1_uwsgi, e1_uwsgi
