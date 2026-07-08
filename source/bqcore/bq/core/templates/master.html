@@ -22,45 +22,14 @@
     <!-- <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
         </style> -->
-    <!-- ExtJS4 styles -->
+    <!-- ExtJS styles -->
     <link rel="stylesheet" type="text/css" href="${tg.url('/core/extjs/resources/css/ext-all.css')}" />
-    <!--<link rel="stylesheet" type="text/css" href="${tg.url('/core/extjs/resources/css/ext-all-neptune.css')}"/>-->
-
-    <!-- ExtJS5 styles -->
-    <!--<link rel="stylesheet" type="text/css" href="${tg.url('/core/extjs/packages/ext-theme-classic/build/resources/ext-theme-classic-all.css')}"/>-->
-    <!--<link rel="stylesheet" type="text/css" href="${tg.url('/core/extjs/packages/ext-theme-crisp/build/resources/ext-theme-crisp-all.css')}"/>-->
     <!-- BisQue UI code -->
     ${h.generate_css_files()}
 
-    <!-- ExtJS 4 -->
+    <!-- ExtJS -->
     <script py:if="tg.config.get('bisque.js_environment', None) == 'production'" type="text/javascript" src="${tg.url('/core/extjs/ext-all.js')}"></script>
     <script py:if="tg.config.get('bisque.js_environment', None) != 'production'" type="text/javascript" src="${tg.url('/core/extjs/ext-all-dev.js')}"></script>
-
-    <!-- ExtJS 5 -->
-    <!--
-    <script type="text/javascript">
-        /*var Ext = Ext || {};
-        Ext.manifest = {
-            compatibility: {
-                ext: '4.2'
-            },
-        };*/
-    </script>
-    <script py:if="tg.config.get('bisque.js_environment', None) == 'production'" type="text/javascript" src="${tg.url('/core/extjs/ext-all.js')}"></script>
-    <script py:if="tg.config.get('bisque.js_environment', None) != 'production'" type="text/javascript" src="${tg.url('/core/extjs/ext-all-debug.js')}"></script>
-
-    <script type="text/javascript">
-        // xml reader is used extensively is utilizes .raw property
-        // deprectaed in extjs5, temporary addition back
-        /*Ext.define('App.overrides.data.Model', {
-            override: 'Ext.data.Model',
-            constructor: function (data) {
-                this.raw = Ext.apply({}, data);
-                this.callParent(arguments);
-            },
-        });*/
-    </script>
-    -->
 
     <!-- Third party libs -->
     <script type="text/javascript" src="${tg.url('/core/d3/d3.js')}"></script>

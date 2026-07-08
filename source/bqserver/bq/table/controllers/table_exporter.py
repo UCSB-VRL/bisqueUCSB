@@ -47,46 +47,47 @@ Table base for exporterters
 
 """
 
-__author__    = "Dmitry Fedorov <dima@dimin.net>"
-__version__   = "1.0"
+__author__ = "Dmitry Fedorov <dima@dimin.net>"
+__version__ = "1.0"
 __copyright__ = "Center for Bio-Image Informatics, University of California at Santa Barbara"
 
 # default imports
-import os
 import logging
-import pkg_resources
+import os
 
+import pkg_resources
 from tg import response
 
 log = logging.getLogger("bq.table.exporter")
 
-__all__ = [ 'TableExporter' ]
+__all__ = ["TableExporter"]
 
-#---------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------
 # Exporters: Table base
-#---------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------
+
 
 class TableExporter(object):
-    '''Formats tables into output format'''
+    """Formats tables into output format"""
 
-    name = ''
-    version = '1.0'
-    ext = 'table'
-    mime_type = 'text/plain'
+    name = ""
+    version = "1.0"
+    ext = "table"
+    mime_type = "text/plain"
 
     def __init__(self):
         pass
 
     # needs implementation for particular format
     def info(self, table):
-        response.headers['Content-Type'] = self.mime_type
+        response.headers["Content-Type"] = self.mime_type
 
     def format(self, table):
         pass
 
     def export(self, table):
-        """Add your first page here.. """
-        fname = '%s.%s' % (table.resource.get('name'), self.ext)
+        """Add your first page here.."""
+        fname = "%s.%s" % (table.resource.get("name"), self.ext)
         # try:
         #     fname.encode('ascii')
         #     disposition = 'filename="%s"'%(fname)
@@ -94,5 +95,5 @@ class TableExporter(object):
         #     disposition = 'filename="%s"; filename*="%s"'%(fname.encode('utf8'), fname.encode('utf8'))
         # response.headers['Content-Disposition'] = disposition
 
-        response.headers['Content-Type'] = self.mime_type
+        response.headers["Content-Type"] = self.mime_type
         return self.format(table)

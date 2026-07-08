@@ -13,8 +13,5 @@ def init_model(engine):
     # you use the model.
 
 
-
 # Import your model modules here.
 from bq.client_service.model.client_service_model import *
-
-

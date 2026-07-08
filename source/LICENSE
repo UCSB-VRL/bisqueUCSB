@@ -1,38 +1,53 @@
-BisQue license
+BisQue Dual License
 
-Center for Bio-Image Informatics, University of California at Santa Barbara
+Center for Bio-Image Informatics, University of California, Santa Barbara
 
-Copyright (c) 2007-2017 by the Regents of the University of California
-All rights reserved
+Copyright (c) 2007-2026 by The Regents of the University of California.
+All rights reserved.
 
-Redistribution and use in source and binary forms, in whole or in parts, with or without
-modification, are permitted provided that the following conditions are met:
+BisQue is offered under a dual-license model:
 
-    Redistributions of source code must retain the above copyright
-    notice, this list of conditions, and the following disclaimer.
+1. GNU Affero General Public License
 
-    Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions, and the following disclaimer in
-    the documentation and/or other materials provided with the
-    distribution.
+   Unless you have entered into a separate commercial license agreement with
+   The Regents of the University of California, BisQue is licensed under the
+   GNU Affero General Public License, version 3 or any later version, as
+   published by the Free Software Foundation.
 
-    Use or redistribution must display the attribution with the logo
-    or project name and the project URL link in a location commonly
-    visible by the end users, unless specifically permitted by the
-    license holders.
+   You may redistribute and/or modify BisQue under the terms of the AGPL. The
+   AGPL includes source-code availability obligations, including for modified
+   versions made available for use over a network. See:
 
-THIS SOFTWARE IS PROVIDED BY THE REGENTS OF THE UNIVERSITY OF CALIFORNIA ''AS IS'' AND ANY
-EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
-PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE REGENTS OF THE UNIVERSITY OF CALIFORNIA OR
+     https://www.gnu.org/licenses/agpl-3.0.html
+
+2. Commercial License
+
+   If you want to use BisQue under terms other than the AGPL, including
+   proprietary distribution or hosted use without AGPL source-code obligations,
+   you must obtain a separate commercial license from The Regents of the
+   University of California through the University of California, Santa Barbara.
+
+Third-Party Components
+
+BisQue includes or can be used with third-party components that are licensed
+under their own terms. Those third-party licenses are not changed by this
+dual-license notice. Review bundled notices, package metadata, and dependency
+licenses before distributing BisQue or derivative works.
+
+No Warranty
+
+THIS SOFTWARE IS PROVIDED BY THE REGENTS OF THE UNIVERSITY OF CALIFORNIA "AS
+IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE REGENTS OF THE UNIVERSITY OF CALIFORNIA OR
 CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
-EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
-PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
-NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
+OF SUCH DAMAGE.
 
-The views and conclusions contained in the software and documentation
-are those of the authors and should not be interpreted as representing
-official policies, either expressed or implied, of the Regents of the University of California.
+The views and conclusions contained in the software and documentation are those
+of the authors and should not be interpreted as representing official policies,
+either expressed or implied, of The Regents of the University of California.

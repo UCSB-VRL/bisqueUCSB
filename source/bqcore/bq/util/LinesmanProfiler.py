@@ -1,36 +1,40 @@
-from linesman.middleware import *
-
-from linesman.backends.sqlite import SqliteBackend
-from linesman.backends.base import Backend
-from sqlalchemy import MetaData, Table, Column, ForeignKey
-from sqlalchemy.types import DateTime, PickleType, FLOAT, Integer, String
-from sqlalchemy.orm import sessionmaker, scoped_session
 import logging
-import time
 import pickle
+import time
+
 import transaction
+from linesman.backends.base import Backend
+from linesman.backends.sqlite import SqliteBackend
+from linesman.middleware import *
+from sqlalchemy import Column, ForeignKey, MetaData, Table
+from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy.types import FLOAT, DateTime, Integer, PickleType, String
 from webob import Request, Response
 
 try:
     from collections import OrderedDict
 except ImportError:
     from ordereddict import OrderedDict
-    
+
 from sqlalchemy import create_engine
-
 from sqlalchemy.ext.declarative import declarative_base
-
 
 log = logging.getLogger("bq.config.middleware.profiler")
 
+
 class BQProfilingMiddleware(ProfilingMiddleware):
-    def __init__(self, app, sqlalchemy_url, profiler_path='__profiler__/', ):
+    def __init__(
+        self,
+        app,
+        sqlalchemy_url,
+        profiler_path="__profiler__/",
+    ):
         self.app = app
         self.sqlalchemy_url = sqlalchemy_url
         self.profiler_path = profiler_path
         self.profiling_enabled = True
         self.chart_packages = []
-        
+
         # Attempt to create the GRAPH_DIR
         if not os.path.exists(GRAPH_DIR):
             try:
@@ -39,48 +43,47 @@ class BQProfilingMiddleware(ProfilingMiddleware):
                 log.error("Could not create directory `%s'", GRAPH_DIR)
                 raise
 
-
         # Setup the Mako template lookup
         self.template_lookup = TemplateLookup(directories=[TEMPLATES_DIR])
-        
-        #self._backend = SqliteBackend()
+
+        # self._backend = SqliteBackend()
         self._backend = SqlAlchemyBackend(sqlalchemy_url)
-        
+
         # Set it up
         self._backend.setup()
-        log.info('Added profiler')
+        log.info("Added profiler")
 
     def __call__(self, environ, start_response):
-        #check if its the profiler ui requested
+        # check if its the profiler ui requested
         req = Request(environ)
-        dispatch = {''        : self.list_profiles, 
-                    'graph'   : self.render_graph, 
-                    'media'   : self.media, 
-                    'profiles': self.show_profile, 
-                    'delete'  : self.delete_profile}
-        
+        dispatch = {
+            "": self.list_profiles,
+            "graph": self.render_graph,
+            "media": self.media,
+            "profiles": self.show_profile,
+            "delete": self.delete_profile,
+        }
+
         wsgi_app = self.app
-        if req.path_info_peek() == self.profiler_path.strip('/'):
-            req.path_info_pop() #pop __profiler__
+        if req.path_info_peek() == self.profiler_path.strip("/"):
+            req.path_info_pop()  # pop __profiler__
             current_path_element = req.path_info_peek()
             if current_path_element in dispatch:
                 req.path_info_pop()
                 wsgi_app = dispatch[current_path_element](req)
             else:
-                environ['PATH_INFO'] = req.path_info #set the path
-                environ['SCRIPT_NAME'] = '' #remove __profiler__ from request
+                environ["PATH_INFO"] = req.path_info  # set the path
+                environ["SCRIPT_NAME"] = ""  # remove __profiler__ from request
                 return self.profiler(environ, start_response)
-                            
-        elif 'HTTP_X_PROFILER' in environ:
+
+        elif "HTTP_X_PROFILER" in environ:
             return self.profiler(environ, start_response)
-#        else:
-#            wsgi_app = HTTPNotFound()
+        #        else:
+        #            wsgi_app = HTTPNotFound()
         return wsgi_app(environ, start_response)
 
-    
-    
     def profiler(self, environ, start_response):
-        #_locals = locals()
+        # _locals = locals()
         prof = Profile()
         start_timestamp = datetime.now()
         prof.enable()
@@ -93,23 +96,26 @@ class BQProfilingMiddleware(ProfilingMiddleware):
         self._backend.add(profile_data)
         return xres
 
+
 DeclarativeBase = declarative_base()
-      
+
+
 class Profiler_Sessions(DeclarativeBase):
-    __tablename__ = 'profiler'
-    uuid      = Column('uuid', String(36), primary_key=True)
-    timestamp = Column('timestamp', FLOAT)
-    session   = Column('session', PickleType)
+    __tablename__ = "profiler"
+    uuid = Column("uuid", String(36), primary_key=True)
+    timestamp = Column("timestamp", FLOAT)
+    session = Column("session", PickleType)
 
 
 class SqlAlchemyBackend(Backend):
     """
-        Opens a connection to a database through SQL Alchemy
+    Opens a connection to a database through SQL Alchemy
     """
-    def __init__(self, url='sqlite:///session.db'):
+
+    def __init__(self, url="sqlite:///session.db"):
         self.url = url
         self.engine = create_engine(self.url)
-        
+
     def setup(self):
         """
         Responsible for initializing the backend. for usage.  This is run once
@@ -120,9 +126,9 @@ class SqlAlchemyBackend(Backend):
 
     def conn(self):
         """
-            Creates a connection to the database and initalizes a session
-            
-            @return: session - dbsession
+        Creates a connection to the database and initalizes a session
+
+        @return: session - dbsession
         """
         maker = sessionmaker(autoflush=True, autocommit=False)
         session = scoped_session(maker)
@@ -139,12 +145,12 @@ class SqlAlchemyBackend(Backend):
         else:
             timestamp = None
         row = Profiler_Sessions(uuid=uuid, timestamp=timestamp, session=session)
-        log.info('adding row %s' % row)
+        log.info("adding row %s" % row)
         local_session = self.conn()
         local_session.add(row)
         local_session.commit()
         local_session.remove()
-        
+
     def delete(self, session_uuid):
         """
         Removes a specific stored session from the history.
@@ -152,9 +158,11 @@ class SqlAlchemyBackend(Backend):
         """
         local_session = self.conn()
         count = 0
-        for row in local_session.query(Profiler_Sessions).filter(Profiler_Sessions.uuid==session_uuid):
+        for row in local_session.query(Profiler_Sessions).filter(
+            Profiler_Sessions.uuid == session_uuid
+        ):
             local_session.delete(row)
-            count +=1
+            count += 1
         local_session.commit()
         local_session.remove()
         return count
@@ -166,13 +174,15 @@ class SqlAlchemyBackend(Backend):
         """
         local_session = self.conn()
         count = 0
-        for row in local_session.query(Profiler_Sessions).filter(Profiler_Sessions.uuid.in_(session_uuids)):
+        for row in local_session.query(Profiler_Sessions).filter(
+            Profiler_Sessions.uuid.in_(session_uuids)
+        ):
             local_session.delete(row)
-            count +=1
+            count += 1
         local_session.commit()
         local_session.remove()
         return count
-    
+
     def delete_all(self):
         """
         Removes all stored sessions from the history.
@@ -190,7 +200,11 @@ class SqlAlchemyBackend(Backend):
         `None` if no session can be found with the specified uuid.
         """
         local_session = self.conn()
-        profile_data = local_session.query(Profiler_Sessions).filter(Profiler_Sessions.uuid==session_uuid).first()
+        profile_data = (
+            local_session.query(Profiler_Sessions)
+            .filter(Profiler_Sessions.uuid == session_uuid)
+            .first()
+        )
         local_session.remove()
         return profile_data and profile_data.session
 
@@ -201,9 +215,10 @@ class SqlAlchemyBackend(Backend):
         """
         local_session = self.conn()
         od = OrderedDict()
-        for id, session in local_session.query(Profiler_Sessions.uuid, Profiler_Sessions.session).order_by(Profiler_Sessions.timestamp):
+        for id, session in local_session.query(
+            Profiler_Sessions.uuid, Profiler_Sessions.session
+        ).order_by(Profiler_Sessions.timestamp):
             od[id] = session
-        log.info('get_all %s' % od)
+        log.info("get_all %s" % od)
         local_session.remove()
         return od
-    

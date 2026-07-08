@@ -1,0 +1,13 @@
+.git
+**/.git
+.venv
+**/.venv
+.cache
+**/.cache
+.bisque
+.local
+.flox/cache
+__pycache__
+*.py[cod]
+.pytest_cache
+*.log

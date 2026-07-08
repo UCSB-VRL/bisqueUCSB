@@ -50,7 +50,9 @@ DESCRIPTION
 ===========
 
 """
+
 from contextlib import contextmanager
+
 
 @contextmanager
 def optional_cm(cm, *args, **kw):
@@ -65,10 +67,10 @@ def optional_cm(cm, *args, **kw):
 
 
 @contextmanager
-def opener_cm (path):
+def opener_cm(path):
     "open a filename or return the already opened file"
-    if hasattr(path, 'read'):
+    if hasattr(path, "read"):
         yield path
     else:
-        with open(path, 'rb') as f:
+        with open(path, "rb") as f:
             yield f

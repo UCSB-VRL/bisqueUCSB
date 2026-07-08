@@ -51,53 +51,61 @@ DESCRIPTION
 ===========
 
 """
+
 import copy
 import json
 import logging
-#import operator
+
+# import operator
 import os
 import string
-#from datetime import datetime
+
+# from datetime import datetime
 from datetime import datetime, timezone
-from urllib.parse import  unquote
+from urllib.parse import unquote
 
 # Import domain models for admin operations
 try:
     from bq.data_service.model.domain_model import AuthorizedEmailDomain, PendingUserRegistration
+
     DOMAIN_MODELS_AVAILABLE = True
 except ImportError:
     DOMAIN_MODELS_AVAILABLE = False
     AuthorizedEmailDomain = None
     PendingUserRegistration = None
-#import io
-#import itertools
-#import mmap
+# import io
+# import itertools
+# import mmap
 
 
 import transaction
 from lxml import etree
 from pylons.controllers.util import abort, redirect
+
+# from sqlalchemy import func
+from sqlalchemy.exc import IntegrityError, InvalidRequestError
+from tg import config, expose, request, response
+
 # from repoze.what.predicates import Any, in_group #!!! deprecated following are the replacements
 from tg.predicates import Any, in_group
-#from sqlalchemy import func
-from sqlalchemy.exc import IntegrityError, InvalidRequestError
-from tg import (config,  expose,   request, response)
 
 from bq import data_service
 from bq.client_service.controllers import notify_service
 from bq.core.identity import get_username, set_current_user
 from bq.core.model import DBSession, Group, User  # , Visit
 from bq.core.service import ServiceController
-from bq.data_service.model import BQUser, Image, TaggableAcl, Tag, current_session
-from bq.data_service.controllers.formats import find_inputer, find_formatter
+from bq.data_service.controllers.formats import find_formatter, find_inputer
+from bq.data_service.model import BQUser, Image, Tag, TaggableAcl, current_session
+
 
 def ensure_domain_tables():
     """Check if domain management tables exist (they should be created by Alembic migrations during setup)"""
     try:
-        from bq.core.model import DBSession
         from sqlalchemy import text
         from sqlalchemy.exc import OperationalError, ProgrammingError
-        
+
+        from bq.core.model import DBSession
+
         # Check if database is ready
         try:
             # Test database connection
@@ -109,283 +117,252 @@ def ensure_domain_tables():
             # DBSession might not be initialized yet during setup
             log.warning("DBSession not initialized yet")
             return False
-        
+
         # Check if authorized_email_domains table exists
         try:
             DBSession.execute(text("SELECT 1 FROM authorized_email_domains LIMIT 1"))
             log.info("Domain management table found")
             return True
         except (OperationalError, ProgrammingError):
-            log.error("Domain management table not found! Please run 'bq-admin setup database' or 'alembic upgrade head' to create it.")
+            log.error(
+                "Domain management table not found! Please run 'bq-admin setup database' or 'alembic upgrade head' to create it."
+            )
             return False
-        
+
     except Exception as e:
         log.warning(f"Error checking domain management table: {e}")
         return False
-#from bq.admin_service.controllers.domain_management import DomainManagementController
-#from bq.admin_service.controllers.modern_domain_management import ModernDomainManagementController
-#from bq.util.bisquik2db import bisquik2db, db2tree
-from bq.util.paths import data_path
+
+
+# from bq.admin_service.controllers.domain_management import DomainManagementController
+# from bq.admin_service.controllers.modern_domain_management import ModernDomainManagementController
+# from bq.util.bisquik2db import bisquik2db, db2tree
 from bq.util import urlutil
+from bq.util.paths import data_path
 
-#from bq.image_service.model import  FileAcl
+# from bq.image_service.model import  FileAcl
 
 
-log = logging.getLogger('bq.admin')
+log = logging.getLogger("bq.admin")
 
-#from tgext.admin import AdminController
-#class BisqueAdminController(AdminController):
+# from tgext.admin import AdminController
+# class BisqueAdminController(AdminController):
 #    'admin controller'
 #    allow_only = Any (in_group("admin"), in_group('admins'))
 
 # reading log file
 
-if os.name != 'nt':
-    def tail(fn, n=10):
-        # cmd = 'tail -n {1} {0}'.format(fn, n) # Old version
-        cmd = 'tail -n {0} {1}'.format(n, fn)
-        return os.popen(cmd).readlines()
 
-elif os.name == 'nt':
-    def tail(fn, n=10, _buffer=4098):
-        """Tail a file and get X lines from the end"""
-        # place holder for the lines found
-        lines_found = []
+def tail(fn, n=10):
+    # cmd = 'tail -n {1} {0}'.format(fn, n) # Old version
+    cmd = "tail -n {0} {1}".format(n, fn)
+    return os.popen(cmd).readlines()
 
-        with open(fn, 'rb') as f:
-            # block counter will be multiplied by buffer
-            # to get the block size from the end
-            block_counter = -1
-
-            # loop until we find X lines
-            while len(lines_found) < n:
-                try:
-                    f.seek(block_counter * _buffer, os.SEEK_END)
-                except IOError:  # either file is too small, or too many lines requested
-                    f.seek(0)
-                    lines_found = f.readlines()
-                    break
-
-                lines_found = f.readlines()
-
-                # we found enough lines, get out
-                if len(lines_found) > n:
-                    break
-
-                # decrement the block counter to get the
-                # next X bytes
-                block_counter -= 1
-
-            return lines_found[-n:]
 
 # Tags that used but not be stored as part of the BQUser record
-REMOVE_TAGS = [ 'user_name', 'password', 'email', 'groups' ]
+REMOVE_TAGS = ["user_name", "password", "email", "groups"]
+
 
 class AdminController(ServiceController):
     """
-        The admin controller is a central point for
-        adminstrative tasks such as monitoring, data, user management, etc.
+    The admin controller is a central point for
+    adminstrative tasks such as monitoring, data, user management, etc.
     """
+
     service_type = "admin"
 
-    allow_only = Any(in_group("admin"), in_group('admins'))
-    #allow_only = is_user('admin')
+    allow_only = Any(in_group("admin"), in_group("admins"))
+    # allow_only = is_user('admin')
 
-    #admin = BisqueAdminController([User, Group], DBSession)
-    @expose ("bq.admin_service.templates.manager")
+    # admin = BisqueAdminController([User, Group], DBSession)
+    @expose("bq.admin_service.templates.manager")
     def manager(self):
         return dict()
 
-    @expose("bq.admin_service.templates.domain_management")  
+    @expose("bq.admin_service.templates.domain_management")
     def domain_management(self):
         """Domain management page"""
         return dict()
 
     # Domain Management API Endpoints
-    @expose(content_type='application/json')
+    @expose(content_type="application/json")
     def domains_list(self):
         """API endpoint to list all authorized domains"""
         try:
             # Ensure tables exist
             if not ensure_domain_tables():
-                return json.dumps({
-                    'status': 'error',
-                    'message': 'Domain management tables not found. Please run "bq-admin setup database" or "alembic upgrade head".'
-                })
-                
+                return json.dumps(
+                    {
+                        "status": "error",
+                        "message": 'Domain management tables not found. Please run "bq-admin setup database" or "alembic upgrade head".',
+                    }
+                )
+
             from bq.data_service.model.domain_model import get_authorized_domains
+
             domains = get_authorized_domains()
             domain_list = [domain.to_dict() for domain in domains]
-            
-            return json.dumps({
-                'status': 'success',
-                'domains': domain_list
-            })
+
+            return json.dumps({"status": "success", "domains": domain_list})
         except Exception as e:
             log.error(f"Error listing domains: {e}")
-            return json.dumps({
-                'status': 'error',
-                'message': str(e)
-            })
+            return json.dumps({"status": "error", "message": str(e)})
 
-    @expose(content_type='application/json')
+    @expose(content_type="application/json")
     def domain_add(self):
         """Add a new authorized domain"""
-        if request.method != 'POST':
+        if request.method != "POST":
             response.status = 405
-            return json.dumps({'status': 'error', 'message': 'Method not allowed'})
-        
+            return json.dumps({"status": "error", "message": "Method not allowed"})
+
         try:
             # Ensure tables exist
             if not ensure_domain_tables():
-                return json.dumps({
-                    'status': 'error',
-                    'message': 'Domain management tables not found. Please run "bq-admin setup database" or "alembic upgrade head".'
-                })
-                
+                return json.dumps(
+                    {
+                        "status": "error",
+                        "message": 'Domain management tables not found. Please run "bq-admin setup database" or "alembic upgrade head".',
+                    }
+                )
+
             from bq.data_service.model.domain_model import add_authorized_domain
-            domain = request.POST.get('domain', '').strip().lower()
-            description = request.POST.get('description', '').strip()
-            
+
+            domain = request.POST.get("domain", "").strip().lower()
+            description = request.POST.get("description", "").strip()
+
             if not domain:
-                return json.dumps({'status': 'error', 'message': 'Domain is required'})
-            
+                return json.dumps({"status": "error", "message": "Domain is required"})
+
             # Add domain using helper function
             if add_authorized_domain(domain, description):
-                return json.dumps({
-                    'status': 'success',
-                    'message': f'Domain {domain} added successfully'
-                })
+                return json.dumps(
+                    {"status": "success", "message": f"Domain {domain} added successfully"}
+                )
             else:
-                return json.dumps({
-                    'status': 'error', 
-                    'message': 'Failed to add domain (may already exist)'
-                })
-            
+                return json.dumps(
+                    {"status": "error", "message": "Failed to add domain (may already exist)"}
+                )
+
         except Exception as e:
             log.exception("Error adding domain")
-            return json.dumps({'status': 'error', 'message': f'Failed to add domain: {str(e)}'})
+            return json.dumps({"status": "error", "message": f"Failed to add domain: {str(e)}"})
 
-    @expose(content_type='application/json')
+    @expose(content_type="application/json")
     def domain_delete(self, id):
         """Delete a domain"""
-        if request.method != 'POST':
+        if request.method != "POST":
             response.status = 405
-            return json.dumps({'status': 'error', 'message': 'Method not allowed'})
-        
+            return json.dumps({"status": "error", "message": "Method not allowed"})
+
         try:
             # Ensure tables exist
             if not ensure_domain_tables():
-                return json.dumps({
-                    'status': 'error',
-                    'message': 'Database tables could not be created'
-                })
-                
+                return json.dumps(
+                    {"status": "error", "message": "Database tables could not be created"}
+                )
+
             from bq.data_service.model.domain_model import delete_authorized_domain
-            
+
             if delete_authorized_domain(id):
-                return json.dumps({
-                    'status': 'success',
-                    'message': 'Domain deleted successfully'
-                })
+                return json.dumps({"status": "success", "message": "Domain deleted successfully"})
             else:
-                return json.dumps({
-                    'status': 'error',
-                    'message': 'Failed to delete domain'
-                })
-            
+                return json.dumps({"status": "error", "message": "Failed to delete domain"})
+
         except Exception as e:
             log.exception("Error deleting domain")
-            return json.dumps({'status': 'error', 'message': f'Failed to delete domain: {str(e)}'})
+            return json.dumps({"status": "error", "message": f"Failed to delete domain: {str(e)}"})
 
     # User verification methods (using existing BisQue email verification system)
-    
-    @expose(content_type='application/json')
+
+    @expose(content_type="application/json")
     def unverified_users_list(self):
         """List all unverified users (no email_verified tag)"""
         try:
             # Find users without email_verified tag
             users_query = current_session.query(BQUser).filter(BQUser.resource_value != None)
-            
+
             unverified_users = []
             for user in users_query:
                 # Check if user has email_verified tag
-                verified_tag = current_session.query(Tag).filter_by(
-                    resource_uniq=user.resource_uniq,
-                    resource_name='email_verified'
-                ).first()
-                
-                if not verified_tag or verified_tag.value != 'true':
-                    unverified_users.append({
-                        'id': user.id,
-                        'resource_uniq': user.resource_uniq,
-                        'email': user.resource_value,
-                        'display_name': user.display_name,
-                        'created': user.ts.isoformat() if user.ts else None,
-                        'verified': verified_tag.value if verified_tag else 'false'
-                    })
-            
-            return json.dumps({
-                'status': 'success',
-                'users': unverified_users
-            })
-            
+                verified_tag = (
+                    current_session.query(Tag)
+                    .filter_by(resource_uniq=user.resource_uniq, resource_name="email_verified")
+                    .first()
+                )
+
+                if not verified_tag or verified_tag.value != "true":
+                    unverified_users.append(
+                        {
+                            "id": user.id,
+                            "resource_uniq": user.resource_uniq,
+                            "email": user.resource_value,
+                            "display_name": user.display_name,
+                            "created": user.ts.isoformat() if user.ts else None,
+                            "verified": verified_tag.value if verified_tag else "false",
+                        }
+                    )
+
+            return json.dumps({"status": "success", "users": unverified_users})
+
         except Exception as e:
             log.exception("Error getting unverified users")
-            return json.dumps({'status': 'error', 'message': str(e)})
-    
-    @expose(content_type='application/json')
+            return json.dumps({"status": "error", "message": str(e)})
+
+    @expose(content_type="application/json")
     def verify_user(self):
         """Verify a user by adding email_verified tag"""
-        if request.method != 'POST':
+        if request.method != "POST":
             response.status = 405
-            return json.dumps({'status': 'error', 'message': 'Method not allowed'})
-        
+            return json.dumps({"status": "error", "message": "Method not allowed"})
+
         try:
-            user_id = request.POST.get('user_id')
+            user_id = request.POST.get("user_id")
             if not user_id:
-                return json.dumps({'status': 'error', 'message': 'User ID is required'})
-            
+                return json.dumps({"status": "error", "message": "User ID is required"})
+
             user = current_session.query(BQUser).filter_by(id=int(user_id)).first()
-            
+
             if not user:
-                return json.dumps({'status': 'error', 'message': 'User not found'})
-            
+                return json.dumps({"status": "error", "message": "User not found"})
+
             # Check if user already has email_verified tag
-            verified_tag = current_session.query(Tag).filter_by(
-                resource_parent_id=user.id,
-                resource_name='email_verified'
-            ).first()
-            
+            verified_tag = (
+                current_session.query(Tag)
+                .filter_by(resource_parent_id=user.id, resource_name="email_verified")
+                .first()
+            )
+
             if verified_tag:
-                verified_tag.value = 'true'
+                verified_tag.value = "true"
             else:
                 # Create new verification tag
                 verified_tag = Tag(parent=user)
-                verified_tag.name = 'email_verified'
-                verified_tag.value = 'true'
+                verified_tag.name = "email_verified"
+                verified_tag.value = "true"
                 verified_tag.owner = user
                 current_session.add(verified_tag)
-            
+
             # TurboGears will handle the commit automatically
-            
-            return json.dumps({
-                'status': 'success',
-                'message': f'User {user.resource_value} verified successfully'
-            })
-            
+
+            return json.dumps(
+                {
+                    "status": "success",
+                    "message": f"User {user.resource_value} verified successfully",
+                }
+            )
+
         except Exception as e:
             log.exception("Error verifying user")
-            return json.dumps({'status': 'error', 'message': str(e)})
+            return json.dumps({"status": "error", "message": str(e)})
 
     # Registration approval system endpoints
-    
+
     @expose("bq.admin_service.templates.pending_registrations")
     def pending_registrations(self):
         """Show pending registrations page"""
         return dict()
-    
-    @expose(template='json')
+
+    @expose(template="json")
     def pending_list(self, **kw):
         """List pending user registrations"""
         try:
@@ -394,302 +371,340 @@ class AdminController(ServiceController):
             # Query users who have email addresses but no email_verified tag
             users_query = session.query(BQUser).filter(BQUser.resource_value != None)
             users = users_query.all()
-            
+
             pending_users = []
             approved_users = []
             rejected_users = []
-            
+
             for user in users:
                 # Check for email verification status
-                verified_tag = session.query(Tag).filter_by(
-                    resource_parent_id=user.id,
-                    resource_name='email_verified'
-                ).first()
-                
+                verified_tag = (
+                    session.query(Tag)
+                    .filter_by(resource_parent_id=user.id, resource_name="email_verified")
+                    .first()
+                )
+
                 # Check for admin approval status
-                approved_tag = session.query(Tag).filter_by(
-                    resource_parent_id=user.id,
-                    resource_name='is_approved'
-                ).first()
-                
-                rejected_tag = session.query(Tag).filter_by(
-                    resource_parent_id=user.id,
-                    resource_name='registration_rejected'
-                ).first()
-                
+                approved_tag = (
+                    session.query(Tag)
+                    .filter_by(resource_parent_id=user.id, resource_name="is_approved")
+                    .first()
+                )
+
+                rejected_tag = (
+                    session.query(Tag)
+                    .filter_by(resource_parent_id=user.id, resource_name="registration_rejected")
+                    .first()
+                )
+
                 user_data = {
-                    'id': user.id,
-                    'username': user.resource_name,
-                    'full_name': user.resource_name,  # Use username as full_name for now
-                    'email': user.resource_value,
-                    'created': user.ts.isoformat() if user.ts else None,
-                    'created_date': user.ts.isoformat() if user.ts else None,  # For frontend compatibility
+                    "id": user.id,
+                    "username": user.resource_name,
+                    "full_name": user.resource_name,  # Use username as full_name for now
+                    "email": user.resource_value,
+                    "created": user.ts.isoformat() if user.ts else None,
+                    "created_date": user.ts.isoformat()
+                    if user.ts
+                    else None,  # For frontend compatibility
                 }
-                
+
                 if rejected_tag:
-                    user_data['rejection_reason'] = rejected_tag.value
-                    user_data['rejected_date'] = rejected_tag.ts.isoformat() if rejected_tag.ts else None
-                    user_data['status'] = 'rejected'
+                    user_data["rejection_reason"] = rejected_tag.value
+                    user_data["rejected_date"] = (
+                        rejected_tag.ts.isoformat() if rejected_tag.ts else None
+                    )
+                    user_data["status"] = "rejected"
                     rejected_users.append(user_data)
-                elif verified_tag and verified_tag.value == 'true' and approved_tag and approved_tag.value == 'true':
-                    user_data['approved_date'] = approved_tag.ts.isoformat() if approved_tag.ts else None
-                    user_data['status'] = 'approved'
+                elif (
+                    verified_tag
+                    and verified_tag.value == "true"
+                    and approved_tag
+                    and approved_tag.value == "true"
+                ):
+                    user_data["approved_date"] = (
+                        approved_tag.ts.isoformat() if approved_tag.ts else None
+                    )
+                    user_data["status"] = "approved"
                     approved_users.append(user_data)
                 else:
-                    user_data['status'] = 'pending'
+                    user_data["status"] = "pending"
                     pending_users.append(user_data)
-            
+
             return {
-                'status': 'success',
-                'pending': pending_users,
-                'approved': approved_users,
-                'rejected': rejected_users,
-                'registrations': pending_users  # For frontend compatibility
+                "status": "success",
+                "pending": pending_users,
+                "approved": approved_users,
+                "rejected": rejected_users,
+                "registrations": pending_users,  # For frontend compatibility
             }
-            
+
         except Exception as e:
             log.error(f"Error retrieving pending registrations: {e}")
-            return {'error': str(e)}
-    
-    @expose(content_type='application/json')
+            return {"error": str(e)}
+
+    @expose(content_type="application/json")
     def registration_approve(self):
         """Approve a user registration by adding email_verified tag exactly like EmailVerificationService"""
-        if request.method != 'POST':
+        if request.method != "POST":
             response.status = 405
-            return json.dumps({'status': 'error', 'message': 'Method not allowed'})
-        
+            return json.dumps({"status": "error", "message": "Method not allowed"})
+
         try:
             # Handle JSON request body
             import json as json_module
-            if hasattr(request, 'json') and request.json:
+
+            if hasattr(request, "json") and request.json:
                 data = request.json
             else:
-                body = request.body.read() if hasattr(request.body, 'read') else request.body
+                body = request.body.read() if hasattr(request.body, "read") else request.body
                 if isinstance(body, bytes):
-                    body = body.decode('utf-8')
+                    body = body.decode("utf-8")
                 data = json_module.loads(body) if body else {}
-            
-            registration_id = data.get('registration_id')
-            
+
+            registration_id = data.get("registration_id")
+
             log.info(f"Approve request: registration_id={registration_id}, data={data}")
-            
+
             if not registration_id:
-                return json.dumps({'status': 'error', 'message': 'Registration ID is required'})
-            
+                return json.dumps({"status": "error", "message": "Registration ID is required"})
+
             user = DBSession.query(BQUser).filter_by(id=int(registration_id)).first()
-            
+
             if not user:
-                return json.dumps({'status': 'error', 'message': 'User not found'})
-            
+                return json.dumps({"status": "error", "message": "User not found"})
+
             # Follow the exact pattern from EmailVerificationService.mark_user_as_verified()
             # Add email_verified tag
             verified_tag = Tag(parent=user)
-            verified_tag.name = 'email_verified'
-            verified_tag.value = 'true'
+            verified_tag.name = "email_verified"
+            verified_tag.value = "true"
             verified_tag.owner = user
             DBSession.add(verified_tag)
-            
+
             # Add is_approved tag for unified approval system
             approved_tag = Tag(parent=user)
-            approved_tag.name = 'is_approved'
-            approved_tag.value = 'true'
+            approved_tag.name = "is_approved"
+            approved_tag.value = "true"
             approved_tag.owner = user
             DBSession.add(approved_tag)
-            
+
             # Add verification timestamp like EmailVerificationService does
             from datetime import datetime, timezone
+
             verified_time_tag = Tag(parent=user)
-            verified_time_tag.name = 'email_verified_at'
+            verified_time_tag.name = "email_verified_at"
             verified_time_tag.value = datetime.now(timezone.utc).isoformat()
             verified_time_tag.owner = user
             DBSession.add(verified_time_tag)
 
             approved_time_tag = Tag(parent=user)
-            approved_time_tag.name = 'is_approved_at'
+            approved_time_tag.name = "is_approved_at"
             approved_time_tag.value = datetime.now(timezone.utc).isoformat()
             approved_time_tag.owner = user
             DBSession.add(approved_time_tag)
 
             DBSession.flush()
-            
+
             log.info(f"Admin approved registration for user: {user.resource_name}")
-            
-            return json.dumps({
-                'status': 'success',
-                'message': f'Registration approved for {user.resource_name}. User can now login.'
-            })
-            
+
+            return json.dumps(
+                {
+                    "status": "success",
+                    "message": f"Registration approved for {user.resource_name}. User can now login.",
+                }
+            )
+
         except Exception as e:
             log.exception("Error approving registration")
-            return json.dumps({'status': 'error', 'message': str(e)})
-    
-    @expose(content_type='application/json')
+            return json.dumps({"status": "error", "message": str(e)})
+
+    @expose(content_type="application/json")
     def registration_reject(self):
         """Reject a user registration by deleting the user completely"""
-        if request.method != 'POST':
+        if request.method != "POST":
             response.status = 405
-            return json.dumps({'status': 'error', 'message': 'Method not allowed'})
-        
+            return json.dumps({"status": "error", "message": "Method not allowed"})
+
         try:
             # Handle JSON request body
             import json as json_module
-            if hasattr(request, 'json') and request.json:
+
+            if hasattr(request, "json") and request.json:
                 data = request.json
             else:
-                body = request.body.read() if hasattr(request.body, 'read') else request.body
+                body = request.body.read() if hasattr(request.body, "read") else request.body
                 if isinstance(body, bytes):
-                    body = body.decode('utf-8')
+                    body = body.decode("utf-8")
                 data = json_module.loads(body) if body else {}
-            
-            registration_id = data.get('registration_id')
-            
+
+            registration_id = data.get("registration_id")
+
             log.info(f"Reject request: registration_id={registration_id}, data={data}")
-            
+
             if not registration_id:
-                return json.dumps({'status': 'error', 'message': 'Registration ID is required'})
-            
+                return json.dumps({"status": "error", "message": "Registration ID is required"})
+
             user = current_session.query(BQUser).filter_by(id=int(registration_id)).first()
-            
+
             if not user:
-                return json.dumps({'status': 'error', 'message': 'User not found'})
-            
+                return json.dumps({"status": "error", "message": "User not found"})
+
             user_name = user.resource_name
             user_uniq = user.resource_uniq
-            
+
             # Use the existing delete_user method
             try:
                 self.delete_user(user_uniq)
                 log.info(f"Admin rejected and deleted user: {user_name}")
-                return json.dumps({
-                    'status': 'success',
-                    'message': f'Registration rejected and user {user_name} has been deleted.'
-                })
+                return json.dumps(
+                    {
+                        "status": "success",
+                        "message": f"Registration rejected and user {user_name} has been deleted.",
+                    }
+                )
             except Exception as delete_error:
                 log.error(f"Error deleting user {user_name}: {delete_error}")
-                return json.dumps({
-                    'status': 'error', 
-                    'message': f'Failed to delete user: {str(delete_error)}'
-                })
-            
+                return json.dumps(
+                    {"status": "error", "message": f"Failed to delete user: {str(delete_error)}"}
+                )
+
         except Exception as e:
             log.exception("Error rejecting registration")
-            return json.dumps({'status': 'error', 'message': str(e)})
+            return json.dumps({"status": "error", "message": str(e)})
+
     def _default(self, *arg, **kw):
         """
-            Returns some command information
+        Returns some command information
         """
-        log.info('admin/index')
-        index_xml = etree.Element('resource', uri=str(request.url))
-        users_xml = etree.SubElement(index_xml,'command', name='user', value='Lists all the users')
-        users_xml = etree.SubElement(index_xml,'command', name='user/RESOURCE_UNIQ', value='Lists the particular user')
-        users_xml = etree.SubElement(index_xml,'command', name='user/RESOURCE_UNIQ/login', value='Log in as user')
+        log.info("admin/index")
+        index_xml = etree.Element("resource", uri=str(request.url))
+        users_xml = etree.SubElement(index_xml, "command", name="user", value="Lists all the users")
+        users_xml = etree.SubElement(
+            index_xml, "command", name="user/RESOURCE_UNIQ", value="Lists the particular user"
+        )
+        users_xml = etree.SubElement(
+            index_xml, "command", name="user/RESOURCE_UNIQ/login", value="Log in as user"
+        )
 
-        etree.SubElement(index_xml,'command', name='notify_users', value='sends message to all users')
-        etree.SubElement(index_xml,'command', name='message_variables', value='returns available message variables')
-        return etree.tostring(index_xml, encoding='unicode')
+        etree.SubElement(
+            index_xml, "command", name="notify_users", value="sends message to all users"
+        )
+        etree.SubElement(
+            index_xml,
+            "command",
+            name="message_variables",
+            value="returns available message variables",
+        )
+        return etree.tostring(index_xml, encoding="unicode")
 
-    @expose(content_type='text/xml')
+    @expose(content_type="text/xml")
     def notify_users(self, *arg, **kw):
         """
-          Sends message to all system users
+        Sends message to all system users
         """
         log.info("notify_users")
-        if request.method.upper() == 'POST' and request.body is not None:
+        if request.method.upper() == "POST" and request.body is not None:
             try:
                 resource = etree.fromstring(request.body)
-                message = resource.find('tag[@name="message"]').get ('value')
-                userlist = resource.find('tag[@name="users"]').get('value')
+                message = resource.find('tag[@name="message"]').get("value")
+                userlist = resource.find('tag[@name="users"]').get("value")
                 self.do_notify_users(userlist, message)
                 return '<resource type="message" value="sent" />'
             except Exception:
-                log.exception ("processing message")
-                return abort(400, 'Malformed request document')
+                log.exception("processing message")
+                return abort(400, "Malformed request document")
 
-        abort(400, 'The request must contain message body')
+        abort(400, "The request must contain message body")
 
-    @expose(content_type='text/xml')
+    @expose(content_type="text/xml")
     def message_variables(self, **kw):
         """
-          Sends message to all system users
+        Sends message to all system users
         """
         log.info("message_variables")
         variables = self.get_variables()
-        resp = etree.Element('resource', name='message_variables')
-        for n,v in variables.items():
-            etree.SubElement(resp, 'tag', name=n, value=v)
-        return etree.tostring(resp, encoding='unicode')
+        resp = etree.Element("resource", name="message_variables")
+        for n, v in variables.items():
+            etree.SubElement(resp, "tag", name=n, value=v)
+        return etree.tostring(resp, encoding="unicode")
 
     def add_admin_info2node(self, user_node, view=None):
         """
-            adds email and password tags and remove the email value
+        adds email and password tags and remove the email value
         """
-        if view and 'short' not in view:
-            tg_user = User.by_user_name (user_node.get('name'))
-            email = user_node.attrib.get('value', '')
-            etree.SubElement(user_node, 'tag', name='email', value=email)
+        if view and "short" not in view:
+            tg_user = User.by_user_name(user_node.get("name"))
+            email = user_node.attrib.get("value", "")
+            etree.SubElement(user_node, "tag", name="email", value=email)
             if tg_user is None:
-                log.error ("No tg_user was found for %s", user_node.get ('name'))
+                log.error("No tg_user was found for %s", user_node.get("name"))
             else:
-                if 'password' in view:
+                if "password" in view:
                     password = tg_user.password
                 else:
-                    password ='******'
-                etree.SubElement(user_node, 'tag', name='password', value=password)
-                etree.SubElement(user_node, 'tag', name="groups", value=",".join (g.group_name for g in tg_user.groups if tg_user))
-                etree.SubElement(user_node, 'tag', name='user_name', value=tg_user.user_name)
+                    password = "******"
+                etree.SubElement(user_node, "tag", name="password", value=password)
+                etree.SubElement(
+                    user_node,
+                    "tag",
+                    name="groups",
+                    value=",".join(g.group_name for g in tg_user.groups if tg_user),
+                )
+                etree.SubElement(user_node, "tag", name="user_name", value=tg_user.user_name)
 
-
-        #try to remove value from user node
-        user_node.attrib.pop('value', None)
+        # try to remove value from user node
+        user_node.attrib.pop("value", None)
 
         return user_node
 
-    #@expose(content_type='text/json')
+    # @expose(content_type='text/json')
     @expose()
     def loggers(self, *arg, **kw):
         """
         Set logging level dynamically
         post /admin/loggers
         """
-        view = kw.pop ('view', 'short')
-        fmt = kw.pop ('format', 'xml')
-        #filter = kw.pop ('filter', 'bq.')
-        if fmt == 'json':
-            response.headers['Content-Type']  = 'text/json'
-        elif fmt == 'xml':
-            response.headers['Content-Type']  = 'text/xml'
+        view = kw.pop("view", "short")
+        fmt = kw.pop("format", "xml")
+        # filter = kw.pop ('filter', 'bq.')
+        if fmt == "json":
+            response.headers["Content-Type"] = "text/json"
+        elif fmt == "xml":
+            response.headers["Content-Type"] = "text/xml"
 
-        if request.method == 'GET':
-            loggers = [ {'name': ln, 'level': logging.getLevelName (lv.level)}
-                        for ln, lv in list(logging.Logger.manager.loggerDict.items())
-                        if hasattr (lv, 'level') #and lv.level != logging.NOTSET
+        if request.method == "GET":
+            loggers = [
+                {"name": ln, "level": logging.getLevelName(lv.level)}
+                for ln, lv in list(logging.Logger.manager.loggerDict.items())
+                if hasattr(lv, "level")  # and lv.level != logging.NOTSET
             ]
 
             # filter and sort loggers
-            loggers.sort(key=lambda x: x['name'])
+            loggers.sort(key=lambda x: x["name"])
 
-            if fmt == 'json':
-                return json.dumps (loggers)
-            elif fmt == 'xml':
-                xml = etree.Element('resource', name='loggers', uri='/admin/loggers')
+            if fmt == "json":
+                return json.dumps(loggers)
+            elif fmt == "xml":
+                xml = etree.Element("resource", name="loggers", uri="/admin/loggers")
                 for l in loggers:
-                    etree.SubElement(xml, 'logger', name=l.get('name'), value=l.get('level'))
-                return etree.tostring(xml, encoding='unicode')
+                    etree.SubElement(xml, "logger", name=l.get("name"), value=l.get("level"))
+                return etree.tostring(xml, encoding="unicode")
 
-        elif request.method in ('POST', 'PUT'):
-
-            if request.headers['Content-Type'] == 'text/json':
-                loggers = json.loads (request.body)
+        elif request.method in ("POST", "PUT"):
+            if request.headers["Content-Type"] == "text/json":
+                loggers = json.loads(request.body)
             else:
                 xml = etree.fromstring(request.body)
-                loggers = [{'name': l.get('name'), 'level': l.get('value')} for l in xml.xpath('logger')]
+                loggers = [
+                    {"name": l.get("name"), "level": l.get("value")} for l in xml.xpath("logger")
+                ]
 
             for l in loggers:
-                ln = l.get('name')
-                lv = l.get('level')
-                log.debug ("Changing log level of %s to %s", ln, lv)
+                ln = l.get("name")
+                lv = l.get("level")
+                log.debug("Changing log level of %s to %s", ln, lv)
                 lg = logging.getLogger(ln)
-                lg.setLevel (lv)
+                lg.setLevel(lv)
             return ""
 
     @expose()
@@ -702,175 +717,176 @@ class AdminController(ServiceController):
 
         # TODO dima: add timestamp based read
 
-        #log.info ("STARTING table (%s): %s", datetime.now().isoformat(), request.url)
-        path = request.path_qs.split('/')
-        path = [unquote(p) for p in path if len(p)>0]
-        operation = path[2] if len(path)>2 else ''
+        # log.info ("STARTING table (%s): %s", datetime.now().isoformat(), request.url)
+        path = request.path_qs.split("/")
+        path = [unquote(p) for p in path if len(p) > 0]
+        operation = path[2] if len(path) > 2 else ""
 
-        log_url = config.get ('bisque.logger')
+        log_url = config.get("bisque.logger")
 
-        if operation == 'config' or operation == '':
+        if operation == "config" or operation == "":
             # dima: here we have to identify what kind of logs we are using
             if log_url is not None:
-                log_url = urlutil.urljoin (request.url, log_url)
-                xml = etree.Element('log', name='log', uri=log_url, type='remote')
+                log_url = urlutil.urljoin(request.url, log_url)
+                xml = etree.Element("log", name="log", uri=log_url, type="remote")
             else:
-                xml = etree.Element('log', name='log', uri='/admin/logs/read', type='local')
-            response.headers['Content-Type']  = 'text/xml'
-            return etree.tostring(xml, encoding='unicode')
-        elif operation == 'read':
+                xml = etree.Element("log", name="log", uri="/admin/logs/read", type="local")
+            response.headers["Content-Type"] = "text/xml"
+            return etree.tostring(xml, encoding="unicode")
+        elif operation == "read":
             # dima, this will only work for local logger
             if log_url is not None:
                 redirect(log_url)
             try:
-            # Old problematic codes
-            #     fn = logging.getLoggerClass().root.handlers[0].stream.filename
-            #     logs = tail(fn, 1000)
-            #     response.headers['Content-Type']  = 'text/plain'
-            #     return ''.join(logs)
-            # except Exception:
-            #     abort(500, 'Error while reading the log' )
+                # Old problematic codes
+                #     fn = logging.getLoggerClass().root.handlers[0].stream.filename
+                #     logs = tail(fn, 1000)
+                #     response.headers['Content-Type']  = 'text/plain'
+                #     return ''.join(logs)
+                # except Exception:
+                #     abort(500, 'Error while reading the log' )
                 # Try to get filename from handler
                 fn = None
                 for handler in logging.getLoggerClass().root.handlers:
-                    if hasattr(handler, 'baseFilename'):
+                    if hasattr(handler, "baseFilename"):
                         fn = handler.baseFilename
                         break
-                
+
                 # Fallback to known log file location
                 if not fn or not os.path.exists(fn):
-                    fn = '/source/bisque_8080.log'
-                
-                if not os.path.exists(fn):
-                    abort(500, 'Log file not found: %s' % fn)
-                
-                logs = tail(fn, 1000)
-                
-                response.headers['Content-Type']  = 'text/plain; charset=utf-8'
-                return ''.join(logs)
-            except Exception as e:
-                abort(500, 'Error while reading the log: %s' % str(e))
-        abort(400, 'not a supported operation' )
+                    fn = os.path.join(
+                        config.get("bisque.paths.run", "."),
+                        "logs",
+                        "bisque_8080.log",
+                    )
 
-    @expose(content_type='text/xml')
+                if not os.path.exists(fn):
+                    abort(500, "Log file not found: %s" % fn)
+
+                logs = tail(fn, 1000)
+
+                response.headers["Content-Type"] = "text/plain; charset=utf-8"
+                return "".join(logs)
+            except Exception as e:
+                abort(500, "Error while reading the log: %s" % str(e))
+        abort(400, "not a supported operation")
+
+    @expose(content_type="text/xml")
     def cache(self, *arg, **kw):
         """
-            Deletes system cache
+        Deletes system cache
 
-            DELETE cache
+        DELETE cache
         """
-        if request.method == 'DELETE':
+        if request.method == "DELETE":
             return self.clearcache()
-        return '<resource/>'
+        return "<resource/>"
 
-
-    @expose(content_type='text/xml')
+    @expose(content_type="text/xml")
     def user(self, *arg, **kw):
         """
-            Main user expose
+        Main user expose
 
-            Merges the shadow user with the normal user for admins easy access to the password
-            columns
+        Merges the shadow user with the normal user for admins easy access to the password
+        columns
 
-            GET user: returns list of all users in xml info see get_all_users for format
+        GET user: returns list of all users in xml info see get_all_users for format
 
-            GET user/uniq: returns user in xml info see get_user for format
+        GET user/uniq: returns user in xml info see get_user for format
 
-            GET user/uniq/login: logins in the admin as the user resource provided
+        GET user/uniq/login: logins in the admin as the user resource provided
 
-            POST user: creates new user, see post_user for format
+        POST user: creates new user, see post_user for format
 
-            PUT user/uniq: update info on user see put_user for format
+        PUT user/uniq: update info on user see put_user for format
 
-            DELETE user/uniq: deletes user, see delete user for format
+        DELETE user/uniq: deletes user, see delete user for format
 
-            DELETE user/uniq/image
-                Deletes only the users image data and not the user itself
+        DELETE user/uniq/image
+            Deletes only the users image data and not the user itself
         """
         http_method = request.method.upper()
 
-        if len(arg)==1:
-            if http_method == 'GET':
+        if len(arg) == 1:
+            if http_method == "GET":
                 return self.get_user(arg[0], **kw)
-            elif http_method == 'PUT':
+            elif http_method == "PUT":
                 if request.body:
                     return self.put_user(arg[0], request.body, **kw)
-            elif request.method == 'DELETE':
+            elif request.method == "DELETE":
                 return self.delete_user(arg[0])
             else:
                 abort(400)
-        elif len(arg)==2:
-            if arg[1]=='login':
-                if http_method == 'GET':
+        elif len(arg) == 2:
+            if arg[1] == "login":
+                if http_method == "GET":
                     return self.loginasuser(arg[0])
-            elif arg[1]=='image':
-                if http_method == 'DELETE':
+            elif arg[1] == "image":
+                if http_method == "DELETE":
                     uniq = arg[0]
                     bquser = data_service.resource_load(uniq=uniq)
-                    #bquser = DBSession.query(BQUser).filter(BQUser.resource_uniq == uniq).first()
+                    # bquser = DBSession.query(BQUser).filter(BQUser.resource_uniq == uniq).first()
                     if bquser:
-                        self.deleteimages(bquser.get ('name'), will_redirect=False)
+                        self.deleteimages(bquser.get("name"), will_redirect=False)
                         return '<resource name="delete_images" value="Successful">'
                     else:
                         abort(404)
         else:
-            if http_method == 'GET':
+            if http_method == "GET":
                 return self.get_all_users(*arg, **kw)
-            elif http_method == 'POST':
+            elif http_method == "POST":
                 if request.body:
                     return self.post_user(request.body, **kw)
         abort(400)
 
-
     def get_all_users(self, *arg, **kw):
         """
-            Returns a list of all users in xml with password and diplay name.
-            (Note: may be removed in version 0.6 due to redundant functionality
-            of data_service)
+        Returns a list of all users in xml with password and diplay name.
+        (Note: may be removed in version 0.6 due to redundant functionality
+        of data_service)
 
-            Limited command support, does not have view=deep,clean..
+        Limited command support, does not have view=deep,clean..
 
-            document format:
-                <resource>
-                    <user name="user" owner="/data_service/00-aYnhJQA5BJVm4GDpuexc2G" permission="published"
-                    resource_uniq="00-aYnhJQA5BJVm4GDpuexc2G" ts="2015-01-30T02:23:18.414000" uri="admin/user/00-aYnhJQA5BJVm4GDpuexc2G">
-                        <tag name="email" value="myemail@email.com"/>
-                        <tag name="display_name" value="user"/>
-                    </user>
-                    <user>...
-                </resource>
+        document format:
+            <resource>
+                <user name="user" owner="/data_service/00-aYnhJQA5BJVm4GDpuexc2G" permission="published"
+                resource_uniq="00-aYnhJQA5BJVm4GDpuexc2G" ts="2015-01-30T02:23:18.414000" uri="admin/user/00-aYnhJQA5BJVm4GDpuexc2G">
+                    <tag name="email" value="myemail@email.com"/>
+                    <tag name="display_name" value="user"/>
+                </user>
+                <user>...
+            </resource>
         """
 
-        kw['wpublic'] = 1
-        users =  data_service.query(resource_type = 'user', **kw)
-        view = kw.pop('view', None)
-        resource = etree.Element('resource', uri=str(request.url))
+        kw["wpublic"] = 1
+        users = data_service.query(resource_type="user", **kw)
+        view = kw.pop("view", None)
+        resource = etree.Element("resource", uri=str(request.url))
         for u in users:
             user = self.add_admin_info2node(u, view)
             resource.append(user)
-        return etree.tostring(resource, encoding='unicode')
-
+        return etree.tostring(resource, encoding="unicode")
 
     def get_user(self, uniq, **kw):
         """
-            Returns requested user in xml with password and diplay name.
-            (Note: may be removed in version 0.6 due to redundant functionality
-            of data_service)
+        Returns requested user in xml with password and diplay name.
+        (Note: may be removed in version 0.6 due to redundant functionality
+        of data_service)
 
-            document format:
-                <user name="user" owner="/data_service/00-aYnhJQA5BJVm4GDpuexc2G" permission="published"
-                resource_uniq="00-aYnhJQA5BJVm4GDpuexc2G" ts="2015-01-30T02:23:18.414000" uri="/data_service/00-aYnhJQA5BJVm4GDpuexc2G">
-                    <tag name="email" value="myemail@email.com"/>
-                    <tag name="display_name" value="user"/>
-                    <tag name="password" value="******"/> //everything will be served in plan text no password will be returned
-                    ...
-                </user>
+        document format:
+            <user name="user" owner="/data_service/00-aYnhJQA5BJVm4GDpuexc2G" permission="published"
+            resource_uniq="00-aYnhJQA5BJVm4GDpuexc2G" ts="2015-01-30T02:23:18.414000" uri="/data_service/00-aYnhJQA5BJVm4GDpuexc2G">
+                <tag name="email" value="myemail@email.com"/>
+                <tag name="display_name" value="user"/>
+                <tag name="password" value="******"/> //everything will be served in plan text no password will be returned
+                ...
+            </user>
         """
-        view=kw.pop('view', 'short')
+        view = kw.pop("view", "short")
         user = data_service.resource_load(uniq, view=view)
-        if user is not None and user.tag =='user':
+        if user is not None and user.tag == "user":
             user = self.add_admin_info2node(user, view)
-            return etree.tostring(user, encoding='unicode')
+            return etree.tostring(user, encoding="unicode")
         else:
             abort(403)
 
@@ -883,249 +899,271 @@ class AdminController(ServiceController):
         for grp_name in groups:
             if not grp_name:
                 continue
-            grp  = DBSession.query (Group).filter_by (group_name = grp_name).first()
+            grp = DBSession.query(Group).filter_by(group_name=grp_name).first()
             if grp is None:
-                log.error ("Unknown group %s used ", grp_name)
+                log.error("Unknown group %s used ", grp_name)
                 continue
             tg_user.groups.append(grp)
-        log.debug ("updated groups %s", tg_user.groups)
-
+        log.debug("updated groups %s", tg_user.groups)
 
     def post_user(self, doc, **kw):
         """
-            Creates new user with tags, the owner of the tags is assigned to the user
+        Creates new user with tags, the owner of the tags is assigned to the user
 
-            document format:
-                <user name="user">
-                    <tag name="password" value="12345"/>
-                    <tag name="email" value="myemail@email.com"/>
-                    <tag name="display_name" value="user"/>
-                </user>
+        document format:
+            <user name="user">
+                <tag name="password" value="12345"/>
+                <tag name="email" value="myemail@email.com"/>
+                <tag name="display_name" value="user"/>
+            </user>
         """
         userxml = etree.fromstring(doc)
-        required_tags = ['user_name','password', 'email', 'display_name']
+        required_tags = ["user_name", "password", "email", "display_name"]
         tags = {}
-        if userxml.tag == 'user':
-            user_name = userxml.attrib['name']
+        if userxml.tag == "user":
+            user_name = userxml.attrib["name"]
             if user_name:
-                tags['user_name'] = user_name
-                for t in userxml.xpath('tag'):
-                    tags[t.get('name')] = t.get('value')
-                    #if (t.attrib['name']=='password') or (t.attrib['name']=='email'):
-                    if t.get('name') in REMOVE_TAGS:
-                        t.getparent().remove(t) #removes email and password
-                        if t.attrib['name'] == 'email':
-                            userxml.attrib['value'] = t.attrib['value'] #set it as value of the user
+                tags["user_name"] = user_name
+                for t in userxml.xpath("tag"):
+                    tags[t.get("name")] = t.get("value")
+                    # if (t.attrib['name']=='password') or (t.attrib['name']=='email'):
+                    if t.get("name") in REMOVE_TAGS:
+                        t.getparent().remove(t)  # removes email and password
+                        if t.attrib["name"] == "email":
+                            userxml.attrib["value"] = t.attrib[
+                                "value"
+                            ]  # set it as value of the user
                 if all(k in tags for k in required_tags):
-                    log.debug("ADMIN: Adding user: %s" , str(user_name))
-                    u = User(user_name=tags['user_name'], password=tags['password'], email_address=tags['email'], display_name=tags['display_name'])
+                    log.debug("ADMIN: Adding user: %s", str(user_name))
+                    u = User(
+                        user_name=tags["user_name"],
+                        password=tags["password"],
+                        email_address=tags["email"],
+                        display_name=tags["display_name"],
+                    )
                     DBSession.add(u)
-                    self._update_groups(u, tags.get ('groups', '').split (','))
+                    self._update_groups(u, tags.get("groups", "").split(","))
                     try:
                         transaction.commit()
                     except IntegrityError:
-                        abort(405, 'Another user already has this user name or email address')
-                    #r = BQUser.query.filter(BQUser.resource_name == tags['user_name']).first()
-                    r = data_service.query(resource_type='user', name=tags['user_name'], wpublic=1)
-                    if len(r)>0:
-                        admin = get_username() #get admin user
-                        set_current_user(tags['user_name']) #change document as user so that all changes are owned by the new user
-                        r = data_service.update_resource('/data_service/%s'%r[0].attrib.get('resource_uniq'), new_resource=userxml)
-                        set_current_user(admin) #set back to admin user
-                        return self.get_user('%s'%r.attrib.get('resource_uniq'), **kw)
+                        abort(405, "Another user already has this user name or email address")
+                    # r = BQUser.query.filter(BQUser.resource_name == tags['user_name']).first()
+                    r = data_service.query(resource_type="user", name=tags["user_name"], wpublic=1)
+                    if len(r) > 0:
+                        admin = get_username()  # get admin user
+                        set_current_user(
+                            tags["user_name"]
+                        )  # change document as user so that all changes are owned by the new user
+                        r = data_service.update_resource(
+                            "/data_service/%s" % r[0].attrib.get("resource_uniq"),
+                            new_resource=userxml,
+                        )
+                        set_current_user(admin)  # set back to admin user
+                        return self.get_user("%s" % r.attrib.get("resource_uniq"), **kw)
                     else:
                         abort(400)
         abort(400)
 
-
     def put_user(self, uniq, doc, **kw):
         """
-            update user
+        update user
 
-            @param: uniq - resource uniq for the user
-            @param: doc - document in the format shown below
+        @param: uniq - resource uniq for the user
+        @param: doc - document in the format shown below
 
-            document format:
-                <user name="user" resource_uniq="00-1235218954">
-                    <tag name="password" value="12345"/> or <tag name="password" value="******"/>
-                    <tag name="email" value="myemail@email.com"/>
-                    <tag name="display_name" value="user"/>
-                </user>
+        document format:
+            <user name="user" resource_uniq="00-1235218954">
+                <tag name="password" value="12345"/> or <tag name="password" value="******"/>
+                <tag name="email" value="myemail@email.com"/>
+                <tag name="display_name" value="user"/>
+            </user>
         """
         userxml = etree.fromstring(doc)
-        required_tags = ['user_name','password', 'email', 'display_name']
+        required_tags = ["user_name", "password", "email", "display_name"]
         tags = {}
-        if userxml.tag == 'user':
-            user_name = userxml.attrib.get('name')
+        if userxml.tag == "user":
+            user_name = userxml.attrib.get("name")
             if user_name:
-                #tags['user_name'] = user_name
-                for t in userxml.xpath('tag'):
-                    tags[t.get ('name')] = t.get('value')
-                    #if t.attrib['name'] == 'password' or t.attrib['name']=='email':
-                    if t.get('name') in REMOVE_TAGS:
-                        t.getparent().remove(t) #removes email and password
-                        if t.attrib['name'] == 'email':
-                            userxml.attrib['value'] = t.attrib.get('value') #set it as value of the user
+                # tags['user_name'] = user_name
+                for t in userxml.xpath("tag"):
+                    tags[t.get("name")] = t.get("value")
+                    # if t.attrib['name'] == 'password' or t.attrib['name']=='email':
+                    if t.get("name") in REMOVE_TAGS:
+                        t.getparent().remove(t)  # removes email and password
+                        if t.attrib["name"] == "email":
+                            userxml.attrib["value"] = t.attrib.get(
+                                "value"
+                            )  # set it as value of the user
 
-                if all(k in tags for k in required_tags): #checks to see if all required tags are present
-                    #update tg_user
-                    #tg_user = DBSession.query(User).filter(User.user_name == tags.get('user_name')).first()
-                    #tg_user = User.by_user_name(tags.get('user_name'))
+                if all(
+                    k in tags for k in required_tags
+                ):  # checks to see if all required tags are present
+                    # update tg_user
+                    # tg_user = DBSession.query(User).filter(User.user_name == tags.get('user_name')).first()
+                    # tg_user = User.by_user_name(tags.get('user_name'))
                     tg_user = User.by_user_name(user_name)
                     if not tg_user:
-                        log.debug('No user was found with name of %s. Please check core tables?',  user_name)
+                        log.debug(
+                            "No user was found with name of %s. Please check core tables?",
+                            user_name,
+                        )
                         abort(404)
-                    #reset values on tg user
+                    # reset values on tg user
                     tg_user.email_address = tags.get("email", tg_user.email_address)
 
-                    if tags['password'] and tags['password'].count('*') != len(tags['password']): #no password and ***.. not allowed passwords
-                        tg_user.password = tags.get("password", tg_user.password) #just set it as itself if nothing is provided
-                    #else:
+                    if tags["password"] and tags["password"].count("*") != len(
+                        tags["password"]
+                    ):  # no password and ***.. not allowed passwords
+                        tg_user.password = tags.get(
+                            "password", tg_user.password
+                        )  # just set it as itself if nothing is provided
+                    # else:
                     #    tags.pop("password", None) #remove the invalid password
 
                     tg_user.display_name = tags.get("display_name", tg_user.display_name)
-                    self._update_groups(tg_user, tags.get ('groups', '').split(','))
-                    if tags.get ('user_name') != user_name:
-                        tg_user.user_name = tags.get ('user_name')
-                        userxml.set ('name' , tags['user_name'])
-                    #del tags['user_name']
+                    self._update_groups(tg_user, tags.get("groups", "").split(","))
+                    if tags.get("user_name") != user_name:
+                        tg_user.user_name = tags.get("user_name")
+                        userxml.set("name", tags["user_name"])
+                    # del tags['user_name']
 
-                    log.debug("ADMIN: Updated user: %s" , str(user_name))
+                    log.debug("ADMIN: Updated user: %s", str(user_name))
                     transaction.commit()
                     ### ALL loaded variables are detached
 
-                    #userxml.attrib['resource_uniq'] = r.attrib['resource_uniq']
-                    #reset BQUser
-                    admin = get_username() #get admin user
-                    set_current_user(tags['user_name']) #change document as user so that all changes are owned by the new user
-                    r = data_service.update_resource(resource=userxml, new_resource=userxml, replace=True)
-                    log.debug ("Sent XML %s", etree.tostring (userxml))
-                    set_current_user(admin) #set back to admin user
-                    #DBSession.flush()
-                    return self.get_user(r.attrib['resource_uniq'], **kw)
+                    # userxml.attrib['resource_uniq'] = r.attrib['resource_uniq']
+                    # reset BQUser
+                    admin = get_username()  # get admin user
+                    set_current_user(
+                        tags["user_name"]
+                    )  # change document as user so that all changes are owned by the new user
+                    r = data_service.update_resource(
+                        resource=userxml, new_resource=userxml, replace=True
+                    )
+                    log.debug("Sent XML %s", etree.tostring(userxml))
+                    set_current_user(admin)  # set back to admin user
+                    # DBSession.flush()
+                    return self.get_user(r.attrib["resource_uniq"], **kw)
         abort(400)
-
 
     def delete_user(self, uniq):
         """
-            Deletes user
+        Deletes user
 
-            @param uniq - resource uniq for the user
+        @param uniq - resource uniq for the user
 
         """
         # Remove the user from the system for most purposes, but
         # leave the id for statistics purposes.
         bquser = DBSession.query(BQUser).filter(BQUser.resource_uniq == uniq).first()
         if bquser:
-            log.debug("ADMIN: Deleting user: %s" , str(bquser) )
-            user = DBSession.query(User).filter (User.user_name == bquser.resource_name).first()
-            log.debug ("Renaming internal user %s" , str(user))
+            log.debug("ADMIN: Deleting user: %s", str(bquser))
+            user = DBSession.query(User).filter(User.user_name == bquser.resource_name).first()
+            log.debug("Renaming internal user %s", str(user))
 
             if user:
                 DBSession.delete(user)
                 # delete the access permission
                 for p in DBSession.query(TaggableAcl).filter_by(user_id=bquser.id):
-                    log.debug ("KILL ACL %s" ,  str(p))
+                    log.debug("KILL ACL %s", str(p))
                     DBSession.delete(p)
                 self.deleteimages(bquser.resource_name, will_redirect=False)
-                #DBSession.delete(bquser)
+                # DBSession.delete(bquser)
 
-                #transaction.commit()
+                # transaction.commit()
             data_service.del_resource(bquser)
-            return '<resource>Delete User</resource>'
+            return "<resource>Delete User</resource>"
 
         abort(400)
 
-
     def deleteimage(self, imageid=None, **kw):
-        log.debug("image: %s " , str(imageid) )
+        log.debug("image: %s ", str(imageid))
         image = DBSession.query(Image).filter(Image.id == imageid).first()
         DBSession.delete(image)
         transaction.commit()
         redirect(request.headers.get("Referer", "/"))
 
-
-    def deleteuser(self, username=None,  **kw):
-        #DBSession.autoflush = False
+    def deleteuser(self, username=None, **kw):
+        # DBSession.autoflush = False
 
         # Remove the user from the system for most purposes, but
         # leave the id for statistics purposes.
-        user = DBSession.query(User).filter (User.user_name == username).first()
-        log.debug ("Renaming internal user %s" , str( user))
+        user = DBSession.query(User).filter(User.user_name == username).first()
+        log.debug("Renaming internal user %s", str(user))
         if user:
             DBSession.delete(user)
-            #user.display_name = ("(R)" + user.display_name)[:255]
-            #user.user_name = ("(R)" + user.user_name)[:255]
-            #user.email_address = ("(R)" + user.email_address)[:16]
+            # user.display_name = ("(R)" + user.display_name)[:255]
+            # user.user_name = ("(R)" + user.user_name)[:255]
+            # user.email_address = ("(R)" + user.email_address)[:16]
 
         user = DBSession.query(BQUser).filter(BQUser.resource_name == username).first()
-        log.debug("ADMIN: Deleting user: %s",  str(user) )
+        log.debug("ADMIN: Deleting user: %s", str(user))
         # delete the access permission
         for p in DBSession.query(TaggableAcl).filter_by(user_id=user.id):
-            log.debug ("KILL ACL %s" , str( p))
+            log.debug("KILL ACL %s", str(p))
             DBSession.delete(p)
-        #DBSession.flush()
+        # DBSession.flush()
 
         self.deleteimages(username, will_redirect=False)
         DBSession.delete(user)
         transaction.commit()
-        redirect('/admin/users')
+        redirect("/admin/users")
 
-
-    def deleteimages(self, username=None,  will_redirect=True, **kw):
+    def deleteimages(self, username=None, will_redirect=True, **kw):
         user = DBSession.query(BQUser).filter(BQUser.resource_name == username).first()
-        log.debug("ADMIN: Deleting all images of: %s" , str(user) )
-        images = DBSession.query(Image).filter( Image.owner_id == user.id).all()
+        log.debug("ADMIN: Deleting all images of: %s", str(user))
+        images = DBSession.query(Image).filter(Image.owner_id == user.id).all()
         for i in images:
-            log.debug("ADMIN: Deleting image: %s" , str(i) )
+            log.debug("ADMIN: Deleting image: %s", str(i))
             DBSession.delete(i)
         if will_redirect:
             transaction.commit()
-            redirect('/admin/users')
+            redirect("/admin/users")
         return dict()
 
-
     def loginasuser(self, uniq):
-        log.debug ('forcing login as user')
-        user = DBSession.query(BQUser).filter (BQUser.resource_uniq == uniq).first()
+        log.debug("forcing login as user")
+        user = DBSession.query(BQUser).filter(BQUser.resource_uniq == uniq).first()
         if user:
-            response.headers = request.environ['repoze.who.plugins']['friendlyform'].remember(request.environ,
-                                                                                              {'repoze.who.userid':user.name})
+            response.headers = request.environ["repoze.who.plugins"]["friendlyform"].remember(
+                request.environ, {"repoze.who.userid": user.name}
+            )
             redirect("/client_service")
         else:
             abort(404)
 
     def clearcache(self):
         log.info("CLEARING CACHE")
-        def clearfiles (folder):
+
+        def clearfiles(folder):
             for the_file in os.listdir(folder):
                 file_path = os.path.join(folder, the_file)
                 try:
                     if os.path.isfile(file_path):
                         os.unlink(file_path)
                 except OSError as e:
-                    log.debug ("unlinking failed: %s", file_path)
+                    log.debug("unlinking failed: %s", file_path)
                 except Exception as e:
-                    log.exception('while removing %s' % file_path)
+                    log.exception("while removing %s" % file_path)
 
-        server_cache = data_path('server_cache')
+        server_cache = data_path("server_cache")
         clearfiles(server_cache)
         log.info("CLEARED CACHE")
         return '<resource name="cache_clear" value="finished">'
 
     def get_variables(self):
-        #bisque_root = config.get ('bisque.root')
+        # bisque_root = config.get ('bisque.root')
         bisque_root = request.application_url
-        bisque_organization = config.get ('bisque.organization', 'BisQue')
-        bisque_email = config.get ('bisque.admin_email', 'info@bisque')
+        bisque_organization = config.get("bisque.organization", "BisQue")
+        bisque_email = config.get("bisque.admin_email", "info@bisque")
 
         variables = {
-            'service_name': bisque_organization,
-            'service_url': '<a href="%s">%s</a>'%(bisque_root, bisque_organization),
-            'user_name': 'username',
-            'email': 'user@email',
-            'display_name': 'First Last',
-            'bisque_email' : bisque_email,
+            "service_name": bisque_organization,
+            "service_url": '<a href="%s">%s</a>' % (bisque_root, bisque_organization),
+            "user_name": "username",
+            "email": "user@email",
+            "display_name": "First Last",
+            "bisque_email": bisque_email,
         }
         return variables
 
@@ -1133,125 +1171,123 @@ class AdminController(ServiceController):
         log.debug(message)
         variables = self.get_variables()
 
-        #for users
-        users = data_service.query(resource_type='user', wpublic='true', view='full')
+        # for users
+        users = data_service.query(resource_type="user", wpublic="true", view="full")
         for u in users:
-            variables['user_name'] = u.get('name')
-            variables['email'] = u.get('value')
-            variables['display_name'] = u.find('tag[@name="display_name"]').get('value')
-            if variables['email'] not in userlist:
+            variables["user_name"] = u.get("name")
+            variables["email"] = u.get("value")
+            variables["display_name"] = u.find('tag[@name="display_name"]').get("value")
+            if variables["email"] not in userlist:
                 continue
 
             msg = copy.deepcopy(message)
             msg = string.Template(msg).safe_substitute(variables)
-            #for v,t in variables.iteritems():
+            # for v,t in variables.iteritems():
             #    msg = msg.replace('$%s'%v, t)
 
             # send
-            log.info('Sending message to: %s', variables['email'])
-            log.info('Message:\n%s', msg)
+            log.info("Sending message to: %s", variables["email"])
+            log.info("Message:\n%s", msg)
 
             try:
-                notify_service.send_mail (
-                    variables['bisque_email'],
-                    variables['email'],
-                    'Notification from %s service'%variables['service_name'],
+                notify_service.send_mail(
+                    variables["bisque_email"],
+                    variables["email"],
+                    "Notification from %s service" % variables["service_name"],
                     msg,
                 )
             except Exception:
                 log.exception("Mail not sent")
 
-
-    @expose (content_type='text/xml')
+    @expose(content_type="text/xml")
     def group(self, *args, **kw):
         """
-            GET /admin/group: returns list of all groups <resource> <group name="a" /> <group ... /> </resource>
+        GET /admin/group: returns list of all groups <resource> <group name="a" /> <group ... /> </resource>
 
-            POST /admin/group: creates new group,
-                  <group name="new_group" /> or <resource> <group ..> <group ../> </resource>
-                  shortcut:  POST /group/new_group with no body
-            PUT /admin/group  : same as POST
+        POST /admin/group: creates new group,
+              <group name="new_group" /> or <resource> <group ..> <group ../> </resource>
+              shortcut:  POST /group/new_group with no body
+        PUT /admin/group  : same as POST
 
-            DELETE /admin/group/group_name : delete the group
+        DELETE /admin/group/group_name : delete the group
 
         """
 
-
-        log.debug ("GROUP %s %s", args, kw)
-        reqformat = kw.pop('format', None)
+        log.debug("GROUP %s %s", args, kw)
+        reqformat = kw.pop("format", None)
         http_method = request.method.upper()
-        if http_method == 'GET':
-            resource =  self.get_groups (*args, **kw)
-        elif http_method == 'DELETE':
+        if http_method == "GET":
+            resource = self.get_groups(*args, **kw)
+        elif http_method == "DELETE":
             resource = self.delete_group(*args, **kw)
-        elif http_method in ('PUT', 'POST'):
+        elif http_method in ("PUT", "POST"):
             resource = self.new_group(*args, **kw)
         else:
-            abort (400, "bad request")
-        accept_header = request.headers.get ('accept')
-        formatter, content_type  = find_formatter (reqformat, accept_header)
-        response.headers['Content-Type'] = content_type
+            abort(400, "bad request")
+        accept_header = request.headers.get("accept")
+        formatter, content_type = find_formatter(reqformat, accept_header)
+        response.headers["Content-Type"] = content_type
         return formatter(resource)
 
-    def get_groups (self, *args, **kw):
-        resource = etree.Element ('resource')
-        for group in DBSession.query (Group):
-            etree.SubElement (resource, 'group', name = group.group_name)
+    def get_groups(self, *args, **kw):
+        resource = etree.Element("resource")
+        for group in DBSession.query(Group):
+            etree.SubElement(resource, "group", name=group.group_name)
         return resource
 
-    def delete_group (self, *args, **kw):
+    def delete_group(self, *args, **kw):
         if len(args):
             group_name = args[0]
         else:
-            content_type = request.headers.get('Content-Type')
-            inputer = find_inputer (content_type)
+            content_type = request.headers.get("Content-Type")
+            inputer = find_inputer(content_type)
             body = request.body_file.read()
-            log.debug ("DELETE content %s", body)
-            els = inputer (body)
-            group_name = els.xpath ('//group/@name')[0]
+            log.debug("DELETE content %s", body)
+            els = inputer(body)
+            group_name = els.xpath("//group/@name")[0]
 
-        resource = etree.Element ('resource')
-        group = DBSession.query (Group).filter_by (group_name = group_name).first()
+        resource = etree.Element("resource")
+        group = DBSession.query(Group).filter_by(group_name=group_name).first()
         if group:
-            etree.SubElement (resource, 'group', name = group.group_name)
+            etree.SubElement(resource, "group", name=group.group_name)
             DBSession.delete(group)
 
         return resource
 
-    def new_group (self, *args, **kw):
+    def new_group(self, *args, **kw):
         if len(args):
             group_names = args
         else:
-            content_type = request.headers.get('Content-Type')
-            inputer = find_inputer (content_type)
-            els = inputer (request.body_file)
-            group_names = els.xpath ('//group/@name')
-        resource = etree.Element ('resource')
+            content_type = request.headers.get("Content-Type")
+            inputer = find_inputer(content_type)
+            els = inputer(request.body_file)
+            group_names = els.xpath("//group/@name")
+        resource = etree.Element("resource")
         for nm in group_names:
-            g = Group(group_name  = nm)
-            DBSession.add (g)
-            etree.SubElement (resource, 'group', name=nm)
+            g = Group(group_name=nm)
+            DBSession.add(g)
+            etree.SubElement(resource, "group", name=nm)
 
         try:
             transaction.commit()
         except (IntegrityError, InvalidRequestError) as e:
             transaction.abort()
-            abort (400, "Bad request %s" %e)
+            abort(400, "Bad request %s" % e)
 
         return resource
 
+
 def initialize(url):
-    """ Initialize the top level server for this microapp"""
-    log.debug ("initialize %s" , url)
+    """Initialize the top level server for this microapp"""
+    log.debug("initialize %s", url)
     return AdminController(url)
 
 
-#def get_static_dirs():
+# def get_static_dirs():
 #    """Return the static directories for this server"""
 #    package = pkg_resources.Requirement.parse ("bqserver")
 #    package_path = pkg_resources.resource_filename(package,'bq')
 #    return [(package_path, os.path.join(package_path, 'admin_service', 'public'))]
-
 
 
 __controller__ = AdminController

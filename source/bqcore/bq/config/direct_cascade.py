@@ -3,6 +3,7 @@
 
 from paste.cascade import Cascade
 
+
 class DirectCascade(Cascade):
     """Cascade-like middleware which doesn't copy wsgi.input.
 
@@ -14,6 +15,7 @@ class DirectCascade(Cascade):
     def __call__(self, environ, start_response):
         # pylint: disable=E1101
         failed = []
+
         def repl_start_response(status, headers, exc_info=None):
             code = int(status.split(None, 1)[0])
             if code in self.catch_codes:
@@ -21,7 +23,8 @@ class DirectCascade(Cascade):
                 return _consuming_writer
             return start_response(status, headers, exc_info)
 
-        def _consuming_writer(s): pass
+        def _consuming_writer(s):
+            pass
 
         for app in self.apps[:-1]:
             environ_copy = environ.copy()
@@ -31,12 +34,12 @@ class DirectCascade(Cascade):
                 if not failed:
                     return v
                 else:
-                    if hasattr(v, 'close'):
+                    if hasattr(v, "close"):
                         # Exhaust the iterator first:
                         list(v)
                         # then close:
                         v.close()
             # Pylin misses that this is a list of exception values
-            except tuple (self.catch_exceptions) as e:
+            except tuple(self.catch_exceptions) as e:
                 pass
         return self.apps[-1](environ, start_response)

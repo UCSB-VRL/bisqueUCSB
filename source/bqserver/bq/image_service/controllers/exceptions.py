@@ -2,17 +2,17 @@
 Provides typical exceptions thrown by the image service
 """
 
-__author__    = "Dmitry Fedorov"
-__version__   = "1.0"
+__author__ = "Dmitry Fedorov"
+__version__ = "1.0"
 __copyright__ = "Center for BioImage Informatics, University California, Santa Barbara"
 
-import sys
 import logging
-
+import sys
 
 ################################################################################
 # Exceptions
 ################################################################################
+
 
 class ImageServiceException(Exception):
     """Raised when any operation or decoder fails
@@ -26,6 +26,7 @@ class ImageServiceException(Exception):
         self.code = code
         self.message = message
 
+
 class ImageServiceFuture(Exception):
     """Raised when any operation timeout or is already locked
 
@@ -34,5 +35,4 @@ class ImageServiceFuture(Exception):
     """
 
     def __init__(self, timeout_range=None):
-        self.timeout_range = timeout_range or (1,20)
-
+        self.timeout_range = timeout_range or (1, 20)

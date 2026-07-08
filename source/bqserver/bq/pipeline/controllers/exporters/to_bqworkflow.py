@@ -47,44 +47,50 @@ Bisque pipeline exporter
 """
 
 # default imports
-import os
-import fnmatch
 import copy
+import fnmatch
 import json
 import logging
+import os
 
 from bq.pipeline.controllers.pipeline_exporter import PipelineExporter
 
-__all__ = [ 'ExporterBisque' ]
+__all__ = ["ExporterBisque"]
 
 log = logging.getLogger("bq.pipeline.export.bqworkflow")
 
-#---------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------
 # exporters: Bisque workflow
-#---------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------
+
 
 def json_to_bqworkflow(pipeline):
     return json.dumps(pipeline)
 
-class ExporterBisque (PipelineExporter):
-    name = 'bqworkflow'
-    version = '1.0'
-    ext = 'bq'
-    mime_type = 'application/json'
+
+class ExporterBisque(PipelineExporter):
+    name = "bqworkflow"
+    version = "1.0"
+    ext = "bq"
+    mime_type = "application/json"
 
     def get_pre_post_ops(self, pipeline):
         """returns the pre/post pipeline operations"""
-        res = { 'PreOps' : [], 'PostOps': [] }
+        res = {"PreOps": [], "PostOps": []}
         return res
-    
+
     def bisque_to_native(self, pipeline):
         """converts BisQue... steps into workflow steps"""
         return pipeline
 
     def format(self, pipeline):
-        """ converts pipeline to workflow format """
+        """converts pipeline to workflow format"""
         pipeline = pipeline.data
-        if not pipeline or '__Header__' not in pipeline or pipeline['__Header__']['__Type__'] != 'BisqueWorkflow':
+        if (
+            not pipeline
+            or "__Header__" not in pipeline
+            or pipeline["__Header__"]["__Type__"] != "BisqueWorkflow"
+        ):
             # wrong pipeline type
-            return None        
+            return None
         return json_to_bqworkflow(pipeline)

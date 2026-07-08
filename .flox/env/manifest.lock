@@ -1,0 +1,2191 @@
+{
+  "lockfile-version": 1,
+  "manifest": {
+    "schema-version": "1.11.0",
+    "install": {
+      "argo-workflows": {
+        "pkg-path": "argo-workflows"
+      },
+      "bash": {
+        "pkg-path": "bash"
+      },
+      "binutils": {
+        "pkg-path": "binutils"
+      },
+      "cairo": {
+        "pkg-path": "cairo"
+      },
+      "cmake": {
+        "pkg-path": "cmake"
+      },
+      "coreutils": {
+        "pkg-path": "coreutils",
+        "priority": 4
+      },
+      "curl": {
+        "pkg-path": "curl"
+      },
+      "docker-client": {
+        "pkg-path": "docker-client"
+      },
+      "expat": {
+        "pkg-path": "expat"
+      },
+      "ffmpeg": {
+        "pkg-path": "ffmpeg_4",
+        "outputs": [
+          "bin",
+          "dev",
+          "lib",
+          "out"
+        ]
+      },
+      "fftw": {
+        "pkg-path": "fftw"
+      },
+      "findutils": {
+        "pkg-path": "findutils"
+      },
+      "gcc": {
+        "pkg-path": "gcc"
+      },
+      "gdcm": {
+        "pkg-path": "gdcm",
+        "pkg-group": "legacy-imgcnv-gdcm",
+        "version": "3.0.26"
+      },
+      "gdk-pixbuf": {
+        "pkg-path": "gdk-pixbuf"
+      },
+      "glib": {
+        "pkg-path": "glib",
+        "outputs": [
+          "bin",
+          "dev",
+          "out"
+        ]
+      },
+      "gnugrep": {
+        "pkg-path": "gnugrep"
+      },
+      "gnumake": {
+        "pkg-path": "gnumake"
+      },
+      "gnused": {
+        "pkg-path": "gnused"
+      },
+      "gnutar": {
+        "pkg-path": "gnutar"
+      },
+      "graphviz": {
+        "pkg-path": "graphviz"
+      },
+      "gzip": {
+        "pkg-path": "gzip"
+      },
+      "hdf5-cpp": {
+        "pkg-path": "hdf5-cpp",
+        "pkg-group": "legacy-imgcnv-hdf5-cpp",
+        "version": "1.10.7",
+        "outputs": [
+          "dev",
+          "out"
+        ]
+      },
+      "iproute2": {
+        "pkg-path": "iproute2"
+      },
+      "jbigkit": {
+        "pkg-path": "jbigkit"
+      },
+      "jdk": {
+        "pkg-path": "jdk8"
+      },
+      "just": {
+        "pkg-path": "just"
+      },
+      "kubectl": {
+        "pkg-path": "kubectl"
+      },
+      "lcms2": {
+        "pkg-path": "lcms2",
+        "outputs": [
+          "bin",
+          "dev",
+          "out"
+        ]
+      },
+      "lerc": {
+        "pkg-path": "lerc"
+      },
+      "libdeflate": {
+        "pkg-path": "libdeflate"
+      },
+      "libgcc": {
+        "pkg-path": "libgcc",
+        "outputs": [
+          "lib"
+        ]
+      },
+      "libjpeg": {
+        "pkg-path": "libjpeg8",
+        "outputs": [
+          "out",
+          "dev"
+        ]
+      },
+      "libmysqlclient": {
+        "pkg-path": "libmysqlclient",
+        "outputs": [
+          "dev",
+          "out"
+        ]
+      },
+      "libpng": {
+        "pkg-path": "libpng"
+      },
+      "libraw": {
+        "pkg-path": "libraw",
+        "pkg-group": "legacy-imgcnv-libraw",
+        "version": "0.20.2",
+        "outputs": [
+          "lib",
+          "out"
+        ]
+      },
+      "libtiff": {
+        "pkg-path": "libtiff"
+      },
+      "libwebp": {
+        "pkg-path": "libwebp"
+      },
+      "libxml2": {
+        "pkg-path": "libxml2",
+        "pkg-group": "legacy-imgcnv-libxml2",
+        "version": "2.9.14",
+        "outputs": [
+          "bin",
+          "dev",
+          "out"
+        ]
+      },
+      "libxslt": {
+        "pkg-path": "libxslt"
+      },
+      "maven": {
+        "pkg-path": "maven"
+      },
+      "openjpeg": {
+        "pkg-path": "openjpeg"
+      },
+      "openslide": {
+        "pkg-path": "openslide"
+      },
+      "patchelf": {
+        "pkg-path": "patchelf"
+      },
+      "pkg-config": {
+        "pkg-path": "pkg-config"
+      },
+      "postgresql": {
+        "pkg-path": "postgresql"
+      },
+      "procps": {
+        "pkg-path": "procps"
+      },
+      "python": {
+        "pkg-path": "python311"
+      },
+      "sqlite": {
+        "pkg-path": "sqlite",
+        "outputs": [
+          "bin",
+          "dev",
+          "out"
+        ]
+      },
+      "unzip": {
+        "pkg-path": "unzip"
+      },
+      "uv": {
+        "pkg-path": "uv"
+      },
+      "wget": {
+        "pkg-path": "wget"
+      },
+      "xz": {
+        "pkg-path": "xz",
+        "outputs": [
+          "bin",
+          "dev",
+          "out"
+        ]
+      },
+      "zlib": {
+        "pkg-path": "zlib"
+      }
+    },
+    "vars": {
+      "PYTHON_VERSION": "3.11",
+      "VENV": ".venv"
+    },
+    "hook": {
+      "on-activate": "  mkdir -p \"$FLOX_ENV_PROJECT/.cache/uv\" \"$FLOX_ENV_PROJECT/.local/bin\" \"$FLOX_ENV_PROJECT/.local/lib\"\n  if [ ! -f \"$FLOX_ENV_PROJECT/.env\" ] && [ -f \"$FLOX_ENV_PROJECT/.env.example\" ]; then\n    cp \"$FLOX_ENV_PROJECT/.env.example\" \"$FLOX_ENV_PROJECT/.env\"\n    echo \"Created .env from .env.example\"\n  fi\n"
+    },
+    "profile": {
+      "common": "  export XDG_CACHE_HOME=\"$FLOX_ENV_PROJECT/.cache\"\n  export UV_CACHE_DIR=\"$FLOX_ENV_PROJECT/.cache/uv\"\n  export VENV=\"$FLOX_ENV_PROJECT/.venv\"\n  export PATH=\"$FLOX_ENV_PROJECT/.local/bin:$FLOX_ENV_PROJECT/.venv/bin:$PATH\"\n  export PYTHONNOUSERSITE=1\n\n  echo \"BisQue environment active. Run: just setup\"\n  if ! command -v direnv >/dev/null 2>&1; then\n    echo \"Tip: install direnv for automatic environment loading: https://direnv.net/docs/installation.html\"\n    echo \"Without direnv, remember to run: flox deactivate\"\n  fi\n"
+    },
+    "options": {
+      "systems": [
+        "x86_64-linux"
+      ]
+    }
+  },
+  "packages": [
+    {
+      "attr_path": "gdcm",
+      "broken": false,
+      "derivation": "/nix/store/6v3agq34xdp7flg0xs4ci1p91y3s726s-gdcm-3.0.26.drv",
+      "description": "Grassroots cross-platform DICOM implementation",
+      "install_id": "gdcm",
+      "license": "[ BSD-3-Clause, Apache-2.0 ]",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=8d4ddb19d03c65a36ad8d189d001dc32ffb0306b",
+      "name": "gdcm-3.0.26",
+      "pname": "gdcm",
+      "rev": "8d4ddb19d03c65a36ad8d189d001dc32ffb0306b",
+      "rev_count": 862643,
+      "rev_date": "2025-09-16T15:19:26Z",
+      "scrape_date": "2025-09-19T02:33:32.811035Z",
+      "stabilities": [
+        "unstable",
+        "staging"
+      ],
+      "unfree": false,
+      "version": "3.0.26",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/a1ysfr5hhpx57wkbvc9s58bbh2lrf8c5-gdcm-3.0.26"
+      },
+      "system": "x86_64-linux",
+      "group": "legacy-imgcnv-gdcm",
+      "priority": 5
+    },
+    {
+      "attr_path": "hdf5-cpp",
+      "broken": false,
+      "derivation": "/nix/store/l9xmx3xws4r7gbayazxvhdkcihjbp2sz-hdf5-1.10.7.drv",
+      "description": "Data model, library, and file format for storing and managing data",
+      "install_id": "hdf5-cpp",
+      "license": "BSD-3-Clause",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=f5e8bdd07d1afaabf6b37afc5497b1e498b8046f",
+      "name": "hdf5-cpp-1.10.7",
+      "pname": "hdf5-cpp",
+      "rev": "f5e8bdd07d1afaabf6b37afc5497b1e498b8046f",
+      "rev_count": 277486,
+      "rev_date": "2021-03-19T17:17:44Z",
+      "scrape_date": "2024-08-15T21:01:12Z",
+      "stabilities": [
+        "unstable",
+        "staging",
+        "stable"
+      ],
+      "unfree": false,
+      "version": "1.10.7",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "dev": "/nix/store/irzk7pjbh60h3d57n0r5srspq2snnf1y-hdf5-1.10.7-dev",
+        "out": "/nix/store/q2y351zzx1mz8gd1hq4kwi48zhy43hac-hdf5-1.10.7"
+      },
+      "system": "x86_64-linux",
+      "group": "legacy-imgcnv-hdf5-cpp",
+      "priority": 5
+    },
+    {
+      "attr_path": "libraw",
+      "broken": false,
+      "derivation": "/nix/store/l8c9rqhl0h4ysfck4hvxw596qm7m9nwl-libraw-0.20.2.p2.drv",
+      "description": "Library for reading RAW files obtained from digital photo cameras (CRW/CR2, NEF, RAF, DNG, and others)",
+      "install_id": "libraw",
+      "license": "GPL-2.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=1b1f50645af2a70dc93eae18bfd88d330bfbcf7f",
+      "name": "libraw-0.20.2.p2",
+      "pname": "libraw",
+      "rev": "1b1f50645af2a70dc93eae18bfd88d330bfbcf7f",
+      "rev_count": 446447,
+      "rev_date": "2023-01-23T07:39:43Z",
+      "scrape_date": "2024-06-13T20:58:50Z",
+      "stabilities": [
+        "unstable",
+        "staging",
+        "stable"
+      ],
+      "unfree": false,
+      "version": "0.20.2.p2",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "dev": "/nix/store/5rni04xgxg4wdbpq51rfwc5f4ixsj952-libraw-0.20.2.p2-dev",
+        "doc": "/nix/store/b9rqmij36213f000gnwrj5h1ncazj4gw-libraw-0.20.2.p2-doc",
+        "lib": "/nix/store/chn5sf0zgmfqv5fp667czakvpj90ypyf-libraw-0.20.2.p2-lib",
+        "out": "/nix/store/0a8kkhcqkx3f5zplw74y8xsmfmkmpj7r-libraw-0.20.2.p2"
+      },
+      "system": "x86_64-linux",
+      "group": "legacy-imgcnv-libraw",
+      "priority": 5
+    },
+    {
+      "attr_path": "libxml2",
+      "broken": false,
+      "derivation": "/nix/store/nj3kay979hkshgk509pxpvx9d1kgjyr7-libxml2-2.9.14.drv",
+      "description": "XML parsing library for C",
+      "install_id": "libxml2",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=d6490a0bd9dfb298fcd8382d3363b86870dc7340",
+      "name": "libxml2-2.9.14",
+      "pname": "libxml2",
+      "rev": "d6490a0bd9dfb298fcd8382d3363b86870dc7340",
+      "rev_count": 410349,
+      "rev_date": "2022-09-21T11:57:03Z",
+      "scrape_date": "2024-08-15T20:35:04Z",
+      "stabilities": [
+        "unstable",
+        "staging",
+        "stable"
+      ],
+      "unfree": false,
+      "version": "2.9.14",
+      "outputs_to_install": [
+        "bin",
+        "man"
+      ],
+      "outputs": {
+        "bin": "/nix/store/jb2430qm7sz02f1000561xma3g8nj7fd-libxml2-2.9.14-bin",
+        "dev": "/nix/store/n3m7sc4ciwq6v9gwk3y4yzldd3m6659s-libxml2-2.9.14-dev",
+        "doc": "/nix/store/0vsq5543v885dk5wq8l5mnb3rvrs4sv7-libxml2-2.9.14-doc",
+        "man": "/nix/store/cs9vl97wpag8q17q859phx2v2d91dsac-libxml2-2.9.14-man",
+        "out": "/nix/store/a60blj59rlczhf411gr1lb9ghiy56mgy-libxml2-2.9.14",
+        "py": "/nix/store/18rmm5d53zgwi8qbrdzi5ch8ackz389y-libxml2-2.9.14-py"
+      },
+      "system": "x86_64-linux",
+      "group": "legacy-imgcnv-libxml2",
+      "priority": 5
+    },
+    {
+      "attr_path": "argo-workflows",
+      "broken": false,
+      "derivation": "/nix/store/jang9bnvalzfws1inwcsblkh7vv94pxs-argo-workflows-3.6.10.drv",
+      "description": "Container native workflow engine for Kubernetes",
+      "install_id": "argo-workflows",
+      "license": "Apache-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "argo-workflows-3.6.10",
+      "pname": "argo-workflows",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:32:50.802892Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "3.6.10",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/rj74w2114hd0z345mqgpniix9r4mhy17-argo-workflows-3.6.10"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "bash",
+      "broken": false,
+      "derivation": "/nix/store/j96v6m8skpckq2dnql0ap2irlpq8f2f2-bash-interactive-5.3p9.drv",
+      "description": "GNU Bourne-Again Shell, the de facto standard shell on Linux (for interactive use)",
+      "install_id": "bash",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "bash-interactive-5.3p9",
+      "pname": "bash",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:32:50.901919Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "5.3p9",
+      "outputs_to_install": [
+        "man",
+        "man",
+        "out",
+        "out",
+        "out",
+        "out",
+        "out",
+        "out",
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "debug": "/nix/store/18k6pfp43yzqh83mxzmj3cpm4x6866j0-bash-interactive-5.3p9-debug",
+        "dev": "/nix/store/bvsy09r85z0q1m30p87s1bf4ikb0s84i-bash-interactive-5.3p9-dev",
+        "doc": "/nix/store/bhbjla95nysak3l3464zjf5phdmqk66v-bash-interactive-5.3p9-doc",
+        "info": "/nix/store/46jj4fy2cndcp00j4972bpddadijxjmc-bash-interactive-5.3p9-info",
+        "man": "/nix/store/73fr7zjwc2s46y7vrq8563237l0ivqcb-bash-interactive-5.3p9-man",
+        "out": "/nix/store/cgjr3kj3hs7ngznyws5qfg16c8scpys0-bash-interactive-5.3p9"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "binutils",
+      "broken": false,
+      "derivation": "/nix/store/fr4s6crprj60n9wwcyf7icplz8dxp1ls-binutils-wrapper-2.46.drv",
+      "description": "Tools for manipulating binaries (linker, assembler, etc.) (wrapper script)",
+      "install_id": "binutils",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "binutils-wrapper-2.46",
+      "pname": "binutils",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:32:50.955794Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "2.46",
+      "outputs_to_install": [
+        "man",
+        "out",
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "info": "/nix/store/mlfnw3b798bj39i25nn145kdyrxsirwp-binutils-wrapper-2.46-info",
+        "man": "/nix/store/8zd61mzpnwpq1x9p45w9ifii7rpxgrq7-binutils-wrapper-2.46-man",
+        "out": "/nix/store/mbyy19mdwnfvfwmdi0gqgggx0njvpl1w-binutils-wrapper-2.46"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "cairo",
+      "broken": false,
+      "derivation": "/nix/store/ki02p6imbncbi1nlrbra8skq5yz53ybg-cairo-1.18.4.drv",
+      "description": "2D graphics library with support for multiple output devices",
+      "install_id": "cairo",
+      "license": "[ LGPL-2.0-or-later, MPL-1.0 ]",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "cairo-1.18.4",
+      "pname": "cairo",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:32:51.051968Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.18.4",
+      "outputs_to_install": [
+        "out",
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "debug": "/nix/store/m0xkyqqd0bqj571wivxvfyz928bw3pml-cairo-1.18.4-debug",
+        "dev": "/nix/store/rjadd507fdm0mxb5gy8xbygnszg22mg8-cairo-1.18.4-dev",
+        "devdoc": "/nix/store/czjk76iic802v906nk3yiww6y0j2p298-cairo-1.18.4-devdoc",
+        "out": "/nix/store/dydyb18hkw3aqmap8apa3708ws440nxd-cairo-1.18.4"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "cmake",
+      "broken": false,
+      "derivation": "/nix/store/nf07zwfw22ysq9pbrcy35wc4g6njq0fg-cmake-4.1.2.drv",
+      "description": "Cross-platform, open-source build system generator",
+      "install_id": "cmake",
+      "license": "BSD-3-Clause",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "cmake-4.1.2",
+      "pname": "cmake",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:32:51.344387Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "4.1.2",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "debug": "/nix/store/rd1qfyjkzr3zswd8v5jblv9j2nydcxgx-cmake-4.1.2-debug",
+        "out": "/nix/store/r9941n32g4wyvggz2703dlplbdq8a6rd-cmake-4.1.2"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "coreutils",
+      "broken": false,
+      "derivation": "/nix/store/08fg4a5d85pnlagm8qrk1pga0zkyjsxm-coreutils-9.11.drv",
+      "description": "GNU Core Utilities",
+      "install_id": "coreutils",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "coreutils-9.11",
+      "pname": "coreutils",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:32:51.464280Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "9.11",
+      "outputs_to_install": [
+        "out",
+        "out",
+        "out",
+        "out",
+        "out",
+        "out",
+        "out",
+        "out",
+        "out",
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "debug": "/nix/store/gfcdh00xkdhrd6qqz1gxdlq7ba5xkyaq-coreutils-9.11-debug",
+        "info": "/nix/store/77sgl4gzlhg90154z7qk1fqs2qpvsqs8-coreutils-9.11-info",
+        "out": "/nix/store/9ypz3flqsrl5xl495mm8h645gadjsxi1-coreutils-9.11"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 4
+    },
+    {
+      "attr_path": "curl",
+      "broken": false,
+      "derivation": "/nix/store/qryz1b6wj5j976g96xfr2kybhmgnlf2f-curl-8.20.0.drv",
+      "description": "Command line tool for transferring files with URL syntax",
+      "install_id": "curl",
+      "license": "curl",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "curl-8.20.0",
+      "pname": "curl",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:32:51.574579Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "8.20.0",
+      "outputs_to_install": [
+        "bin",
+        "bin",
+        "bin",
+        "bin",
+        "bin",
+        "bin",
+        "man",
+        "man",
+        "man",
+        "man",
+        "man"
+      ],
+      "outputs": {
+        "bin": "/nix/store/0aha64svrrch155x78xhzn6kmgrrsl9a-curl-8.20.0-bin",
+        "debug": "/nix/store/k8nrdq3c1hm3r0bzbqiqqabxl3rldv98-curl-8.20.0-debug",
+        "dev": "/nix/store/ni3mcvikdjzaq2h0jx3k0xds57z0y2r5-curl-8.20.0-dev",
+        "devdoc": "/nix/store/csaqi0fj0d53rsdlazw7rmrri40457vd-curl-8.20.0-devdoc",
+        "man": "/nix/store/zghy1pwbzdn7awhk7id00jlb83hk8y8v-curl-8.20.0-man",
+        "out": "/nix/store/xm1x557414bq1lgrx18gvb7cbz1qrdy8-curl-8.20.0"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "docker-client",
+      "broken": false,
+      "derivation": "/nix/store/hv2wslb295ydxrsxhp9bcwyla97x7agw-docker-29.5.1.drv",
+      "description": "Open source project to pack, ship and run any application as a lightweight container",
+      "install_id": "docker-client",
+      "license": "Apache-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "docker-29.5.1",
+      "pname": "docker-client",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:32:51.796625Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "29.5.1",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/gla5h7ig435y9jj5z0nfbsm7f1jfdf0b-docker-29.5.1"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "expat",
+      "broken": false,
+      "derivation": "/nix/store/k48c3sv78mhi18p9rn9h3rdj3h8wn421-expat-2.8.0.drv",
+      "description": "Stream-oriented XML parser library written in C",
+      "install_id": "expat",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "expat-2.8.0",
+      "pname": "expat",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:32:52.184321Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "2.8.0",
+      "outputs_to_install": [
+        "out",
+        "out",
+        "out",
+        "out",
+        "out",
+        "out",
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "dev": "/nix/store/nhl6l0mxarafm0g1mk4yd2xzcws4qz7d-expat-2.8.0-dev",
+        "out": "/nix/store/d8927sznk6qnqln6hl9p4d42h8pq49vg-expat-2.8.0"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "ffmpeg_4",
+      "broken": false,
+      "derivation": "/nix/store/yx7kk903mhv307l2vdp77g28xrx34b76-ffmpeg-4.4.6.drv",
+      "description": "Complete, cross-platform solution to record, convert and stream audio and video",
+      "install_id": "ffmpeg",
+      "license": "[ LGPL-2.1-or-later, GPL-2.0-or-later, LGPL-3.0-or-later, GPL-3.0-or-later ]",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "ffmpeg-4.4.6",
+      "pname": "ffmpeg_4",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:32:52.305801Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "4.4.6",
+      "outputs_to_install": [
+        "bin"
+      ],
+      "outputs": {
+        "bin": "/nix/store/s1qlmx4ykvhd9vqk14x3bykiv9x3bg6n-ffmpeg-4.4.6-bin",
+        "data": "/nix/store/5sbrf0qkjv9vkb2h631q6qq6m2n169l4-ffmpeg-4.4.6-data",
+        "dev": "/nix/store/ih4k0zr866qmfa7is9q6dmrsaan2ypm3-ffmpeg-4.4.6-dev",
+        "lib": "/nix/store/k03jjcgmjkmrxscsrs21iz98vkq2hz4a-ffmpeg-4.4.6-lib",
+        "out": "/nix/store/111a2jdhbd0wwdk1kbs8i8y3b7jvnrn8-ffmpeg-4.4.6"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "fftw",
+      "broken": false,
+      "derivation": "/nix/store/06s3kgln90djrp0nv7fbai5f6rd9f8jk-fftw-double-3.3.10.drv",
+      "description": "Fastest Fourier Transform in the West library",
+      "install_id": "fftw",
+      "license": "GPL-2.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "fftw-double-3.3.10",
+      "pname": "fftw",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:32:52.312280Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "3.3.10",
+      "outputs_to_install": [
+        "man",
+        "out",
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "dev": "/nix/store/sbw22rxqdnjfhv76zzvz4rf3lwba48y7-fftw-double-3.3.10-dev",
+        "info": "/nix/store/wnrcfz5v9kmmlyxbv1v6j3n1q4y8j6w6-fftw-double-3.3.10-info",
+        "man": "/nix/store/27gb2kky1l85fvm4mk6c3yxldpqm1w1k-fftw-double-3.3.10-man",
+        "out": "/nix/store/kq39hlb5gz0rvfsndxzbk2fkbsdqds2z-fftw-double-3.3.10"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "findutils",
+      "broken": false,
+      "derivation": "/nix/store/nv9vbwdbppdb9zvv78m9a99vga207ykq-findutils-4.10.0.drv",
+      "description": "GNU Find Utilities, the basic directory searching utilities of the GNU operating system",
+      "install_id": "findutils",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "findutils-4.10.0",
+      "pname": "findutils",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:32:52.337279Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "4.10.0",
+      "outputs_to_install": [
+        "out",
+        "out",
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "info": "/nix/store/mc65clwg5q361fa9614ryvmhl3yqradh-findutils-4.10.0-info",
+        "locate": "/nix/store/fcid2ld7f37q6h1rknkrv80302is8c0y-findutils-4.10.0-locate",
+        "out": "/nix/store/c1cjgg6p8m8fssivzrc2p13mwwml3p3v-findutils-4.10.0"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "gcc",
+      "broken": false,
+      "derivation": "/nix/store/y7wnv3kycy9gpxzwmny1sppi7il9i31a-gcc-wrapper-15.2.0.drv",
+      "description": "GNU Compiler Collection, version 15.2.0 (wrapper script)",
+      "install_id": "gcc",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "gcc-wrapper-15.2.0",
+      "pname": "gcc",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:32:52.649940Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "15.2.0",
+      "outputs_to_install": [
+        "man",
+        "man",
+        "out",
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "info": "/nix/store/5b0hplrl0n9g159mcis4jca1fjd4822a-gcc-wrapper-15.2.0-info",
+        "man": "/nix/store/r35yg8h1w630r3lmnyglwhv5nvk284mx-gcc-wrapper-15.2.0-man",
+        "out": "/nix/store/788mx070y81zjlg5ipcl0cra3afviw9k-gcc-wrapper-15.2.0"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "gdk-pixbuf",
+      "broken": false,
+      "derivation": "/nix/store/lar8cvvihnavl8vn6vb5a6jjhclcki6y-gdk-pixbuf-2.44.6.drv",
+      "description": "Library for image loading and manipulation",
+      "install_id": "gdk-pixbuf",
+      "license": "LGPL-2.1-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "gdk-pixbuf-2.44.6",
+      "pname": "gdk-pixbuf",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:32:52.679282Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "2.44.6",
+      "outputs_to_install": [
+        "man",
+        "man",
+        "out",
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "debug": "/nix/store/3ljh7w7w9772gi21wzz8lwws2ivs1n88-gdk-pixbuf-2.44.6-debug",
+        "dev": "/nix/store/s8666p9giz8ckcvc5jf9nch0cwlybw4n-gdk-pixbuf-2.44.6-dev",
+        "devdoc": "/nix/store/hjb40zbb1g3pq7nfh9qqcsw7172h96i6-gdk-pixbuf-2.44.6-devdoc",
+        "installedTests": "/nix/store/3mblvl8l7i9m8fic4yikx0g07vc30cg1-gdk-pixbuf-2.44.6-installedTests",
+        "man": "/nix/store/lcy8q79b85hy79vr4iv35gchqi0bq8b3-gdk-pixbuf-2.44.6-man",
+        "out": "/nix/store/5d5gq4hcclz3mwikka3ykh924p610bdr-gdk-pixbuf-2.44.6"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "glib",
+      "broken": false,
+      "derivation": "/nix/store/1a0jk2iiii83h07l53kpmdnhljywfh78-glib-2.88.1.drv",
+      "description": "C library of programming buildings blocks",
+      "install_id": "glib",
+      "license": "LGPL-2.1-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "glib-2.88.1",
+      "pname": "glib",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:32:52.904412Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "2.88.1",
+      "outputs_to_install": [
+        "bin",
+        "bin",
+        "bin",
+        "bin"
+      ],
+      "outputs": {
+        "bin": "/nix/store/flq8wn4dikbhn2nmqac31zbpv0lkii2w-glib-2.88.1-bin",
+        "debug": "/nix/store/s8qqr71pd2hqv5j6fkbriw5p384fhcv4-glib-2.88.1-debug",
+        "dev": "/nix/store/q9ksx8c79jfj1cawwwzmpq3qapvpvab7-glib-2.88.1-dev",
+        "devdoc": "/nix/store/a007knv7hxkqmhx10rw8n2vc9rxg4qmq-glib-2.88.1-devdoc",
+        "out": "/nix/store/jlyahda14aya375lv7k9fsin2zk90nxz-glib-2.88.1"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "gnugrep",
+      "broken": false,
+      "derivation": "/nix/store/8z0ip4s3i9ghw3yljf19c1mhvz4571pg-gnugrep-3.12.drv",
+      "description": "GNU implementation of the Unix grep command",
+      "install_id": "gnugrep",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "gnugrep-3.12",
+      "pname": "gnugrep",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:32:53.549629Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "3.12",
+      "outputs_to_install": [
+        "out",
+        "out",
+        "out",
+        "out",
+        "out",
+        "out",
+        "out",
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "info": "/nix/store/sycfd661ry96dl1xw5k1qa3q93b9ms45-gnugrep-3.12-info",
+        "out": "/nix/store/gn94gpcp5q08x4v6g8mvw8v4r65rcjzk-gnugrep-3.12"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "gnumake",
+      "broken": false,
+      "derivation": "/nix/store/7r4i2k0iihf294fij4fharxs9ph4xy7i-gnumake-4.4.1.drv",
+      "description": "Tool to control the generation of non-source files from sources",
+      "install_id": "gnumake",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "gnumake-4.4.1",
+      "pname": "gnumake",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:32:53.551884Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "4.4.1",
+      "outputs_to_install": [
+        "man",
+        "out",
+        "out",
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "debug": "/nix/store/q683z843wi7xs96pngh1kinnx88vn2if-gnumake-4.4.1-debug",
+        "doc": "/nix/store/wxg27bzsljjw4k72m9b2v6a0fx5a68s0-gnumake-4.4.1-doc",
+        "info": "/nix/store/03d41qgjsrhcr3fzq2z99ry07rahnj0v-gnumake-4.4.1-info",
+        "man": "/nix/store/bmvqa5ym318mymhxlwwmxq8wxal958p4-gnumake-4.4.1-man",
+        "out": "/nix/store/d3bwqm6bymhy3pdgbvf7vxjqfp31m3j1-gnumake-4.4.1"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "gnused",
+      "broken": false,
+      "derivation": "/nix/store/fax2439jq23r7zcxs44axd7aqzmwbnxf-gnused-4.9.drv",
+      "description": "GNU sed, a batch stream editor",
+      "install_id": "gnused",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "gnused-4.9",
+      "pname": "gnused",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:32:53.562426Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "4.9",
+      "outputs_to_install": [
+        "out",
+        "out",
+        "out",
+        "out",
+        "out",
+        "out",
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "info": "/nix/store/whi6yac9mj29mdvmaglrnn1z6v156j1z-gnused-4.9-info",
+        "out": "/nix/store/kgxafhycw2kybbqih759ykc2043qyi5j-gnused-4.9"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "gnutar",
+      "broken": false,
+      "derivation": "/nix/store/k8mgqrkbrh8jpll2yamzk66jksqhlw0y-gnutar-1.35.drv",
+      "description": "GNU implementation of the `tar` archiver",
+      "install_id": "gnutar",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "gnutar-1.35",
+      "pname": "gnutar",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:32:53.566097Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.35",
+      "outputs_to_install": [
+        "out",
+        "out",
+        "out",
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "info": "/nix/store/mrvcwlivqq2nr2anqq9ap4wdhflk52lm-gnutar-1.35-info",
+        "out": "/nix/store/55nbxpjrgrrsplq739z1z8n05h16cgsq-gnutar-1.35"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "graphviz",
+      "broken": false,
+      "derivation": "/nix/store/90wv4iw5hzbvxvmvmy3x0c943rn0j6xk-graphviz-12.2.1.drv",
+      "description": "Graph visualization tools",
+      "install_id": "graphviz",
+      "license": "EPL-1.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "graphviz-12.2.1",
+      "pname": "graphviz",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:32:53.832259Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "12.2.1",
+      "outputs_to_install": [
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/12rgns2296s4qcja778gvcbx61z77rc4-graphviz-12.2.1"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "gzip",
+      "broken": false,
+      "derivation": "/nix/store/6a8p8kb4charqds4z1zf6ka1gbj71p1n-gzip-1.14.drv",
+      "description": "GNU zip compression program",
+      "install_id": "gzip",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "gzip-1.14",
+      "pname": "gzip",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:32:54.006299Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.14",
+      "outputs_to_install": [
+        "man",
+        "man",
+        "out",
+        "out",
+        "out",
+        "out",
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "info": "/nix/store/rxpgmmbxm5s2cg2rdd4hg14xvbjvy7b6-gzip-1.14-info",
+        "man": "/nix/store/hi5a6p82c2z8l7cm91bj05qlp35kjm5k-gzip-1.14-man",
+        "out": "/nix/store/ndpbjk6jhw0da5h272dqqnyxa35a9gmx-gzip-1.14"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "iproute2",
+      "broken": false,
+      "derivation": "/nix/store/g71glc0qqjdbzhz3r20brmf806l762dh-iproute2-7.0.0.drv",
+      "description": "Collection of utilities for controlling TCP/IP networking and traffic control in Linux",
+      "install_id": "iproute2",
+      "license": "GPL-2.0-only",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "iproute2-7.0.0",
+      "pname": "iproute2",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:33:13.696666Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "7.0.0",
+      "outputs_to_install": [
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "dev": "/nix/store/3vawsxg8kx0k9zq55vrgb0y12cnyw70p-iproute2-7.0.0-dev",
+        "out": "/nix/store/f8y3cn08mlw2cwjq05anf6sgkfyb0k8a-iproute2-7.0.0",
+        "scripts": "/nix/store/9mqx5i8wy5nw65hid25gsqg33a9w9aa1-iproute2-7.0.0-scripts"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "jbigkit",
+      "broken": false,
+      "derivation": "/nix/store/5nwc4fgwwkz6vcijzvb6rnr26a9qfmkz-jbigkit-2.1.drv",
+      "description": "Software implementation of the JBIG1 data compression standard",
+      "install_id": "jbigkit",
+      "license": "GPL-2.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "jbigkit-2.1",
+      "pname": "jbigkit",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:33:14.010989Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "2.1",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/1np3r21p8ml8wpcxgailsvzj38ay8w5c-jbigkit-2.1"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "jdk8",
+      "broken": false,
+      "derivation": "/nix/store/7nvjc1ff5vkxfc26a1ys5020d9b4dhd2-openjdk-8u502-b01.drv",
+      "description": "Open-source Java Development Kit",
+      "install_id": "jdk",
+      "license": "GPL-2.0-only",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "openjdk-8u502-b01",
+      "pname": "jdk8",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:33:14.045121Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "8u502-b01",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "debug": "/nix/store/r5y2yqsq0ys5zqwm1pfg63mb8i2nrg2m-openjdk-8u502-b01-debug",
+        "jre": "/nix/store/r2bjjys3g5759jrsbq9hzg55b6js5q8g-openjdk-8u502-b01-jre",
+        "out": "/nix/store/4wgr7m4i32dksq8ks601c4znn4aa7jmk-openjdk-8u502-b01"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "just",
+      "broken": false,
+      "derivation": "/nix/store/45c51wm8lisrj4d8p7kshvwyfm3wfnz3-just-1.51.0.drv",
+      "description": "Handy way to save and run project-specific commands",
+      "install_id": "just",
+      "license": "CC0-1.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "just-1.51.0",
+      "pname": "just",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:33:14.456114Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.51.0",
+      "outputs_to_install": [
+        "man",
+        "out"
+      ],
+      "outputs": {
+        "doc": "/nix/store/r800x8xppg70s00hw3h6x9cxpd6nh06y-just-1.51.0-doc",
+        "man": "/nix/store/p04vig0h2hj7hg5vgd74n5nphlcy23l8-just-1.51.0-man",
+        "out": "/nix/store/3j32zmchv9wd60qng1mm04yj07wf04i8-just-1.51.0"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "kubectl",
+      "broken": false,
+      "derivation": "/nix/store/i9ypkq36hrg798in8nr9zdfzpnss03vr-kubectl-1.36.1.drv",
+      "description": "Kubernetes CLI",
+      "install_id": "kubectl",
+      "license": "Apache-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "kubectl-1.36.1",
+      "pname": "kubectl",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:33:16.086126Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.36.1",
+      "outputs_to_install": [
+        "man",
+        "out"
+      ],
+      "outputs": {
+        "convert": "/nix/store/pajisc6xx344n31bklar8r04a395x7ws-kubectl-1.36.1-convert",
+        "man": "/nix/store/wln7k2l3lglmzmaxc5s3ycbzdc793vdv-kubectl-1.36.1-man",
+        "out": "/nix/store/hpxrpfnk0cdij0vwq0djimy9dcjl22vd-kubectl-1.36.1"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "lcms2",
+      "broken": false,
+      "derivation": "/nix/store/2xds37ic14am44xix91q470azpjsbk6x-lcms2-2.18.drv",
+      "description": "Color management engine",
+      "install_id": "lcms2",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "lcms2-2.18",
+      "pname": "lcms2",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:33:16.420766Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "2.18",
+      "outputs_to_install": [
+        "bin",
+        "bin"
+      ],
+      "outputs": {
+        "bin": "/nix/store/l56l3ixln0rbc621wchgddpz2j9304m6-lcms2-2.18-bin",
+        "dev": "/nix/store/f9r08vm2pg4sp8cya3m6hdaviq8w678w-lcms2-2.18-dev",
+        "out": "/nix/store/md7n8n5l55lpw8izhv4792cjn2isdi3y-lcms2-2.18"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "lerc",
+      "broken": false,
+      "derivation": "/nix/store/r21npsdxfypzx8vl6im7vrg8imgx5ssg-lerc-4.1.0.drv",
+      "description": "C++ library for Limited Error Raster Compression",
+      "install_id": "lerc",
+      "license": "Apache-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "lerc-4.1.0",
+      "pname": "lerc",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:33:16.580295Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "4.1.0",
+      "outputs_to_install": [
+        "out",
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "dev": "/nix/store/8bfrdi68b61zzf492mlxcj4bz2xmbr3p-lerc-4.1.0-dev",
+        "out": "/nix/store/n2qf6xg33jak5cfykmw1lx3z823hnkas-lerc-4.1.0"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "libdeflate",
+      "broken": false,
+      "derivation": "/nix/store/jx0ksczvhdyrb3srd51bp7gcc32lywkp-libdeflate-1.25.drv",
+      "description": "Fast DEFLATE/zlib/gzip compressor and decompressor",
+      "install_id": "libdeflate",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "libdeflate-1.25",
+      "pname": "libdeflate",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:33:16.959185Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.25",
+      "outputs_to_install": [
+        "out",
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/qdnz4adgz6p65pfxaw3w3q6zx3hbaa3x-libdeflate-1.25"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "libgcc",
+      "broken": false,
+      "derivation": "/nix/store/vp409v6lb83p243hmv8wgdmiaj7ivq6h-gcc-15.2.0.drv",
+      "description": "GNU Compiler Collection, version 15.2.0",
+      "install_id": "libgcc",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "gcc-15.2.0",
+      "pname": "libgcc",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:33:17.143133Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "15.2.0",
+      "outputs_to_install": [
+        "man",
+        "man",
+        "out",
+        "out",
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "checksum": "/nix/store/x37x98ygrwmp439bf5ilmrvgzz7lpjzl-gcc-15.2.0-checksum",
+        "info": "/nix/store/ppv8h4xawrqpnqhrdimk8xg9wwlfxxp5-gcc-15.2.0-info",
+        "lib": "/nix/store/chqq8mpmpyfi9kgsngya71akv5xicn03-gcc-15.2.0-lib",
+        "libgcc": "/nix/store/xyikkpwkyxx6syba3kfrr0h67ig5hwmn-gcc-15.2.0-libgcc",
+        "man": "/nix/store/b1p9a901ds4wck8n1pd76vxnjm34sfap-gcc-15.2.0-man",
+        "out": "/nix/store/qxaq7jz61a6zkr2mq49i0zvqip2m2jj8-gcc-15.2.0"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "libjpeg8",
+      "broken": false,
+      "derivation": "/nix/store/yps36m3f2z2mjhm0q7xaf50fjwi77i7r-libjpeg-turbo-3.1.4.drv",
+      "description": "Faster (using SIMD) libjpeg implementation",
+      "install_id": "libjpeg",
+      "license": "IJG",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "libjpeg-turbo-3.1.4",
+      "pname": "libjpeg8",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:33:17.343838Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "3.1.4",
+      "outputs_to_install": [
+        "bin",
+        "man"
+      ],
+      "outputs": {
+        "bin": "/nix/store/7r2xz87g2xpj75gradghlw05nrdig0cj-libjpeg-turbo-3.1.4-bin",
+        "dev": "/nix/store/jxl8z3bfmk96ccqfirdg6j1zq9bnw7cj-libjpeg-turbo-3.1.4-dev",
+        "doc": "/nix/store/sfw5s0v7vfmxnqfnb6cyczmsqyd3awjh-libjpeg-turbo-3.1.4-doc",
+        "man": "/nix/store/6imx0pfy39qf3hbwwgpm416hv3n5gm21-libjpeg-turbo-3.1.4-man",
+        "out": "/nix/store/w5irdzvydy7dhmpy1gzvrzm33vpi9dls-libjpeg-turbo-3.1.4"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "libmysqlclient",
+      "broken": false,
+      "derivation": "/nix/store/24238mz5dnvmznqa8qv4kx7wp0lhgg1d-mariadb-connector-c-3.3.5.drv",
+      "description": "Client library that can be used to connect to MySQL or MariaDB",
+      "install_id": "libmysqlclient",
+      "license": "LGPL-2.1-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "mariadb-connector-c-3.3.5",
+      "pname": "libmysqlclient",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:33:17.510479Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "3.3.5",
+      "outputs_to_install": [
+        "out",
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "dev": "/nix/store/cmngya9pswfpxi4z3slsca1f3ld4zqh4-mariadb-connector-c-3.3.5-dev",
+        "out": "/nix/store/0ggmvkkcr23vin6kfjk6m0cvn1ccck5c-mariadb-connector-c-3.3.5"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "libpng",
+      "broken": false,
+      "derivation": "/nix/store/awrbm03zwlx2im41ds8kxcwpb3zvzbr7-libpng-apng-1.6.56.drv",
+      "description": "Official reference implementation for the PNG file format with animation patch",
+      "install_id": "libpng",
+      "license": "libpng-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "libpng-apng-1.6.56",
+      "pname": "libpng",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:33:17.692061Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.6.56",
+      "outputs_to_install": [
+        "man",
+        "out",
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "dev": "/nix/store/qd3gla6sn63is90462qdfqwsvppkrhby-libpng-apng-1.6.56-dev",
+        "man": "/nix/store/ksc26yh77f53pc6n95g5614aijfmi75m-libpng-apng-1.6.56-man",
+        "out": "/nix/store/vqyqaaar0dvcdbmzsap60r96n1va0idd-libpng-apng-1.6.56"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "libtiff",
+      "broken": false,
+      "derivation": "/nix/store/a43cgikdwkz4d077qsqlp5r8mfzpc8vg-libtiff-4.7.1.drv",
+      "description": "Library and utilities for working with the TIFF image file format",
+      "install_id": "libtiff",
+      "license": "libtiff",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "libtiff-4.7.1",
+      "pname": "libtiff",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:33:18.401852Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "4.7.1",
+      "outputs_to_install": [
+        "bin",
+        "bin",
+        "bin",
+        "man",
+        "man"
+      ],
+      "outputs": {
+        "bin": "/nix/store/rkhwg07szrjgn40cxfs94ysiyyvl6lw0-libtiff-4.7.1-bin",
+        "dev": "/nix/store/xlfg33vwfqrybcxicqsph52ssbrcz9zs-libtiff-4.7.1-dev",
+        "dev_private": "/nix/store/icg21l0ya6ara73gl0d8dy6xg34hxb7p-libtiff-4.7.1-dev_private",
+        "doc": "/nix/store/9x0jwqm508jv63ayjlzh2flx487a029f-libtiff-4.7.1-doc",
+        "man": "/nix/store/lgzlkwsczgnqh6s8djbp43s6pzaszm8y-libtiff-4.7.1-man",
+        "out": "/nix/store/jjp9vc7vfrflxnliwkwblzadnyyw2zj2-libtiff-4.7.1"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "libwebp",
+      "broken": false,
+      "derivation": "/nix/store/ngvvj73wky2frwbgry1nxhayn723cj67-libwebp-1.6.0.drv",
+      "description": "Tools and library for the WebP image format",
+      "install_id": "libwebp",
+      "license": "BSD-3-Clause",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "libwebp-1.6.0",
+      "pname": "libwebp",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:33:18.565414Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.6.0",
+      "outputs_to_install": [
+        "out",
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/40kvg6g8ww9k9d116fiv7r9kwxhg4n7s-libwebp-1.6.0"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "libxslt",
+      "broken": false,
+      "derivation": "/nix/store/gddzg6wbma4zhq7zj77y96rl8rb644xb-libxslt-1.1.45.drv",
+      "description": "C library and tools to do XSL transformations",
+      "install_id": "libxslt",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "libxslt-1.1.45",
+      "pname": "libxslt",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:33:18.684531Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.1.45",
+      "outputs_to_install": [
+        "bin",
+        "bin"
+      ],
+      "outputs": {
+        "bin": "/nix/store/mgylqh12fhg9959fqx0r93hwpbww7x8g-libxslt-1.1.45-bin",
+        "dev": "/nix/store/h4yxchl2vqk3bmjqxfxpd9kxq9vflmm7-libxslt-1.1.45-dev",
+        "devdoc": "/nix/store/hlpllk1gkaz7wfmzpj472qraz5zfgcbr-libxslt-1.1.45-devdoc",
+        "doc": "/nix/store/j7cwsqfpvgrpxc68isb2cbb4f6iasb13-libxslt-1.1.45-doc",
+        "out": "/nix/store/xpgdpmr7rzzbv8nag6s4d9swwhwvh79k-libxslt-1.1.45"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "maven",
+      "broken": false,
+      "derivation": "/nix/store/prlwnw2czygqpqwxyk18x82c06cn4bbp-maven-3.9.12.drv",
+      "description": "Build automation tool (used primarily for Java projects)",
+      "install_id": "maven",
+      "license": "Apache-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "maven-3.9.12",
+      "pname": "maven",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:33:27.847753Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "3.9.12",
+      "outputs_to_install": [
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/pfi6mjf7mi0hl0nzlbipdsycfq0z22p3-maven-3.9.12"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "openjpeg",
+      "broken": false,
+      "derivation": "/nix/store/0gg0xcmpbkswdwayybsb1nm5wwgjzd7j-openjpeg-2.5.4.drv",
+      "description": "Open-source JPEG 2000 codec written in C language",
+      "install_id": "openjpeg",
+      "license": "BSD-2-Clause",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "openjpeg-2.5.4",
+      "pname": "openjpeg",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:33:38.535269Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "2.5.4",
+      "outputs_to_install": [
+        "out",
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "dev": "/nix/store/gv28539wq7k1n5q3pfgnf68gqfi053b9-openjpeg-2.5.4-dev",
+        "out": "/nix/store/viv5274f8mkvkg9df7karvl4ffwp0xkb-openjpeg-2.5.4"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "openslide",
+      "broken": false,
+      "derivation": "/nix/store/cpr0mk98gg3zv5sz5gfm531vbcnik0dw-openslide-4.0.0.drv",
+      "description": "C library that provides a simple interface to read whole-slide images",
+      "install_id": "openslide",
+      "license": "LGPL-2.1",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "openslide-4.0.0",
+      "pname": "openslide",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:33:38.742317Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "4.0.0",
+      "outputs_to_install": [
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/xppgwds6jvq7zx5qkjw7ajaxk14gpxlr-openslide-4.0.0"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "patchelf",
+      "broken": false,
+      "derivation": "/nix/store/bxcayhyg3gnlg7zfcvyrwdb9cwxpl09v-patchelf-0.15.2.drv",
+      "description": "Small utility to modify the dynamic linker and RPATH of ELF executables",
+      "install_id": "patchelf",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "patchelf-0.15.2",
+      "pname": "patchelf",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:33:40.111330Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "0.15.2",
+      "outputs_to_install": [
+        "out",
+        "out",
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/ilblcn1dkvzghcr2yk3av6jxn5rk1iqw-patchelf-0.15.2"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "pkg-config",
+      "broken": false,
+      "derivation": "/nix/store/gfzk85k58qbgzfw0ymjz8w3z8cfjf0m1-pkg-config-wrapper-0.29.2.drv",
+      "description": "Tool that allows packages to find out information about other packages (wrapper script)",
+      "install_id": "pkg-config",
+      "license": "GPL-2.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "pkg-config-wrapper-0.29.2",
+      "pname": "pkg-config",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:33:50.777986Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "0.29.2",
+      "outputs_to_install": [
+        "man",
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "doc": "/nix/store/lghsjphn6xrfac5q2zqnbbxvrmj6c3s7-pkg-config-wrapper-0.29.2-doc",
+        "man": "/nix/store/6ki0phq7gff15ywxghxbhpcg3390x0hp-pkg-config-wrapper-0.29.2-man",
+        "out": "/nix/store/1m05k7xgfnw6jc21xxk5681ni3ar97wf-pkg-config-wrapper-0.29.2"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "postgresql",
+      "broken": false,
+      "derivation": "/nix/store/2bdcnix0yay0pl7iv2g4nhmp7hd07i7w-postgresql-17.10.drv",
+      "description": "Powerful, open source object-relational database system",
+      "install_id": "postgresql",
+      "license": "PostgreSQL",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "postgresql-17.10",
+      "pname": "postgresql",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:33:51.411123Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "17.10",
+      "outputs_to_install": [
+        "man",
+        "out",
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "debug": "/nix/store/lfgkjigmsr1pyyyf42d5ilnc003bjxn7-postgresql-17.10-debug",
+        "dev": "/nix/store/2y8a47fzhkibnfy5lzrv16ylj5rn2pj7-postgresql-17.10-dev",
+        "doc": "/nix/store/c8wad1x0pmvysnfkz5d9rcpb872qc2j7-postgresql-17.10-doc",
+        "jit": "/nix/store/phskfynzln3q5qhc1m0i2g7n585129yn-postgresql-17.10-jit",
+        "lib": "/nix/store/h0mwgi47x8cmwyfqgbi3spsyr8hwidn0-postgresql-17.10-lib",
+        "man": "/nix/store/csjq4w1qavdihdq7hywbr0cdf2rzpfz9-postgresql-17.10-man",
+        "out": "/nix/store/8zm2sma9jgvq101yy4x45za4y28yd164-postgresql-17.10",
+        "plperl": "/nix/store/h98zq6zgf63dwix04cp93c0m3wk29acy-postgresql-17.10-plperl",
+        "plpython3": "/nix/store/wy8i0s38mq87j1cbq69i950rb26z7pz1-postgresql-17.10-plpython3",
+        "pltcl": "/nix/store/dd2j50hn9p1capz9kqcbj1773v4agpfj-postgresql-17.10-pltcl"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "procps",
+      "broken": false,
+      "derivation": "/nix/store/1rsysr5i7nyp885ycr655zjfpkg7k5h3-procps-4.0.6.drv",
+      "description": "Utilities that give information about processes using the /proc filesystem",
+      "install_id": "procps",
+      "license": "GPL-2.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "procps-4.0.6",
+      "pname": "procps",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:33:52.756083Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "4.0.6",
+      "outputs_to_install": [
+        "out",
+        "out",
+        "out",
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/5cfwmqmymsqynbyqq0vkbpf6914550x7-procps-4.0.6"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "python311",
+      "broken": false,
+      "derivation": "/nix/store/6yk3zyxpch1innsz4l2bg94ac5glcm05-python3-3.11.15.drv",
+      "description": "High-level dynamically-typed programming language",
+      "install_id": "python",
+      "license": "Python-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "python3-3.11.15",
+      "pname": "python311",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:33:53.816864Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "python3-3.11.15",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "debug": "/nix/store/yrllyw58ssiwap5bb50jxc8pk9kqh68v-python3-3.11.15-debug",
+        "out": "/nix/store/c6yb989sl77467xxwhylnkph1pqyi47p-python3-3.11.15"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "sqlite",
+      "broken": false,
+      "derivation": "/nix/store/c31mrkf6n1rm83cpz0w9h4a5imfg66yn-sqlite-3.51.2.drv",
+      "description": "Self-contained, serverless, zero-configuration, transactional SQL database engine",
+      "install_id": "sqlite",
+      "license": "Public Domain",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "sqlite-3.51.2",
+      "pname": "sqlite",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:35:22.465105Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "3.51.2",
+      "outputs_to_install": [
+        "bin",
+        "bin",
+        "bin",
+        "bin",
+        "bin",
+        "bin",
+        "man"
+      ],
+      "outputs": {
+        "bin": "/nix/store/jl35p88sb0jjm11sr2p9v37q6hm3c6pm-sqlite-3.51.2-bin",
+        "debug": "/nix/store/anbrfwxcbxj6y2n541mnazq5ijsa44bk-sqlite-3.51.2-debug",
+        "dev": "/nix/store/vyd6g9viqafhzr97dq8zsbksdf4w5avm-sqlite-3.51.2-dev",
+        "doc": "/nix/store/bc6wa5rbapbam6vq11kishrh8yg48zxj-sqlite-3.51.2-doc",
+        "man": "/nix/store/i4jxf27jfv2hrj68m2b3qy5b9q27p9xj-sqlite-3.51.2-man",
+        "out": "/nix/store/yg1gv8db04ldrnmdhykq8zjqqg6pg5kd-sqlite-3.51.2"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "unzip",
+      "broken": false,
+      "derivation": "/nix/store/xlyclrkmavyjhzyg5mh2cxc69h1hii2x-unzip-6.0.drv",
+      "description": "Extraction utility for archives compressed in .zip format",
+      "install_id": "unzip",
+      "license": "Info-ZIP",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "unzip-6.0",
+      "pname": "unzip",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:36:20.256114Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "6.0",
+      "outputs_to_install": [
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/mhw4sjc1rz4zmb3vkdinvfm7ym96fazx-unzip-6.0"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "uv",
+      "broken": false,
+      "derivation": "/nix/store/friqv48zwcpmg2g2ag6aak5rgrj6sj2g-uv-0.11.16.drv",
+      "description": "Extremely fast Python package installer and resolver, written in Rust",
+      "install_id": "uv",
+      "license": "[ Apache-2.0, MIT ]",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "uv-0.11.16",
+      "pname": "uv",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:36:20.802169Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "0.11.16",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/hq1ygvwk5p6w6iyvfqfpvxbwjvi1b2cw-uv-0.11.16"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "wget",
+      "broken": false,
+      "derivation": "/nix/store/25kkls4ycscdvihdh08s6w9gg7pvp3wy-wget-1.25.0.drv",
+      "description": "Tool for retrieving files using HTTP, HTTPS, and FTP",
+      "install_id": "wget",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "wget-1.25.0",
+      "pname": "wget",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:36:36.146636Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.25.0",
+      "outputs_to_install": [
+        "man",
+        "man",
+        "out",
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "info": "/nix/store/76xvwigsd25lrfpljip4dnsm2d5dfd6n-wget-1.25.0-info",
+        "man": "/nix/store/7l88zrsas43dlxx460xvs84jvkdni2yh-wget-1.25.0-man",
+        "out": "/nix/store/j9izhj1pb3k07wdw2q2c1z7pw2xkrz69-wget-1.25.0"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "xz",
+      "broken": false,
+      "derivation": "/nix/store/skfpkjqyfc0gn4skvrf2d3frr94i9idn-xz-5.8.3.drv",
+      "description": "General-purpose data compression software, successor of LZMA",
+      "install_id": "xz",
+      "license": "[ GPL-2.0-or-later, LGPL-2.1-or-later ]",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "xz-5.8.3",
+      "pname": "xz",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:36:40.814274Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "5.8.3",
+      "outputs_to_install": [
+        "bin",
+        "bin",
+        "bin",
+        "man",
+        "man"
+      ],
+      "outputs": {
+        "bin": "/nix/store/csra6zhdjw7rjzv98fycz7qjalyv55k2-xz-5.8.3-bin",
+        "dev": "/nix/store/91iczghslmxl3lafdy7z95cg76x2hiz7-xz-5.8.3-dev",
+        "doc": "/nix/store/69pslx8xbf1zcakhzkc60ccpcgbivxmk-xz-5.8.3-doc",
+        "man": "/nix/store/wzrpsby9iwag9j12618269fs6adhl4lb-xz-5.8.3-man",
+        "out": "/nix/store/waz72vmxc8zk90qqvgg9ikhzdk1kzjy4-xz-5.8.3"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "zlib",
+      "broken": false,
+      "derivation": "/nix/store/nf9d42gssxwv5i3ln0wclcyhnjszfqk4-zlib-1.3.2.drv",
+      "description": "Lossless data-compression library",
+      "install_id": "zlib",
+      "license": "Zlib",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "zlib-1.3.2",
+      "pname": "zlib",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:36:42.756071Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.3.2",
+      "outputs_to_install": [
+        "out",
+        "out",
+        "out",
+        "out",
+        "out",
+        "out",
+        "out",
+        "out",
+        "out",
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "dev": "/nix/store/h7ik0g1xxayy0z8h27zbvrgmac63irgs-zlib-1.3.2-dev",
+        "out": "/nix/store/61a1nwx3w6rqyaisj5rn1sal1981apm7-zlib-1.3.2",
+        "static": "/nix/store/xn70pn0qd5jhdvp5rikgn1yl9bbmyxiq-zlib-1.3.2-static"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    }
+  ]
+}

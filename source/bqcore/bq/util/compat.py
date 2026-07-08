@@ -49,9 +49,9 @@ Add python 2.6 and 2.7, 3.X compatibility functions here
 
 """
 
-
 import logging
-        # python 2.7, 3 import
+
+# python 2.7, 3 import
 try:
     from collections import OrderedDict
 except ImportError:
@@ -60,6 +60,3 @@ except ImportError:
         from ordereddict import OrderedDict
     except ImportError:
         logging.error("can't import OrderedDict.. install ordereddict")
-
-
-

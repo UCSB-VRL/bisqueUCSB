@@ -27,8 +27,8 @@ h1.services_disabled =
 # h1.uwsgi.master = true
 # h1.uwsgi.processes = 4
 # h1.bisque.static_files = false
-# Example h1 with only image service, feature and helpers
-#h1.services_enabled = blob_service, data_service, image_service, features
+# Example h1 with only image service and helpers
+#h1.services_enabled = blob_service, data_service, image_service
 
 # You can define more than one host for paster when used with frontent proxy (haproxy)
 # Not needed by uwsgi as it already run multiple background processes
@@ -51,11 +51,6 @@ e1.bisque.static_files = false
 # Define where the logs and PID files will go (otherwise will create in local dir)
 #log_dir = /var/log/bisque
 #pid_dir = /var/run/bisque
-
-# Run a logging server.. very important if multiple bisques are running(uwsgi, paster)
-# See
-#logging_server = python contrib/logging/loggingwebmonitor.py  -c config/loggingwebmonitor.ini
-
 
 ###############################
 # Extra filters to be added
@@ -134,12 +129,6 @@ bisque.stores.local.top = file://$datadir/imagedir/
 #bisque.stores.s3.credentials = <access_key>:<secret_key>
 #bisque.stores.s3.bucket_id = None
 #bisque.stores.s3.location = us-west
-
-# Feature service
-# Set if a feature is cached (all features are set to not cache by default)
-#bisque.feature.default.cache = False
-#set for specific feature
-#bisque.feature.HTD.cache = False
 
 # Data service
 #bisque.data_service.caching=true
@@ -250,14 +239,10 @@ bisque.login.firebase_github.type = firebase
 # Google Maps API Key
 #bisque.gmaps = ABC
 
-# Bisque Cluster Runtime
-condor.enabled = False
-condor.dag_template =
-condor.submit_template =
-condor.dag_config_template =
+# Bisque Module Runtime
 runtime.staging_base =
 runtime.matlab_home =
-runtime.mode = command
+runtime.platforms = command
 
 
 ###############################################################
@@ -590,7 +575,6 @@ formatter = generic
 
 #[handler_pylog]
 ## Install a SocketListener like python-loggingserver
-## see contrib/logging and enable the logging server in the [servers] section.
 #class= handlers.SocketHandler
 #level=NOTSET
 #formatter=generic

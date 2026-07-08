@@ -43,6 +43,7 @@ htmlcov/
 .nox/
 .coverage
 .coverage.*
+.bisque/
 .cache
 nosetests.xml
 coverage.xml
@@ -131,6 +132,7 @@ celerybeat.pid
 # Environments
 .env
 .venv
+.local/
 env/
 venv/
 ENV/
@@ -222,6 +224,8 @@ Thumbs.db
 /source/config/
 /source/data/
 /source/bqcore/bq/core/public/core
+/source/reports/
+/source/staging/
 
 # files created during development
 *.pid

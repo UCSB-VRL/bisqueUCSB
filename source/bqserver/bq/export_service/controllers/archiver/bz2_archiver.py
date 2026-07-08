@@ -1,11 +1,13 @@
-from bq.export_service.controllers.archiver.tar_archiver import TarArchiver
 import bz2
+
 # from io import StringIO
 # !!! modern Python versions use BytesIO for binary data, not StringIO
 from io import BytesIO
 
+from bq.export_service.controllers.archiver.tar_archiver import TarArchiver
+
+
 class BZip2Archiver(TarArchiver):
-    
     def __init__(self):
         # TarArchiver.__init__(self)
         # self.bbuffer = StringIO()
@@ -29,7 +31,7 @@ class BZip2Archiver(TarArchiver):
         return block
 
     def getContentType(self):
-        return 'application/x-bzip2'
+        return "application/x-bzip2"
 
     def getFileExtension(self):
-        return '.tar.bz2'
+        return ".tar.bz2"

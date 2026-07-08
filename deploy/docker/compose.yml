@@ -1,0 +1,88 @@
+services:
+  nginx:
+    image: nginx:1.27-alpine
+    depends_on:
+      bisque:
+        condition: service_healthy
+    ports:
+      - "${BISQUE_HTTP_PORT:-8080}:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - bisque-upload-tmp:/var/lib/bisque-upload-tmp
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1/robots.txt"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+
+  bisque:
+    image: "${BISQUE_IMAGE:-bisque:local}"
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile
+      args:
+        BISQUE_ENV_IMAGE: "${BISQUE_ENV_IMAGE:-bisque:env}"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - ../../.env
+    environment:
+      BISQUE_RUNTIME_DIR: /app/.bisque
+      BISQUE_CONFIG_DIR: /app/.bisque/config
+      BISQUE_DATA_DIR: /app/.bisque/data
+      BISQUE_EXTERNAL_DIR: /app/.bisque/external
+      BISQUE_PUBLIC_DIR: /app/public
+      BISQUE_REPORTS_DIR: /app/.bisque/reports
+      BISQUE_STAGING_DIR: /app/.bisque/staging
+      BISQUE_LOG_DIR: /app/.bisque/logs
+      BISQUE_RUN_DIR: /app/.bisque/run
+      BISQUE_DBURL: "${BISQUE_DBURL:-postgresql://${POSTGRES_USER:-bisque}:${POSTGRES_PASSWORD:-bisque}@postgres:5432/${POSTGRES_DB:-bisque}}"
+      BISQUE_SECRET: "${BISQUE_SECRET:-change-me-in-production}"
+      BISQUE_PUBLIC_URL: "${BISQUE_PUBLIC_URL:-http://127.0.0.1:${BISQUE_HTTP_PORT:-8080}}"
+      BISQUE_DOCKER_CALLBACK_URL: "${BISQUE_DOCKER_CALLBACK_URL:-http://host.docker.internal:${BISQUE_HTTP_PORT:-8080}}"
+      BISQUE_HTTP_HOST: 0.0.0.0
+      BISQUE_HTTP_PORT: 8080
+      BISQUE_UPLOAD_TMP_DIR: /var/lib/bisque-upload-tmp
+      BISQUE_DOCKER_HUB: "${BISQUE_DOCKER_HUB:-}"
+      BISQUE_DEBUG: "${BISQUE_DEBUG:-false}"
+      BISQUE_JS_ENVIRONMENT: "${BISQUE_JS_ENVIRONMENT:-production}"
+      BISQUE_ENABLE_ENGINE_SERVICE: "${BISQUE_DOCKER_ENABLE_ENGINE_SERVICE:-true}"
+      BISQUE_SERVICES_DISABLED: "${BISQUE_DOCKER_SERVICES_DISABLED:-}"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - bisque-runtime:/app/.bisque
+      - bisque-upload-tmp:/var/lib/bisque-upload-tmp
+      # need host's docker sock to run modules
+      - /var/run/docker.sock:/var/run/docker.sock
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "/.venv/bin/python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/core/js/bq_api.js', timeout=5).read(1)\"",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: "${POSTGRES_DB:-bisque}"
+      POSTGRES_USER: "${POSTGRES_USER:-bisque}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:-bisque}"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+volumes:
+  bisque-runtime:
+  bisque-upload-tmp:
+  postgres-data:

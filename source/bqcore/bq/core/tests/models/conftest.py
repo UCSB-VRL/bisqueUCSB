@@ -1,5 +1,6 @@
 # tests/models/conftest.py or directly in test_auth.py
 import pytest
+
 from bq.core.model import DBSession
 from bq.core.tests import setup_db, teardown_db
 

@@ -1,0 +1,9 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.16
+    hooks:
+      - id: ruff-check
+        args: [--fix]
+        files: ^(scripts|tests|source/bqapi|source/bqcore|source/bqengine|source/bqserver|source/pytest-bisque)/.*\.py$
+      - id: ruff-format
+        files: ^(scripts|tests|source/bqapi|source/bqcore|source/bqengine|source/bqserver|source/pytest-bisque)/.*\.py$

@@ -1,15 +1,15 @@
-#---------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------
 # Table Operations: Filter
-#---------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------
 
 from pylons.controllers.util import abort
 
+from bq.table.controllers.table_base import ParseError, TableQueryParser
 from bq.table.controllers.table_operation import TableOperation
-from bq.table.controllers.table_base import TableQueryParser, ParseError
 
 
 class FilterOperation(TableOperation):
-    name = 'filter'
+    name = "filter"
 
     """ Filter table with some condition
         Condition syntax:
@@ -31,7 +31,9 @@ class FilterOperation(TableOperation):
 
     def execute(self, table, args):
         try:
-            table.t_ops.append({'filter':TableQueryParser().parse_filter(args, table.get_columns())})
+            table.t_ops.append(
+                {"filter": TableQueryParser().parse_filter(args, table.get_columns())}
+            )
         except ParseError as e:
             abort(400, str(e))
         return table.read()  # TODO: try to delay the read as much as possible by combining t_ops

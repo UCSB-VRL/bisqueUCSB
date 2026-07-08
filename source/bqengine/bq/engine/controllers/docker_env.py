@@ -4,7 +4,7 @@ from __future__ import with_statement
 
 import logging
 import os
-import string
+import sys
 
 from bq.util.converters import asbool
 
@@ -14,50 +14,196 @@ from .module_env import BaseEnvironment, ModuleEnvironmentError
 
 log = logging.getLogger("bq.engine_service.docker_env")
 
-DOCKER_RUN = """#!/bin/bash
-set -euo pipefail
-set -x
+DOCKER_LAUNCHER = """import os
+import platform
+import shlex
+import subprocess
+import sys
 
-mex=$(echo "$MEX_ID" | tr '[:upper:]' '[:lower:]')
 
-cat > params.yaml <<EOF
-image: "${DOCKER_IMAGE}"
-args: "$(printf '%q ' "$@")"
-EOF
+DOCKER_IMAGE = {docker_image}
+DOCKER_LOGIN = {docker_login}
+DOCKER_PULL = {docker_pull}
+DOCKER_CALLBACK_URL = {docker_callback_url}
+DOCKER_INTERNAL_URLS = {docker_internal_urls}
+GPU_COUNT = {gpu_count}
+HOST_SYSTEM = platform.system().lower()
+MODULE_LOG_FILES = ("PythonScript.log", "scriptrun.log")
+STAGING_DIR = os.path.dirname(os.path.abspath(__file__))
 
-if [[ -z "${ARGO_TOKEN:-}" ]]; then
-  echo "Creating Argo token..."
-  export ARGO_TOKEN="$(kubectl create token argo -n argo)"
-fi
 
-argo submit --log \
-  --from workflowtemplate/bqflow-module-template \
-  --parameter-file params.yaml \
-  --token "$ARGO_TOKEN" \
-  --generate-name "${mex}-"
+def run(command):
+    print("+ " + " ".join(shlex.quote(str(part)) for part in command), flush=True)
+    return subprocess.call(command)
+
+
+def run_output(command):
+    print("+ " + " ".join(shlex.quote(str(part)) for part in command), flush=True)
+    return subprocess.check_output(command, universal_newlines=True).strip()
+
+
+def run_shell_config(command):
+    if not command:
+        return 0
+    return run(shlex.split(command))
+
+
+def module_argument(argument):
+    if DOCKER_CALLBACK_URL:
+        for internal_url in DOCKER_INTERNAL_URLS:
+            if internal_url and argument.startswith(internal_url):
+                return DOCKER_CALLBACK_URL.rstrip("/") + argument[len(internal_url) :]
+    if HOST_SYSTEM in ("darwin", "windows"):
+        return (
+            argument.replace("http://localhost:", "http://host.docker.internal:")
+            .replace("https://localhost:", "https://host.docker.internal:")
+            .replace("http://127.0.0.1:", "http://host.docker.internal:")
+            .replace("https://127.0.0.1:", "https://host.docker.internal:")
+        )
+    return argument
+
+
+def copy_module_logs(container):
+    for log_file in MODULE_LOG_FILES:
+        container_path = "%s:/module/%s" % (container, log_file)
+        host_path = os.path.join(STAGING_DIR, log_file)
+        code = run(["docker", "cp", container_path, host_path])
+        if code:
+            print("warning: could not copy %s from container" % log_file, flush=True)
+
+
+code = run_shell_config(DOCKER_LOGIN)
+if code:
+    sys.exit(code)
+
+code = run_shell_config(DOCKER_PULL)
+if code:
+    sys.exit(code)
+
+container = None
+module_return = 1
+docker_command = ["docker", "create"]
+if GPU_COUNT:
+    docker_command.extend(["--gpus", str(GPU_COUNT)])
+if HOST_SYSTEM == "linux":
+    docker_command.extend(["--network=host", "--add-host=host.docker.internal:host-gateway"])
+docker_command.append(DOCKER_IMAGE)
+docker_command.extend(module_argument(arg) for arg in sys.argv[1:])
+try:
+    container = run_output(docker_command)
+    if not container:
+        sys.exit(1)
+
+    code = run(["docker", "start", container])
+    if code:
+        sys.exit(code)
+
+    wait_output = run_output(["docker", "wait", container])
+    module_return = int(wait_output.splitlines()[-1])
+    run(["docker", "logs", container])
+    copy_module_logs(container)
+    sys.exit(module_return)
+except subprocess.CalledProcessError as exc:
+    sys.exit(exc.returncode)
+finally:
+    if container:
+        run(["docker", "rm", container])
 """
 
-DOCKER_RUN_GPU = """#!/bin/bash
-set -euo pipefail
-set -x
+ARGO_LAUNCHER = """import json
+import os
+import platform
+import re
+import shlex
+import subprocess
+import sys
+import tempfile
 
-mex=$(echo "$MEX_ID" | tr '[:upper:]' '[:lower:]')
 
-cat > params.yaml <<EOF
-image: "${DOCKER_IMAGE}"
-args: "$(printf '%q ' "$@")"
-EOF
+DOCKER_IMAGE = {docker_image}
+DOCKER_CALLBACK_URL = {docker_callback_url}
+DOCKER_INTERNAL_URLS = {docker_internal_urls}
+MEX_ID = {mex_id}
+GPU_COUNT = {gpu_count}
+CPU = {cpu}
+MEMORY = {memory}
+EPHEMERAL_STORAGE = {ephemeral_storage}
+ARGO_WORKFLOW_TEMPLATE = {argo_workflow_template}
+ARGO_GPU_WORKFLOW_TEMPLATE = {argo_gpu_workflow_template}
+HOST_SYSTEM = platform.system().lower()
 
-if [[ -z "${ARGO_TOKEN:-}" ]]; then
-  echo "Creating Argo token..."
-  export ARGO_TOKEN="$(kubectl create token argo -n argo)"
-fi
 
-argo submit --log \
-  --from workflowtemplate/bqflow-module-gpu-template \
-  --parameter-file params.yaml \
-  --token "$ARGO_TOKEN" \
-  --generate-name "${mex}-"
+def run(command):
+    print("+ " + " ".join(shlex.quote(str(part)) for part in command), flush=True)
+    return subprocess.call(command)
+
+
+def module_argument(argument):
+    if DOCKER_CALLBACK_URL:
+        for internal_url in DOCKER_INTERNAL_URLS:
+            if internal_url and argument.startswith(internal_url):
+                return DOCKER_CALLBACK_URL.rstrip("/") + argument[len(internal_url) :]
+    if HOST_SYSTEM in ("darwin", "windows"):
+        return (
+            argument.replace("http://localhost:", "http://host.docker.internal:")
+            .replace("https://localhost:", "https://host.docker.internal:")
+            .replace("http://127.0.0.1:", "http://host.docker.internal:")
+            .replace("https://127.0.0.1:", "https://host.docker.internal:")
+        )
+    return argument
+
+
+def workflow_generate_name(mex_id):
+    name = re.sub(r"[^a-z0-9-]+", "-", mex_id.lower()).strip("-")
+    name = name or "mex"
+    return name[:52].rstrip("-") + "-"
+
+
+template = ARGO_GPU_WORKFLOW_TEMPLATE if GPU_COUNT else ARGO_WORKFLOW_TEMPLATE
+module_command = shlex.join(module_argument(arg) for arg in sys.argv[1:])
+params = {{
+    "image": DOCKER_IMAGE,
+    "args": module_command,
+    "cpu": CPU,
+    "memory": MEMORY,
+    "ephemeral_storage": EPHEMERAL_STORAGE,
+    "gpu_count": str(GPU_COUNT or ""),
+}}
+parameter_path = None
+
+try:
+    with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as parameter_file:
+        json.dump(params, parameter_file)
+        parameter_file.write("\\n")
+        parameter_path = parameter_file.name
+
+    argo_command = [
+        "argo",
+        "submit",
+        "--log",
+        "--from",
+        "workflowtemplate/%s" % template,
+        "--parameter-file",
+        parameter_path,
+        "--generate-name",
+        workflow_generate_name(MEX_ID),
+    ]
+
+    namespace = os.environ.get("ARGO_NAMESPACE") or os.environ.get("POD_NAMESPACE")
+    if namespace:
+        argo_command.extend(["--namespace", namespace])
+
+    token = os.environ.get("ARGO_TOKEN")
+    if token:
+        argo_command.extend(["--token", token])
+
+    sys.exit(run(argo_command))
+finally:
+    if parameter_path:
+        try:
+            os.unlink(parameter_path)
+        except OSError:
+            pass
 """
 
 # DOCKER_RUN="""#!/bin/bash
@@ -108,6 +254,7 @@ class DockerEnvironment(BaseEnvironment):
     config = {}
     matlab_launcher = ""
     docker_keys = [
+        "docker.backend",
         "docker.hub",
         "docker.image",
         "docker.hub.user",
@@ -115,15 +262,32 @@ class DockerEnvironment(BaseEnvironment):
         "docker.hub.email",
         "docker.login_tmpl",
         "docker.default_tag",
+        "docker.callback_url",
+        "docker.argo.workflow_template",
+        "docker.argo.gpu_workflow_template",
     ]
+    requirement_defaults = {
+        "gpu": "false",
+        "gpu.count": "",
+        "cpu": "500m",
+        "memory": "512Mi",
+        "ephemeral_storage": "1Gi",
+    }
 
     def process_config(self, runner, **kw):
         log.debug("=== PROCESS_CONFIG START ===")
         log.debug("Input kwargs: %s", kw)
-        runner.load_section("docker", runner.bisque_cfg)
+        if hasattr(runner, "bisque_cfg"):
+            runner.load_section("docker", runner.bisque_cfg)
         runner.load_section("docker", runner.module_cfg)
         self.enabled = asbool(runner.config.get("docker.enabled", False))
+        self.backend = (runner.config.get("docker.backend", "docker") or "docker").strip().lower()
+        if self.backend not in ("docker", "argo"):
+            raise ModuleEnvironmentError(
+                "Unsupported docker.backend %r. Expected 'docker' or 'argo'." % self.backend
+            )
         self.module_exec_env = runner.config.get("exec_env", "")
+        self.requirements = self.module_requirements(runner)
         log.debug("Docker enabled: %s", self.enabled)
 
         self.docker_params = AttrDict()
@@ -164,9 +328,7 @@ class DockerEnvironment(BaseEnvironment):
         docker_login = ""
 
         # Build docker image name
-        image_parts = [
-            x for x in [p.docker_hub, p.docker_hub_user, p.docker_image] if x
-        ]
+        image_parts = [x for x in [p.docker_hub, p.docker_hub_user, p.docker_image] if x]
         log.debug("Docker image parts (hub, user, image): %s", image_parts)
 
         docker_image = "/".join(image_parts)
@@ -187,6 +349,12 @@ class DockerEnvironment(BaseEnvironment):
             log.debug("Docker hub not configured, skipping login/pull setup")
 
         log.debug("Total mexes to process: %d", len(runner.mexes))
+        runner_config = getattr(runner, "config", {})
+        bisque_server = runner_config.get("bisque.server", "").rstrip("/")
+        docker_callback_url = p.get("docker_callback_url", "").rstrip("/")
+        docker_internal_urls = [
+            url for url in [bisque_server, "http://127.0.0.1:8080", "http://localhost:8080"] if url
+        ]
 
         for mex_index, mex in enumerate(runner.mexes):
             log.debug("--- Processing mex %d ---", mex_index)
@@ -256,19 +424,25 @@ class DockerEnvironment(BaseEnvironment):
                 docker_inputs,
                 docker_outputs,
                 self.module_exec_env,
+                getattr(self, "requirements", self.module_requirements(runner)),
+                docker_callback_url,
+                docker_internal_urls,
+                getattr(self, "backend", "docker"),
+                self.docker_params.get("docker_argo_workflow_template", "")
+                or "bqflow-module-template",
+                self.docker_params.get("docker_argo_gpu_workflow_template", "")
+                or "bqflow-module-gpu-template",
             )
             log.debug("Created docker launcher at: %s", docker)
 
             if mex.executable:
                 # Keep the original executable list intact for the docker script
                 original_executable = list(mex.executable)
-                log.debug(
-                    "Original executable before replacement: %s", original_executable
-                )
+                log.debug("Original executable before replacement: %s", original_executable)
 
                 # Replace entire executable with docker script + original command
                 # This way: docker_run python PythonScriptWrapper.py url1 url2 token
-                mex.executable = [docker] + original_executable
+                mex.executable = [sys.executable, docker] + original_executable
                 mex.files = docker_inputs
                 mex.output_files = docker_outputs + ["output_files/"]
 
@@ -279,7 +453,8 @@ class DockerEnvironment(BaseEnvironment):
                 log.debug("Updated mex files: %s", mex.files)
                 log.debug("Updated mex output_files: %s", mex.output_files)
 
-                # Verify the docker script exists and is executable
+                # Verify the docker launcher exists. It is invoked by Python, so it is
+                # intentionally not executable.
                 if os.path.exists(docker):
                     script_stat = os.stat(docker)
                     log.debug(
@@ -288,12 +463,6 @@ class DockerEnvironment(BaseEnvironment):
                         script_stat.st_size,
                         script_stat.st_mode,
                     )
-                    is_executable = os.access(docker, os.X_OK)
-                    log.debug("Docker script is executable: %s", is_executable)
-                    if not is_executable:
-                        log.error(
-                            "Docker script is NOT executable! Need to fix permissions."
-                        )
                 else:
                     log.error("Docker script does NOT exist: %s", docker)
 
@@ -308,6 +477,34 @@ class DockerEnvironment(BaseEnvironment):
 
         log.debug("=== SETUP_ENVIRONMENT END ===")
 
+    def module_requirements(self, runner):
+        requirements = dict(self.requirement_defaults)
+        module_requirements = {}
+        if hasattr(runner, "module_cfg"):
+            module_requirements = runner.module_cfg.get("requirements", asdict=True)
+            requirements.update(module_requirements)
+
+        if "gpu" not in module_requirements:
+            runner_config = getattr(runner, "config", {})
+            if (runner_config.get("exec_env", "") or "").strip().lower() == "use_gpu":
+                requirements["gpu"] = "true"
+                requirements["gpu.count"] = requirements.get("gpu.count") or "1"
+
+        if asbool(requirements.get("gpu", "false")) and not requirements.get("gpu.count"):
+            requirements["gpu.count"] = "1"
+        if not asbool(requirements.get("gpu", "false")):
+            requirements["gpu.count"] = ""
+
+        return AttrDict(
+            gpu=asbool(requirements.get("gpu", "false")),
+            gpu_count=requirements.get("gpu.count", ""),
+            cpu=requirements.get("cpu", self.requirement_defaults["cpu"]),
+            memory=requirements.get("memory", self.requirement_defaults["memory"]),
+            ephemeral_storage=requirements.get(
+                "ephemeral_storage", self.requirement_defaults["ephemeral_storage"]
+            ),
+        )
+
     def create_docker_launcher(
         self,
         dest,
@@ -318,6 +515,12 @@ class DockerEnvironment(BaseEnvironment):
         docker_inputs,
         docker_outputs,
         module_exec_env,
+        requirements=None,
+        docker_callback_url="",
+        docker_internal_urls=None,
+        backend="docker",
+        argo_workflow_template="bqflow-module-template",
+        argo_gpu_workflow_template="bqflow-module-gpu-template",
     ):
         log.debug("=== CREATE_DOCKER_LAUNCHER START ===")
         log.debug("Destination: %s", dest)
@@ -325,39 +528,53 @@ class DockerEnvironment(BaseEnvironment):
         log.debug("Docker image: %s", docker_image)
         log.debug("Docker inputs: %s", docker_inputs)
         log.debug("Docker outputs: %s", docker_outputs)
+        requirements = requirements or AttrDict(
+            gpu=False,
+            gpu_count="",
+            cpu=self.requirement_defaults["cpu"],
+            memory=self.requirement_defaults["memory"],
+            ephemeral_storage=self.requirement_defaults["ephemeral_storage"],
+        )
+        gpu_count = requirements.gpu_count if requirements.gpu else ""
 
-        if module_exec_env == "use_gpu":
-            log.info("executing module on gpu %s", module_exec_env)
-            docker_run = DOCKER_RUN_GPU
+        if backend == "docker":
+            inputs_str = "\n".join(
+                "docker cp %s %s:/module/%s" % (f, "$CONTAINER", f) for f in docker_inputs
+            )
+            outputs_str = "\n".join(
+                "docker cp %s:/module/%s %s" % ("$CONTAINER", f, f) for f in docker_outputs
+            )
+
+            log.debug("Generated docker inputs commands:\n%s", inputs_str)
+            log.debug("Generated docker outputs commands:\n%s", outputs_str)
+
+            content = DOCKER_LAUNCHER.format(
+                docker_image=repr(docker_image),
+                docker_login=repr(docker_login),
+                docker_pull=repr(docker_pull),
+                docker_callback_url=repr(docker_callback_url),
+                docker_internal_urls=repr(docker_internal_urls or []),
+                gpu_count=repr(gpu_count),
+            )
+        elif backend == "argo":
+            content = ARGO_LAUNCHER.format(
+                docker_image=repr(docker_image),
+                docker_callback_url=repr(docker_callback_url),
+                docker_internal_urls=repr(docker_internal_urls or []),
+                mex_id=repr(mex_id),
+                gpu_count=repr(gpu_count),
+                cpu=repr(requirements.cpu),
+                memory=repr(requirements.memory),
+                ephemeral_storage=repr(requirements.ephemeral_storage),
+                argo_workflow_template=repr(argo_workflow_template),
+                argo_gpu_workflow_template=repr(argo_gpu_workflow_template),
+            )
         else:
-            docker_run = DOCKER_RUN
-        content = string.Template(docker_run)
+            raise ModuleEnvironmentError(
+                "Unsupported docker.backend %r. Expected 'docker' or 'argo'." % backend
+            )
 
-        inputs_str = "\n".join(
-            "docker cp %s %s:/module/%s" % (f, "$CONTAINER", f) for f in docker_inputs
-        )
-        outputs_str = "\n".join(
-            "docker cp %s:/module/%s %s" % ("$CONTAINER", f, f) for f in docker_outputs
-        )
-
-        log.debug("Generated docker inputs commands:\n%s", inputs_str)
-        log.debug("Generated docker outputs commands:\n%s", outputs_str)
-
-        content = content.safe_substitute(
-            MEX_ID=mex_id,
-            DOCKER_IMAGE=docker_image,
-            DOCKER_LOGIN=docker_login,
-            DOCKER_PULL=docker_pull,
-            DOCKER_INPUTS=inputs_str,
-            DOCKER_OUTPUTS=outputs_str,
-        )
-
-        if os.name == "nt":
-            path = os.path.join(dest, "docker_run.bat")
-            log.debug("Windows environment detected")
-        else:
-            path = os.path.join(dest, "docker_run")
-            log.debug("Unix environment detected")
+        path = os.path.join(dest, "docker_run.py")
 
         log.debug("Writing docker launcher script to: %s", path)
 
@@ -370,8 +587,8 @@ class DockerEnvironment(BaseEnvironment):
             raise
 
         try:
-            os.chmod(path, 0o744)
-            log.debug("Set permissions to 0o744 on: %s", path)
+            os.chmod(path, 0o644)
+            log.debug("Set permissions to 0o644 on: %s", path)
         except Exception as e:
             log.error("Failed to set permissions: %s", e, exc_info=True)
             raise

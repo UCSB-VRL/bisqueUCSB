@@ -52,56 +52,59 @@ DESCRIPTION
  Base engine adaptor for common code
 
 """
-import os
-import logging
+
 import copy
+import logging
+import os
 import tempfile
+
 from lxml import etree
+
 from bq.core import identity
 
+log = logging.getLogger("bq.engine_service.adapters.base_adapter")
 
-log = logging.getLogger('bq.engine_service.adapters.base_adapter')
 
 def local_xml_copy(root):
-    b, id = root.get ('uri').rsplit ('/', 1)
-    #path = '/tmp/%s%s' % (root.tag, id)
+    b, id = root.get("uri").rsplit("/", 1)
+    # path = '/tmp/%s%s' % (root.tag, id)
     path = os.path.join(tempfile.gettempdir(), "%s%s" % (root.tag, id))
-    f = open (path, 'w')
-    f.write (etree.tostring (root), encoding='unicode')
+    f = open(path, "w")
+    f.write(etree.tostring(root), encoding="unicode")
     f.close()
     return path
 
-class BaseAdapter(object):
 
+class BaseAdapter(object):
     def check(self, module):
-        '''Check if the adaptor can be loaded and run. Check for
+        """Check if the adaptor can be loaded and run. Check for
         missing libraries or try a trial run.  Used by the engine
         service to determine whether a module is valid
-        '''
+        """
         return False
 
     def execute(self, module, mex, pool):
-        '''Execute the module given by the mex context.  The module
+        """Execute the module given by the mex context.  The module
         will be the module definition parameter, the mex will contain
         the current values of all input parameters
-        '''
+        """
         pass
 
-
-    def prepare_inputs (self, module, mex):
-        '''Scan the module definition and the mex and match input
+    def prepare_inputs(self, module, mex):
+        """Scan the module definition and the mex and match input
         formal parameters creating a list of actual parameters in the
         proper order (sorted by index)
 
-        '''
+        """
 
         # ? dima - client_server, look at any find_service('client_service') in any api file
-        mex_specials = { 'mex_url'      : mex.get('uri'),
-                         'bisque_token' : identity.mex_authorization_token(),
-                         'module_url'   : module.get ('uri'),
-                         #'bisque_root'  : '',
-                         #'client_server': '',
-                         }
+        mex_specials = {
+            "mex_url": mex.get("uri"),
+            "bisque_token": identity.mex_authorization_token(),
+            "module_url": module.get("uri"),
+            #'bisque_root'  : '',
+            #'client_server': '',
+        }
 
         # Pass through module definition looking for inputs
         # for each input find the corresponding tag in the mex
@@ -111,58 +114,53 @@ class BaseAdapter(object):
         formal_inputs = formal_inputs and formal_inputs[0]
         actual_inputs = mex.xpath('./tag[@name="inputs"]')
         actual_inputs = actual_inputs and actual_inputs[0]
-        #actual_inputs = mex
+        # actual_inputs = mex
 
         for mi in formal_inputs:
             # pull type off and markers off
             found = None
-            #param_name = mi.get('value').split(':')[0].strip('$')
-            param_name = mi.get('name')
-            #log.debug ("PARAM %s" % param_name)
+            # param_name = mi.get('value').split(':')[0].strip('$')
+            param_name = mi.get("name")
+            # log.debug ("PARAM %s" % param_name)
             if param_name in mex_specials:
-                log.debug ("PARAM special %s=%s" % ( param_name, mex_specials[param_name]))
-                found = etree.Element('tag',
-                                      name=param_name,
-                                      value = mex_specials[param_name])
-                input_nodes.append (found)
+                log.debug("PARAM special %s=%s" % (param_name, mex_specials[param_name]))
+                found = etree.Element("tag", name=param_name, value=mex_specials[param_name])
+                input_nodes.append(found)
             else:
-                found = actual_inputs.xpath ('./tag[@name="%s"]'%param_name)
-                log.debug ("PARAM %s=%s" % (param_name, found))
-                input_nodes +=  found
+                found = actual_inputs.xpath('./tag[@name="%s"]' % param_name)
+                log.debug("PARAM %s=%s" % (param_name, found))
+                input_nodes += found
             if found is None:
-                log.warn ('missing input for parameter %s' % mi.get('value'))
+                log.warn("missing input for parameter %s" % mi.get("value"))
 
         # Add the index
         for i, node in enumerate(input_nodes):
-            if 'index' in list(node.keys()):
+            if "index" in list(node.keys()):
                 continue
-            node.set ('index', str(i))
+            node.set("index", str(i))
 
-        input_nodes.sort (lambda n1,n2: cmp(int(n1.get('index')), int(n2.get('index'))))
+        input_nodes.sort(lambda n1, n2: cmp(int(n1.get("index")), int(n2.get("index"))))
 
         return input_nodes
 
-
-
-    def prepare_outputs (self, module, mex):
-        '''Scan the module definition and the mex and match output
+    def prepare_outputs(self, module, mex):
+        """Scan the module definition and the mex and match output
         parameters creating a list in the proper order
-        '''
-        outputs = module.xpath ('./tag[@name="outputs"]')
+        """
+        outputs = module.xpath('./tag[@name="outputs"]')
         outputs = outputs and outputs[0]
-        return [ copy.deepcopy(kid) for kid in outputs ]
+        return [copy.deepcopy(kid) for kid in outputs]
 
-
-    def prepare_options (self, module, mex):
+    def prepare_options(self, module, mex):
         """Find the module options on the module definition
         and make available as a dict
         """
         options = {}
-        execute = module.xpath ('./tag[@name="execute_options"]')
+        execute = module.xpath('./tag[@name="execute_options"]')
         execute = execute and execute[0]
-        log.debug ("options %s" % execute )
+        log.debug("options %s" % execute)
         for opt in execute:
-            options[opt.get('name')]= opt
+            options[opt.get("name")] = opt
 
         log.debug("options=%s" % options)
         return options

@@ -47,30 +47,34 @@ DESCRIPTION
 
 """
 
+import datetime
+import logging
 import optparse
 import os
 import sys
-import logging
+import urllib.error
 import urllib.parse
-import urllib.request, urllib.parse, urllib.error
-import datetime
+import urllib.request
+
 from lxml import etree
 from paste.deploy import appconfig
 from tg import config
 
 from bq.config.environment import load_environment
 from bq.util import http
-from bq.util.paths import config_path
 from bq.util.commands import find_site_cfg
+from bq.util.paths import config_path
 from bq.util.urlnorm import norm
 
-logging.basicConfig(level = logging.WARN)
+logging.basicConfig(level=logging.WARN)
+
 
 def load_config(filename):
-    conf = appconfig('config:' + os.path.abspath(filename))
+    conf = appconfig("config:" + os.path.abspath(filename))
     load_environment(conf.global_conf, conf.local_conf)
 
-log = logging.getLogger('bq.engine.command.module_admin')
+
+log = logging.getLogger("bq.engine.command.module_admin")
 
 usage = """
 %prog module [register|unregister/list-engine/list-server] [-u user:pass] [-p] [-a] http://myengnine.org/engine_service/[MyModule] [http://bisque_server/data_service/module_uri]
@@ -81,65 +85,71 @@ usage = """
   Optionaly include the the module_uri on the server to disambiguate
 """
 
-def error (msg):
+
+def error(msg):
     print(msg, file=sys.stderr)
 
 
 class module_admin(object):
-    desc = 'module options'
+    desc = "module options"
+
     def __init__(self, version):
         parser = optparse.OptionParser(usage=usage, version="%prog " + version)
-        parser.add_option('-u', '--user', default=None, help='Login as user <user>:<pass>')
-        parser.add_option('-a', '--all', action='store_true', help='Register/Unregister all modules at engine',
-                          default=False)
-        parser.add_option('-r', '--root', help='Bisque server root url')
-        parser.add_option('-p', '--published', help='Make published module', default=False, action='store_true')
+        parser.add_option("-u", "--user", default=None, help="Login as user <user>:<pass>")
+        parser.add_option(
+            "-a",
+            "--all",
+            action="store_true",
+            help="Register/Unregister all modules at engine",
+            default=False,
+        )
+        parser.add_option("-r", "--root", help="Bisque server root url")
+        parser.add_option(
+            "-p", "--published", help="Make published module", default=False, action="store_true"
+        )
 
         options, args = parser.parse_args()
         self.args = args
         self.options = options
         self.command = None
         if len(self.args):
-            self.command = getattr(self, self.args.pop(0).replace('-', '_'), None)
+            self.command = getattr(self, self.args.pop(0).replace("-", "_"), None)
         if not self.command:
             parser.error("no valid command given")
 
         self.credentials = None
         if self.options.user:
-            self.credentials = tuple(self.options.user.split(':'))
-
+            self.credentials = tuple(self.options.user.split(":"))
 
         self.module_uri = None
         if len(self.args):
             self.engine_path = self.args.pop(0)
-            if not self.engine_path.endswith('/'):
-                self.engine_path += '/'
+            if not self.engine_path.endswith("/"):
+                self.engine_path += "/"
 
             if len(self.args):
                 self.module_uri = self.args.pop(0)
         else:
-            parser.error('must provide URL to the service ')
-
+            parser.error("must provide URL to the service ")
 
     def run(self):
         if self.options.root:
             self.root = self.options.root
         else:
-            site_cfg = find_site_cfg('site.cfg')
+            site_cfg = find_site_cfg("site.cfg")
             load_config(site_cfg)
-            self.root = norm(config.get('bisque.root') + '/')
+            self.root = norm(config.get("bisque.root") + "/")
         self.command()
-
 
     def get_xml(self, url):
         print("loading ", url)
         resp, xml = http.xmlrequest(url)
-        if resp['status'] != '200':
-            print("Can't access %s" %url)
+        if resp["status"] != "200":
+            print("Can't access %s" % url)
             print(resp)
             return None
         try:
-            xml =   etree.XML(xml)
+            xml = etree.XML(xml)
             return xml
         except Exception:
             print("Problem parsing")
@@ -147,80 +157,82 @@ class module_admin(object):
         return None
 
     def get_modules(self, engine_path):
-        'list module urls  at engine given path path'
-        engine_path = norm(engine_path + '/')
-        modules = self.get_xml( url = urllib.parse.urljoin(engine_path, '_services'))
+        "list module urls  at engine given path path"
+        engine_path = norm(engine_path + "/")
+        modules = self.get_xml(url=urllib.parse.urljoin(engine_path, "_services"))
         if modules is None:
-            return error ('Cannot read modules from engine: %s' % engine_path)
-        return  [ m.get('value') for m in modules ]
+            return error("Cannot read modules from engine: %s" % engine_path)
+        return [m.get("value") for m in modules]
 
     def register_one(self, module_path):
         bisque_root = self.root
-        module_path = norm(module_path + '/')
-        module_register = norm (urllib.parse.urljoin(bisque_root, "module_service/register_engine") + '/')
-        module_xml = self.get_xml( url = urllib.parse.urljoin(module_path, 'definition'))
+        module_path = norm(module_path + "/")
+        module_register = norm(
+            urllib.parse.urljoin(bisque_root, "module_service/register_engine") + "/"
+        )
+        module_xml = self.get_xml(url=urllib.parse.urljoin(module_path, "definition"))
         if module_xml is None:
-            error ("cannot read definition from %s!  Is engine address correct?")
-        name = module_xml.get('name')
+            error("cannot read definition from %s!  Is engine address correct?")
+        name = module_xml.get("name")
         if module_xml is not None:
-            log.info ("POSTING %s to %s" % (name, module_register))
-            #engine = etree.Element ('engine', uri = module_path)
-            #engine.append(module_xml)
-            #xml =  etree.tostring (engine)
-            #print xml
-            module_xml.set('ts', datetime.datetime.now().isoformat())
+            log.info("POSTING %s to %s" % (name, module_register))
+            # engine = etree.Element ('engine', uri = module_path)
+            # engine.append(module_xml)
+            # xml =  etree.tostring (engine)
+            # print xml
+            module_xml.set("ts", datetime.datetime.now().isoformat())
             if self.options.published:
                 for el in module_xml.getiterator(tag=etree.Element):
-                    el.set ('permission', 'published')
-            xml = etree.tostring(module_xml, encoding='unicode')
-            params = [ ('engine_uri', module_path) ]
+                    el.set("permission", "published")
+            xml = etree.tostring(module_xml, encoding="unicode")
+            params = [("engine_uri", module_path)]
             if self.module_uri:
-                params.append ( ('module_uri', self.module_uri) )
+                params.append(("module_uri", self.module_uri))
             url = "%s?%s" % (module_register, urllib.parse.urlencode(params))
-            resp, content = http.xmlrequest (url, method='POST', body=xml, userpass=self.credentials)
+            resp, content = http.xmlrequest(url, method="POST", body=xml, userpass=self.credentials)
 
-            if resp.status == '401':
+            if resp.status == "401":
                 print("You do not have permission to register (provide credentials)")
-            elif resp['status'] != '200':
+            elif resp["status"] != "200":
                 print("An error occurred:")
                 print(content)
                 return
             print("Registered")
 
-    def register (self):
+    def register(self):
         if self.options.all:
             module_paths = self.get_modules(self.engine_path)
         else:
-            module_paths = [ self.engine_path ]
+            module_paths = [self.engine_path]
         for m in module_paths:
             print("registering %s" % m)
             self.register_one(m)
-
 
     def unregister(self):
         if self.options.all:
             module_paths = self.get_modules(self.engine_path)
         else:
-            module_paths = [ self.engine_path ]
+            module_paths = [self.engine_path]
         for m in module_paths:
             print("unregistering %s" % m)
             self.unregister_one(m)
 
-
     def unregister_one(self, module_path):
         bisque_root = self.root
-        module_path = norm(module_path + '/')
-        module_unregister = norm (urllib.parse.urljoin(bisque_root, "module_service/unregister_engine") + '/')
+        module_path = norm(module_path + "/")
+        module_unregister = norm(
+            urllib.parse.urljoin(bisque_root, "module_service/unregister_engine") + "/"
+        )
 
-        module_name = module_path.split('/')[-2]
-        params = [ ('engine_uri', module_path) ]
+        module_name = module_path.split("/")[-2]
+        params = [("engine_uri", module_path)]
         if self.module_uri:
-            params.append ( ('module_uri', self.module_uri) )
+            params.append(("module_uri", self.module_uri))
         url = "%s?%s" % (module_unregister, urllib.parse.urlencode(params))
-        resp, content = http.xmlrequest (url, method='GET', userpass=self.credentials)
-        if resp.status == '401':
+        resp, content = http.xmlrequest(url, method="GET", userpass=self.credentials)
+        if resp.status == "401":
             print("You do not have permission to register (provide credentials)")
-        elif resp['status'] != '200':
+        elif resp["status"] != "200":
             print("An error occurred:")
             print(content)
             return
@@ -229,48 +241,50 @@ class module_admin(object):
     def list_engine(self):
         module_paths = self.get_modules(self.engine_path)
         if module_paths is None:
-            module_paths = self.get_modules(self.engine_path + '/engine_service/')
+            module_paths = self.get_modules(self.engine_path + "/engine_service/")
         for module in module_paths or []:
             print(module)
 
-
     def list_server(self):
         from collections import namedtuple
-        Row = namedtuple ('Row', ('name', 'engine', 'module'))
-        server_modules = self.get_xml( url = urllib.parse.urljoin(self.root, 'module_service'))
+
+        Row = namedtuple("Row", ("name", "engine", "module"))
+        server_modules = self.get_xml(url=urllib.parse.urljoin(self.root, "module_service"))
         if server_modules is None:
-            error ("No modules registered at %s. Is this a bisque server?" % self.root)
+            error("No modules registered at %s. Is this a bisque server?" % self.root)
 
-        rows = [ Row(name=module.get('name'), engine=module.get('value'), module=module.get ('uri'))
-                 for module in server_modules ]
-        pprinttable ( rows)
+        rows = [
+            Row(name=module.get("name"), engine=module.get("value"), module=module.get("uri"))
+            for module in server_modules
+        ]
+        pprinttable(rows)
 
 
-#taken from
-#http://stackoverflow.com/questions/5909873/python-pretty-printing-ascii-tables
+# taken from
+# http://stackoverflow.com/questions/5909873/python-pretty-printing-ascii-tables
 def pprinttable(rows):
-  if len(rows) > 1:
-    headers = rows[0]._fields
-    lens = []
-    for i in range(len(rows[0])):
-      lens.append(len(max([x[i] for x in rows] + [headers[i]],key=lambda x:len(str(x)))))
-    formats = []
-    hformats = []
-    for i in range(len(rows[0])):
-      if isinstance(rows[0][i], int):
-        formats.append("%%%dd" % lens[i])
-      else:
-        formats.append("%%-%ds" % lens[i])
-      hformats.append("%%-%ds" % lens[i])
-    pattern = " | ".join(formats)
-    hpattern = " | ".join(hformats)
-    separator = "-+-".join(['-' * n for n in lens])
-    print(hpattern % tuple(headers))
-    print(separator)
-    for line in rows:
-      print(pattern % tuple(line))
-  elif len(rows) == 1:
-    row = rows[0]
-    hwidth = len(max(row._fields,key=lambda x: len(x)))
-    for i in range(len(row)):
-      print("%*s = %s" % (hwidth,row._fields[i],row[i]))
+    if len(rows) > 1:
+        headers = rows[0]._fields
+        lens = []
+        for i in range(len(rows[0])):
+            lens.append(len(max([x[i] for x in rows] + [headers[i]], key=lambda x: len(str(x)))))
+        formats = []
+        hformats = []
+        for i in range(len(rows[0])):
+            if isinstance(rows[0][i], int):
+                formats.append("%%%dd" % lens[i])
+            else:
+                formats.append("%%-%ds" % lens[i])
+            hformats.append("%%-%ds" % lens[i])
+        pattern = " | ".join(formats)
+        hpattern = " | ".join(hformats)
+        separator = "-+-".join(["-" * n for n in lens])
+        print(hpattern % tuple(headers))
+        print(separator)
+        for line in rows:
+            print(pattern % tuple(line))
+    elif len(rows) == 1:
+        row = rows[0]
+        hwidth = len(max(row._fields, key=lambda x: len(x)))
+        for i in range(len(row)):
+            print("%*s = %s" % (hwidth, row._fields[i], row[i]))

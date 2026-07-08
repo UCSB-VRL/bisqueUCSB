@@ -1,14 +1,17 @@
-import zipfile
-import time
 import os
+import time
+import zipfile
 from io import BytesIO
+
 from bq.export_service.controllers.archiver.archiver_factory import AbstractArchiver
 
 
 class ZipArchiver(AbstractArchiver):
     def __init__(self):
         self.buffer = BytesIO()
-        self.zip = zipfile.ZipFile(self.buffer, mode='w', compression=zipfile.ZIP_DEFLATED, allowZip64=True)
+        self.zip = zipfile.ZipFile(
+            self.buffer, mode="w", compression=zipfile.ZIP_DEFLATED, allowZip64=True
+        )
         self._finalized = False
         self._file_buffer = None
         self._file_name = None
@@ -22,7 +25,7 @@ class ZipArchiver(AbstractArchiver):
     def readBlock(self, block_size):
         chunk = self.reader.read(block_size)
         self._file_buffer.write(chunk)
-        return b''  # Nothing to yield yet
+        return b""  # Nothing to yield yet
 
     def EOF(self):
         return self.reader.tell() >= self.fileSize
@@ -43,15 +46,16 @@ class ZipArchiver(AbstractArchiver):
         return data
 
     def getContentType(self):
-        return 'application/zip'
+        return "application/zip"
 
     def getFileExtension(self):
-        return '.zip'
+        return ".zip"
 
     def close(self):
         if not self._finalized:
             self.zip.close()
             self._finalized = True
+
 
 # !!! Old implementation, kept for reference, not used in the current implementation !!!
 # import zipfile

@@ -1,19 +1,23 @@
 ##
 ## Add local fixtures here
-import pytest
 from collections import OrderedDict, namedtuple
 
+import pytest
 from bq.util.bunch import Bunch
 from bq.util.mkdir import _mkdir
-from .util import  fetch_file
+
 from bqapi import BQServer
+
+from .util import fetch_file
+
 
 @pytest.fixture(scope="module")
 def server():
     return BQServer()
 
 
-LocalFile = namedtuple('LocalFile', ['name', 'location'])
+LocalFile = namedtuple("LocalFile", ["name", "location"])
+
 
 @pytest.fixture(scope="module")
 def stores(config):
@@ -23,8 +27,8 @@ def stores(config):
     _mkdir(results)
 
     files = []
-    for name in [ x.strip() for x in config.store.files.split() ]:
+    for name in [x.strip() for x in config.store.files.split()]:
         print("Fetching", name)
-        files.append (LocalFile (name, fetch_file(name, samples, inputs)))
+        files.append(LocalFile(name, fetch_file(name, samples, inputs)))
 
     return Bunch(samples=samples, inputs=inputs, results=results, files=files)

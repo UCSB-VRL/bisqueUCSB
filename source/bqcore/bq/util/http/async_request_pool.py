@@ -63,30 +63,36 @@ DESCRIPTION
 
 import threading
 
-from .thread_pool import  ThreadPool, WorkRequest, NoResultsPending
 import httplib2
 
+from .thread_pool import NoResultsPending, ThreadPool, WorkRequest
 
 main_pool = None
+
+
 class HTTPAsyncRequest(WorkRequest):
     """Helper class for initialization of thread_pool WorkRequest with
     an http request
     """
+
     def __init__(self, uri, method, body, headers, callback, client):
         super(HTTPAsyncRequest, self).__init__(
-            callable_ =  client.request,
-            args = [ uri ],
-            kwds = { 'method': method, 'body':body, 'headers':headers },
-            callback = callback)
+            callable_=client.request,
+            args=[uri],
+            kwds={"method": method, "body": body, "headers": headers},
+            callback=callback,
+        )
 
-class HTTPThreadPool (threading.Thread):
+
+class HTTPThreadPool(threading.Thread):
     """Maintain a thread pool"""
-    def __init__(self, num_workers = 3, **kw):
+
+    def __init__(self, num_workers=3, **kw):
         threading.Thread.__init__(self, **kw)
-        #self.setDaemon(True)
-        #self.daemon = True
-        self.stopping =False
-        self.pool =  ThreadPool( num_workers, **kw)
+        # self.setDaemon(True)
+        # self.daemon = True
+        self.stopping = False
+        self.pool = ThreadPool(num_workers, **kw)
         self.start()
 
     def putRequest(self, r):
@@ -94,10 +100,10 @@ class HTTPThreadPool (threading.Thread):
 
     def run(self):
         while True:
-            if  self.stopping:
+            if self.stopping:
                 break
             try:
-                self.pool.poll( timeout=1)
+                self.pool.poll(timeout=1)
             except NoResultsPending:
                 continue
         self.pool.dismissWorkers(do_join=True)
@@ -106,21 +112,19 @@ class HTTPThreadPool (threading.Thread):
         self.stopping = True
 
 
-def request(uri, method="GET", body=None, headers={}, callback=None, client= None, **kw):
+def request(uri, method="GET", body=None, headers={}, callback=None, client=None, **kw):
     """Make an aynchrounous request adding user credential if available
     Return: ( Request, None)
     """
 
-    return (main_pool.putRequest (
-        HTTPAsyncRequest(uri,
-                         method=method,
-                         body = body,
-                         headers=headers,
-                         callback = callback,
-                         client=client)),
-            None)
-
-
+    return (
+        main_pool.putRequest(
+            HTTPAsyncRequest(
+                uri, method=method, body=body, headers=headers, callback=callback, client=client
+            )
+        ),
+        None,
+    )
 
 
 def start_pool_handler():
@@ -138,21 +142,20 @@ def stop_pool_handler():
 def isrunning():
     return main_pool != None
 
-if __name__ == "__main__":
 
+if __name__ == "__main__":
     client = httplib2.Http(disable_ssl_certificate_validation=True)
 
     start_pool_handler()
 
     def mycallback(request, result):
         headers, content = result
-        print(request, " ==> " , headers, len(content))
-    sites = [ 'http://cnn.com', 'http://yahoo.com', 'http://news.google.com']
+        print(request, " ==> ", headers, len(content))
 
+    sites = ["http://cnn.com", "http://yahoo.com", "http://news.google.com"]
 
     for url in sites:
-        request(url, callback = mycallback, client = client)
+        request(url, callback=mycallback, client=client)
         print(url)
 
     stop_pool_handler()
-

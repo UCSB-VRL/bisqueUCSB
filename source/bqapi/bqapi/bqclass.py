@@ -46,49 +46,71 @@ BQ API - a set of classes that represent Bisque objects
 
 """
 
-__module__    = "bqapi.py"
-__author__    = "Dmitry Fedorov and Kris Kvilekval"
-__version__   = "0.1"
-__revision__  = "$Rev$"
-__date__      = "$Date$"
+__module__ = "bqapi.py"
+__author__ = "Dmitry Fedorov and Kris Kvilekval"
+__version__ = "0.1"
+__revision__ = "$Rev$"
+__date__ = "$Date$"
 __copyright__ = "Center for BioImage Informatics, University California, Santa Barbara"
 
+import inspect
+import io
+import logging
+import math
 import os
 import sys
-import math
-import io
-import inspect
-import logging
 import tempfile
+
 try:
     from lxml import etree
 except ImportError:
     import xml.etree.ElementTree as etree
 from .xmldict import xml2nv
 
+log = logging.getLogger("bqapi.class")
 
-log = logging.getLogger('bqapi.class')
+__all__ = [
+    "BQFactory",
+    "BQNode",
+    "BQImage",
+    "BQResource",
+    "BQValue",
+    "BQTag",
+    "BQVertex",
+    "BQGObject",
+    "BQDataset",
+    "BQUser",
+    "BQMex",
+    "gobject_primitives",
+    "BQPoint",
+    "BQLabel",
+    "BQPolyline",
+    "BQPolygon",
+    "BQCircle",
+    "BQEllipse",
+    "BQRectangle",
+    "BQSquare",
+]  # 'toXml', 'fromXml' ]
 
-__all__ = [ 'BQFactory', 'BQNode', 'BQImage', 'BQResource', 'BQValue', 'BQTag', 'BQVertex', 'BQGObject',
-            "BQDataset", "BQUser", "BQMex",
-            'gobject_primitives',
-            'BQPoint', 'BQLabel', 'BQPolyline', 'BQPolygon', 'BQCircle', 'BQEllipse', 'BQRectangle', 'BQSquare',] # 'toXml', 'fromXml' ]
-
-gobject_primitives = set(['point', 'label', 'polyline', 'polygon', 'circle', 'ellipse', 'rectangle', 'square', 'line'])
+gobject_primitives = set(
+    ["point", "label", "polyline", "polygon", "circle", "ellipse", "rectangle", "square", "line"]
+)
 
 
 ################################################################################
 # Base class for bisque resources
 ################################################################################
 
-class BQNode (object):
-    '''Base class for parsing Bisque XML'''
-    xmltag = ''
+
+class BQNode(object):
+    """Base class for parsing Bisque XML"""
+
+    xmltag = ""
     xmlfields = []
     xmlkids = []
 
     def __init__(self, *args, **kw):
-        for k,v in zip(self.xmlfields, args):
+        for k, v in zip(self.xmlfields, args):
             setattr(self, k, v)
         for k in self.xmlfields:
             if k in self.__dict__:
@@ -96,40 +118,46 @@ class BQNode (object):
             setattr(self, k, kw.get(k, None))
 
     def initialize(self):
-        'used for class post parsing initialization'
+        "used for class post parsing initialization"
         pass
 
     def initializeXml(self, xmlnode):
         for x in self.xmlfields:
-            setattr(self, x, xmlnode.get (x, None))
+            setattr(self, x, xmlnode.get(x, None))
 
     def set_parent(self, parent):
         pass
 
     def __repr__(self):
-        return '(%s:%s)' % (self.xmltag, id(self) )
+        return "(%s:%s)" % (self.xmltag, id(self))
 
     def __str__(self):
-        return '(%s:%s)'%(self.xmltag,','.join (['%s=%s' % (f, getattr(self,f,'')) for f in self.xmlfields]))
+        return "(%s:%s)" % (
+            self.xmltag,
+            ",".join(["%s=%s" % (f, getattr(self, f, "")) for f in self.xmlfields]),
+        )
 
-    def toTuple (self):
-        return tuple( [ x for x in self.xmlfields ] )
+    def toTuple(self):
+        return tuple([x for x in self.xmlfields])
+
 
 ################################################################################
 # Value
 ################################################################################
 
-class BQValue (BQNode):
-    '''tag value'''
-    xmltag = "value"
-    xmlfields = ['value', 'type', 'index']
 
-    #def __init__(self,  **kw):
+class BQValue(BQNode):
+    """tag value"""
+
+    xmltag = "value"
+    xmlfields = ["value", "type", "index"]
+
+    # def __init__(self,  **kw):
     #    super(BQValue, self).__init__(**kw)
 
     def set_parent(self, parent):
         if self.index is not None:
-            parent.values.extend([None for x in range((self.index+1)-len(parent.values))])
+            parent.values.extend([None for x in range((self.index + 1) - len(parent.values))])
             parent.values[self.index] = self
         else:
             parent.values.append(self)
@@ -143,24 +171,37 @@ class BQValue (BQNode):
         self.value = xmlnode.text
 
     def toetree(self, parent, baseuri):
-        n = etree.SubElement(parent, 'value', )
-        if self.type is not None: n.set('type', str(self.type))
-        if self.index is not None: n.set('index', str(self.index))
-        if self.value is not None: n.text = str(self.value)
+        n = etree.SubElement(
+            parent,
+            "value",
+        )
+        if self.type is not None:
+            n.set("type", str(self.type))
+        if self.index is not None:
+            n.set("index", str(self.index))
+        if self.value is not None:
+            n.text = str(self.value)
         return n
+
 
 ################################################################################
 # Base class for bisque resources
 ################################################################################
 
-class BQResource (BQNode):
-    '''Base class for Bisque resources'''
-    xmltag = 'resource'
-    xmlfields = ['name', 'type', 'uri', 'ts', 'resource_uniq']
-    xmlkids = ['kids', 'tags', 'gobjects',] #  'values'] handled differently
+
+class BQResource(BQNode):
+    """Base class for Bisque resources"""
+
+    xmltag = "resource"
+    xmlfields = ["name", "type", "uri", "ts", "resource_uniq"]
+    xmlkids = [
+        "kids",
+        "tags",
+        "gobjects",
+    ]  #  'values'] handled differently
 
     def __repr__(self):
-        return '(%s:%s)'%(self.xmltag, self.uri) #pylint: disable=no-member
+        return "(%s:%s)" % (self.xmltag, self.uri)  # pylint: disable=no-member
 
     def __init__(self, *args, **kw):
         self.tags = []
@@ -170,64 +211,64 @@ class BQResource (BQNode):
         self.parent = None
         super(BQResource, self).__init__(*args, **kw)
 
-    def toDict (self):
+    def toDict(self):
         objs = {}
-        objs.update ( [ (f.name, f) for f in self.tags if f.name ] )
-        objs.update ( [ (f.name, f) for f in self.gobjects if f.name ] )
+        objs.update([(f.name, f) for f in self.tags if f.name])
+        objs.update([(f.name, f) for f in self.gobjects if f.name])
         return objs
 
     def set_parent(self, parent):
         self.parent = parent
         parent.kids.append(self)
 
-    def addTag(self, name=None, value=None, type = None, tag=None):
+    def addTag(self, name=None, value=None, type=None, tag=None):
         if tag is None:
-            tag = BQTag(name=name, value=value, type = type)
-        tag.set_parent (self)
+            tag = BQTag(name=name, value=value, type=type)
+        tag.set_parent(self)
         return tag
+
     add_tag = addTag
 
-    def addGObject(self, name=None, value=None, type = None, gob=None):
+    def addGObject(self, name=None, value=None, type=None, gob=None):
         if gob is None:
-            gob = BQGObject(name=name, value=value, type = type)
+            gob = BQGObject(name=name, value=value, type=type)
         gob.set_parent(self)
+
     add_gob = addGObject
 
-
-    def findall (self, name, limit=None):
+    def findall(self, name, limit=None):
         "find all name that match, options limit search tag, gobject or a kid"
-        limit = limit or  ['tag', 'gobject', 'kid']
-        results =[]
-        if 'tag' in limit:
+        limit = limit or ["tag", "gobject", "kid"]
+        results = []
+        if "tag" in limit:
             for tg in self.tags:
                 if tg.name == name:
-                    results.append( tg )
-        if 'gobject' in limit:
+                    results.append(tg)
+        if "gobject" in limit:
             for tg in self.gobjects:
                 if tg.name == name:
-                    results.append(  tg )
-        if 'kid' in limit:
+                    results.append(tg)
+        if "kid" in limit:
             for tg in self.kids:
                 if tg.name == name:
-                    results.append ( tg )
+                    results.append(tg)
         return results
 
     def find(self, name, limit=None):
         "Find first element and return options limit search tag, gobject or a kid"
-        limit = limit or  ['tag', 'gobject', 'kid']
-        if 'tag' in limit:
+        limit = limit or ["tag", "gobject", "kid"]
+        if "tag" in limit:
             for tg in self.tags:
                 if tg.name == name:
                     return tg
-        if 'gobject' in limit:
+        if "gobject" in limit:
             for tg in self.gobjects:
                 if tg.name == name:
                     return tg
-        if 'kid' in limit:
+        if "kid" in limit:
             for tg in self.kids:
                 if tg.name == name:
                     return tg
-
 
     # def tag(self, name):
     #     results = []
@@ -254,32 +295,31 @@ class BQResource (BQNode):
     #         return results
 
     def get_value(self):
-        if len(self.values)==0:
+        if len(self.values) == 0:
             return None
-        if len(self.values)==1:
+        if len(self.values) == 1:
             return self.values[0].value
-        return [ x.value for x in self.values ]
+        return [x.value for x in self.values]
 
     def set_value(self, values):
         if not isinstance(values, list):
-            values = [ values ]
-        self.values = [ BQValue(*v) if isinstance(v, tuple) else BQValue(v) for v in values ]
-
+            values = [values]
+        self.values = [BQValue(*v) if isinstance(v, tuple) else BQValue(v) for v in values]
 
     value = property(get_value, set_value)
 
     def toetree(self, parent, baseuri):
         xmlkids = list(self.xmlkids)
-        if len(self.values)<=1:
+        if len(self.values) <= 1:
             n = create_element(self, parent, baseuri)
         else:
             n = create_element(self, parent, baseuri)
-            if 'value' in n.attrib:
-                del n.attrib['value']
-            xmlkids.append('values')
+            if "value" in n.attrib:
+                del n.attrib["value"]
+            xmlkids.append("values")
         for kid_name in xmlkids:
             for x in getattr(self, kid_name, None):
-                toxmlnode (x, n, baseuri)
+                toxmlnode(x, n, baseuri)
         return n
 
 
@@ -287,12 +327,20 @@ class BQResource (BQNode):
 # Image
 ################################################################################
 
+
 class BQImage(BQResource):
     xmltag = "image"
-    xmlfields = ['name', 'value', 'type', 'uri', 'ts', 'resource_uniq' ] #  "x", "y","z", "t", "ch"  ]
-    xmlkids = ['tags', 'gobjects']
+    xmlfields = [
+        "name",
+        "value",
+        "type",
+        "uri",
+        "ts",
+        "resource_uniq",
+    ]  #  "x", "y","z", "t", "ch"  ]
+    xmlkids = ["tags", "gobjects"]
 
-    def __init__(self, *args,  **kw):
+    def __init__(self, *args, **kw):
         super(BQImage, self).__init__(*args, **kw)
         self._geometry = None
         self._meta = None
@@ -300,7 +348,7 @@ class BQImage(BQResource):
 
     # returns etree XML with image metadata
     def meta(self):
-        'return image meta as xml'
+        "return image meta as xml"
         if self._meta is None:
             info = self.pixels().meta().fetch()
             self._meta = etree.XML(info)
@@ -309,19 +357,19 @@ class BQImage(BQResource):
 
     # returns dict with image metadata name:value
     def info(self):
-        'return image meta as dict'
+        "return image meta as dict"
         if self._meta is None:
             self.meta()
         return self._info
 
     def geometry(self):
-        'return x,y,z,t,ch of image'
+        "return x,y,z,t,ch of image"
         if self._geometry is None:
             info = self.meta()
             geom = []
-            for n in 'xyztc':
+            for n in "xyztc":
                 tn = info.xpath('//tag[@name="image_num_%s"]' % n)
-                geom.append(tn[0].get('value'))
+                geom.append(tn[0].get("value"))
             self._geometry = tuple(map(int, geom))
         return self._geometry
 
@@ -329,108 +377,109 @@ class BQImage(BQResource):
         return BQImagePixels(self)
 
 
-
 class BQImagePixels(object):
     """manage requests to the image pixels"""
+
     def __init__(self, image):
         self.image = image
         self.ops = []
 
     def _construct_url(self):
-        """build the final url based on the operation
-        """
-        image_service = self.image.session.service('image_service')
-        return image_service.construct (path = '%s?%s'%(self.image.resource_uniq,
-                                                        '&'.join ( "%s=%s" % tp for tp in self.ops )))
-        #return session.service_url('image_service',
+        """build the final url based on the operation"""
+        image_service = self.image.session.service("image_service")
+        return image_service.construct(
+            path="%s?%s" % (self.image.resource_uniq, "&".join("%s=%s" % tp for tp in self.ops))
+        )
+        # return session.service_url('image_service',
         #                           % (self.image.resource_uniq, '&'.join(self.ops)))
 
     def fetch(self, path=None, stream=False):
-        """resolve the current and fetch the pixel
-        """
+        """resolve the current and fetch the pixel"""
         url = self._construct_url()
-        image_service = self.image.session.service ('image_service')
+        image_service = self.image.session.service("image_service")
         if path is not None:
             stream = True
 
-        response = image_service.fetch (url, stream=stream)
+        response = image_service.fetch(url, stream=stream)
         if path is not None:
-            with open (path, 'wb') as fb:
-                for block in response.iter_content(chunk_size = 16 * 1024 * 1024): #16MB
+            with open(path, "wb") as fb:
+                for block in response.iter_content(chunk_size=16 * 1024 * 1024):  # 16MB
                     fb.write(block)
                 response.close()
         else:
             return response.content
 
-    def command(self, operation, arguments=''):
+    def command(self, operation, arguments=""):
         self.ops.append((operation, arguments))
         return self
 
-    def slice(self, x='', y='',z='',t=''):
+    def slice(self, x="", y="", z="", t=""):
         """Slice the current image"""
-        return self.command('slice', '%s,%s,%s,%s' % (x,y,z,t))
+        return self.command("slice", "%s,%s,%s,%s" % (x, y, z, t))
 
     def format(self, fmt):
-        return self.command('format', fmt)
+        return self.command("format", fmt)
 
-    def resize(self, w='',h='', interpolation=''):
-        """ interpoaltion may be,[ NN|,BL|,BC][,AR]
-        """
-        return self.command('resize', '%s,%s,%s' % (w,h,interpolation))
+    def resize(self, w="", h="", interpolation=""):
+        """interpoaltion may be,[ NN|,BL|,BC][,AR]"""
+        return self.command("resize", "%s,%s,%s" % (w, h, interpolation))
 
     def localpath(self):
-        return self.command('localpath')
+        return self.command("localpath")
 
     def meta(self):
-        return self.command('meta')
+        return self.command("meta")
 
     def info(self):
-        return self.command('info')
+        return self.command("info")
 
     def asarray(self):
         try:
             import tifffile
         except ImportError:
-            log.error ("Please install Tifffile (Optional)")
+            log.error("Please install Tifffile (Optional)")
             return None
         # Force format to be tiff by removing any format and append format tiff
-        self.ops = [ tp for tp in self.ops if tp[0] != 'format' ]
-        self.format ('tiff')
+        self.ops = [tp for tp in self.ops if tp[0] != "format"]
+        self.format("tiff")
         url = self._construct_url()
-        image_service = self.image.session.service ('image_service')
-        with  image_service.fetch (url, stream=True) as response:
-            #response.raw.decode_content = True
-            return tifffile.imread (io.BytesIO (response.content))
+        image_service = self.image.session.service("image_service")
+        with image_service.fetch(url, stream=True) as response:
+            # response.raw.decode_content = True
+            return tifffile.imread(io.BytesIO(response.content))
 
-    def savearray (self, fname, imdata=None, imshape=None, dtype=None, **kwargs):
+    def savearray(self, fname, imdata=None, imshape=None, dtype=None, **kwargs):
         try:
             import tifffile
         except ImportError:
-            log.error ("Please install Tifffile (Optional)")
+            log.error("Please install Tifffile (Optional)")
             return None
-        import_service = self.image.session.service ('import_service')
-        imfile =  tempfile.mkstemp (suffix='.tiff')
-        tifffile.imsave (imfile, imdata, imshape, dtype, **kwargs)
-        import_service.transfer (fname, fileobj = open (imfile, 'rb'))
-        os.remove (imfile)
-
-
-
+        import_service = self.image.session.service("import_service")
+        imfile = tempfile.mkstemp(suffix=".tiff")
+        tifffile.imsave(imfile, imdata, imshape, dtype, **kwargs)
+        import_service.transfer(fname, fileobj=open(imfile, "rb"))
+        os.remove(imfile)
 
 
 ################################################################################
 # Tag
 ################################################################################
 
-class BQTag (BQResource):
-    '''tag resource'''
+
+class BQTag(BQResource):
+    """tag resource"""
+
     xmltag = "tag"
-    xmlfields = ['name',  'value', 'type', 'uri', 'ts']
-    xmlkids = ['tags', 'gobjects', ] # handle values  specially
+    xmlfields = ["name", "value", "type", "uri", "ts"]
+    xmlkids = [
+        "tags",
+        "gobjects",
+    ]  # handle values  specially
 
     def set_parent(self, parent):
         self.parent = parent
         parent.tags.append(self)
+
 
 #     def get_value(self):
 #         if len(self.values)==0:
@@ -460,23 +509,23 @@ class BQTag (BQResource):
 #         return n
 
 
-
-
 ################################################################################
 # GObject
 ################################################################################
 
-class BQVertex (BQNode):
-    '''gobject vertex'''
-    type = 'vertex'
+
+class BQVertex(BQNode):
+    """gobject vertex"""
+
+    type = "vertex"
     xmltag = "vertex"
-    xmlfields = ['x', 'y', 'z', 't', 'c', 'index']
+    xmlfields = ["x", "y", "z", "t", "c", "index"]
 
     def __init__(self, **kw):
         self.fromObj(**kw)
 
     def __repr__(self):
-        return 'vertex(x:%s,y:%s,z:%s,t:%s)'%(self.x, self.y, self.z, self.t)
+        return "vertex(x:%s,y:%s,z:%s,t:%s)" % (self.x, self.y, self.z, self.t)
 
     def set_parent(self, parent):
         self.parent = parent
@@ -486,36 +535,41 @@ class BQVertex (BQNode):
         return (self.x, self.y, self.z, self.t)
 
     def fromTuple(self, v):
-        x,y,z,t = v
-        self.x=x; self.y=y; self.z=z; self.t=t
+        x, y, z, t = v
+        self.x = x
+        self.y = y
+        self.z = z
+        self.t = t
 
     def fromObj(self, **kw):
-        for k,v in list(kw.items()):
+        for k, v in list(kw.items()):
             if k in self.xmlfields:
-                setattr(self,k,v)
+                setattr(self, k, v)
+
 
 class BQGObject(BQResource):
-    '''Gobject resource: A grpahical annotation'''
-    type = 'gobject'
+    """Gobject resource: A grpahical annotation"""
+
+    type = "gobject"
     xmltag = "gobject"
-    xmlfields = ['name', 'value', 'type', 'uri']
-    xmlkids = ['tags', 'gobjects', 'vertices']
+    xmlfields = ["name", "value", "type", "uri"]
+    xmlkids = ["tags", "gobjects", "vertices"]
 
     def __init__(self, *args, **kw):
         super(BQGObject, self).__init__(*args, **kw)
         self.name = None
         self.vertices = []
-        self.type= self.type or self.xmltag
+        self.type = self.type or self.xmltag
 
     def __str__(self):
-        return '(type: %s, name: %s, %s)'%(self.type, self.name, self.vertices)
+        return "(type: %s, name: %s, %s)" % (self.type, self.name, self.vertices)
 
     def set_parent(self, parent):
         self.parent = parent
         parent.gobjects.append(self)
 
     def verticesAsTuples(self):
-        return [v.toTuple() for v in self.vertices ]
+        return [v.toTuple() for v in self.vertices]
 
     def perimeter(self):
         return -1
@@ -524,41 +578,49 @@ class BQGObject(BQResource):
         return -1
 
 
-class BQPoint (BQGObject):
-    '''point gobject resource'''
+class BQPoint(BQGObject):
+    """point gobject resource"""
+
     xmltag = "point"
 
-class BQLabel (BQGObject):
-    '''label gobject resource'''
+
+class BQLabel(BQGObject):
+    """label gobject resource"""
+
     xmltag = "label"
 
-class BQPolyline (BQGObject):
-    '''polyline gobject resource'''
+
+class BQPolyline(BQGObject):
+    """polyline gobject resource"""
+
     xmltag = "polyline"
+
     def perimeter(self):
         vx = self.verticesAsTuples()
         d = 0
-        for i in range(0, len(vx)-1):
-            x1,y1,z1,t1 = vx[i]
-            x2,y2,z2,t2 = vx[i+1]
-            d += math.sqrt( math.pow(x2-x1,2.0) + math.pow(y2-y1,2.0) )
+        for i in range(0, len(vx) - 1):
+            x1, y1, z1, t1 = vx[i]
+            x2, y2, z2, t2 = vx[i + 1]
+            d += math.sqrt(math.pow(x2 - x1, 2.0) + math.pow(y2 - y1, 2.0))
         return d
 
 
 # only does 2D version right now, polygon area is flawed if the edges are intersecting
 # implement better algorithm based on triangles
-class BQPolygon (BQGObject):
-    '''Polygon gobject resource'''
+class BQPolygon(BQGObject):
+    """Polygon gobject resource"""
+
     xmltag = "polygon"
+
     # only does 2D version right now
     def perimeter(self):
         vx = self.verticesAsTuples()
         vx.append(vx[0])
         d = 0
-        for i in range(0, len(vx)-1):
-            x1,y1,z1,t1 = vx[i]
-            x2,y2,z2,t2 = vx[i+1]
-            d += math.sqrt( math.pow(x2-x1,2.0) + math.pow(y2-y1,2.0) )
+        for i in range(0, len(vx) - 1):
+            x1, y1, z1, t1 = vx[i]
+            x2, y2, z2, t2 = vx[i + 1]
+            d += math.sqrt(math.pow(x2 - x1, 2.0) + math.pow(y2 - y1, 2.0))
         return d
 
     # only does 2D version right now
@@ -567,67 +629,77 @@ class BQPolygon (BQGObject):
         vx = self.verticesAsTuples()
         vx.append(vx[0])
         d = 0
-        for i in range(0, len(vx)-1):
-            x1,y1,z1,t1 = vx[i]
-            x2,y2,z2,t2 = vx[i+1]
-            d += x1*y2 - y1*x2
+        for i in range(0, len(vx) - 1):
+            x1, y1, z1, t1 = vx[i]
+            x2, y2, z2, t2 = vx[i + 1]
+            d += x1 * y2 - y1 * x2
         return 0.5 * math.fabs(d)
 
-class BQCircle (BQGObject):
-    '''circle gobject resource'''
+
+class BQCircle(BQGObject):
+    """circle gobject resource"""
+
     xmltag = "circle"
+
     def perimeter(self):
         vx = self.verticesAsTuples()
-        x1,y1,z1,t1 = vx[0]
-        x2,y2,z2,t2 = vx[1]
-        return 2.0 * math.pi * max(math.fabs(x1-x2), math.fabs(y1-y2))
+        x1, y1, z1, t1 = vx[0]
+        x2, y2, z2, t2 = vx[1]
+        return 2.0 * math.pi * max(math.fabs(x1 - x2), math.fabs(y1 - y2))
 
     def area(self):
         vx = self.verticesAsTuples()
-        x1,y1,z1,t1 = vx[0]
-        x2,y2,z2,t2 = vx[1]
-        return math.pi * pow( max(math.fabs(x1-x2), math.fabs(y1-y2)), 2.0)
+        x1, y1, z1, t1 = vx[0]
+        x2, y2, z2, t2 = vx[1]
+        return math.pi * pow(max(math.fabs(x1 - x2), math.fabs(y1 - y2)), 2.0)
 
-class BQEllipse (BQGObject):
-    '''ellipse gobject resource'''
+
+class BQEllipse(BQGObject):
+    """ellipse gobject resource"""
+
     xmltag = "ellipse"
-    type = 'ellipse'
+    type = "ellipse"
 
     def perimeter(self):
         vx = self.verticesAsTuples()
-        x1,y1,z1,t1 = vx[0]
-        x2,y2,z2,t2 = vx[1]
-        x3,y3,z3,t3 = vx[2]
-        a = max(math.fabs(x1-x2), math.fabs(y1-y2))
-        b = max(math.fabs(x1-x3), math.fabs(y1-y3))
-        return math.pi * ( 3.0*(a+b) - math.sqrt( 10.0*a*b + 3.0*(a*a + b*b)) )
+        x1, y1, z1, t1 = vx[0]
+        x2, y2, z2, t2 = vx[1]
+        x3, y3, z3, t3 = vx[2]
+        a = max(math.fabs(x1 - x2), math.fabs(y1 - y2))
+        b = max(math.fabs(x1 - x3), math.fabs(y1 - y3))
+        return math.pi * (3.0 * (a + b) - math.sqrt(10.0 * a * b + 3.0 * (a * a + b * b)))
 
     def area(self):
         vx = self.verticesAsTuples()
-        x1,y1,z1,t1 = vx[0]
-        x2,y2,z2,t2 = vx[1]
-        x3,y3,z3,t3 = vx[2]
-        a = max(math.fabs(x1-x2), math.fabs(y1-y2))
-        b = max(math.fabs(x1-x3), math.fabs(y1-y3))
+        x1, y1, z1, t1 = vx[0]
+        x2, y2, z2, t2 = vx[1]
+        x3, y3, z3, t3 = vx[2]
+        a = max(math.fabs(x1 - x2), math.fabs(y1 - y2))
+        b = max(math.fabs(x1 - x3), math.fabs(y1 - y3))
         return math.pi * a * b
 
-class BQRectangle (BQGObject):
-    '''rectangle gobject resource'''
+
+class BQRectangle(BQGObject):
+    """rectangle gobject resource"""
+
     xmltag = "rectangle"
+
     def perimeter(self):
         vx = self.verticesAsTuples()
-        x1,y1,z1,t1 = vx[0]
-        x2,y2,z2,t2 = vx[1]
-        return math.fabs(x1-x2)*2.0 + math.fabs(y1-y2)*2.0
+        x1, y1, z1, t1 = vx[0]
+        x2, y2, z2, t2 = vx[1]
+        return math.fabs(x1 - x2) * 2.0 + math.fabs(y1 - y2) * 2.0
 
     def area(self):
         vx = self.verticesAsTuples()
-        x1,y1,z1,t1 = vx[0]
-        x2,y2,z2,t2 = vx[1]
-        return math.fabs(x1-x2) * math.fabs(y1-y2)
+        x1, y1, z1, t1 = vx[0]
+        x2, y2, z2, t2 = vx[1]
+        return math.fabs(x1 - x2) * math.fabs(y1 - y2)
 
-class BQSquare (BQRectangle):
-    '''square gobject resource'''
+
+class BQSquare(BQRectangle):
+    """square gobject resource"""
+
     xmltag = "square"
 
 
@@ -636,26 +708,37 @@ class BQSquare (BQRectangle):
 ################################################################################
 class BQDataset(BQResource):
     xmltag = "dataset"
-    #xmlfields = ['name', 'uri', 'ts']
-    #xmlkids = ['kids', 'tags', 'gobjects']
+    # xmlfields = ['name', 'uri', 'ts']
+    # xmlkids = ['kids', 'tags', 'gobjects']
+
 
 class BQUser(BQResource):
     xmltag = "user"
-    #xmlfields = ['name', 'uri', 'ts']
-    #xmlkids = ['tags', 'gobjects']
+    # xmlfields = ['name', 'uri', 'ts']
+    # xmlkids = ['tags', 'gobjects']
+
 
 class BQMex(BQResource):
     xmltag = "mex"
-    #xmlfields = ['module', 'uri', 'ts', 'value']
-    #xmlkids = ['tags', 'gobjects']
+    # xmlfields = ['module', 'uri', 'ts', 'value']
+    # xmlkids = ['tags', 'gobjects']
+
 
 ################################################################################
 # Factory
 ################################################################################
 
-class BQFactory (object):
-    '''Factory for Bisque resources'''
-    resources = dict([ (x[1].xmltag, x[1]) for x in inspect.getmembers(sys.modules[__name__]) if inspect.isclass(x[1]) and hasattr(x[1], 'xmltag') ])
+
+class BQFactory(object):
+    """Factory for Bisque resources"""
+
+    resources = dict(
+        [
+            (x[1].xmltag, x[1])
+            for x in inspect.getmembers(sys.modules[__name__])
+            if inspect.isclass(x[1]) and hasattr(x[1], "xmltag")
+        ]
+    )
 
     def __init__(self, session):
         self.session = session
@@ -667,116 +750,123 @@ class BQFactory (object):
         c = cls.resources.get(xmltag, BQResource)
         return c()
 
-    index_map = dict(vertex=('vertices',BQVertex), tag=('tags', BQTag))
+    index_map = dict(vertex=("vertices", BQVertex), tag=("tags", BQTag))
+
     @classmethod
     def index(cls, xmltag, parent, indx):
-        array, ctor = cls.index_map.get (xmltag, (None,None))
+        array, ctor = cls.index_map.get(xmltag, (None, None))
         if array:
-            objarr =  getattr(parent, array)
-            objarr.extend ([ ctor() for x in range(((indx+1)-len(objarr)))])
+            objarr = getattr(parent, array)
+            objarr.extend([ctor() for x in range(((indx + 1) - len(objarr)))])
             v = objarr[indx]
             v.indx = indx
-            #log.debug ('fetching %s %s[%d]:%s' %(parent , array, indx, v))
+            # log.debug ('fetching %s %s[%d]:%s' %(parent , array, indx, v))
             return v
 
     ################################################################################
     # Parsing
     ################################################################################
 
-    def from_etree (self, xmlResource, resource=None, parent=None ):
-        """ Convert an etree to a python structure"""
-        stack = [];
-        resources = [];
+    def from_etree(self, xmlResource, resource=None, parent=None):
+        """Convert an etree to a python structure"""
+        stack = []
+        resources = []
         #  Initialize stack with a tuple of
         #    1. The XML node being parsed
         #    2. The current resource being filled outs
         #    3. The parent resource if any
-        stack.append ( (xmlResource, resource, parent ) )
+        stack.append((xmlResource, resource, parent))
         while stack:
-            node, resource, parent = stack.pop(0);
-            xmltag = node.tag;
+            node, resource, parent = stack.pop(0)
+            xmltag = node.tag
             if resource is None:
-                type_ = node.get( 'type', '')
+                type_ = node.get("type", "")
                 resource = self.make(xmltag, type_)
 
             resource.session = self.session
             resource.initializeXml(node)
-            resources.append (resource)
+            resources.append(resource)
             if parent:
                 resource.set_parent(parent)
-                #resource.doc = parent.doc;
+                # resource.doc = parent.doc;
             for k in node:
-                stack.append( (k, None, resource) )
+                stack.append((k, None, resource))
 
         resources[0].initialize()
         resources[0].xmltree = xmlResource
-        return resources[0];
-    def from_string (self, xmlstring):
-        et = etree.XML (xmlstring)
+        return resources[0]
+
+    def from_string(self, xmlstring):
+        et = etree.XML(xmlstring)
         return self.from_etree(et)
 
     # Generation
 
     @classmethod
-    def to_etree(self, dbo, parent=None, baseuri='', view=''):
+    def to_etree(self, dbo, parent=None, baseuri="", view=""):
         """Convert a BQObject to an etree object suitable for XML
         generation
         """
         node = toxmlnode(dbo, parent, baseuri, view)
-        return node;
+        return node
+
     @classmethod
-    def to_string (self, node):
-        if isinstance (node, BQNode):
+    def to_string(self, node):
+        if isinstance(node, BQNode):
             node = self.to_etree(node)
-        return etree.tostring(node, encoding='unicode')
+        return etree.tostring(node, encoding="unicode")
 
     @classmethod
     def string2etree(self, xmlstring):
-        return etree.XML (xmlstring)
+        return etree.XML(xmlstring)
 
 
 def create_element(dbo, parent, baseuri, **kw):
-    """Create an etree element from BQ object
-    """
-    xtag = kw.pop('xtag', dbo.xmltag)
+    """Create an etree element from BQ object"""
+    xtag = kw.pop("xtag", dbo.xmltag)
     if not kw:
-        kw = model_fields (dbo, baseuri)
+        kw = model_fields(dbo, baseuri)
 
     if parent is not None:
-        node =  etree.SubElement (parent, xtag, **kw)
+        node = etree.SubElement(parent, xtag, **kw)
     else:
-        node =  etree.Element (xtag,  **kw)
+        node = etree.Element(xtag, **kw)
     return node
 
-def toxmlnode (dbo, parent, baseuri, view=None):
-    if hasattr(dbo, 'toetree'):
+
+def toxmlnode(dbo, parent, baseuri, view=None):
+    if hasattr(dbo, "toetree"):
         node = dbo.toetree(parent, baseuri)
     else:
-        node = create_element (dbo, parent, baseuri)
+        node = create_element(dbo, parent, baseuri)
         for kid_name in dbo.xmlkids:
             for x in getattr(dbo, kid_name, None):
-                toxmlnode (x, node, baseuri, view)
+                toxmlnode(x, node, baseuri, view)
     return node
 
 
-def make_owner (dbo, fn, baseuri):
-    return ('owner', baseuri + str(dbo.owner))
+def make_owner(dbo, fn, baseuri):
+    return ("owner", baseuri + str(dbo.owner))
+
 
 def make_uri(dbo, fn, baseuri):
-    return ('uri', "%s%s" % (baseuri , str (dbo.uri)))
+    return ("uri", "%s%s" % (baseuri, str(dbo.uri)))
 
-def get_email (dbo, fn, baseuri):
-    return ('email', dbo.user.email_address)
+
+def get_email(dbo, fn, baseuri):
+    return ("email", dbo.user.email_address)
+
 
 mapping_fields = {
-    'mex' : None,
-    'acl' : None,
+    "mex": None,
+    "acl": None,
     # Auth
-    'user_id' : get_email,
-    'taggable_id': None,
-    'permission': 'action',
-    'resource': None,
-    }
+    "user_id": get_email,
+    "taggable_id": None,
+    "permission": "action",
+    "resource": None,
+}
+
 
 def model_fields(dbo, baseuri=None):
     """Extract known fields from a BQ object, while removing any known
@@ -791,7 +881,7 @@ def model_fields(dbo, baseuri=None):
     except AttributeError:
         # This occurs when the object is a fake DB objects
         # The dictionary is sufficient
-        dbo_fields= dbo.__dict__
+        dbo_fields = dbo.__dict__
     for fn in dbo_fields:
         fn = mapping_fields.get(fn, fn)
         # Skip when map is None
@@ -804,9 +894,9 @@ def model_fields(dbo, baseuri=None):
             attr_val = getattr(dbo, fn, None)
 
         # Put value in attribute dictionary
-        if attr_val is not None and attr_val!='':
+        if attr_val is not None and attr_val != "":
             if isinstance(attr_val, str):
                 attrs[fn] = attr_val
             else:
-                attrs[fn] = str(attr_val) #unicode(attr_val,'utf-8')
+                attrs[fn] = str(attr_val)  # unicode(attr_val,'utf-8')
     return attrs

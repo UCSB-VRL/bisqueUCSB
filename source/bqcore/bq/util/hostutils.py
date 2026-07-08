@@ -1,4 +1,3 @@
-
 ###############################################################################
 ##  Bisquik                                                                  ##
 ##  Center for Bio-Image Informatics                                         ##
@@ -52,35 +51,38 @@ DESCRIPTION
 
 """
 
+import logging
+import socket
 
 from tg import config
 
-import socket
-import logging
-
 log = logging.getLogger("bisquik.controllers")
 
+
 def fqdn(h=None):
-    ''' return the fqdn and port'''
+    """return the fqdn and port"""
 
     if not h:
         h = socket.gethostname()
-        port = config.get('server.socket_port')
+        port = config.get("server.socket_port")
     else:
-        h, port = h.split(':')
+        h, port = h.split(":")
 
     nm, aliases, ipaddr = socket.gethostbyaddr(h)
-    log.debug("name is"+str(nm))
-    if nm.find('.')>0: return nm, int(port)
+    log.debug("name is" + str(nm))
+    if nm.find(".") > 0:
+        return nm, int(port)
     for a in aliases:
-        if a.find('.')>0: return a, int(port)
+        if a.find(".") > 0:
+            return a, int(port)
+
 
 def same_host(h1, h2=None):
-    '''
+    """
     Return true when host name represents same host
-    '''
+    """
     fqdn1, port1 = fqdn(h1)
     fqdn2, port2 = fqdn(h2)
-    same = ( (fqdn1 == fqdn2) and (port1 == port2) )
-    #log.debug ("same: " +str(same)+' ' + fqdn1+':'+str(port1) +'||'+ fqdn2 +':'+str(port2))
+    same = (fqdn1 == fqdn2) and (port1 == port2)
+    # log.debug ("same: " +str(same)+' ' + fqdn1+':'+str(port1) +'||'+ fqdn2 +':'+str(port2))
     return same

@@ -5,62 +5,73 @@ Original: table/tests/run_tests.py - Table service functionality tests
 Enhanced with authentication integration and modern pytest patterns
 """
 
-import pytest
-import os
 import configparser
-from bqapi import BQSession, BQCommError
+import os
+
+import pytest
+from bqapi import BQCommError, BQSession
+
 
 # Enhanced authentication fixtures
 @pytest.fixture
 def table_test_base(admin_session):
     """Provide ImageServiceTestBase helper methods with session"""
     from bq.image_service.tests.tests_base import ImageServiceTestBase
+
     base = ImageServiceTestBase()
     base.session = admin_session  # Set the session manually
     return base
+
 
 # Test image configurations
 @pytest.fixture(scope="session")
 def test_images_config():
     """Configuration for test images"""
     return {
-        'image_rgb_uint8': 'flowers_24bit_nointr.png',
-        'image_zstack_uint16': '161pkcvampz1Live2-17-2004_11-57-21_AM.tif',
-        'image_float': 'autocorrelation.tif'
+        "image_rgb_uint8": "flowers_24bit_nointr.png",
+        "image_zstack_uint16": "161pkcvampz1Live2-17-2004_11-57-21_AM.tif",
+        "image_float": "autocorrelation.tif",
     }
+
 
 @pytest.fixture(scope="session")
 def table_image_2d_uint8(admin_session, test_images_config):
     """Upload and provide 2D RGB uint8 test image for table tests"""
     from bq.image_service.tests.tests_base import ImageServiceTestBase
+
     base = ImageServiceTestBase()
     base.session = admin_session  # Set the session manually
-    resource = base.ensure_bisque_file(test_images_config['image_rgb_uint8'])
+    resource = base.ensure_bisque_file(test_images_config["image_rgb_uint8"])
     yield resource
     if resource:
         base.delete_resource(resource)
 
-@pytest.fixture(scope="session") 
+
+@pytest.fixture(scope="session")
 def table_image_3d_uint16(admin_session, test_images_config):
     """Upload and provide 3D zstack uint16 test image for table tests"""
     from bq.image_service.tests.tests_base import ImageServiceTestBase
+
     base = ImageServiceTestBase()
     base.session = admin_session  # Set the session manually
-    resource = base.ensure_bisque_file(test_images_config['image_zstack_uint16'])
+    resource = base.ensure_bisque_file(test_images_config["image_zstack_uint16"])
     yield resource
     if resource:
         base.delete_resource(resource)
+
 
 @pytest.fixture(scope="session")
 def table_image_2d_float(admin_session, test_images_config):
     """Upload and provide 2D float test image for table tests"""
     from bq.image_service.tests.tests_base import ImageServiceTestBase
+
     base = ImageServiceTestBase()
     base.session = admin_session  # Set the session manually
-    resource = base.ensure_bisque_file(test_images_config['image_float'])
+    resource = base.ensure_bisque_file(test_images_config["image_float"])
     yield resource
     if resource:
         base.delete_resource(resource)
+
 
 # Table Service Tests - Modernized from unittest
 class TestTableServiceCore:
@@ -74,7 +85,7 @@ class TestTableServiceCore:
             assert result is not None
         except Exception as e:
             pytest.skip(f"Service not available: {e}")
-        
+
     def test_ui_thumbnail_2d_3c_uint8(self, admin_session, table_image_2d_uint8, table_test_base):
         """Test table service UI thumbnail generation for 2D 3-channel uint8 image"""
         # Test basic image service connectivity
@@ -210,7 +221,9 @@ class TestTableServiceCore:
         except Exception as e:
             pytest.skip(f"Service not available: {e}")
 
-    def test_brightnesscontrast_2d_3c_uint8(self, admin_session, table_image_2d_uint8, table_test_base):
+    def test_brightnesscontrast_2d_3c_uint8(
+        self, admin_session, table_image_2d_uint8, table_test_base
+    ):
         """Test table service brightness/contrast operation for 2D 3-channel uint8 image"""
         # Test basic image service connectivity
         try:
@@ -254,6 +267,7 @@ class TestTableServiceCore:
             assert result is not None
         except Exception as e:
             pytest.skip(f"Service not available: {e}")
+
 
 # Additional Table Service Tests
 class TestTableServiceAdvanced:
@@ -421,16 +435,17 @@ class TestTableServiceAdvanced:
         except Exception as e:
             pytest.skip(f"Service not available: {e}")
 
+
 # Authentication Integration Tests
 class TestTableServiceAuthentication:
     """Test authentication integration with table service"""
-    
+
     def test_enhanced_authentication_support(self, admin_session):
         """Test that enhanced authentication works with table service"""
         assert admin_session is not None
         # Test basic API access using BQSession's fetchxml method
         try:
-            response = admin_session.fetchxml('/auth_service/whoami')
+            response = admin_session.fetchxml("/auth_service/whoami")
             assert response is not None, "Authentication failed: no response from whoami"
         except Exception as e:
             assert False, f"Table service authentication test skipped: {e}"

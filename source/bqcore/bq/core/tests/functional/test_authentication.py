@@ -9,6 +9,8 @@ should be updated.
 # !!! modern way with pytest
 
 import pytest
+
+
 class TestAuthentication:
     """Tests for the default authentication setup."""
 
@@ -17,49 +19,48 @@ class TestAuthentication:
         # Request a protected area
         # !!! /client_service/upload is not valid anymore
         # resp = app.get('/client_service/upload', status=302)
-        resp = app.get('/import/transfer', status=302)
-        assert resp.location.startswith('http://localhost/auth_service/login')
+        resp = app.get("/import/transfer", status=302)
+        assert resp.location.startswith("http://localhost/auth_service/login")
 
         # Follow redirect to login form
         resp = resp.follow(status=200)
         form = resp.form
 
         # Submit login form
-        form['login'] = 'admin'
-        form['password'] = 'admin'
+        form["login"] = "admin"
+        form["password"] = "admin"
         post_login = form.submit(status=302)
 
         # Should redirect to post_login
-        assert post_login.location.startswith('http://localhost/auth_service/post_login')
+        assert post_login.location.startswith("http://localhost/auth_service/post_login")
 
         # Follow redirect to originally requested page
         initial_page = post_login.follow(status=302)
 
         cookies = {c.name: c.value for c in app.cookiejar}
-        assert 'authtkt' in cookies, \
-            f"Session cookie wasn't defined: {cookies}"
+        assert "authtkt" in cookies, f"Session cookie wasn't defined: {cookies}"
 
         # assert initial_page.location.startswith('http://localhost/client_service/upload')
-        assert initial_page.location.startswith('http://localhost/import/transfer')
+        assert initial_page.location.startswith("http://localhost/import/transfer")
 
     def test_voluntary_login(self, app):
         """Voluntary logins must work correctly."""
-        resp = app.get('/auth_service/login', status=200)
+        resp = app.get("/auth_service/login", status=200)
         form = resp.form
 
-        form['login'] = 'admin'
-        form['password'] = 'admin'
+        form["login"] = "admin"
+        form["password"] = "admin"
         post_login = form.submit(status=302)
 
-        assert post_login.location.startswith('http://localhost/auth_service/post_login')
+        assert post_login.location.startswith("http://localhost/auth_service/post_login")
 
         home_page = post_login.follow(status=302)
         cookies = {c.name: c.value for c in app.cookiejar}
 
-        assert 'authtkt' in cookies, \
-            f'Session cookie was not defined: {cookies}'
+        assert "authtkt" in cookies, f"Session cookie was not defined: {cookies}"
 
-        assert home_page.location == 'http://localhost/'
+        assert home_page.location == "http://localhost/"
+
 
 #!!! old way with nose
 # from bq.core.tests import TestController

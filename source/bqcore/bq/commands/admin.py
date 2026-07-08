@@ -1,27 +1,73 @@
-import sys
-import os
-import subprocess
-import re
-from bq.core.model import DBSession
-import pkg_resources
-import optparse
 import errno
 import logging
+import optparse
+import os
+import re
 import shutil
-
-from paste.deploy.converters import asbool
+import subprocess
+import sys
+from importlib.metadata import entry_points
 
 from bq.release import __VERSION__
-from bq.util.io_misc import remove_safe
-from bq.util.paths import site_cfg_path, data_path, config_path, defaults_path
+
+logging.basicConfig(level=logging.WARNING)
 
 
-# logging.basicConfig(level=logging.INFO, formatter="%(name)s:%(levelname)s:%(message)s")
-logging.basicConfig(level=logging.DEBUG)  #!!! Added this for py3
+def iter_entry_points(group):
+    return entry_points(group=group)
+
+
+def config_path(*path):
+    from bq.util.paths import config_path as _config_path
+
+    return _config_path(*path)
+
+
+def data_path(*path):
+    from bq.util.paths import data_path as _data_path
+
+    return _data_path(*path)
+
+
+def defaults_path(*path):
+    from bq.util.paths import defaults_path as _defaults_path
+
+    return _defaults_path(*path)
+
+
+def site_cfg_path(*path):
+    from bq.util.paths import site_cfg_path as _site_cfg_path
+
+    return _site_cfg_path(*path)
+
+
+def remove_safe(path):
+    from bq.util.io_misc import remove_safe as _remove_safe
+
+    return _remove_safe(path)
+
+
+COMMAND_DESCRIPTIONS = {
+    "create-core": "Create a bisque core service.. it will be under  <name>/<package>/bq.<package>",
+    "create-module": "Create a blank bisque analysis module",
+    "create-service": "Create a bisque service",
+    "database": "Execute a database command",
+    "deploy": "Advanced deployment options: public",
+    "engine": "engine debuig",
+    "hosturl": "Find and replace host settings in bisuqe db:",
+    "module": "module options",
+    "password": "Password utilities for manipulating passwords",
+    "preferences": "read and/or update preferences",
+    "server": "Start or stop a bisque server",
+    "setup": "Setup or update a bisque server",
+    "sql": "Run a sql command (disabled)",
+    "stores": "Generate stores resource by visiting image/file resouces",
+}
 
 
 def load_config(filename):
     from paste.deploy import appconfig
+
     from bq.config.environment import load_environment
 
     print("Loading config file %s" % filename)
@@ -31,8 +77,9 @@ def load_config(filename):
 
 def load_bisque_services():
     from tg import config
-    from bq.util.fakerequestenv import create_fake_env
+
     from bq.core.controllers.root import RootController
+    from bq.util.fakerequestenv import create_fake_env
 
     root = config.get("bisque.root", "/")
     create_fake_env()
@@ -44,9 +91,9 @@ def load_bisque_services():
 def main():
     """Main entrypoint for bq-admin commands"""
     commands = {}
-    for entrypoint in pkg_resources.iter_entry_points("bq.commands"):
-        command = entrypoint.load()
-        commands[entrypoint.name] = (command.desc, entrypoint)
+    for entrypoint in iter_entry_points("bq.commands"):
+        description = COMMAND_DESCRIPTIONS.get(entrypoint.name, entrypoint.value)
+        commands[entrypoint.name] = (description, entrypoint)
 
     def _help():
         "Custom help text for bq-admin."
@@ -105,15 +152,9 @@ class server(object):
             usage="%prog servers [options] start|stop|restart",
             version="%prog " + version,
         )
-        parser.add_option(
-            "--reload", action="store_true", help="autoreload for development"
-        )
-        parser.add_option(
-            "-n", "--dryrun", action="store_true", help="Dry run and show commands"
-        )
-        parser.add_option(
-            "-v", "--verbose", action="store_true", help="show commands as run"
-        )
+        parser.add_option("--reload", action="store_true", help="autoreload for development")
+        parser.add_option("-n", "--dryrun", action="store_true", help="Dry run and show commands")
+        parser.add_option("-v", "--verbose", action="store_true", help="show commands as run")
         parser.add_option("-w", "--wait", action="store_true", help="wait for children")
         parser.add_option("-s", "--site", help="specify location of site.cfg")
         parser.add_option(
@@ -160,9 +201,7 @@ class database(object):
     desc = "Execute a database command"
 
     def __init__(self, version):
-        parser = optparse.OptionParser(
-            usage="%prog database [admin]", version="%prog " + version
-        )
+        parser = optparse.OptionParser(usage="%prog database [admin]", version="%prog " + version)
 
         parser.add_option(
             "-c",
@@ -193,18 +232,12 @@ class setup(object):
     desc = "Setup or update a bisque server"
 
     def __init__(self, version):
-        from bq.setup.bisque_setup import USAGE, ALL_OPTIONS
+        from bq.setup.bisque_setup import ALL_OPTIONS, USAGE
 
         parser = optparse.OptionParser(usage=USAGE, version="%prog " + version)
-        parser.add_option(
-            "--inscript", action="store_true", help="we are running under typescript"
-        )
-        parser.add_option(
-            "-r", "--read", action="store", help="Read answers from given file"
-        )
-        parser.add_option(
-            "-w", "--write", action="store", help="Write answers from given file"
-        )
+        parser.add_option("--inscript", action="store_true", help="we are running under typescript")
+        parser.add_option("-r", "--read", action="store", help="Read answers from given file")
+        parser.add_option("-w", "--write", action="store", help="Write answers from given file")
         parser.add_option(
             "-y",
             "--yes",
@@ -215,9 +248,7 @@ class setup(object):
         parser.add_option("-d", "--debug", action="store_true", default=False)
         options, args = parser.parse_args()
         if args and args[0] not in ALL_OPTIONS:
-            parser.error(
-                "argument %s must be install option %s" % (args[0], ALL_OPTIONS)
-            )
+            parser.error("argument %s must be install option %s" % (args[0], ALL_OPTIONS))
 
         self.args = args
         self.options = options
@@ -234,17 +265,13 @@ class deploy(object):
     desc = "Advanced deployment options: public"
 
     def __init__(self, version):
-        from bq.util.copylink import copy_symlink, copy_link
+        from paste.deploy.converters import asbool
 
-        parser = optparse.OptionParser(
-            usage="%prog deploy [public]", version="%prog " + version
-        )
-        parser.add_option(
-            "--packagedir", help="Root package of install", default="bqcore"
-        )
-        parser.add_option(
-            "--symlinks", default=True, help="use symlinks instead of copying"
-        )
+        from bq.util.copylink import copy_link, copy_symlink
+
+        parser = optparse.OptionParser(usage="%prog deploy [public]", version="%prog " + version)
+        parser.add_option("--packagedir", help="Root package of install", default="bqcore")
+        parser.add_option("--symlinks", default=True, help="use symlinks instead of copying")
         options, args = parser.parse_args()
         self.args = args
         self.options = options
@@ -259,14 +286,6 @@ class deploy(object):
     def deploy_public(self):
         """"""
 
-        # dima: deploy fails under windows with access denied, need to clean dir first
-        if os.name == "nt":
-            try:
-                print("Cleaning up %s" % self.public_dir)
-                shutil.rmtree(self.public_dir, ignore_errors=True)
-            except OSError as e:
-                pass
-
         try:
             print("Creating %s" % self.public_dir)
             os.makedirs(self.public_dir)
@@ -279,7 +298,7 @@ class deploy(object):
         # os.chdir(self.public_dir)
         # currdir = os.getcwd()
 
-        for x in pkg_resources.iter_entry_points("bisque.services"):
+        for x in iter_entry_points("bisque.services"):
             try:
                 # print ('found static service: ' + str(x))
                 try:
@@ -291,7 +310,6 @@ class deploy(object):
                     continue
                 staticdirs = service.get_static_dirs()
                 for d, r in staticdirs:
-
                     # Copy all elements r into public_dir
                     # shutil.copytree (r, os.path.join (self.public_dir, x.name))
                     dest = os.path.join(self.public_dir, x.name)
@@ -343,11 +361,8 @@ class deploy(object):
         # all_js_combined = os.path.join(publicdir, 'core/js/all_js.js')
         all_js_public = os.path.join(publicdir, "core/js/all_js.js")
 
-        if (
-            os.name != "nt"
-        ):  # under windows the whole public is removed at the beginning
-            remove_safe(all_css_public)
-            remove_safe(all_js_public)
+        remove_safe(all_css_public)
+        remove_safe(all_js_public)
         import pylons
 
         pylons.config["cache_enabled"] = "False"
@@ -379,9 +394,7 @@ class preferences(object):
             default=site_cfg_path(),
             help="Path to config file: %default",
         )
-        parser.add_option(
-            "-f", "--force", action="store_true", help="Force action if able"
-        )
+        parser.add_option("-f", "--force", action="store_true", help="Force action if able")
         options, args = parser.parse_args()
 
         self.args = args
@@ -392,11 +405,12 @@ class preferences(object):
     def run(self):
 
         load_config(self.options.config)
+        import transaction
         from lxml import etree
-        from tg import config, session, request
+        from tg import config, request, session
+
         from bq import data_service
         from bq.core.identity import set_admin_mode
-        import transaction
 
         load_bisque_services()
 
@@ -448,9 +462,7 @@ class preferences(object):
             uri = system.get("uri")
             print("system = %s" % etree.tostring(system))
 
-            system = data_service.update_resource(
-                new_resource=system, resource=uri, view="deep"
-            )
+            system = data_service.update_resource(new_resource=system, resource=uri, view="deep")
             print(etree.tostring(system))
         transaction.commit()
         if system is not None:
@@ -463,9 +475,7 @@ class sql(object):
     desc = "Run a sql command (disabled)"
 
     def __init__(self, version):
-        parser = optparse.OptionParser(
-            usage="%prog sql <sql>", version="%prog " + version
-        )
+        parser = optparse.OptionParser(usage="%prog sql <sql>", version="%prog " + version)
         parser.add_option(
             "-c",
             "--config",
@@ -480,10 +490,11 @@ class sql(object):
     def run(self):
         """"""
 
-        from tg import config
+        from configparser import ConfigParser
+
         from sqlalchemy import create_engine
         from sqlalchemy.sql import text
-        from configparser import ConfigParser
+        from tg import config
 
         load_config(self.options.config)
 
@@ -497,9 +508,7 @@ class group(object):
     "do a group command"
 
     def __init__(self, version):
-        parser = optparse.OptionParser(
-            usage="%prog sql <sql>", version="%prog " + version
-        )
+        parser = optparse.OptionParser(usage="%prog sql <sql>", version="%prog " + version)
         parser.add_option(
             "-c",
             "--config",
@@ -514,10 +523,11 @@ class group(object):
     def run(self):
         """"""
 
-        from tg import config
+        from configparser import ConfigParser
+
         from sqlalchemy import create_engine
         from sqlalchemy.sql import text
-        from configparser import ConfigParser
+        from tg import config
 
         load_config(self.options.config)
 
@@ -556,14 +566,15 @@ class stores(object):
         load_config(self.options.config)
         load_bisque_services()
 
+        import transaction
+
         from .stores import (
+            fill_stores,
             init_stores,
             list_stores,
-            fill_stores,
-            update_stores,
             move_stores,
+            update_stores,
         )
-        import transaction
 
         command = self.command.lower()
         username = None
@@ -632,12 +643,12 @@ class password(object):
             user_name, password = self.args
             self.set_password(user_name, password)
         elif self.command == "list":
-            from bq.core.model.auth import User, DBSession
+            from bq.core.model.auth import DBSession, User
 
             for user in DBSession.query(User):
                 print(user.user_name, user.password)
         elif self.command == "convert":
-            from bq.core.model.auth import User, DBSession
+            from bq.core.model.auth import DBSession, User
 
             for user in DBSession.query(User):
                 if len(user.password) == 80 and not self.options.force:
@@ -647,7 +658,7 @@ class password(object):
         transaction.commit()
 
     def set_password(self, user_name, password):
-        from bq.core.model.auth import User, DBSession
+        from bq.core.model.auth import DBSession, User
 
         user = DBSession.query(User).filter_by(user_name=user_name).first()
         if user:
@@ -672,9 +683,7 @@ class hosturl(object):
             help="Path to config file: %default",
         )
         self.parser.add_option("-f", "--force", action="store_true", default=False)
-        self.parser.add_option(
-            "--dburl", default=None, help="Override dburl from site.cfg"
-        )
+        self.parser.add_option("--dburl", default=None, help="Override dburl from site.cfg")
         options, args = self.parser.parse_args()
 
         if len(args) > 0:
@@ -688,10 +697,10 @@ class hosturl(object):
             self.parser.error("illegal command")
 
     def run(self):
-        from tg import config
+        import transaction
         from sqlalchemy import create_engine
         from sqlalchemy.sql import func, update
-        import transaction
+        from tg import config
 
         if self.options.dburl is None:
             load_config(self.options.config)
@@ -713,11 +722,7 @@ class hosturl(object):
             # pylint: disable=no-value-for-parameter
             stmt = (
                 taggable.update()
-                .values(
-                    resource_value=func.replace(
-                        taggable.c.resource_value, oldurl, newurl
-                    )
-                )
+                .values(resource_value=func.replace(taggable.c.resource_value, oldurl, newurl))
                 .where(taggable.c.resource_value.like(oldurl + "%"))
             )
             print(stmt)

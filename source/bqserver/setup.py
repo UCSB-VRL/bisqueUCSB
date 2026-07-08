@@ -1,55 +1,61 @@
-from setuptools import setup, find_packages
-import sys, os
+import os
+import sys
 
-#from bq.release import __VERSION__
-__VERSION__ = '0.5.9'
+from setuptools import find_packages, setup
+
+# from bq.release import __VERSION__
+__VERSION__ = "0.5.9"
 
 # -*- Extra requirements: -*-
 install_requires = [
-#        "bqcore",
-        "ply",
-        "gdata",
-        # "Turbomail", # !!! was in the py2 version
-        "genshi",
-#        "TGScheduler",
-        "boto",
-        "numpy",
-        "ordereddict",
-        # Installed from http://biodev.ece.ucsb.edu/binaries/depot
-        # "tw.recaptcha", # !!! was in the py2 version
-        # "tgext.registration2", # !!! was in the py2 version
-        # "tw.output", #https://bitbucket.org/alexbodn/twoutput/get/af6904c504cf.zip #!!! was in the py2 version
-        "furl",
-      ]
+    #        "bqcore",
+    "ply",
+    "gdata",
+    # "Turbomail", # !!! was in the py2 version
+    "genshi",
+    #        "TGScheduler",
+    "boto",
+    "numpy",
+    "ordereddict",
+    # Installed from http://biodev.ece.ucsb.edu/binaries/depot
+    # "tw.recaptcha", # !!! was in the py2 version
+    # "tgext.registration2", # !!! was in the py2 version
+    # "tw.output", #https://bitbucket.org/alexbodn/twoutput/get/af6904c504cf.zip #!!! was in the py2 version
+    "furl",
+]
 
-if sys.version_info  < ( 2, 7 ):
-    install_requires.append('unittest2')
+if sys.version_info < (2, 7):
+    install_requires.append("unittest2")
 
 
-setup(name='bqserver',
-      version=__VERSION__,
-      description="Main Bisque server",
-      long_description="""\
+setup(
+    name="bqserver",
+    version=__VERSION__,
+    description="Main Bisque server",
+    long_description="""\
 The bisque server
 """,
-      classifiers=[], # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
-      keywords='bioinformatics, image, database',
-      author='Center for Bioinformatics',
-      author_email='cbi@biodev.ece.ucsb.edu',
-      url='http://bioimage.ucsb.edu',
-      license='BSD',
-      packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
-      namespace_packages = ['bq'],
-      message_extractors={'bq': [
-          ('**.py', 'python', None),
-          ('client_service/templates/**.mako', 'mako', None),
-          ('client_service/templates/**.html', 'genshi', None),
-          ('client_service/public/**', 'ignore', None)]},
-      #setup_requires=["hgtools"],
-      include_package_data=True,
-      zip_safe=False,
-      install_requires=install_requires,
-      entry_points="""
+    classifiers=[],  # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
+    keywords="bioinformatics, image, database",
+    author="Center for Bioinformatics",
+    author_email="cbi@biodev.ece.ucsb.edu",
+    url="http://bioimage.ucsb.edu",
+    license="AGPL-3.0-or-later OR LicenseRef-Bisque-Commercial",
+    packages=find_packages(exclude=["ez_setup", "examples", "tests"]),
+    namespace_packages=["bq"],
+    message_extractors={
+        "bq": [
+            ("**.py", "python", None),
+            ("client_service/templates/**.mako", "mako", None),
+            ("client_service/templates/**.html", "genshi", None),
+            ("client_service/public/**", "ignore", None),
+        ]
+    },
+    # setup_requires=["hgtools"],
+    include_package_data=True,
+    zip_safe=False,
+    install_requires=install_requires,
+    entry_points="""
       # -*- Entry points: -*-
     [bisque.services]
     client_service   = bq.client_service.controllers.service
@@ -75,4 +81,4 @@ The bisque server
     [bq.commands]
     module = bq.module_service.commands.module_admin:module_admin
       """,
-      )
+)

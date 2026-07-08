@@ -1,5 +1,5 @@
-from sqlalchemy import *
 from migrate import *
+from sqlalchemy import *
 
 
 def upgrade(migrate_engine):
@@ -7,11 +7,9 @@ def upgrade(migrate_engine):
     # migrate_engine to your metadata
     meta = MetaData()
     meta.bind = migrate_engine
-    taggable = Table('taggable', meta, autoload=True)
-    uniq_index = Index('resource_uniq_idx', taggable.c.resource_uniq)
+    taggable = Table("taggable", meta, autoload=True)
+    uniq_index = Index("resource_uniq_idx", taggable.c.resource_uniq)
     uniq_index.create()
-
-
 
 
 def downgrade(migrate_engine):

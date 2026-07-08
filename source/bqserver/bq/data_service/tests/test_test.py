@@ -1,13 +1,12 @@
-
-import sys
-import os
 import io
+import os
 import re
-import transaction
-import pytest
-
-from lxml import etree as ET
+import sys
 from io import StringIO
+
+import pytest
+import transaction
+from lxml import etree as ET
 
 
 def setup_module():
@@ -18,7 +17,7 @@ def setup_module():
 def teardown_module():
     """Module teardown"""
     pass
-    
+
 
 class TestDemo:
     """Converted from nose to pytest"""
@@ -26,4 +25,3 @@ class TestDemo:
     def test_a(self):
         """A test"""
         assert True  # Basic test to ensure it runs
-

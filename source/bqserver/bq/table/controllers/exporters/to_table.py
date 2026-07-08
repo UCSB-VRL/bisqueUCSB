@@ -46,34 +46,35 @@
 Direct table exporter for internal access
 """
 
-__author__    = "Dmitry Fedorov <dima@dimin.net>"
-__version__   = "1.0"
+__author__ = "Dmitry Fedorov <dima@dimin.net>"
+__version__ = "1.0"
 __copyright__ = "Center for Bio-Image Informatics, University of California at Santa Barbara"
 
 # default imports
-import os
 import logging
+import os
 
 log = logging.getLogger("bq.table.export.table")
 
 from bq.table.controllers.table_exporter import TableExporter
 
-#---------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------
 # exporters: Table
-#---------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------
 
-class ExporterTable (TableExporter):
-    '''Direct export for internal processes'''
 
-    name = 'table'
-    version = '1.0'
-    ext = 'table'
-    mime_type = 'python/table'
+class ExporterTable(TableExporter):
+    """Direct export for internal processes"""
+
+    name = "table"
+    version = "1.0"
+    ext = "table"
+    mime_type = "python/table"
 
     def info(self, table):
         super(ExporterTable, self).info(table)
         return table
 
     def format(self, table):
-        """ direct export """
+        """direct export"""
         return table

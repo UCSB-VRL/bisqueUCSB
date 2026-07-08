@@ -1,7 +1,5 @@
-
-
 USENODE = False
 if USENODE:
-    from .bqnode import  *
+    from .bqnode import *
 else:
     from .bqclass import *

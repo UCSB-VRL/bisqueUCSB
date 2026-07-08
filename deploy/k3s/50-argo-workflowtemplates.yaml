@@ -1,0 +1,89 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: bqflow-module-template
+  namespace: bisque
+spec:
+  entrypoint: bqmodule-template
+  serviceAccountName: bisque-argo-workflow
+  templates:
+    - name: bqmodule-template
+      inputs:
+        parameters:
+          - name: image
+          - name: args
+          - name: cpu
+            default: 500m
+          - name: memory
+            default: 512Mi
+          - name: ephemeral_storage
+            default: 1Gi
+      retryStrategy:
+        limit: "0"
+      podSpecPatch: |
+        containers:
+          - name: main
+            resources:
+              requests:
+                cpu: "{{inputs.parameters.cpu}}"
+                memory: "{{inputs.parameters.memory}}"
+                ephemeral-storage: "{{inputs.parameters.ephemeral_storage}}"
+      container:
+        image: "{{inputs.parameters.image}}"
+        imagePullPolicy: IfNotPresent
+        command:
+          - /bin/bash
+          - -lc
+        args:
+          - "{{inputs.parameters.args}}"
+  ttlStrategy:
+    secondsAfterCompletion: 86400
+    secondsAfterSuccess: 86400
+    secondsAfterFailure: 86400
+---
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: bqflow-module-gpu-template
+  namespace: bisque
+spec:
+  entrypoint: bqmodule-template
+  serviceAccountName: bisque-argo-workflow
+  templates:
+    - name: bqmodule-template
+      inputs:
+        parameters:
+          - name: image
+          - name: args
+          - name: cpu
+            default: "1"
+          - name: memory
+            default: 4Gi
+          - name: ephemeral_storage
+            default: 1Gi
+          - name: gpu_count
+            default: "1"
+      retryStrategy:
+        limit: "0"
+      podSpecPatch: |
+        containers:
+          - name: main
+            resources:
+              requests:
+                cpu: "{{inputs.parameters.cpu}}"
+                memory: "{{inputs.parameters.memory}}"
+                ephemeral-storage: "{{inputs.parameters.ephemeral_storage}}"
+              limits:
+                nvidia.com/gpu: "{{inputs.parameters.gpu_count}}"
+      container:
+        image: "{{inputs.parameters.image}}"
+        imagePullPolicy: IfNotPresent
+        command:
+          - /bin/bash
+          - -lc
+        args:
+          - "{{inputs.parameters.args}}"
+  ttlStrategy:
+    secondsAfterCompletion: 86400
+    secondsAfterSuccess: 86400
+    secondsAfterFailure: 86400

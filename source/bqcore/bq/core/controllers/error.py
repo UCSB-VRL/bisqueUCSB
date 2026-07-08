@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 """Error controller"""
 
-from tg import request, expose, response
-from tg import config
+from tg import config, expose, request, response
 
-__all__ = ['ErrorController']
+__all__ = ["ErrorController"]
 
 
 class ErrorController(object):
@@ -31,17 +30,14 @@ class ErrorController(object):
     #     return values
 
     # !!! modern alternative
-    @expose('bq.core.templates.error')
+    @expose("bq.core.templates.error")
     def document(self, *args, **kwargs):
-        default_message = ("<p>We're sorry but we weren't able to process "
-                        "this request.</p>")
+        default_message = "<p>We're sorry but we weren't able to process this request.</p>"
 
-        status_code = kwargs.get('code', getattr(response, 'status_code', 500))
-        message = kwargs.get('message', default_message)
+        status_code = kwargs.get("code", getattr(response, "status_code", 500))
+        message = kwargs.get("message", default_message)
 
         value = dict(
-            prefix=request.environ.get('SCRIPT_NAME', ''),
-            code=status_code,
-            message=message
+            prefix=request.environ.get("SCRIPT_NAME", ""), code=status_code, message=message
         )
         return value

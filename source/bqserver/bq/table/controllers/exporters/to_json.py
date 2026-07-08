@@ -46,43 +46,44 @@
 CSV table exporter
 """
 
-__author__    = "Dmitry Fedorov <dima@dimin.net>"
-__version__   = "1.0"
+__author__ = "Dmitry Fedorov <dima@dimin.net>"
+__version__ = "1.0"
 __copyright__ = "Center for Bio-Image Informatics, University of California at Santa Barbara"
 
 # default imports
-import os
-import logging
 import datetime as dt
+import logging
 import numbers
+import os
 
-__all__ = [ 'ExporterJSON' ]
+__all__ = ["ExporterJSON"]
 
 log = logging.getLogger("bq.table.export.json")
 
 try:
     import numpy as np
 except ImportError:
-    log.info('Numpy was not found but required for table service!')
+    log.info("Numpy was not found but required for table service!")
 
 try:
     import pandas as pd
 except ImportError:
-    log.info('Pandas was not found but required for table service!')
+    log.info("Pandas was not found but required for table service!")
 
 try:
     import json
 except ImportError:
-    log.info('Json was not found but needed for JSON output...')
+    log.info("Json was not found but needed for JSON output...")
 
 from bq.table.controllers.table_exporter import TableExporter
 
-#---------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------
 # Json serializer
-#---------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------
+
 
 class ExtEncoder(json.JSONEncoder):
-    def default(self, o): # pylint: disable=method-hidden
+    def default(self, o):  # pylint: disable=method-hidden
         if isinstance(o, (dt.datetime, dt.date, dt.time)):
             return o.isoformat()
         elif isinstance(o, np.integer):
@@ -92,34 +93,39 @@ class ExtEncoder(json.JSONEncoder):
         elif isinstance(o, np.ndarray):
             return o.tolist()
         elif isinstance(o, (np.bytes_, bytes)):
-            return o.decode('utf-8', errors='ignore')
+            return o.decode("utf-8", errors="ignore")
         elif isinstance(o, np.str_):
             return str(o)
-        #try:
+        # try:
         #    return super(ExtEncoder, o).default(o)
-        #except TypeError:
+        # except TypeError:
         #    return str(o)
         return json.JSONEncoder.default(self, o)
 
+
 def _replace_nans(o):
-    if isinstance(o,list):
+    if isinstance(o, list):
         return [_replace_nans(el) for el in o]
-    elif isinstance(o, numbers.Number) and np.isnan(o):   # NaN not a JSON standard; replace with "null"
+    elif isinstance(o, numbers.Number) and np.isnan(
+        o
+    ):  # NaN not a JSON standard; replace with "null"
         return None
     else:
         return o
 
-#---------------------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------------------
 # exporters: ExtJS - JSON formatted for ExtJS store ingest
-#---------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------
 
-class ExporterExtJS (TableExporter):
-    '''Formats tables as ExtJS'''
 
-    name = 'extjs'
-    version = '1.0'
-    ext = 'extjs'
-    mime_type = 'application/json'
+class ExporterExtJS(TableExporter):
+    """Formats tables as ExtJS"""
+
+    name = "extjs"
+    version = "1.0"
+    ext = "extjs"
+    mime_type = "application/json"
 
     def info(self, table):
         super(ExporterExtJS, self).info(table)
@@ -132,42 +138,44 @@ class ExporterExtJS (TableExporter):
                 v["sizes"] = table.sizes
         if table.tables is not None:
             v["group"] = table.tables
-        if table.meta is not None and len(table.meta)>0:
+        if table.meta is not None and len(table.meta) > 0:
             v["meta"] = table.meta
 
-        #log.debug(v)
+        # log.debug(v)
         return json.dumps(v, cls=ExtEncoder)
 
     def format(self, table):
-        """ converts table to JSON """
-        #return table.data.to_json()
+        """converts table to JSON"""
+        # return table.data.to_json()
         data = _replace_nans(table.as_array().tolist())
-        if hasattr(data, "strip") or   \
-           (not hasattr(data, "__getitem__") and   \
-            not hasattr(data, "__iter__")):
+        if hasattr(data, "strip") or (
+            not hasattr(data, "__getitem__") and not hasattr(data, "__iter__")
+        ):
             # data is not a list/tuple => wrap it
-            data = [ data ]
+            data = [data]
         v = {
-            'offset': table.offset,
-            'data': data,
-            'headers': table.headers,
-            'types': table.types,
+            "offset": table.offset,
+            "data": data,
+            "headers": table.headers,
+            "types": table.types,
         }
         if table.sizes is not None:
             v["sizes"] = table.sizes
         return json.dumps(v, cls=ExtEncoder)
 
-#---------------------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------------------
 # exporters: Json
-#---------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------
 
-class ExporterJSON (TableExporter):
-    '''Formats tables as Json'''
 
-    name = 'json'
-    version = '1.0'
-    ext = 'json'
-    mime_type = 'application/json'
+class ExporterJSON(TableExporter):
+    """Formats tables as Json"""
+
+    name = "json"
+    version = "1.0"
+    ext = "json"
+    mime_type = "application/json"
 
     def info(self, table):
         super(ExporterJSON, self).info(table)
@@ -180,27 +188,32 @@ class ExporterJSON (TableExporter):
                 v["sizes"] = table.sizes
         if table.tables is not None:
             v["group"] = table.tables
-        if table.meta is not None and len(table.meta)>0:
+        if table.meta is not None and len(table.meta) > 0:
             v["meta"] = table.meta
 
-        #log.debug(v)
+        # log.debug(v)
         return json.dumps(v, cls=ExtEncoder)
 
     def format(self, table):
-        """ converts table to JSON """
-        #return table.data.to_json()
+        """converts table to JSON"""
+        # return table.data.to_json()
         m = table.as_array()
         rank = len(m.shape)
-        is_table = len(table.headers)<=5 or (len(table.headers)>5 and (table.headers[0] != '0' or table.headers[1] != '1' or table.headers[2] != '2' ))
+        is_table = len(table.headers) <= 5 or (
+            len(table.headers) > 5
+            and (table.headers[0] != "0" or table.headers[1] != "1" or table.headers[2] != "2")
+        )
 
-        if rank<3 and is_table:
+        if rank < 3 and is_table:
             v = []
             for i in range(len(table.headers)):
                 vv = {
-                    'offset': table.offset,
-                    'header': table.headers[i],
-                    'type': table.types[i],
-                    'data': _replace_nans(m[:,i].tolist()) if rank>1 else _replace_nans(m.tolist()),
+                    "offset": table.offset,
+                    "header": table.headers[i],
+                    "type": table.types[i],
+                    "data": _replace_nans(m[:, i].tolist())
+                    if rank > 1
+                    else _replace_nans(m.tolist()),
                 }
                 if table.sizes is not None:
                     vv["size"] = table.sizes[0]
@@ -212,13 +225,12 @@ class ExporterJSON (TableExporter):
             #     # data is not a list/tuple => wrap it
             #     data = [ data ]
             v = {
-                'offset': table.offset,
+                "offset": table.offset,
                 #'headers': table.headers,
-                'type': table.types[0],
-                'data': _replace_nans(m.tolist()),
+                "type": table.types[0],
+                "data": _replace_nans(m.tolist()),
             }
             if table.sizes is not None:
                 v["size"] = table.sizes
 
         return json.dumps(v, cls=ExtEncoder)
-

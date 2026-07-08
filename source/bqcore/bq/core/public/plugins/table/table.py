@@ -43,64 +43,84 @@
 ###############################################################################
 
 
-__author__    = "Dmitry Fedorov <dima@dimin.net>"
-__version__   = "1.0"
+__author__ = "Dmitry Fedorov <dima@dimin.net>"
+__version__ = "1.0"
 __copyright__ = "Center for Bio-Image Informatics, University of California at Santa Barbara"
 
 from bq.blob_service.controllers.blob_plugins import ResourcePlugin
 
-class TablePlugin (ResourcePlugin):
-    '''Supports Tabular Files'''
+
+class TablePlugin(ResourcePlugin):
+    """Supports Tabular Files"""
+
     name = "TablePlugin"
-    version = '1.0'
-    ext = 'csv'
-    resource_type = 'table'
-    mime_type = 'text/csv'
+    version = "1.0"
+    ext = "csv"
+    resource_type = "table"
+    mime_type = "text/csv"
 
     def __init__(self):
         pass
 
-class CsvTablePlugin (TablePlugin):
-    '''Supports CSV file'''
-    ext = 'csv'
-    mime_type = 'text/csv'
 
-class XlsXTablePlugin (TablePlugin):
-    '''Supports Excel file'''
-    ext = 'xlsx'
-    mime_type = 'application/vnd.ms-excel'
+class CsvTablePlugin(TablePlugin):
+    """Supports CSV file"""
 
-class XlsTablePlugin (TablePlugin):
-    '''Supports Excel file'''
-    ext = 'xls'
-    mime_type = 'application/vnd.ms-excel'
+    ext = "csv"
+    mime_type = "text/csv"
 
-class HdfTablePlugin1 (TablePlugin):
-    '''Supports HDF file'''
-    ext = 'hdf'
-    mime_type = 'application/x-hdf'
 
-class HdfTablePlugin2 (TablePlugin):
-    '''Supports HDF5 file'''
-    ext = 'hdf5'
-    mime_type = 'application/x-hdf'
+class XlsXTablePlugin(TablePlugin):
+    """Supports Excel file"""
 
-class HdfTablePlugin3 (TablePlugin):
-    '''Supports HDF5 file'''
-    ext = 'h5'
-    mime_type = 'application/x-hdf'
+    ext = "xlsx"
+    mime_type = "application/vnd.ms-excel"
 
-class HdfTablePlugin4 (TablePlugin):
-    '''Supports HDF5 file'''
-    ext = 'he5'
-    mime_type = 'application/x-hdf'
 
-class HdfTablePlugin5 (TablePlugin):
-    '''Supports HDF5 file'''
-    ext = 'h5ebsd'
-    mime_type = 'application/x-hdf'
-    
-class HdfTablePlugin6 (TablePlugin):
-    '''Supports HDF5 file used by Dream.3D'''
-    ext = 'dream3d'
-    mime_type = 'application/x-hdf'
+class XlsTablePlugin(TablePlugin):
+    """Supports Excel file"""
+
+    ext = "xls"
+    mime_type = "application/vnd.ms-excel"
+
+
+class HdfTablePlugin1(TablePlugin):
+    """Supports HDF file"""
+
+    ext = "hdf"
+    mime_type = "application/x-hdf"
+
+
+class HdfTablePlugin2(TablePlugin):
+    """Supports HDF5 file"""
+
+    ext = "hdf5"
+    mime_type = "application/x-hdf"
+
+
+class HdfTablePlugin3(TablePlugin):
+    """Supports HDF5 file"""
+
+    ext = "h5"
+    mime_type = "application/x-hdf"
+
+
+class HdfTablePlugin4(TablePlugin):
+    """Supports HDF5 file"""
+
+    ext = "he5"
+    mime_type = "application/x-hdf"
+
+
+class HdfTablePlugin5(TablePlugin):
+    """Supports HDF5 file"""
+
+    ext = "h5ebsd"
+    mime_type = "application/x-hdf"
+
+
+class HdfTablePlugin6(TablePlugin):
+    """Supports HDF5 file used by Dream.3D"""
+
+    ext = "dream3d"
+    mime_type = "application/x-hdf"

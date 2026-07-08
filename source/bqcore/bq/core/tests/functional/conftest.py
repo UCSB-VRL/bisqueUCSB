@@ -1,10 +1,12 @@
 """Pytest fixtures and setup for bqcore tests."""
 
-import pytest
+import os
 from os import path
-from tg import config
+
+import pytest
 from paste.deploy import loadapp
 from paste.script.appinstall import SetupCommand
+from tg import config
 from webtest import TestApp
 
 from bq.core.model import DBSession
@@ -14,14 +16,13 @@ from bq.core.tests import setup_db, teardown_db
 @pytest.fixture(scope="session")
 def app():
     """Returns a functional test app with authentication enabled."""
-    conf_dir = "config"
+    test_file = os.getenv("BISQUE_TEST_CONFIG", path.join("config", "test.ini"))
+    conf_dir = path.dirname(test_file)
     section = "main_with_auth"  # Use config section with authentication enabled
     wsgiapp = loadapp(f"config:test.ini#{section}", relative_to=conf_dir)
-    test_file = path.join(conf_dir, "test.ini")
     SetupCommand("setup-app").run([test_file])
     app = TestApp(wsgiapp)
     return app
-
 
 
 @pytest.fixture(scope="module", autouse=True)

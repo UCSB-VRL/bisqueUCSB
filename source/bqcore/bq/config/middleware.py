@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 """WSGI middleware initialization for the bqcore application."""
+
+import logging
 import os
 import sys
-import logging
-import pkg_resources
-#from webtest import TestApp
 
-#from paste.cascade import Cascade
+import pkg_resources
+
+# from webtest import TestApp
+# from paste.cascade import Cascade
 from paste.registry import RegistryManager
 
 from bq.config.app_cfg import BisqueAppConfig, base_config
@@ -17,35 +19,44 @@ from bq.util.proxy import Proxy
 
 log = logging.getLogger(__name__)
 from tg.configuration import config
+
 from .direct_cascade import DirectCascade
 
-__all__ = ['make_app', 'bisque_app']
+__all__ = ["make_app", "bisque_app"]
 
 log = logging.getLogger("bq.config.middleware")
 
 bisque_app = None
 
-def add_profiler(app):
-    if config.get('bisque.profiler.enable', None) == 'true': #inialize profiler app
-        from bq.util.LinesmanProfiler import BQProfilingMiddleware
-        app = BQProfilingMiddleware(app, config.get('sqlalchemy.url', None), config.get('bisque.profiler.path', '__profiler__'))
-        log.info("HOOKING profiler app")
-    return app #pass through
 
-base_config.register_hook('before_config', add_profiler)
+def add_profiler(app):
+    if config.get("bisque.profiler.enable", None) == "true":  # inialize profiler app
+        from bq.util.LinesmanProfiler import BQProfilingMiddleware
+
+        app = BQProfilingMiddleware(
+            app,
+            config.get("sqlalchemy.url", None),
+            config.get("bisque.profiler.path", "__profiler__"),
+        )
+        log.info("HOOKING profiler app")
+    return app  # pass through
+
+
+base_config.register_hook("before_config", add_profiler)
+
 
 def save_bisque_app(app):
     global bisque_app
-    bisque_app = app # RegistryManager(app, streaming = True)
-    log.info ("HOOKING App %s", str(app))
+    bisque_app = app  # RegistryManager(app, streaming = True)
+    log.info("HOOKING App %s", str(app))
     return app
 
-base_config.register_hook('before_config', save_bisque_app)
+
+base_config.register_hook("before_config", save_bisque_app)
 
 # Use base_config to setup the necessary PasteDeploy application factory.
 # make_base_app will wrap the TG2 app with all the middleware it needs.
 make_base_app = base_config.setup_tg_wsgi_app(load_environment)
-
 
 
 class LogWSGIErrors(object):
@@ -55,25 +66,26 @@ class LogWSGIErrors(object):
         self.level = level
 
     def __call__(self, environ, start_response):
-        environ['wsgi.errors' ] = self
+        environ["wsgi.errors"] = self
         return self.app(environ, start_response)
 
     def write(self, message):
-        if message != '\n':
+        if message != "\n":
             self.logger.log(self.level, message)
+
 
 class ProxyApp(object):
     def __init__(self, app):
         self.oldapp = app
 
     def __call__(self, environ, start_response):
-        if environ['PATH_INFO'].startswith('/proxy/'):
-            log.debug('ProxyApp activated')
-            command = environ['PATH_INFO'].split('/', 3)
-            #log.debug('ProxyApp command: %s', command)
-            address = 'http://%s'%command[2]
-            path = '/%s'%command[3]
-            environ['PATH_INFO'] = path
+        if environ["PATH_INFO"].startswith("/proxy/"):
+            log.debug("ProxyApp activated")
+            command = environ["PATH_INFO"].split("/", 3)
+            # log.debug('ProxyApp command: %s', command)
+            address = "http://%s" % command[2]
+            path = "/%s" % command[3]
+            environ["PATH_INFO"] = path
             proxy = Proxy(address)
             return proxy(environ, start_response)
         return self.oldapp(environ, start_response)
@@ -104,16 +116,16 @@ def make_app(global_conf, full_stack=True, **app_conf):
     global bisque_app
 
     app = make_base_app(global_conf, full_stack=True, **app_conf)
-    
+
     log.info("CALLING add_auth_middleware")
     # Add repoze.who authentication middleware
-    app = base_config.add_auth_middleware(app, app_conf.get('skip_authentication', False))
+    app = base_config.add_auth_middleware(app, app_conf.get("skip_authentication", False))
     log.info("add_auth_middleware COMPLETED")
 
-    #from repoze.profile.profiler import AccumulatingProfileMiddleware
+    # from repoze.profile.profiler import AccumulatingProfileMiddleware
 
     # Wrap your base TurboGears 2 application with custom middleware here
-    #app = AccumulatingProfileMiddleware(
+    # app = AccumulatingProfileMiddleware(
     #    app,
     #    log_filename='/tmp/proj.log',
     #    cachegrind_filename='/tmp/cachegrind.out.bar',
@@ -123,22 +135,25 @@ def make_app(global_conf, full_stack=True, **app_conf):
     #    )
 
     # Wrap your base TurboGears 2 application with custom middleware here
-    #from tg import config
+    # from tg import config
 
     app = ProxyApp(app)
     bisque_app = app
-    app = LogWSGIErrors(app, logging.getLogger('bq.middleware'), logging.ERROR)
+    app = LogWSGIErrors(app, logging.getLogger("bq.middleware"), logging.ERROR)
 
-    app = BisqueAppConfig().setup_sqlalchemy(app) # !!! added this to manually add sqlalchemy middleware
-    app = BisqueAppConfig().add_static_file_middleware(app) # !!! added this to manually add static file middleware
+    app = BisqueAppConfig().setup_sqlalchemy(
+        app
+    )  # !!! added this to manually add sqlalchemy middleware
+    app = BisqueAppConfig().add_static_file_middleware(
+        app
+    )  # !!! added this to manually add static file middleware
 
     # Call the loader in the root controller
-    log.info ("wsgi - Application : complete")
+    log.info("wsgi - Application : complete")
     root.startup()
-    log.info ("Root-Controller: startup complete")
+    log.info("Root-Controller: startup complete")
 
     return app
-
 
 
 class AddValue(object):
@@ -152,9 +167,11 @@ class AddValue(object):
         environ[self.key] = self.value
         return self.app(environ, start_response)
 
+
 def add_global(global_conf, **app_conf):
     def filter(app):
-        return AddValue(app, 'global_app', app)
-            #app_conf.get('key', 'default'),
-            #app_conf.get('value', 'defaultvalue'))
+        return AddValue(app, "global_app", app)
+        # app_conf.get('key', 'default'),
+        # app_conf.get('value', 'defaultvalue'))
+
     return filter

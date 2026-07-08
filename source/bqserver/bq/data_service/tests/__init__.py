@@ -1,7 +1,6 @@
+# from bq.core.tests import setup_db, teardown_db
 
-#from bq.core.tests import setup_db, teardown_db
-
-#def setup():
+# def setup():
 #    setup_db()
-#def teardown():
+# def teardown():
 #    teardown_db()

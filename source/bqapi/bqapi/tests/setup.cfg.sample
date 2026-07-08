@@ -4,8 +4,8 @@ user: test
 password: test
 
 [Store]
-samples_url: https://s3-us-west-2.amazonaws.com/viqi-test-images/
-input_dir: SampleData
+samples_url: fixtures
+input_dir: fixtures
 results_dir: Results
 files: flowers_24bit_nointr.png
 
@@ -13,4 +13,3 @@ files: flowers_24bit_nointr.png
 filename1: flowers_24bit_nointr.png
 
 [nosetests]
-

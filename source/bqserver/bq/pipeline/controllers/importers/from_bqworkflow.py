@@ -46,54 +46,57 @@
 Bisque pipeline importer
 """
 
-
 # default imports
-import os
-import logging
 import json
-import pkg_resources
+import logging
+import os
 import tempfile
+
+import pkg_resources
 from pylons.controllers.util import abort
 
 from bq import blob_service
 from bq.pipeline.controllers.pipeline_base import PipelineBase
 
-__all__ = [ 'PipelineBisque' ]
+__all__ = ["PipelineBisque"]
 
 log = logging.getLogger("bq.pipeline.import.bqworkflow")
 
 
-
-
-#---------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------
 # Importer: Bisque workflow
-#---------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------
+
 
 def upload_bisque_pipeline(uf, intags):
-    with open(uf.localpath(), 'rb') as fo:
+    with open(uf.localpath(), "rb") as fo:
         res = [blob_service.store_blob(resource=uf.resource, fileobj=fo)]
     uf.close()
     return res
-        
+
+
 def bqworkflow_to_json(pipeline_file):
     raw_pipeline = pipeline_file.read()
     pipeline = json.loads(raw_pipeline)
     return pipeline
 
+
 class PipelineBisque(PipelineBase):
-    name = 'bqworkflow'
-    version = '1.0'
-    ext = ['bq']
+    name = "bqworkflow"
+    version = "1.0"
+    ext = ["bq"]
 
     def __init__(self, uniq, resource, path, **kw):
         super(PipelineBisque, self).__init__(uniq, resource, path, **kw)
 
         # try to load the resource binary
-        b = blob_service.localpath(uniq, resource=resource) or abort (404, 'File not available from blob service')
+        b = blob_service.localpath(uniq, resource=resource) or abort(
+            404, "File not available from blob service"
+        )
         self.filename = b.path
         self.data = {}
-        with open(self.filename, 'r') as pipeline_file:
+        with open(self.filename, "r") as pipeline_file:
             self.data = bqworkflow_to_json(pipeline_file)
-                
+
     def __repr__(self):
         return str(self.data)

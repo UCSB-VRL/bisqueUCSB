@@ -9,51 +9,60 @@ It's perfectly fine to re-use this definition in the bqcore application,
 though.
 
 """
-import logging
-from tg import config
-
-import os
-from datetime import datetime
-import sys
 
 import base64
 import hmac
+import logging
+import os
+import sys
+from datetime import datetime
+
+from tg import config
 
 try:
     # from hashlib import sha1
-    import hashlib # !!! In between upgrading to py3.10+ (Experimental) before was sha1
+    import hashlib  # !!! In between upgrading to py3.10+ (Experimental) before was sha1
 except ImportError:
-    sys.exit('ImportError: No module named hashlib\n'
-             'If you are on python2.4 this library is not part of python. '
-             'Please install it. Example: easy_install hashlib')
+    sys.exit(
+        "ImportError: No module named hashlib\n"
+        "If you are on python2.4 this library is not part of python. "
+        "Please install it. Example: easy_install hashlib"
+    )
 
 import sqlalchemy as sa
-from sqlalchemy import Table, ForeignKey, Column, select, text
-from sqlalchemy.types import Unicode, Integer, DateTime
-# from sqlalchemy.orm import relation, synonym#, validates # !!! before upgrading to py3.10+
-from sqlalchemy.orm import relationship, synonym # !!! In between upgrading to py3.10+ (Experimental)
-from sqlalchemy import event
+from sqlalchemy import Column, ForeignKey, Table, event, select, text
 from sqlalchemy.engine import Engine
 from sqlalchemy.ext.hybrid import hybrid_property
-from bq.core.model import DeclarativeBase, metadata, DBSession
 
-log = logging.getLogger('bq.core.model.auth')
+# from sqlalchemy.orm import relation, synonym#, validates # !!! before upgrading to py3.10+
+from sqlalchemy.orm import (
+    relationship,
+    synonym,
+)  # !!! In between upgrading to py3.10+ (Experimental)
+from sqlalchemy.types import DateTime, Integer, Unicode
+
+from bq.core.model import DBSession, DeclarativeBase, metadata
+
+log = logging.getLogger("bq.core.model.auth")
+
 
 @event.listens_for(Engine, "connect")
 def set_sqlite_pragma(dbapi_connection, connection_record):
-    if config.get('sqlalchemy.url', '').startswith ("sqlite://"):
+    if config.get("sqlalchemy.url", "").startswith("sqlite://"):
         cursor = dbapi_connection.cursor()
         cursor.execute("PRAGMA foreign_keys=ON")
         cursor.close()
-        log.debug ("SQLITE: enabling foriegn keys")
+        log.debug("SQLITE: enabling foriegn keys")
+
 
 @event.listens_for(Engine, "connect")
 def do_connect(dbapi_connection, connection_record):
     # disable pysqlite's emitting of the BEGIN statement entirely.
     # also stops it from emitting COMMIT before any DDL.
-    if config.get('sqlalchemy.url', '').startswith ("sqlite://"):
+    if config.get("sqlalchemy.url", "").startswith("sqlite://"):
         dbapi_connection.isolation_level = None
-        log.debug ("SQLITE: Disable automatic transactions")
+        log.debug("SQLITE: Disable automatic transactions")
+
 
 # @event.listens_for(Engine, "begin")
 # def do_begin(conn):
@@ -64,16 +73,18 @@ def do_connect(dbapi_connection, connection_record):
 #         conn.execute("BEGIN ")
 #         log.debug ("SQLITE: Begin Transaction")
 
+
 # !!! new code to support python 3.10+ (Experimental)
 @event.listens_for(Engine, "begin")
 def do_begin(conn):
-    if config.get('sqlalchemy.url', '').startswith("sqlite://"):
+    if config.get("sqlalchemy.url", "").startswith("sqlite://"):
         conn.execute(text("BEGIN"))
         log.debug("SQLITE: Begin Transaction")
 
+
 # http://docs.sqlalchemy.org/en/latest/core/pooling.html#pool-disconnects-pessimistic
 # http://docs.sqlalchemy.org/en/latest/core/pooling.html#disconnect-handling-pessimistic
-#@event.listens_for(Engine, "engine_connect")
+# @event.listens_for(Engine, "engine_connect")
 # def ping_connection(connection, branch):
 #     if branch:
 #         # "branch" refers to a sub-connection of a connection,
@@ -106,46 +117,66 @@ def do_begin(conn):
 #         # restore "close with result"
 #         connection.should_close_with_result = save_should_close_with_result
 
-__all__ = ['User', 'Group', 'Permission', 'HashPassword', 'FreeTextPassword']
-
+__all__ = ["User", "Group", "Permission", "HashPassword", "FreeTextPassword"]
 
 
 from sqlalchemy.engine import Engine
 
 # THIS APPEARS TO BE A DUPLICATE (bad merge) of the above..
-#@event.listens_for(Engine, "connect")
-#def set_sqlite_pragma(dbapi_connection, connection_record):
+# @event.listens_for(Engine, "connect")
+# def set_sqlite_pragma(dbapi_connection, connection_record):
 #    if config.get('sqlalchemy.url', '').startswith ("sqlite://"):
 #        cursor = dbapi_connection.cursor()
 #        cursor.execute("PRAGMA foreign_keys=ON")
 #        cursor.close()
 
 
-#{ Association tables
+# { Association tables
 
 
 # This is the association table for the many-to-many relationship between
 # groups and permissions. This is required by repoze.what.
-#group_permission_table = Table('tg_group_permission', metadata,
-group_permission_table = Table('group_permission', metadata,
-    Column('group_id', Integer, ForeignKey('tg_group.group_id',
-        onupdate="CASCADE", ondelete="CASCADE"), primary_key=True),
-#    Column('permission_id', Integer, ForeignKey('tg_permission.permission_id',
-    Column('permission_id', Integer, ForeignKey('permission.permission_id',
-        onupdate="CASCADE", ondelete="CASCADE"), primary_key=True)
+# group_permission_table = Table('tg_group_permission', metadata,
+group_permission_table = Table(
+    "group_permission",
+    metadata,
+    Column(
+        "group_id",
+        Integer,
+        ForeignKey("tg_group.group_id", onupdate="CASCADE", ondelete="CASCADE"),
+        primary_key=True,
+    ),
+    #    Column('permission_id', Integer, ForeignKey('tg_permission.permission_id',
+    Column(
+        "permission_id",
+        Integer,
+        ForeignKey("permission.permission_id", onupdate="CASCADE", ondelete="CASCADE"),
+        primary_key=True,
+    ),
 )
 
 # This is the association table for the many-to-many relationship between
 # groups and members - this is, the memberships. It's required by repoze.what.
-#user_group_table = Table('tg_user_group', metadata,
-user_group_table = Table('user_group', metadata,
-    Column('user_id', Integer, ForeignKey('tg_user.user_id',
-        onupdate="CASCADE", ondelete="CASCADE"), primary_key=True),
-    Column('group_id', Integer, ForeignKey('tg_group.group_id',
-        onupdate="CASCADE", ondelete="CASCADE"), primary_key=True)
+# user_group_table = Table('tg_user_group', metadata,
+user_group_table = Table(
+    "user_group",
+    metadata,
+    Column(
+        "user_id",
+        Integer,
+        ForeignKey("tg_user.user_id", onupdate="CASCADE", ondelete="CASCADE"),
+        primary_key=True,
+    ),
+    Column(
+        "group_id",
+        Integer,
+        ForeignKey("tg_group.group_id", onupdate="CASCADE", ondelete="CASCADE"),
+        primary_key=True,
+    ),
 )
 
-class HashPassword():
+
+class HashPassword:
     @staticmethod
     def create_password(password):
         # if isinstance(password, str):
@@ -161,20 +192,23 @@ class HashPassword():
 
         # !!! In between upgrading to py3.10+ (Experimental) previously was sha1
         if isinstance(password, str):
-            password = password.encode('utf-8')
+            password = password.encode("utf-8")
 
         salt = os.urandom(16)  # 128-bit salt
         hash_bytes = hashlib.pbkdf2_hmac(
-            'sha256',              # Secure hash function
-            password,              # The password
-            salt,                  # The salt
-            100_000,               # Iteration count
-            dklen=32               # Hash length in bytes
+            "sha256",  # Secure hash function
+            password,  # The password
+            salt,  # The salt
+            100_000,  # Iteration count
+            dklen=32,  # Hash length in bytes
         )
 
         # Encode salt and hash to base64 and return in the format: salt$hash
-        hashed_password = base64.b64encode(salt).decode() + '$' + base64.b64encode(hash_bytes).decode()
+        hashed_password = (
+            base64.b64encode(salt).decode() + "$" + base64.b64encode(hash_bytes).decode()
+        )
         return hashed_password
+
     @staticmethod
     def check_password(passval, password):
         # hash = sha1()
@@ -185,42 +219,37 @@ class HashPassword():
 
         # !!! In between upgrading to py3.10+ (Experimental) previously was sha1
         if isinstance(password, str):
-            password = password.encode('utf-8')
+            password = password.encode("utf-8")
 
         try:
-            salt_b64, hash_b64 = passval.split('$')
+            salt_b64, hash_b64 = passval.split("$")
             salt = base64.b64decode(salt_b64)
             stored_hash = base64.b64decode(hash_b64)
 
-            test_hash = hashlib.pbkdf2_hmac(
-                'sha256',
-                password,
-                salt,
-                100_000,
-                dklen=32
-            )
+            test_hash = hashlib.pbkdf2_hmac("sha256", password, salt, 100_000, dklen=32)
 
             return hmac.compare_digest(test_hash, stored_hash)
         except Exception:
             return False
 
-class FreeTextPassword ():
+
+class FreeTextPassword:
     @staticmethod
     def create_password(password):
         return password
+
     @staticmethod
     def check_password(passval, password):
         return passval == password
 
 
 password_map = {
-    'hashed' : HashPassword,
-    'freetext' : FreeTextPassword,
-    }
+    "hashed": HashPassword,
+    "freetext": FreeTextPassword,
+}
 
 
-
-#{ The auth* model itself
+# { The auth* model itself
 
 
 class Group(DeclarativeBase):
@@ -231,30 +260,34 @@ class Group(DeclarativeBase):
 
     """
 
-    __tablename__ = 'tg_group'
+    __tablename__ = "tg_group"
 
-    #{ Columns
+    # { Columns
 
     group_id = Column(Integer, autoincrement=True, primary_key=True)
     group_name = Column(Unicode(16), unique=True, nullable=False)
     display_name = Column(Unicode(255))
     created = Column(DateTime, default=datetime.now)
 
-    #{ Relations
+    # { Relations
 
-    users = relationship('User', secondary=user_group_table, backref='groups') # !!! In between upgrading to py3.10+ (Experimental) previously was relation
+    users = relationship(
+        "User", secondary=user_group_table, backref="groups"
+    )  # !!! In between upgrading to py3.10+ (Experimental) previously was relation
 
-    #{ Special methods
+    # { Special methods
 
     def __repr__(self):
-        return ('<Group: name=%s>' % self.group_name).encode('utf-8')
+        return ("<Group: name=%s>" % self.group_name).encode("utf-8")
 
     # def __unicode__(self):
-    #     return self.group_name 
+    #     return self.group_name
     def __str__(self):
-        return self.group_name #!!! In between upgrading to py3.10+ (Experimental) previously was __unicode__
+        return (
+            self.group_name
+        )  #!!! In between upgrading to py3.10+ (Experimental) previously was __unicode__
 
-    #}
+    # }
 
 
 # The 'info' argument we're passing to the email_address and password columns
@@ -268,38 +301,43 @@ class User(DeclarativeBase):
     least the ``user_name`` column.
 
     """
-    __tablename__ = 'tg_user'
+
+    __tablename__ = "tg_user"
     callbacks = []
 
-    #{ Columns
+    # { Columns
 
     user_id = Column(Integer, autoincrement=True, primary_key=True)
     user_name = Column(Unicode(255), unique=True, nullable=False)
-    _email_address = Column('email_address', Unicode(255), unique=True, nullable=False,
-                           info={'rum': {'field':'Email'}})
+    _email_address = Column(
+        "email_address", Unicode(255), unique=True, nullable=False, info={"rum": {"field": "Email"}}
+    )
     display_name = Column(Unicode(255))
-    _password = Column('password', Unicode(80),
-                       info={'rum': {'field':'Password'}})
+    _password = Column("password", Unicode(80), info={"rum": {"field": "Password"}})
     created = Column(DateTime, default=datetime.now)
 
-    #{ Special methods
+    # { Special methods
     def __init__(self, **kw):
         super(User, self).__init__(**kw)
-        if 'password' in kw:
-            self.password = kw['password'] # Force hashing if needed
+        if "password" in kw:
+            self.password = kw["password"]  # Force hashing if needed
 
         self.on_create()
 
     def __repr__(self):
-        return ('<User: name=%r, email=%r, display=%r>' % (
-                self.user_name, self.email_address, self.display_name)).encode('utf-8')
+        return (
+            "<User: name=%r, email=%r, display=%r>"
+            % (self.user_name, self.email_address, self.display_name)
+        ).encode("utf-8")
 
     # def __unicode__(self):
     #     return self.display_name or self.user_name
     def __str__(self):
-        return self.display_name or self.user_name #!!! In between upgrading to py3.10+ (Experimental) previously was __unicode__
+        return (
+            self.display_name or self.user_name
+        )  #!!! In between upgrading to py3.10+ (Experimental) previously was __unicode__
 
-    #{ Getters and setters
+    # { Getters and setters
 
     @property
     def permissions(self):
@@ -322,17 +360,17 @@ class User(DeclarativeBase):
     def _set_password(self, password):
         """Hash ``password`` on the fly and store its hashed version."""
 
-        password_type = config.get ('bisque.login.password', 'freetext')
-        password_cls  = password_map.get(password_type, FreeTextPassword)
+        password_type = config.get("bisque.login.password", "freetext")
+        password_cls = password_map.get(password_type, FreeTextPassword)
 
-        password = password_cls.create_password (password)
+        password = password_cls.create_password(password)
         # Make sure the hashed password is an UTF-8 object at the end of the
         # process because SQLAlchemy _wants_ a unicode object for Unicode
         # columns
-        log.debug ("Setting %s password", password_type)
+        log.debug("Setting %s password", password_type)
 
         if not isinstance(password, str):
-            password = password.decode('utf-8')
+            password = password.decode("utf-8")
         self._password = password
         self.on_update()
 
@@ -340,10 +378,9 @@ class User(DeclarativeBase):
         """Return the hashed version of the password."""
         return self._password
 
-    password = synonym('_password', descriptor=property(_get_password,
-                                                        _set_password))
+    password = synonym("_password", descriptor=property(_get_password, _set_password))
 
-    #}
+    # }
 
     def validate_password(self, password):
         """
@@ -357,49 +394,46 @@ class User(DeclarativeBase):
         :rtype: bool
 
         """
-        password_type = config.get ('bisque.login.password', 'freetext')
-        password_cls  = password_map.get(password_type, FreeTextPassword)
+        password_type = config.get("bisque.login.password", "freetext")
+        password_cls = password_map.get(password_type, FreeTextPassword)
 
         if isinstance(password, str):
-            password = password.encode('utf-8')
+            password = password.encode("utf-8")
 
         return password_cls.check_password(self.password, password)
 
-    #@hybrid_property
+    # @hybrid_property
     def _get_email(self):
         return self._email_address
 
-    #@email_address.setter
+    # @email_address.setter
     def _set_email(self, email):
         self._email_address = email
         self.on_update()
 
-    email_address = synonym('_email_address', descriptor=property(_get_email,
-                                                                  _set_email))
-
-
+    email_address = synonym("_email_address", descriptor=property(_get_email, _set_email))
 
     def on_create(self):
         for cb in User.callbacks:
-            cb(tg_user = self, operation = 'create')
+            cb(tg_user=self, operation="create")
+
     def on_update(self):
         # never run update on new objects
         if self.user_id is None:
             return
         for cb in User.callbacks:
-            cb(tg_user = self, operation = 'update')
+            cb(tg_user=self, operation="update")
 
 
 # Newer sqlalchemy does not allow modification of session ..
-#def create_user(mapper, connection, target, ):
+# def create_user(mapper, connection, target, ):
 #    for cb in User.callbacks:
 #        cb(tg_user = target, operation = 'create')
-#def update_user(mapper, connection, target, ):
+# def update_user(mapper, connection, target, ):
 #    for cb in User.callbacks:
 #        cb(tg_user = target, operation = 'update')
-#event.listen(User, 'after_update', update_user )
-#event.listen(User, 'after_insert', create_user )
-
+# event.listen(User, 'after_update', update_user )
+# event.listen(User, 'after_insert', create_user )
 
 
 class Permission(DeclarativeBase):
@@ -410,31 +444,34 @@ class Permission(DeclarativeBase):
 
     """
 
-#    __tablename__ = 'tg_permission'
-    __tablename__ = 'permission'
+    #    __tablename__ = 'tg_permission'
+    __tablename__ = "permission"
 
-    #{ Columns
+    # { Columns
 
     permission_id = Column(Integer, autoincrement=True, primary_key=True)
     permission_name = Column(Unicode(63), unique=True, nullable=False)
     description = Column(Unicode(255))
 
-    #{ Relations
+    # { Relations
 
-    groups = relationship(Group, secondary=group_permission_table,
-                      backref='permissions') # !!! In between upgrading to py3.10+ (Experimental) previously was relation
+    groups = relationship(
+        Group, secondary=group_permission_table, backref="permissions"
+    )  # !!! In between upgrading to py3.10+ (Experimental) previously was relation
 
-    #{ Special methods
+    # { Special methods
 
     def __repr__(self):
-        return ('<Permission: name=%r>' % self.permission_name).encode('utf-8')
+        return ("<Permission: name=%r>" % self.permission_name).encode("utf-8")
 
     # def __unicode__(self):
     #     return self.permission_name
     def __str__(self):
-        return self.permission_name #!!! In between upgrading to py3.10+ (Experimental) previously was __unicode__
+        return (
+            self.permission_name
+        )  #!!! In between upgrading to py3.10+ (Experimental) previously was __unicode__
 
-    #}
+    # }
 
 
-#}
+# }

@@ -13,15 +13,17 @@ Please read http://pythonpaste.org/webtest/ for more information.
 
 # !!! modern way with pytest
 import pytest
+
 # from bs4 import BeautifulSoup
+
 
 class TestRootController:
     """Tests for the methods in the root controller."""
 
     def test_index(self, app):
         """The front page is working properly."""
-        msg = 'Welcome'
-        response = app.get('/', status=302)
+        msg = "Welcome"
+        response = app.get("/", status=302)
         response = response.follow(status=200)
 
         assert msg in response.text
@@ -33,8 +35,9 @@ class TestRootController:
 
     def test_services(self, app):
         """Displaying Services works."""
-        response = app.get('/services', status=200)
-        assert 'client_service' in response.text
+        response = app.get("/services", status=200)
+        assert "client_service" in response.text
+
 
 # !!! old approach with nose
 # from nose.tools import assert_true

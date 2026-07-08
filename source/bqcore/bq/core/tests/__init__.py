@@ -1,38 +1,41 @@
 # # -*- coding: utf-8 -*-
 # """Unit and functional test suite for bqcore."""
 
-from os import path
 import sys
+from os import path
 
-from tg import config
+import transaction
+from nose.tools import eq_
 from paste.deploy import loadapp
 from paste.script.appinstall import SetupCommand
 from routes import url_for
+from tg import config
 from webtest import TestApp
-from nose.tools import eq_
-import transaction
 
 from bq.core import model
 from bq.core.model import DBSession
 
 # __all__ = ['setup_db', 'teardown_db', 'TestController', 'url_for']
 
+
 def setup_db():
     """Method used to build a database"""
-    engine = config['pylons.app_globals'].sa_engine
+    engine = config["pylons.app_globals"].sa_engine
     model.init_model(engine)
     model.metadata.create_all(engine)
     print("SETUP DB")
+
 
 def teardown_db():
     """Method used to destroy a database"""
     DBSession.rollback()
     DBSession.remove()
-    engine = config['pylons.app_globals'].sa_engine
+    engine = config["pylons.app_globals"].sa_engine
     model.metadata.drop_all(engine)
     print("TEARDOWN DB")
 
-    #transaction.doom()
+    # transaction.doom()
+
 
 # def setup_app(section = 'main'):
 #     conf_dir = 'config'  # config.here

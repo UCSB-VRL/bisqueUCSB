@@ -1,6 +1,6 @@
 #
 #
-from bq.core.model import DeclarativeBase, metadata, DBSession
+from bq.core.model import DBSession, DeclarativeBase, metadata
 
 
 def init_model(engine):
@@ -12,5 +12,3 @@ def init_model(engine):
     # the init_model function, so that the engine is available if you
     # use the model outside tg2, you need to make sure this is called before
     # you use the model.
-
-

@@ -1,7 +1,7 @@
 # This file created by bq-admin setup and contains runtime variables needed by modules
 # Original copy is config and linked into the modules
 #
-# Mode is a list of allow runtime platforms i.e. command, condor, [hadoop]
+# Mode is a list of allowed runtime platforms.
 runtime.platforms = command
 # Where staging directory are createed
 runtime.staging_base =
@@ -25,15 +25,3 @@ docker.login_tmpl =
 docker.image.matlab_runtime = biodev.ece.ucsb.edu:5000/mcr_runtime_2015b
 docker.image.dream3d = biodev.ece.ucsb.edu:5000/dream3d
 docker.image.cellprofiler = biodev.ece.ucsb.edu:5000/cellprofiler
-
-[condor]
-condor.enabled = False
-condor.dag_template = config-defaults/templates/condor_dag.tmpl
-condor.submit_template = config-defaults/templates/condor_submit.tmpl
-condor.dag_config_template = config-defaults/templates/condor_dag_conf.tmpl
-
-[condor_submit]
-request_cpus = 1
-request_memory = 2000
-match_list_length = 3
-requirements = (Arch == "x86_64") && (TARGET.Name =!= LastMatchName1) && (OpSys == "LINUX")

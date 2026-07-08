@@ -47,27 +47,29 @@ Table base for operations
 
 """
 
-__author__    = "Dmitry Fedorov <dima@dimin.net>"
-__version__   = "1.0"
+__author__ = "Dmitry Fedorov <dima@dimin.net>"
+__version__ = "1.0"
 __copyright__ = "Center for Bio-Image Informatics, University of California at Santa Barbara"
 
 # default imports
-import os
 import logging
+import os
+
 import pkg_resources
 
 log = logging.getLogger("bq.table.operation")
 
-__all__ = [ 'TableOperation' ]
+__all__ = ["TableOperation"]
 
-#---------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------
 # Operations: Table base
-#---------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------
+
 
 class TableOperation(object):
-    '''Processes tables'''
+    """Processes tables"""
 
-    name = ''
+    name = ""
 
     def __init__(self):
         pass

@@ -1,1 +1,0 @@
-{"Name": "SeamCarvingDetection", "Author": "Chandrakanth", "Description": "Module to flag seam carved images", "Inputs": {"Input Image": "image"}, "Outputs": {"Output Image": "image"}}

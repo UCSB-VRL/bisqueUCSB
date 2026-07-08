@@ -269,12 +269,14 @@ def base_link(ext, *sources, **options):
     combined = options.pop('combined', False)
     timestamp = options.pop('timestamp', False)
     beaker_options = options.pop('beaker_kwargs', False)
+    fs_root = options.pop('fs_root', None)
 
     # !!! Added to support when pylons.paths is not available
-    try:
-        fs_root = config.get('pylons.paths').get('static_files')
-    except:
-        fs_root = './public/'
+    if not fs_root:
+        try:
+            fs_root = config.get('pylons.paths').get('static_files')
+        except:
+            fs_root = './public/'
 
 
     sources = list(sources)

@@ -1,42 +1,42 @@
-""" An ordered dictionary of converters
-"""
+"""An ordered dictionary of converters"""
 
-__author__    = "Dmitry Fedorov"
-__version__   = "1.4"
+__author__ = "Dmitry Fedorov"
+__version__ = "1.4"
 __copyright__ = "Center for BioImage Informatics, University California, Santa Barbara"
 
-import sys
-import logging
-import os.path
-import shutil
-import re
-import io
-from lxml import etree
 import datetime
+import io
+import logging
 import math
+import os.path
+import re
+import shutil
+import sys
 
-#from collections import OrderedDict
+from lxml import etree
+
+# from collections import OrderedDict
 from bq.util.compat import OrderedDict
 
 from .process_token import ProcessToken
 
-import logging
-log = logging.getLogger('bq.image_service.converters')
+log = logging.getLogger("bq.image_service.converters")
 
 ################################################################################
 # ConverterDict
 ################################################################################
 
-class ConverterDict(OrderedDict):
-    'Store items in the order the keys were last added'
 
-#     def __setitem__(self, key, value):
-#         if key in self:
-#             del self[key]
-#         OrderedDict.__setitem__(self, key, value)
+class ConverterDict(OrderedDict):
+    "Store items in the order the keys were last added"
+
+    #     def __setitem__(self, key, value):
+    #         if key in self:
+    #             del self[key]
+    #         OrderedDict.__setitem__(self, key, value)
 
     def __str__(self):
-        return ', '.join(['%s (%s)'%(n, c.version['full']) for n,c in self.items()])
+        return ", ".join(["%s (%s)" % (n, c.version["full"]) for n, c in self.items()])
 
     def defaultExtension(self, formatName):
         formatName = formatName.lower()
@@ -60,23 +60,23 @@ class ConverterDict(OrderedDict):
 
         token = ProcessToken(ifnm=filename)
         if name is None:
-            for n,c in self.items():
+            for n, c in self.items():
                 info = c.info(token)
-                if info is not None and len(info)>0:
-                    info['converter'] = n
+                if info is not None and len(info) > 0:
+                    info["converter"] = n
                     return info
         else:
             c = self[name]
             info = c.info(token)
-            if info is not None and len(info)>0:
-                info['converter'] = name
+            if info is not None and len(info) > 0:
+                info["converter"] = name
                 return info
         return None
 
     def canWriteMultipage(self, formatName):
         formats = []
         for c in self.values():
-            for n,f in c.formats().items():
+            for n, f in c.formats().items():
                 if f.multipage is True:
                     formats.append(n)
         return formatName.lower() in formats
@@ -84,7 +84,7 @@ class ConverterDict(OrderedDict):
     def converters(self, readable=True, writable=True, multipage=False):
         fs = {}
         for c in self.values():
-            for n,f in c.formats().items():
+            for n, f in c.formats().items():
                 ok = True
                 if readable is True and f.reading is not True:
                     ok = False

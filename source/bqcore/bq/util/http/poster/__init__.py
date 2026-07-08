@@ -31,12 +31,11 @@ New in version 0.6."""
 # import poster.encode
 
 #!!! in between migrating to python3
-from . import streaminghttp
-from . import encode
+from . import encode, streaminghttp
 
 __all__ = [
-    'streaminghttp',
-    'encode',
+    "streaminghttp",
+    "encode",
 ]
 
-version = (0, 8, 1) # Thanks JP!
+version = (0, 8, 1)  # Thanks JP!

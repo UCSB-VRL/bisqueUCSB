@@ -1,5 +1,0 @@
-# docker
-
-    $ make
-
-    $ make test

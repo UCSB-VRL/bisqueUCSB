@@ -46,28 +46,29 @@
 CSV table exporter
 """
 
-__author__    = "Dmitry Fedorov <dima@dimin.net>"
-__version__   = "1.0"
+__author__ = "Dmitry Fedorov <dima@dimin.net>"
+__version__ = "1.0"
 __copyright__ = "Center for Bio-Image Informatics, University of California at Santa Barbara"
 
 # default imports
-import os
 import logging
+import os
 
-__all__ = [ 'ExporterCSV' ]
+__all__ = ["ExporterCSV"]
 
 log = logging.getLogger("bq.table.export.csv")
 
 import csv
+
 try:
     import numpy as np
 except ImportError:
-    log.info('Numpy was not found but required for table service!')
+    log.info("Numpy was not found but required for table service!")
 
 try:
     import pandas as pd
 except ImportError:
-    log.info('Pandas was not found but required for table service!')
+    log.info("Pandas was not found but required for table service!")
 
 try:
     from pylons.controllers.util import abort
@@ -77,42 +78,48 @@ except ImportError:
 
 from bq.table.controllers.table_exporter import TableExporter
 
-#---------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------
 # exporters: Csv
-#---------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------
 
-class ExporterCSV (TableExporter):
-    '''Formats tables as CSV'''
 
-    name = 'csv'
-    version = '1.0'
-    ext = 'csv'
-    mime_type = 'text/csv'
+class ExporterCSV(TableExporter):
+    """Formats tables as CSV"""
+
+    name = "csv"
+    version = "1.0"
+    ext = "csv"
+    mime_type = "text/csv"
 
     def info(self, table):
         super(ExporterCSV, self).info(table)
         if table.headers:
             # has headers => this is a leaf object (table or matrix)
             v = [
-                "headers,%s"%','.join([str(i) for i in table.headers]),
-                "types,%s"%','.join([str(t) for t in table.types]),
+                "headers,%s" % ",".join([str(i) for i in table.headers]),
+                "types,%s" % ",".join([str(t) for t in table.types]),
             ]
             if table.sizes is not None:
-                v.append("sizes,%s"%','.join([str(i) for i in table.sizes]))
+                v.append("sizes,%s" % ",".join([str(i) for i in table.sizes]))
         else:
             # no headers => this is a group/subfolder
-            v = [ "group,%s"%','.join(["%s;%s"%(tab['path'],tab['type']) for tab in table.tables]), ]
+            v = [
+                "group,%s"
+                % ",".join(["%s;%s" % (tab["path"], tab["type"]) for tab in table.tables]),
+            ]
 
-        return ';'.join(v)
+        return ";".join(v)
 
     def format(self, table):
-        """ converts table to CSV """
+        """converts table to CSV"""
         try:
-            headers = ','.join([str(i) for i in table.headers])
+            headers = ",".join([str(i) for i in table.headers])
             if isinstance(table.data, pd.DataFrame):
                 t = table.data
             else:
                 t = table.as_table()
-            return '\n'.join([headers, t.to_csv(header=False, sep=',', line_terminator='\n', index=False)])
+            return "\n".join(
+                [headers, t.to_csv(header=False, sep=",", line_terminator="\n", index=False)]
+            )
         except Exception:
-            abort(400, 'Data cannot be converted to CSV')
+            abort(400, "Data cannot be converted to CSV")

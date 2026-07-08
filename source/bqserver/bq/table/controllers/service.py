@@ -145,43 +145,47 @@ numpy_array, sub_url_string
 
 """
 
-__author__    = "Dmitry Fedorov <dima@dimin.net>"
-__version__   = "1.0"
+__author__ = "Dmitry Fedorov <dima@dimin.net>"
+__version__ = "1.0"
 __copyright__ = "Center for Bio-Image Informatics, University of California at Santa Barbara"
 
 # default imports
+import inspect
+import logging
 import os
 import sys
-import logging
-import inspect
+import urllib.error
+import urllib.parse
+import urllib.request
 from datetime import datetime
-import urllib.request, urllib.parse, urllib.error
-#import cStringIO as StringIO
-#from urllib import quote
-#from urllib import unquote
-#import inspect
-#from itertools import *
-#import csv
 
-from lxml import etree
 import pkg_resources
-#from pylons.i18n import ugettext as _, lazy_ugettext as l_
-from tg import expose, request#, response, require
-#from repoze.what import predicates
+
+# import cStringIO as StringIO
+# from urllib import quote
+# from urllib import unquote
+# import inspect
+# from itertools import *
+# import csv
+from lxml import etree
+
+# from repoze.what import predicates
 from pylons.controllers.util import abort
 
+# from pylons.i18n import ugettext as _, lazy_ugettext as l_
+from tg import expose, request  # , response, require
 
-#import numpy as np
-#import pandas as pd
-#import json
+from bq import data_service
 
+# import numpy as np
+# import pandas as pd
+# import json
 # imports for table server
-#from bqapi import *
+# from bqapi import *
 from bq.core import identity
 from bq.core.service import ServiceController
-from bq import data_service
-#from bq import blob_service
 
+# from bq import blob_service
 from .plugin_manager import PluginManager
 from .table_base import TableBase
 from .table_exporter import TableExporter
@@ -194,67 +198,85 @@ log = logging.getLogger("bq.table")
 # misc
 ################################################################################
 
+
 def get_arg(table, name, defval=None, **kw):
     v = kw.get(name, defval)
     idx = [i for i, elem in enumerate(table.path) if name in elem]
-    if len(idx)>0:
+    if len(idx) > 0:
         return table.path[idx[0]]
+
 
 def is_arg(table, name):
     idx = [i for i, elem in enumerate(table.path) if name in elem]
-    return len(idx)>0
+    return len(idx) > 0
+
 
 # simply accept two characters for range: ":" or ";" due to parsing error in turbogears for ":"
 def parse_subrange(rng):
-    #rng = urllib.unquote(rng)
-    v = rng.split(';', 1) if ';' in rng else rng.split(':', 1)
+    # rng = urllib.unquote(rng)
+    v = rng.split(";", 1) if ";" in rng else rng.split(":", 1)
     return [int(i) if i.strip() else None for i in v]
+
 
 ################################################################################
 # TableController
 ################################################################################
 
+
 class TableController(ServiceController):
-    #Uncomment this line if your controller requires an authenticated user
-    #allow_only = predicates.not_anonymous()
+    # Uncomment this line if your controller requires an authenticated user
+    # allow_only = predicates.not_anonymous()
     service_type = "table"
 
     def __init__(self, server_url):
         super(TableController, self).__init__(server_url)
-        #self.baseuri = server_url
+        # self.baseuri = server_url
         self.basepath = os.path.dirname(inspect.getfile(inspect.currentframe()))
 
-        self.importers = PluginManager('import', os.path.join(self.basepath, 'importers'), TableBase)
-        self.exporters = PluginManager('export', os.path.join(self.basepath, 'exporters'), TableExporter)
-        self.operations = PluginManager('operation', os.path.join(self.basepath, 'operations'), TableOperation)
-        self.operations.plugins['format'] = None # format is a virtual operation, exporters are used here
-        self.operations.plugins['info'] = None # virtual operation driving exporter function
+        self.importers = PluginManager(
+            "import", os.path.join(self.basepath, "importers"), TableBase
+        )
+        self.exporters = PluginManager(
+            "export", os.path.join(self.basepath, "exporters"), TableExporter
+        )
+        self.operations = PluginManager(
+            "operation", os.path.join(self.basepath, "operations"), TableOperation
+        )
+        self.operations.plugins["format"] = (
+            None  # format is a virtual operation, exporters are used here
+        )
+        self.operations.plugins["info"] = None  # virtual operation driving exporter function
 
-        log.info('Table service started...')
+        log.info("Table service started...")
 
-    #-----------------------------------------------------------------------------------------
+    # -----------------------------------------------------------------------------------------
     # Exposed RESTful API
-    #-----------------------------------------------------------------------------------------
+    # -----------------------------------------------------------------------------------------
 
-    #@expose('bq.table.templates.index')
-    @expose(content_type='text/xml')
+    # @expose('bq.table.templates.index')
+    @expose(content_type="text/xml")
     def index(self, **kw):
-        """Add your service description here """
-        response = etree.Element ('resource', uri=self.baseuri)
-        etree.SubElement(response, 'method', name='%s/ID[/PATH1/PATH2/...][/RANGE][/COMMAND:PARS]'%self.baseuri, value='Executes operations for a given table ID.')
-        return etree.tostring(response, encoding='unicode')
+        """Add your service description here"""
+        response = etree.Element("resource", uri=self.baseuri)
+        etree.SubElement(
+            response,
+            "method",
+            name="%s/ID[/PATH1/PATH2/...][/RANGE][/COMMAND:PARS]" % self.baseuri,
+            value="Executes operations for a given table ID.",
+        )
+        return etree.tostring(response, encoding="unicode")
 
     @expose()
     def _default(self, *args, **kw):
         """find export plugin and run export"""
-        return self.get_table(request.path_qs.replace(self.baseuri, '', 1), **kw)
+        return self.get_table(request.path_qs.replace(self.baseuri, "", 1), **kw)
 
-    #-----------------------------------------------------------------------------------------
+    # -----------------------------------------------------------------------------------------
     # Internal API
-    #-----------------------------------------------------------------------------------------
+    # -----------------------------------------------------------------------------------------
 
     def check_access(self, uniq):
-        resource = data_service.resource_load (uniq = uniq)
+        resource = data_service.resource_load(uniq=uniq)
         if resource is None:
             if identity.not_anonymous():
                 abort(403)
@@ -305,7 +327,7 @@ class TableController(ServiceController):
     #             abort(501, 'Table cannot be read. Format not recognized')
     #         log.debug('Inited table: %s',str(table))
 
-    #         # operations consuming the rest of the path            
+    #         # operations consuming the rest of the path
     #         i = 0
     #         a = table.path[i] if len(table.path)>i else None
     #         while a is not None:
@@ -327,7 +349,7 @@ class TableController(ServiceController):
     #                 table.close()
     #                 table = table_new
     #             a = table.path[i] if len(table.path)>i else None
-                
+
     #         # force read the latest here
     #         table_new = table.read()
     #         table.close()
@@ -357,9 +379,9 @@ class TableController(ServiceController):
 
     def get_table(self, path, **kw):
         """find export plugin and run export"""
-        log.info ("STARTING table (%s): %s", datetime.now().isoformat(), request.url)
-        path = path.split('/')
-        path = [urllib.parse.unquote(p) for p in path if len(p)>0]
+        log.info("STARTING table (%s): %s", datetime.now().isoformat(), request.url)
+        path = path.split("/")
+        path = [urllib.parse.unquote(p) for p in path if len(p) > 0]
         log.debug("Path: %s", path)
 
         # load table
@@ -368,23 +390,31 @@ class TableController(ServiceController):
             # /table/ID[/PATH1/PATH2/...](/FILTERCOND | /COMMAND:PARS)*
             # Example:
             #   /table/ID[/PATH1/PATH2/{[:,"temperature"] >= 0 and [:,"temperature"] < 30}/agg:AVG(:,"humidity")/format:csv
-            if len(path)<1:
-                abort(400, 'Element ID is required as a first parameter, ex: /table/00-XXXXX/format:xml' )
+            if len(path) < 1:
+                abort(
+                    400,
+                    "Element ID is required as a first parameter, ex: /table/00-XXXXX/format:xml",
+                )
             uniq = path.pop(0)
 
             # check permissions
             resource = self.check_access(uniq)
-            log.info('Resource: %s', etree.tostring(resource))
+            log.info("Resource: %s", etree.tostring(resource))
 
             for n, r in self.importers.plugins.items():
-                #if '.' in resource.get('value', '') and resource.get('value').split('.')[-1].lower() not in r.ext:
-                ext =  os.path.splitext (resource.get('value', ''))[-1].lstrip('.').lower()
+                # if '.' in resource.get('value', '') and resource.get('value').split('.')[-1].lower() not in r.ext:
+                ext = os.path.splitext(resource.get("value", ""))[-1].lstrip(".").lower()
                 log.info("Testing importer %s for extension %s (supported: %s)", n, ext, r.ext)
                 if ext and ext not in r.ext:
                     # resource has filename with extension and extension does not match plugins supported extensions
                     # (this is to prevent trying to read some binary format with CSV for example)
                     # TODO: better try CSV at the end for this reason
-                    log.info("Skipping importer %s: extension %s not in supported extensions %s", n, ext, r.ext)
+                    log.info(
+                        "Skipping importer %s: extension %s not in supported extensions %s",
+                        n,
+                        ext,
+                        r.ext,
+                    )
                     continue
                 try:
                     log.info("trying format %s", str(n))
@@ -392,47 +422,58 @@ class TableController(ServiceController):
                 except Exception as ex:
                     log.info("failed with error %s", str(ex))
                     table = None
-                    continue # continue with next format
+                    continue  # continue with next format
                 if table is not None and table.isloaded():
                     log.info("Successfully loaded table with importer %s", n)
                     break
             if table is None:
-                log.error ("Table %s could not be read. Format not recognized", uniq)
-                abort(501, 'Table cannot be read. Format not recognized')
-            log.info('Inited table: %s',str(table))
+                log.error("Table %s could not be read. Format not recognized", uniq)
+                abort(501, "Table cannot be read. Format not recognized")
+            log.info("Inited table: %s", str(table))
 
-            # operations consuming the rest of the path            
+            # operations consuming the rest of the path
             i = 0
-            a = table.path[i] if len(table.path)>i else None
+            a = table.path[i] if len(table.path) > i else None
             while a is not None:
                 log.info("table op %s" % a)
-                log.info("table before operation: %s", str(table)[:200] + "..." if len(str(table)) > 200 else str(table))
-                
+                log.info(
+                    "table before operation: %s",
+                    str(table)[:200] + "..." if len(str(table)) > 200 else str(table),
+                )
+
                 # Check if this looks like a range specification (contains digits, commas, colons, or semicolons)
                 # Range patterns: "0:100", "0;100", "0:100,5:10", "0;100,5;10", etc.
                 import re
-                range_pattern = re.compile(r'^[\d:;,\s]*$')
-                is_range = range_pattern.match(a) and (',' in a or ':' in a or ';' in a)
-                
+
+                range_pattern = re.compile(r"^[\d:;,\s]*$")
+                is_range = range_pattern.match(a) and ("," in a or ":" in a or ";" in a)
+
                 if is_range:
                     # This is a range specification, treat it as a filter operation
                     log.info("Detected range specification: %s", a)
                     table.path.pop(0)
-                    table_new = self.operations.plugins['filter']().execute(table, a)
+                    table_new = self.operations.plugins["filter"]().execute(table, a)
                     table.close()
                     table = table_new
-                    log.info("table after range operation: %s", str(table)[:200] + "..." if len(str(table)) > 200 else str(table))
+                    log.info(
+                        "table after range operation: %s",
+                        str(table)[:200] + "..." if len(str(table)) > 200 else str(table),
+                    )
                 else:
                     # Normal operation processing
-                    a_split = a.split(':',1)
-                    op,arg = a_split if len(a_split)>1 else a_split + [None]
+                    a_split = a.split(":", 1)
+                    op, arg = a_split if len(a_split) > 1 else a_split + [None]
                     if op in self.operations.plugins and self.operations.plugins[op] is not None:
                         log.info("Executing operation: %s with arg: %s", op, arg)
                         table.path.pop(0)
                         table_new = self.operations.plugins[op]().execute(table, arg)
                         table.close()
                         table = table_new
-                        log.info("table after operation %s: %s", op, str(table)[:200] + "..." if len(str(table)) > 200 else str(table))
+                        log.info(
+                            "table after operation %s: %s",
+                            op,
+                            str(table)[:200] + "..." if len(str(table)) > 200 else str(table),
+                        )
                     elif op in self.operations.plugins and self.operations.plugins[op] is None:
                         # skip "special ops" for now
                         log.info("Skipping special operation: %s", op)
@@ -441,59 +482,67 @@ class TableController(ServiceController):
                         # op unknown => assume it is 'filter' for backward compatibility
                         log.info("Unknown operation %s, treating as filter", op)
                         table.path.pop(0)
-                        table_new = self.operations.plugins['filter']().execute(table, op+':'+arg if arg is not None else op)
+                        table_new = self.operations.plugins["filter"]().execute(
+                            table, op + ":" + arg if arg is not None else op
+                        )
                         table.close()
                         table = table_new
-                        log.info("table after filter operation: %s", str(table)[:200] + "..." if len(str(table)) > 200 else str(table))
-                a = table.path[i] if len(table.path)>i else None
-                
+                        log.info(
+                            "table after filter operation: %s",
+                            str(table)[:200] + "..." if len(str(table)) > 200 else str(table),
+                        )
+                a = table.path[i] if len(table.path) > i else None
+
             # force read the latest here
             table_new = table.read()
             table.close()
             table = table_new
-            log.info('Processed table: %s', str(table))
+            log.info("Processed table: %s", str(table))
 
             # export
-            out_format = get_arg(table, 'format:', defval='format:xml', **kw).replace('format:', '')
-            out_info   = is_arg(table, 'info')
-            log.info('Format: %s, Info: %s', out_format, out_info)
+            out_format = get_arg(table, "format:", defval="format:xml", **kw).replace("format:", "")
+            out_info = is_arg(table, "info")
+            log.info("Format: %s, Info: %s", out_format, out_info)
             if out_format in self.exporters.plugins:
                 if out_info is True:
                     r = self.exporters.plugins[out_format]().info(table)
                 else:
                     r = self.exporters.plugins[out_format]().export(table)
                 return r
-            abort(400, 'Requested export format (%s) is not supported'%out_format )
+            abort(400, "Requested export format (%s) is not supported" % out_format)
 
         except RuntimeError as exc:
-            abort(400, 'Error in query: %s'%str(exc))
+            abort(400, "Error in query: %s" % str(exc))
 
         finally:
             # close any open table
             if table is not None:
                 table.close()
-            log.info ("FINISHED (%s): %s", datetime.now().isoformat(), request.url)
+            log.info("FINISHED (%s): %s", datetime.now().isoformat(), request.url)
 
-#---------------------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------------------
 # bisque init stuff
-#---------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------
+
 
 def initialize(uri):
-    """ Initialize the top level server for this microapp"""
+    """Initialize the top level server for this microapp"""
     # Add you checks and database initialize
-    log.debug ("initialize " + uri)
-    service =  TableController(uri)
-    #directory.register_service ('table', service)
+    log.debug("initialize " + uri)
+    service = TableController(uri)
+    # directory.register_service ('table', service)
     return service
 
-#def get_static_dirs():
+
+# def get_static_dirs():
 #    """Return the static directories for this server"""
 #    package = pkg_resources.Requirement.parse ("bqserver")
 #    package_path = pkg_resources.resource_filename(package,'bq')
 #    return [(package_path, os.path.join(package_path, 'table', 'public'))]
 
-#def get_model():
+# def get_model():
 #    from bq.table import model
 #    return model
 
-__controller__ =  TableController
+__controller__ = TableController

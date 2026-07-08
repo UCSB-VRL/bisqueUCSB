@@ -1,6 +1,8 @@
 import logging
-from tg import expose, validate, request, redirect, flash
+
+from tg import expose, flash, redirect, request, validate
 from tg.exceptions import HTTPFound
+
 from bq.core.lib.base import BaseController
 from bq.core.model import DBSession
 from bq.core.model.auth import User
@@ -8,6 +10,7 @@ from bq.core.model.auth import User
 # Import domain models for authorization checking
 try:
     from bq.data_service.model.domain_model import AuthorizedEmailDomain
+
     DOMAIN_MODELS_AVAILABLE = True
 except ImportError:
     DOMAIN_MODELS_AVAILABLE = False
@@ -16,8 +19,8 @@ except ImportError:
 # Import email verification conditionally to avoid import errors during service loading
 try:
     from bq.registration.email_verification import (
-        EmailVerificationService,
         EmailVerificationError,
+        EmailVerificationService,
     )
 
     EMAIL_VERIFICATION_AVAILABLE = True
@@ -49,9 +52,7 @@ class RegistrationController(BaseController):
         self.email_service = None
 
         if not EMAIL_VERIFICATION_AVAILABLE:
-            log.info(
-                "Email verification disabled - service not available due to import issues"
-            )
+            log.info("Email verification disabled - service not available due to import issues")
             return
 
         try:
@@ -67,9 +68,7 @@ class RegistrationController(BaseController):
                 if not config_status["smtp_configured"]:
                     log.info("Email verification disabled: SMTP not configured")
                 elif not config_status["verification_enabled"]:
-                    log.info(
-                        "Email verification disabled: feature not enabled in configuration"
-                    )
+                    log.info("Email verification disabled: feature not enabled in configuration")
                 else:
                     log.warning(
                         f"Email verification disabled due to configuration errors: {config_status['errors']}"
@@ -132,15 +131,16 @@ class RegistrationController(BaseController):
 
     def _is_domain_authorized(self, email):
         """Check if email domain is in authorized domains list"""
-        if not email or '@' not in email:
+        if not email or "@" not in email:
             log.warning(f"Invalid email format: {email}")
             return False
-        
-        domain = email.split('@')[1].lower()
-        
+
+        domain = email.split("@")[1].lower()
+
         try:
             # Use the domain model to check authorization - pass the full email
             from bq.data_service.model.domain_model import is_domain_authorized
+
             result = is_domain_authorized(email)  # Pass full email, not just domain
             log.info(f"Domain authorization check for {domain}: {result}")
             return result
@@ -148,29 +148,40 @@ class RegistrationController(BaseController):
             log.error(f"Error checking domain authorization for {domain}: {e}")
             # For security, default to DENYING registration if check fails
             # This ensures domain management is properly enforced
-            log.warning(f"Domain authorization check failed, denying registration for security: {e}")
+            log.warning(
+                f"Domain authorization check failed, denying registration for security: {e}"
+            )
             return False
 
-    def _create_pending_registration(self, email, username, fullname, password, 
-                                   research_area, institution_affiliation, funding_agency=None):
+    def _create_pending_registration(
+        self,
+        email,
+        username,
+        fullname,
+        password,
+        research_area,
+        institution_affiliation,
+        funding_agency=None,
+    ):
         """Create a pending registration request"""
         try:
             # Ensure tables exist first
             from bq.admin_service.controllers.service import ensure_domain_tables
+
             ensure_domain_tables()
-            
+
             from bq.data_service.model.domain_model import add_pending_registration
-            
+
             # Use the helper function to add pending registration
             success = add_pending_registration(email, fullname, password)
-            
+
             if success:
                 log.info(f"Created pending registration for {email}")
                 return True
             else:
                 log.error(f"Failed to create pending registration for {email}")
                 return False
-                
+
         except Exception as e:
             log.error(f"Failed to create pending registration for {email}: {e}")
             raise
@@ -250,11 +261,11 @@ class RegistrationController(BaseController):
 
             # Check if domain is authorized for registration
             if not self._is_domain_authorized(email):
-                domain = email.split('@')[1] if '@' in email else 'unknown'
+                domain = email.split("@")[1] if "@" in email else "unknown"
                 log.info(f"Registration attempt from unauthorized domain: {domain}")
                 return {
                     "status": "error",
-                    "message": f"Registration not allowed for domain '{domain}'. Please contact an administrator to authorize your domain for registration."
+                    "message": f"Registration not allowed for domain '{domain}'. Please contact an administrator to authorize your domain for registration.",
                 }
 
             # Validate research area options
@@ -277,7 +288,7 @@ class RegistrationController(BaseController):
             if research_area and research_area not in valid_research_areas:
                 return {
                     "status": "error",
-                    "message": f'Invalid research area. Must be one of: {", ".join(valid_research_areas)}',
+                    "message": f"Invalid research area. Must be one of: {', '.join(valid_research_areas)}",
                 }
 
             # Validate funding agency options (optional field)
@@ -298,7 +309,7 @@ class RegistrationController(BaseController):
             if funding_agency and funding_agency not in valid_funding_agencies:
                 return {
                     "status": "error",
-                    "message": f'Invalid funding agency. Must be one of: {", ".join(valid_funding_agencies)}',
+                    "message": f"Invalid funding agency. Must be one of: {', '.join(valid_funding_agencies)}",
                 }
 
             log.info(f"Creating new user: {username} ({email})")
@@ -360,9 +371,7 @@ class RegistrationController(BaseController):
                 funding_tag.owner = bq_user
                 DBSession.add(funding_tag)
 
-            log.info(
-                f"Successfully created user: {username} with ID: {bq_user.resource_uniq}"
-            )
+            log.info(f"Successfully created user: {username} with ID: {bq_user.resource_uniq}")
 
             # Handle email verification if enabled
             verification_message = ""
@@ -443,7 +452,7 @@ class RegistrationController(BaseController):
             else:
                 # Email verification not available - do NOT auto-verify for domain management
                 # Leave user unverified so admin can manually approve through domain management interface
-                
+
                 # Provide detailed logging about why verification was skipped
                 if email_verification_status:
                     if not email_verification_status.get("smtp_configured", False):
@@ -451,9 +460,7 @@ class RegistrationController(BaseController):
                             f"Email verification skipped for {username}: SMTP not configured. User left unverified for admin approval."
                         )
                         verification_message = " Your account has been created but requires administrator approval since email verification is not configured. Please wait for an administrator to verify your account."
-                    elif not email_verification_status.get(
-                        "verification_enabled", False
-                    ):
+                    elif not email_verification_status.get("verification_enabled", False):
                         log.info(
                             f"Email verification skipped for {username}: verification disabled in config. User left unverified for admin approval."
                         )
@@ -546,7 +553,7 @@ class RegistrationController(BaseController):
 
     @expose()
     def register_redirect(self, **kw):
-        """    
+        """
         Registration endpoint that redirects to login with flash message
         This provides a fallback for non-AJAX registration
         """
@@ -589,9 +596,12 @@ class RegistrationController(BaseController):
 
             # Check if domain is authorized for registration
             if not self._is_domain_authorized(email):
-                domain = email.split('@')[1] if '@' in email else 'unknown'
+                domain = email.split("@")[1] if "@" in email else "unknown"
                 log.info(f"Registration attempt from unauthorized domain: {domain}")
-                flash(f"Registration not allowed for domain '{domain}'. Please contact an administrator to authorize your domain for registration.", "error")
+                flash(
+                    f"Registration not allowed for domain '{domain}'. Please contact an administrator to authorize your domain for registration.",
+                    "error",
+                )
                 redirect("/registration/")
 
             # Validate research area options
@@ -613,7 +623,7 @@ class RegistrationController(BaseController):
             ]
             if research_area and research_area not in valid_research_areas:
                 flash(
-                    f'Invalid research area. Must be one of: {", ".join(valid_research_areas)}',
+                    f"Invalid research area. Must be one of: {', '.join(valid_research_areas)}",
                     "error",
                 )
                 redirect("/registration/")
@@ -673,9 +683,7 @@ class RegistrationController(BaseController):
                 funding_tag.value = funding_agency
                 DBSession.add(funding_tag)
 
-            log.info(
-                f"Successfully created user: {username} with ID: {bq_user.resource_uniq}"
-            )
+            log.info(f"Successfully created user: {username} with ID: {bq_user.resource_uniq}")
 
             # Handle email verification
             email_verification_status = self._safe_email_call("validate_configuration")
@@ -686,9 +694,7 @@ class RegistrationController(BaseController):
             )
 
             if email_verification_available:
-                log.info(
-                    f"Email verification is available - sending verification email to {email}"
-                )
+                log.info(f"Email verification is available - sending verification email to {email}")
 
                 # Generate verification token
                 verification_token = self._safe_email_call(
@@ -730,9 +736,7 @@ class RegistrationController(BaseController):
                         "success",
                     )
                 else:
-                    log.error(
-                        f"Failed to send verification email to {email}: {send_result}"
-                    )
+                    log.error(f"Failed to send verification email to {email}: {send_result}")
                     # Mark user as verified if email sending fails
                     self._safe_email_call("mark_user_as_verified", bq_user)
                     flash(
@@ -761,9 +765,7 @@ class RegistrationController(BaseController):
                 raise
             else:
                 # This is a real error - let TurboGears transaction manager handle rollback
-                log.error(
-                    f"Registration failed for {kw.get('email', 'unknown')}: {str(e)}"
-                )
+                log.error(f"Registration failed for {kw.get('email', 'unknown')}: {str(e)}")
                 import traceback
 
                 log.error(f"Full traceback: {traceback.format_exc()}")
@@ -818,9 +820,12 @@ class RegistrationController(BaseController):
 
             # Check if domain is authorized for registration
             if not self._is_domain_authorized(email):
-                domain = email.split('@')[1] if '@' in email else 'unknown'
+                domain = email.split("@")[1] if "@" in email else "unknown"
                 log.info(f"Registration attempt from unauthorized domain: {domain}")
-                flash(f"Registration not allowed for domain '{domain}'. Please contact an administrator to authorize your domain for registration.", "error")
+                flash(
+                    f"Registration not allowed for domain '{domain}'. Please contact an administrator to authorize your domain for registration.",
+                    "error",
+                )
                 redirect("/registration/")
 
             # Validate research area options
@@ -842,7 +847,7 @@ class RegistrationController(BaseController):
             ]
             if research_area and research_area not in valid_research_areas:
                 flash(
-                    f'Invalid research area. Must be one of: {", ".join(valid_research_areas)}',
+                    f"Invalid research area. Must be one of: {', '.join(valid_research_areas)}",
                     "error",
                 )
                 redirect("/registration/")
@@ -902,9 +907,7 @@ class RegistrationController(BaseController):
                 funding_tag.value = funding_agency
                 DBSession.add(funding_tag)
 
-            log.info(
-                f"Successfully created user: {username} with ID: {bq_user.resource_uniq}"
-            )
+            log.info(f"Successfully created user: {username} with ID: {bq_user.resource_uniq}")
 
             # Handle email verification
             email_verification_status = self._safe_email_call("validate_configuration")
@@ -915,9 +918,7 @@ class RegistrationController(BaseController):
             )
 
             if email_verification_available:
-                log.info(
-                    f"Email verification is available - sending verification email to {email}"
-                )
+                log.info(f"Email verification is available - sending verification email to {email}")
 
                 # Generate verification token
                 verification_token = self._safe_email_call(
@@ -959,9 +960,7 @@ class RegistrationController(BaseController):
                         "success",
                     )
                 else:
-                    log.error(
-                        f"Failed to send verification email to {email}: {send_result}"
-                    )
+                    log.error(f"Failed to send verification email to {email}: {send_result}")
                     # Do NOT mark user as verified if email sending fails - require admin approval
                     flash(
                         f"Account created successfully! Email verification failed - your account requires administrator approval before you can sign in.",
@@ -1026,9 +1025,7 @@ class RegistrationController(BaseController):
             bq_user = users[0]
             username = bq_user.resource_name
 
-            log.info(
-                f"Found user: {username} (ID: {bq_user.resource_uniq}) for email: {email}"
-            )
+            log.info(f"Found user: {username} (ID: {bq_user.resource_uniq}) for email: {email}")
 
             # Check if user is already verified
             if self._safe_email_call("is_user_verified", bq_user):
@@ -1063,18 +1060,12 @@ class RegistrationController(BaseController):
             token_tag = None
             if all_tokens:
                 # Find the most recent valid token
-                valid_tokens = [
-                    t for t in all_tokens if t.value and t.value.strip() != ""
-                ]
+                valid_tokens = [t for t in all_tokens if t.value and t.value.strip() != ""]
                 if valid_tokens:
                     token_tag = valid_tokens[-1]  # Get the most recent valid one
-                    log.info(
-                        f"Using valid token: ID={token_tag.id}, value='{token_tag.value}'"
-                    )
+                    log.info(f"Using valid token: ID={token_tag.id}, value='{token_tag.value}'")
                 else:
-                    log.error(
-                        f"No valid tokens found among {len(all_tokens)} total tokens"
-                    )
+                    log.error(f"No valid tokens found among {len(all_tokens)} total tokens")
             else:
                 log.error(f"No email_verification_token tags found for user")
 
@@ -1110,9 +1101,7 @@ class RegistrationController(BaseController):
                 # Debug: Check all tags for this user
                 all_user_tags = DBSession.query(Tag).filter(Tag.parent == bq_user).all()
                 all_user_tags_by_id = (
-                    DBSession.query(Tag)
-                    .filter(Tag.resource_parent_id == bq_user.id)
-                    .all()
+                    DBSession.query(Tag).filter(Tag.resource_parent_id == bq_user.id).all()
                 )
                 log.info(
                     f"All tags for user {username} (by parent): {[(t.name, t.value) for t in all_user_tags]}"
@@ -1130,9 +1119,7 @@ class RegistrationController(BaseController):
             # Use whichever method found the token
             actual_token_tag = token_tag or token_tag_by_id
 
-            log.info(
-                f"Found stored token for user {username}: {actual_token_tag.value}"
-            )
+            log.info(f"Found stored token for user {username}: {actual_token_tag.value}")
             log.info(f"URL token: {token}")
             log.info(f"Tokens match: {actual_token_tag.value == token}")
 
@@ -1226,18 +1213,14 @@ class RegistrationController(BaseController):
 
             # Check if already verified
             if self._safe_email_call("is_user_verified", bq_user):
-                success_msg = (
-                    "Your email is already verified! You can sign in normally."
-                )
+                success_msg = "Your email is already verified! You can sign in normally."
                 return self._handle_verification_response("success", success_msg, **kw)
 
             # Get user's full name
             from bq.data_service.model.tag_model import Tag
 
             fullname_tag = (
-                DBSession.query(Tag)
-                .filter(Tag.parent == bq_user, Tag.name == "fullname")
-                .first()
+                DBSession.query(Tag).filter(Tag.parent == bq_user, Tag.name == "fullname").first()
             )
             fullname = fullname_tag.value if fullname_tag else username
 
@@ -1292,12 +1275,8 @@ class RegistrationController(BaseController):
                 return self._handle_verification_response("error", error_msg, **kw)
 
             DBSession.flush()
-            log.info(
-                f"Token stored and flushed to database for {email}: {verification_token}"
-            )
-            success_msg = (
-                "Verification email sent successfully! Please check your email."
-            )
+            log.info(f"Token stored and flushed to database for {email}: {verification_token}")
+            success_msg = "Verification email sent successfully! Please check your email."
             return self._handle_verification_response("success", success_msg, **kw)
 
         except EmailVerificationError as e:
@@ -1324,9 +1303,7 @@ class RegistrationController(BaseController):
         # Check if this is an AJAX request
         if request.headers.get(
             "X-Requested-With"
-        ) == "XMLHttpRequest" or "application/json" in request.headers.get(
-            "Accept", ""
-        ):
+        ) == "XMLHttpRequest" or "application/json" in request.headers.get("Accept", ""):
             # Return JSON for AJAX requests
             return {"status": status, "message": message}
         else:
@@ -1368,9 +1345,7 @@ class RegistrationController(BaseController):
                 log.error(f"Verification token not found in database: {token}")
                 # Debug: Check if there are any verification tokens at all
                 all_verification_tokens = (
-                    DBSession.query(Tag)
-                    .filter(Tag.name == "email_verification_token")
-                    .all()
+                    DBSession.query(Tag).filter(Tag.name == "email_verification_token").all()
                 )
                 log.info(
                     f"All verification tokens in database: {[t.value for t in all_verification_tokens]}"
@@ -1485,7 +1460,9 @@ class RegistrationController(BaseController):
             users = DBSession.query(BQUser).filter(BQUser.resource_value == email).all()
             if not users:
                 # Don't reveal if email exists for security - always show success
-                success_msg = "If an account with this email exists, a password reset email has been sent."
+                success_msg = (
+                    "If an account with this email exists, a password reset email has been sent."
+                )
                 return self._handle_reset_response("success", success_msg, **kw)
 
             bq_user = users[0]
@@ -1495,20 +1472,18 @@ class RegistrationController(BaseController):
             from bq.data_service.model.tag_model import Tag
 
             fullname_tag = (
-                DBSession.query(Tag)
-                .filter(Tag.parent == bq_user, Tag.name == "fullname")
-                .first()
+                DBSession.query(Tag).filter(Tag.parent == bq_user, Tag.name == "fullname").first()
             )
             fullname = fullname_tag.value if fullname_tag else username
 
             # Generate password reset token
-            reset_token = self._safe_email_call(
-                "generate_password_reset_token", email, username
-            )
+            reset_token = self._safe_email_call("generate_password_reset_token", email, username)
             if not reset_token:
                 log.error(f"Failed to generate password reset token for {email}")
                 # Show success message even if token generation fails (for security)
-                success_msg = "If an account with this email exists, a password reset email has been sent."
+                success_msg = (
+                    "If an account with this email exists, a password reset email has been sent."
+                )
                 return self._handle_reset_response("success", success_msg, **kw)
 
             log.info(f"Generated password reset token for {email}: {reset_token}")
@@ -1545,12 +1520,16 @@ class RegistrationController(BaseController):
             if not send_result or not send_result.get("success"):
                 log.error(f"Failed to send password reset email to {email}")
                 # Still show success for security, but log the error
-                success_msg = "If an account with this email exists, a password reset email has been sent."
+                success_msg = (
+                    "If an account with this email exists, a password reset email has been sent."
+                )
                 return self._handle_reset_response("success", success_msg, **kw)
 
             DBSession.flush()
             log.info(f"Password reset email sent successfully to {email}")
-            success_msg = "If an account with this email exists, a password reset email has been sent."
+            success_msg = (
+                "If an account with this email exists, a password reset email has been sent."
+            )
             return self._handle_reset_response("success", success_msg, **kw)
 
         except Exception as e:
@@ -1562,7 +1541,9 @@ class RegistrationController(BaseController):
                 # This is a real error
                 log.error(f"Password reset request failed for {email}: {e}")
                 # Show success message even for errors (for security)
-                success_msg = "If an account with this email exists, a password reset email has been sent."
+                success_msg = (
+                    "If an account with this email exists, a password reset email has been sent."
+                )
                 return self._handle_reset_response("success", success_msg, **kw)
 
     @expose("bq.registration.templates.reset_password")
@@ -1605,21 +1586,15 @@ class RegistrationController(BaseController):
 
         if not token or not email or not new_password:
             error_msg = "Missing required fields"
-            return self._handle_reset_form_response(
-                "error", error_msg, token, email, **kw
-            )
+            return self._handle_reset_form_response("error", error_msg, token, email, **kw)
 
         if new_password != confirm_password:
             error_msg = "Passwords do not match"
-            return self._handle_reset_form_response(
-                "error", error_msg, token, email, **kw
-            )
+            return self._handle_reset_form_response("error", error_msg, token, email, **kw)
 
         if len(new_password) < 6:
             error_msg = "Password must be at least 6 characters long"
-            return self._handle_reset_form_response(
-                "error", error_msg, token, email, **kw
-            )
+            return self._handle_reset_form_response("error", error_msg, token, email, **kw)
 
         try:
             # Find user by email
@@ -1628,31 +1603,21 @@ class RegistrationController(BaseController):
             users = DBSession.query(BQUser).filter(BQUser.resource_value == email).all()
             if not users:
                 error_msg = "Invalid reset link"
-                return self._handle_reset_form_response(
-                    "error", error_msg, token, email, **kw
-                )
+                return self._handle_reset_form_response("error", error_msg, token, email, **kw)
 
             bq_user = users[0]
             username = bq_user.resource_name
 
             # Verify reset token
-            if not self._safe_email_call(
-                "verify_password_reset_token", token, email, username
-            ):
+            if not self._safe_email_call("verify_password_reset_token", token, email, username):
                 error_msg = "Invalid or expired reset link"
-                return self._handle_reset_form_response(
-                    "error", error_msg, token, email, **kw
-                )
+                return self._handle_reset_form_response("error", error_msg, token, email, **kw)
 
             # Reset password
-            reset_result = self._safe_email_call(
-                "reset_user_password", bq_user, new_password
-            )
+            reset_result = self._safe_email_call("reset_user_password", bq_user, new_password)
             if not reset_result or not reset_result.get("success"):
                 error_msg = "Failed to reset password. Please try again."
-                return self._handle_reset_form_response(
-                    "error", error_msg, token, email, **kw
-                )
+                return self._handle_reset_form_response("error", error_msg, token, email, **kw)
 
             # Remove reset token
             from bq.data_service.model.tag_model import Tag
@@ -1708,9 +1673,7 @@ class RegistrationController(BaseController):
         # Check if this is an AJAX request
         if request.headers.get(
             "X-Requested-With"
-        ) == "XMLHttpRequest" or "application/json" in request.headers.get(
-            "Accept", ""
-        ):
+        ) == "XMLHttpRequest" or "application/json" in request.headers.get("Accept", ""):
             # Return JSON for AJAX requests
             return {"status": status, "message": message}
         else:
@@ -1729,9 +1692,7 @@ class RegistrationController(BaseController):
         # Check if this is an AJAX request
         if request.headers.get(
             "X-Requested-With"
-        ) == "XMLHttpRequest" or "application/json" in request.headers.get(
-            "Accept", ""
-        ):
+        ) == "XMLHttpRequest" or "application/json" in request.headers.get("Accept", ""):
             # Return JSON for AJAX requests
             return {"status": status, "message": message}
         else:
@@ -1741,9 +1702,7 @@ class RegistrationController(BaseController):
                 redirect("/client_service/")
             else:
                 # Get email verification status for template
-                email_verification_status = self._safe_email_call(
-                    "validate_configuration"
-                )
+                email_verification_status = self._safe_email_call("validate_configuration")
                 email_verification_enabled = (
                     email_verification_status.get("available", False)
                     if email_verification_status
@@ -1767,6 +1726,7 @@ class RegistrationController(BaseController):
     def edit_user(self, **kw):
         """User profile editing form"""
         from tg import request
+
         from bq.core.model.auth import User
         from bq.data_service.model import BQUser
         from bq.data_service.model.tag_model import Tag
@@ -1785,9 +1745,7 @@ class RegistrationController(BaseController):
 
         try:
             # Get user details from BQUser
-            bq_user = (
-                DBSession.query(BQUser).filter(BQUser.resource_name == username).first()
-            )
+            bq_user = DBSession.query(BQUser).filter(BQUser.resource_name == username).first()
             if not bq_user:
                 flash("User profile not found.", "error")
                 redirect("/client_service/")
@@ -1841,6 +1799,7 @@ class RegistrationController(BaseController):
     def update_user(self, **kw):
         """Process user profile update"""
         from tg import request
+
         from bq.core.model.auth import User
         from bq.data_service.model import BQUser
         from bq.data_service.model.tag_model import Tag
@@ -1890,9 +1849,7 @@ class RegistrationController(BaseController):
 
         try:
             # Get user records
-            bq_user = (
-                DBSession.query(BQUser).filter(BQUser.resource_name == username).first()
-            )
+            bq_user = DBSession.query(BQUser).filter(BQUser.resource_name == username).first()
             if not bq_user:
                 error_msg = "User profile not found."
                 return self._handle_edit_user_response("error", error_msg, **kw)
@@ -1910,9 +1867,7 @@ class RegistrationController(BaseController):
 
             # Update TurboGears User display_name to match the new fullname
             current_user.display_name = fullname
-            log.info(
-                f"Updated TurboGears User display_name to {fullname} for user {username}"
-            )
+            log.info(f"Updated TurboGears User display_name to {fullname} for user {username}")
 
             # Update user tags - find existing tags or create new ones
             tag_updates = {
@@ -1976,9 +1931,7 @@ class RegistrationController(BaseController):
         # Check if this is an AJAX request
         if request.headers.get(
             "X-Requested-With"
-        ) == "XMLHttpRequest" or "application/json" in request.headers.get(
-            "Accept", ""
-        ):
+        ) == "XMLHttpRequest" or "application/json" in request.headers.get("Accept", ""):
             return {"status": status, "message": message}
         else:
             flash(message, status)

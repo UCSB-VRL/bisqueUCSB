@@ -1,133 +1,164 @@
-import pytest
 from collections import OrderedDict
-from lxml import etree
 
+import pytest
+from bq.preference.controllers.service import (
+    TagNameNode,
+    TagValueNode,
+    mergeDocuments,
+    to_dict,
+    to_etree,
+    update_level,
+)
 from bqapi import bqnode
 from bqapi.bqnode import BQResource, BQUser
-from bq.preference.controllers.service import mergeDocuments, to_dict, to_etree, update_level, TagValueNode, TagNameNode
+from lxml import etree
 
 
 class BQPreference(BQResource):
-    TAG = xmltag = 'preference'
-    xmlfields = ['uri', 'ts', 'resource_uniq']
+    TAG = xmltag = "preference"
+    xmlfields = ["uri", "ts", "resource_uniq"]
+
 
 class BQTemplate(BQResource):
-    TAG = xmltag = 'template'
+    TAG = xmltag = "template"
     xmlfields = []
+
 
 def compare_dict(answer, result):
     """
-        Compare Dict
-        
-        @param: answer - dict with TagValueNode elements and TagNameNode elements
-        @param: result - dict with TagValueNode elements and TagNameNode elements
-        
-        @assert: checks if answer is equal to result
+    Compare Dict
+
+    @param: answer - dict with TagValueNode elements and TagNameNode elements
+    @param: result - dict with TagValueNode elements and TagNameNode elements
+
+    @assert: checks if answer is equal to result
     """
+
     def compare(answer, result):
-        assert (type(result) == TagNameNode), 'result not TagNameNode'
-        assert (type(result) == TagNameNode), 'answer not TagNameNode'
-        assert (list(answer.sub_node_dict.keys()) == list(result.sub_node_dict.keys())), 'answer does not have the same keys or order as results'
-        assert len(answer.sub_none_tag_node) == len(result.sub_none_tag_node), 'Sub tag nodes not the same length'
-        
-        #check untagged sub node
-        for i,t in enumerate(answer.sub_none_tag_node):
+        assert type(result) == TagNameNode, "result not TagNameNode"
+        assert type(result) == TagNameNode, "answer not TagNameNode"
+        assert list(answer.sub_node_dict.keys()) == list(result.sub_node_dict.keys()), (
+            "answer does not have the same keys or order as results"
+        )
+        assert len(answer.sub_none_tag_node) == len(result.sub_none_tag_node), (
+            "Sub tag nodes not the same length"
+        )
+
+        # check untagged sub node
+        for i, t in enumerate(answer.sub_none_tag_node):
             compare_etree(answer.sub_none_tag_node[i], result.sub_none_tag_node[i])
-        
+
         for k in list(answer.sub_node_dict.keys()):
-            assert type(result.sub_node_dict[k]) == type(answer.sub_node_dict[k]), ('%s types are not equal'%k)
+            assert type(result.sub_node_dict[k]) == type(answer.sub_node_dict[k]), (
+                "%s types are not equal" % k
+            )
             if type(result.sub_node_dict[k]) == TagNameNode:
-                #check attribute node
+                # check attribute node
                 result_attrib = result.sub_node_dict[k].node_attrib
                 answer_attrib = answer.sub_node_dict[k].node_attrib
-                assert sorted(result_attrib.keys()) == sorted(answer_attrib.keys()), 'answer attrib does not have the same keys as results attrib'
+                assert sorted(result_attrib.keys()) == sorted(answer_attrib.keys()), (
+                    "answer attrib does not have the same keys as results attrib"
+                )
                 for sk in list(answer_attrib.keys()):
-                    assert answer_attrib[sk] == result_attrib[sk], 'sub attribute node doesnt match'
-                    
-                #check sub dict
+                    assert answer_attrib[sk] == result_attrib[sk], "sub attribute node doesnt match"
+
+                # check sub dict
                 compare(answer.sub_node_dict[k], result.sub_node_dict[k])
-                
+
             elif type(result.sub_node_dict[k]) == TagValueNode:
-                #check value
-                assert result.sub_node_dict[k].value == answer.sub_node_dict[k].value, 'Values not equal'
-                
+                # check value
+                assert result.sub_node_dict[k].value == answer.sub_node_dict[k].value, (
+                    "Values not equal"
+                )
+
                 result_attrib = result.sub_node_dict[k].node_attrib
                 answer_attrib = answer.sub_node_dict[k].node_attrib
-                assert sorted(result_attrib.keys()) == sorted(answer_attrib.keys()), 'answer attrib does not have the same keys as results attrib'
+                assert sorted(result_attrib.keys()) == sorted(answer_attrib.keys()), (
+                    "answer attrib does not have the same keys as results attrib"
+                )
                 for sk in list(answer_attrib.keys()):
-                    assert answer_attrib[sk] == result_attrib[sk], 'sub attribute node doesnt match'
-                    
-                for i,n in enumerate(answer.sub_node_dict[k].sub_node):
-                    compare_etree(answer.sub_node_dict[k].sub_node[i], result.sub_node_dict[k].sub_node[i])
+                    assert answer_attrib[sk] == result_attrib[sk], "sub attribute node doesnt match"
+
+                for i, n in enumerate(answer.sub_node_dict[k].sub_node):
+                    compare_etree(
+                        answer.sub_node_dict[k].sub_node[i], result.sub_node_dict[k].sub_node[i]
+                    )
             else:
-                assert 0, ('%s not an excepted type'%type(result.sub_node_dict[k]))
-            
+                assert 0, "%s not an excepted type" % type(result.sub_node_dict[k])
+
     compare(answer, result)
-    
-    
+
+
 def compare_etree(expected, actual):
     """
     Compare Etree elements with better error messages and handling for BisQue specifics
-    
+
     @param: expected - etree element
     @param: actual - etree element
-    
+
     @assert: checks if expected is equal to actual
     """
+
     def normalize_element(element):
         """Normalize element for comparison - handle BisQue specific attributes"""
         # Create a copy to avoid modifying original
         normalized = etree.Element(element.tag, element.attrib)
         normalized.text = element.text
         normalized.tail = element.tail
-        
+
         # Copy children
         for child in element:
             normalized.append(normalize_element(child))
-            
+
         return normalized
-    
+
     def compare_recursive(expected, actual, path=""):
         """Recursively compare elements with path context"""
         current_path = f"{path}/{expected.tag}" if path else expected.tag
-        
+
         # Check tags
-        assert expected.tag == actual.tag, f'Tags are not equal at {current_path}: expected "{expected.tag}", got "{actual.tag}"'
-        
+        assert expected.tag == actual.tag, (
+            f'Tags are not equal at {current_path}: expected "{expected.tag}", got "{actual.tag}"'
+        )
+
         # Check attributes - be more flexible with BisQue specific attributes
         expected_attrib = dict(expected.attrib)
         actual_attrib = dict(actual.attrib)
-        
+
         # Handle known BisQue attributes that might be added automatically
-        bisque_auto_attributes = {'hidden', 'resource_uniq', 'ts', 'uri'}
-        
+        bisque_auto_attributes = {"hidden", "resource_uniq", "ts", "uri"}
+
         # Remove auto-generated attributes from comparison if they weren't in expected
         for attr in bisque_auto_attributes:
             if attr not in expected_attrib and attr in actual_attrib:
                 del actual_attrib[attr]
-        
+
         # Compare remaining attributes
-        assert sorted(expected_attrib.keys()) == sorted(actual_attrib.keys()), \
-            f'Attribute keys differ at {current_path}:\nExpected: {sorted(expected_attrib.keys())}\nActual: {sorted(actual_attrib.keys())}'
-        
+        assert sorted(expected_attrib.keys()) == sorted(actual_attrib.keys()), (
+            f"Attribute keys differ at {current_path}:\nExpected: {sorted(expected_attrib.keys())}\nActual: {sorted(actual_attrib.keys())}"
+        )
+
         for key in expected_attrib:
-            assert expected_attrib[key] == actual_attrib[key], \
+            assert expected_attrib[key] == actual_attrib[key], (
                 f'Attribute "{key}" differs at {current_path}: expected "{expected_attrib[key]}", got "{actual_attrib[key]}"'
-        
+            )
+
         # Check text content
-        expected_text = (expected.text or '').strip()
-        actual_text = (actual.text or '').strip()
-        assert expected_text == actual_text, \
+        expected_text = (expected.text or "").strip()
+        actual_text = (actual.text or "").strip()
+        assert expected_text == actual_text, (
             f'Text content differs at {current_path}: expected "{expected_text}", got "{actual_text}"'
-        
+        )
+
         # Check children count
-        assert len(expected) == len(actual), \
-            f'Number of children differs at {current_path}: expected {len(expected)}, got {len(actual)}'
-        
+        assert len(expected) == len(actual), (
+            f"Number of children differs at {current_path}: expected {len(expected)}, got {len(actual)}"
+        )
+
         # Recursively check children
         for i, (exp_child, act_child) in enumerate(zip(expected, actual)):
             compare_recursive(exp_child, act_child, f"{current_path}[{i}]")
-    
+
     try:
         compare_recursive(expected, actual)
     except AssertionError as e:
@@ -135,78 +166,102 @@ def compare_etree(expected, actual):
         print(f"\nExpected XML:\n{etree.tostring(expected, encoding='unicode', pretty_print=True)}")
         print(f"\nActual XML:\n{etree.tostring(actual, encoding='unicode', pretty_print=True)}")
         raise
-    
-    
+
+
 XMLPARSER = etree.XMLParser(remove_blank_text=True)
-    
-    
+
+
 def test_update_level_1():
     """
-        Update Level Test 1
-        
-        Simple
+    Update Level Test 1
+
+    Simple
     """
-    current = etree.XML("""
+    current = etree.XML(
+        """
         <preference>
             <tag name="test1" value="old" uri="/data_service/preference/1234/tag/12345"/>
         </preference>
-    """, parser=XMLPARSER)
+    """,
+        parser=XMLPARSER,
+    )
 
-    new = etree.XML("""
+    new = etree.XML(
+        """
         <preference>
             <tag name="test1" value="new"/>
         </preference>
-    """, parser=XMLPARSER)
-    answer = etree.XML("""
+    """,
+        parser=XMLPARSER,
+    )
+    answer = etree.XML(
+        """
         <preference>
             <tag name="test1" value="new" uri="/data_service/preference/1234/tag/12345"/>
         </preference>
-    """, parser=XMLPARSER)
-    
+    """,
+        parser=XMLPARSER,
+    )
+
     result = update_level(new, current)
     compare_etree(answer, result)
-    
+
+
 def test_update_level_2():
     """
-        Update Level Test 2
-        
-        Adding new tags
-    """
-    current = etree.XML("""
-        <preference>
-            <tag name="test1" value="old" uri="/data_service/preference/1234/tag/12345"/>
-        </preference>
-    """, parser=XMLPARSER)
+    Update Level Test 2
 
-    new = etree.XML("""
+    Adding new tags
+    """
+    current = etree.XML(
+        """
+        <preference>
+            <tag name="test1" value="old" uri="/data_service/preference/1234/tag/12345"/>
+        </preference>
+    """,
+        parser=XMLPARSER,
+    )
+
+    new = etree.XML(
+        """
         <preference>
             <tag name="test2" value="new"/>
         </preference>
-    """, parser=XMLPARSER)
-    
-    answer = etree.XML("""
+    """,
+        parser=XMLPARSER,
+    )
+
+    answer = etree.XML(
+        """
         <preference>
             <tag name="test1" value="old" uri="/data_service/preference/1234/tag/12345"/>
             <tag name="test2" value="new"/>
         </preference>
-    """, parser=XMLPARSER)
-    
+    """,
+        parser=XMLPARSER,
+    )
+
     result = update_level(new, current)
     compare_etree(answer, result)
-    
+
+
 def test_update_level_3():
     """
-        Update Level Test 3
-        
-        templating the latter element
+    Update Level Test 3
+
+    templating the latter element
     """
-    current = etree.XML("""
+    current = etree.XML(
+        """
         <preference>
             <tag name="test1" value="old" uri="/data_service/preference/1234/tag/12345"/>
         </preference>
-    """, parser=XMLPARSER)
-    
-    new = etree.XML("""
+    """,
+        parser=XMLPARSER,
+    )
+
+    new = etree.XML(
+        """
         <preference>
             <tag name="test2" value="new" type="something">
                 <template>
@@ -214,157 +269,200 @@ def test_update_level_3():
                 </template>
             </tag>
         </preference>
-    """, parser=XMLPARSER)
-    
+    """,
+        parser=XMLPARSER,
+    )
+
     # Fixed: type attribute should be preserved in the result
-    answer = etree.XML("""
+    answer = etree.XML(
+        """
         <preference>
             <tag name="test1" value="old" uri="/data_service/preference/1234/tag/12345" />
             <tag name="test2" value="new" type="something"/>
         </preference>
-    """, parser=XMLPARSER)
+    """,
+        parser=XMLPARSER,
+    )
     result = update_level(new, current)
     compare_etree(answer, result)
-    
+
+
 def test_update_level_4():
     """
-        Update Level Test 4
-        
-        first level value
+    Update Level Test 4
+
+    first level value
     """
-    
-    current = etree.XML("""
+
+    current = etree.XML(
+        """
         <preference>
             <tag name="test1"/>
         </preference>
-    """, parser=XMLPARSER)
-    
-    new = etree.XML("""
+    """,
+        parser=XMLPARSER,
+    )
+
+    new = etree.XML(
+        """
         <preference>
             <tag name="test1">
                 <tag name="test1" value="new"/>
             </tag>
         </preference>
-    """, parser=XMLPARSER)
-    
-    answer = etree.XML("""
+    """,
+        parser=XMLPARSER,
+    )
+
+    answer = etree.XML(
+        """
         <preference>
             <tag name="test1">
                 <tag name="test1" value="new"/>
             </tag>
         </preference>
-    """, parser=XMLPARSER)
-    
+    """,
+        parser=XMLPARSER,
+    )
+
     result = update_level(new, current)
     compare_etree(answer, result)
-    
-    
+
+
 def test_mergeDocument_1():
     """
-        Merge Document Test 1
-        
-        Simple Test
+    Merge Document Test 1
+
+    Simple Test
     """
-    
-    etree_1 = etree.XML("""
+
+    etree_1 = etree.XML(
+        """
         <preference>
             <tag name="name" value="old"/>
         </preference>
-    """, parser=XMLPARSER)
+    """,
+        parser=XMLPARSER,
+    )
 
-    etree_2 = etree.XML("""
+    etree_2 = etree.XML(
+        """
         <preference>
             <tag name="name" value="new"/>
         </preference>
-    """, parser=XMLPARSER)
-    answer = etree.XML("""
+    """,
+        parser=XMLPARSER,
+    )
+    answer = etree.XML(
+        """
         <preference>
             <tag name="name" value="new"/>
         </preference>
-    """, parser=XMLPARSER)
-    
+    """,
+        parser=XMLPARSER,
+    )
+
     result = mergeDocuments(etree_1, etree_2)
     compare_etree(answer, result)
-    
-    
+
+
 def test_mergeDocument_2():
     """
-        Merge Document Test 2
-        
-        With 2 levels 
+    Merge Document Test 2
+
+    With 2 levels
     """
-    etree_1 = etree.XML("""
+    etree_1 = etree.XML(
+        """
         <preference>
             <tag name="first_level">
                 <tag name="name" value="old"/>
             </tag>
         </preference>
-    """, parser=XMLPARSER)
+    """,
+        parser=XMLPARSER,
+    )
 
-    etree_2 = etree.XML("""
+    etree_2 = etree.XML(
+        """
         <preference>
             <tag name="first_level">
                 <tag name="name" value="new"/>
             </tag>
         </preference>
-    """, parser=XMLPARSER)
-    
-    answer = etree.XML("""
+    """,
+        parser=XMLPARSER,
+    )
+
+    answer = etree.XML(
+        """
         <preference>
             <tag name="first_level">
                 <tag name="name" value="new"/>
             </tag>
         </preference>
-    """, parser=XMLPARSER)
-    
+    """,
+        parser=XMLPARSER,
+    )
+
     result = mergeDocuments(etree_1, etree_2)
     compare_etree(answer, result)
-    
-    
+
+
 def test_mergeDocument_3():
     """
-        Merge Document Test 3
-        
-        Strange Case
-        
-        With a tag nusted under a tag with a value 
+    Merge Document Test 3
+
+    Strange Case
+
+    With a tag nusted under a tag with a value
     """
-    etree_1 = etree.XML("""
+    etree_1 = etree.XML(
+        """
         <preference>
             <tag name="first_level" value="old">
                 <tag name="name" value="old"/>
             </tag>
         </preference>
-    """, parser=XMLPARSER)
+    """,
+        parser=XMLPARSER,
+    )
 
-    etree_2 = etree.XML("""
+    etree_2 = etree.XML(
+        """
         <preference>
             <tag name="first_level" value="old">
                 <tag name="name" value="new"/>
             </tag>
         </preference>
-    """, parser=XMLPARSER)
-    answer = etree.XML("""
+    """,
+        parser=XMLPARSER,
+    )
+    answer = etree.XML(
+        """
         <preference>
             <tag name="first_level">
                 <tag name="name" value="new"/>
             </tag>
         </preference>
-    """, parser=XMLPARSER)
-    
+    """,
+        parser=XMLPARSER,
+    )
+
     result = mergeDocuments(etree_1, etree_2)
     compare_etree(answer, result)
-    
-    
+
+
 def test_mergeDocument_4():
     """
-        Merge Document Test 4
-        
-        More Strange Case
-        
-        
+    Merge Document Test 4
+
+    More Strange Case
+
+
     """
-    etree_1 = etree.XML("""
+    etree_1 = etree.XML(
+        """
         <preference>
             <template>
                 <tag name="name" value="template_name_old"/>
@@ -379,9 +477,12 @@ def test_mergeDocument_4():
                 <tag name= "node2" value="value2_old"/>
             </tag>
         </preference>
-    """, parser=XMLPARSER)
-    
-    etree_2 = etree.XML("""
+    """,
+        parser=XMLPARSER,
+    )
+
+    etree_2 = etree.XML(
+        """
         <preference>
             <template>
                 <tag name="name" value="template_name_new"/>
@@ -395,9 +496,12 @@ def test_mergeDocument_4():
                 <tag name= "node1" value="value1_new"/>
             </tag>
         </preference>
-    """, parser=XMLPARSER)
-    
-    answer = etree.XML("""
+    """,
+        parser=XMLPARSER,
+    )
+
+    answer = etree.XML(
+        """
         <preference>
             <template>
                 <tag name="name" value="template_name_old"/>
@@ -412,20 +516,22 @@ def test_mergeDocument_4():
                 <tag name= "node2" value="value2_old"/>
             </tag>
         </preference>
-    """, parser=XMLPARSER)
-    
+    """,
+        parser=XMLPARSER,
+    )
+
     result = mergeDocuments(etree_1, etree_2)
     compare_etree(answer, result)
-    
-    
-    
+
+
 def test_mergeDocument_5():
     """
-        Merge Document Test 5
-        
-        Normal Use Case
+    Merge Document Test 5
+
+    Normal Use Case
     """
-    etree_1 = etree.XML("""
+    etree_1 = etree.XML(
+        """
         <preference>
             <tag name="test1" value="test1_old"/>
             <tag name="test2" value="test2_old"/>
@@ -443,9 +549,12 @@ def test_mergeDocument_5():
                 </tag>
             </tag>
         </preference>
-    """, parser=XMLPARSER)
-    
-    etree_2 = etree.XML("""
+    """,
+        parser=XMLPARSER,
+    )
+
+    etree_2 = etree.XML(
+        """
         <preference>
             <tag name="test2" value="test2_new"/>
             <tag name="first_level">
@@ -461,9 +570,12 @@ def test_mergeDocument_5():
                 </tag>
             </tag>
         </preference>
-    """, parser=XMLPARSER)
-    
-    answer = etree.XML("""
+    """,
+        parser=XMLPARSER,
+    )
+
+    answer = etree.XML(
+        """
         <preference>
             <tag name="test1" value="test1_old"/>
             <tag name="test2" value="test2_new"/>
@@ -481,21 +593,24 @@ def test_mergeDocument_5():
                 </tag>
             </tag>
         </preference>
-    """, parser=XMLPARSER)
-    
+    """,
+        parser=XMLPARSER,
+    )
+
     result = mergeDocuments(etree_1, etree_2)
     compare_etree(answer, result)
-    
-    
+
+
 def test_mergeDocument_6():
     """
-        Merge Document Test 6
-        
-        Has type attributes
-        
-        order get mest up
+    Merge Document Test 6
+
+    Has type attributes
+
+    order get mest up
     """
-    etree_1 = etree.XML("""
+    etree_1 = etree.XML(
+        """
         <preference>
             <tag name="test1" type="Boolean" value="true"/>
             <tag name="test2" type="Boolean" value="true"/>
@@ -506,9 +621,12 @@ def test_mergeDocument_6():
                 <tag name="test3" type="Boolean" value="true"/>
             </tag>
         </preference>
-    """, parser=XMLPARSER)
-    
-    etree_2 = etree.XML("""
+    """,
+        parser=XMLPARSER,
+    )
+
+    etree_2 = etree.XML(
+        """
         <preference>
             <tag name="test1" value="false"/>
             <tag name="test3" type="String" value="false"/>
@@ -517,9 +635,12 @@ def test_mergeDocument_6():
                 <tag name="test3" type="String" value="false"/>
             </tag>
         </preference>
-    """, parser=XMLPARSER)
-    
-    answer = etree.XML("""
+    """,
+        parser=XMLPARSER,
+    )
+
+    answer = etree.XML(
+        """
         <preference>
             <tag name="test1" type="Boolean" value="false"/>
             <tag name="test2" type="Boolean" value="true"/>
@@ -530,165 +651,205 @@ def test_mergeDocument_6():
                 <tag name="test3" type="Boolean" value="false"/>
             </tag>
         </preference>
-    """, parser=XMLPARSER)
-    
+    """,
+        parser=XMLPARSER,
+    )
+
     result = mergeDocuments(etree_1, etree_2)
     compare_etree(answer, result)
-    
-    
+
+
 def test_mergeDocument_7():
     """
-        Merge Document Test 7
-        
-        merging uris
+    Merge Document Test 7
+
+    merging uris
     """
-    etree_1 = etree.XML("""
+    etree_1 = etree.XML(
+        """
         <preference>
             <tag name="test1" type="Boolean" value="true" uri="http://host/data_service/00-RhsMCPzWzqd577N34mZZVC/preference/1271/tag/1277"/>
             <tag name="first_level" uri="http://host/data_service/00-RhsMCPzWzqd577N34mZZVC/preference/1271/tag/1278">
                 <tag name="test1" type="Boolean" value="true" uri="http://host/data_service/00-RhsMCPzWzqd577N34mZZVC/preference/1271/tag/1278/tag/1530"/>
             </tag>
         </preference>
-    """, parser=XMLPARSER)
-    
-    etree_2 = etree.XML("""
+    """,
+        parser=XMLPARSER,
+    )
+
+    etree_2 = etree.XML(
+        """
         <preference>
             <tag name="test1" value="false" uri="http://host/data_service/00-RhsMCPzWzqd577N34mZZVC/preference/1272/tag/1234"/>
             <tag name="first_level" uri="http://host/data_service/00-RhsMCPzWzqd577N34mZZVC/preference/1272/tag/1235">
                 <tag name="test1" value="false" uri="http://host/data_service/00-RhsMCPzWzqd577N34mZZVC/preference/1272/tag/1235/tag/1423"/>
             </tag>
         </preference>
-    """, parser=XMLPARSER)
-    
-    answer = etree.XML("""
+    """,
+        parser=XMLPARSER,
+    )
+
+    answer = etree.XML(
+        """
         <preference>
             <tag name="test1" type="Boolean" value="false" uri="http://host/data_service/00-RhsMCPzWzqd577N34mZZVC/preference/1272/tag/1234"/>
             <tag name="first_level" uri="http://host/data_service/00-RhsMCPzWzqd577N34mZZVC/preference/1272/tag/1235">
                 <tag name="test1" type="Boolean" value="false" uri="http://host/data_service/00-RhsMCPzWzqd577N34mZZVC/preference/1272/tag/1235/tag/1423"/>
             </tag>
         </preference>
-    """, parser=XMLPARSER)
-    
+    """,
+        parser=XMLPARSER,
+    )
+
     result = mergeDocuments(etree_1, etree_2)
     compare_etree(answer, result)
-    
+
+
 def test_mergeDocument_8():
     """
-        Merge Document Test 8
-        
-        Strange Case
-        
-        With a tag nusted under a tag with a value 
+    Merge Document Test 8
+
+    Strange Case
+
+    With a tag nusted under a tag with a value
     """
-    etree_1 = etree.XML("""
+    etree_1 = etree.XML(
+        """
         <preference>
             <tag name="first_level" value="old">
                 <tag name="name1" value="old"/>
                 <tag name="name2" value="old"/>
             </tag>
         </preference>
-    """, parser=XMLPARSER)
+    """,
+        parser=XMLPARSER,
+    )
 
-    etree_2 = etree.XML("""
+    etree_2 = etree.XML(
+        """
         <preference>
             <tag name="first_level" value="">
                 <tag name="name1" value="new"/>
             </tag>
         </preference>
-    """, parser=XMLPARSER)
-    
-    answer = etree.XML("""
+    """,
+        parser=XMLPARSER,
+    )
+
+    answer = etree.XML(
+        """
         <preference>
             <tag name="first_level">
                 <tag name="name1" value="new"/>
                 <tag name="name2" value="old"/>
             </tag>
         </preference>
-    """, parser=XMLPARSER)
-    
+    """,
+        parser=XMLPARSER,
+    )
+
     result = mergeDocuments(etree_1, etree_2)
     compare_etree(answer, result)
-    
+
+
 def test_mergeDocument_9():
     """
-        Merge Document Test 9
-        
-        Strange Case
-        
-        With a tag nusted under a tag with a value 
+    Merge Document Test 9
+
+    Strange Case
+
+    With a tag nusted under a tag with a value
     """
-    etree_1 = etree.XML("""
+    etree_1 = etree.XML(
+        """
         <preference name="Preferences" value="">
             <tag name="first_level" value="old">
                 <tag name="name1" value="old"/>
                 <tag name="name2" value="old"/>
             </tag>
         </preference>
-    """, parser=XMLPARSER)
+    """,
+        parser=XMLPARSER,
+    )
 
-    etree_2 = etree.XML("""
+    etree_2 = etree.XML(
+        """
         <preference name="Preferences" value="">
             <tag name="first_level" value="">
                 <tag name="name1" value="new"/>
             </tag>
         </preference>
-    """, parser=XMLPARSER)
-    
-    answer = etree.XML("""
+    """,
+        parser=XMLPARSER,
+    )
+
+    answer = etree.XML(
+        """
         <preference>
             <tag name="first_level">
                 <tag name="name1" value="new"/>
                 <tag name="name2" value="old"/>
             </tag>
         </preference>
-    """, parser=XMLPARSER)
-    
+    """,
+        parser=XMLPARSER,
+    )
+
     result = mergeDocuments(etree_1, etree_2)
     compare_etree(answer, result)
-    
-    
+
+
 def test_mergeDocument_10():
     """
-        Merge Document Test 10
-        
-        Strange Case
-        
-        With a tag nusted under a tag with a value 
+    Merge Document Test 10
+
+    Strange Case
+
+    With a tag nusted under a tag with a value
     """
-    etree_1 = etree.XML("""
+    etree_1 = etree.XML(
+        """
         <preference name="Preferences" value="">
             <tag name="first_level">
                 <tag name="name1" value="old"/>
             </tag>
         </preference>
-    """, parser=XMLPARSER)
+    """,
+        parser=XMLPARSER,
+    )
 
-    etree_2 = etree.XML("""
+    etree_2 = etree.XML(
+        """
         <preference name="Preferences" value="">
             <tag name="first_level"/>
         </preference>
-    """, parser=XMLPARSER)
-    
-    answer = etree.XML("""
+    """,
+        parser=XMLPARSER,
+    )
+
+    answer = etree.XML(
+        """
         <preference>
             <tag name="first_level">
                 <tag name="name1" value="old"/>
             </tag>
         </preference>
-    """, parser=XMLPARSER)
-    
+    """,
+        parser=XMLPARSER,
+    )
+
     result = mergeDocuments(etree_1, etree_2)
     compare_etree(answer, result)
-    
-    
-    
+
+
 def test_to_dict_1():
     """
-        To Dict Test 1
-        
-        Simple Test
+    To Dict Test 1
+
+    Simple Test
     """
-    xml = etree.XML("""
+    xml = etree.XML(
+        """
         <preference>
             <tag name="test1" value="test1_old"/>
             <tag name="test2" value="test2_old"/>
@@ -701,80 +862,100 @@ def test_to_dict_1():
                 </tag>
             </tag>
         </preference>
-    """, parser=XMLPARSER)
-    
-    answer = TagNameNode(
-        sub_node_dict = OrderedDict([(
-            'test1', TagValueNode(
-                value = 'test1_old',
-                node_attrib = {
-                    'name':'test1', 
-                    'value':'test1_old'
-                }
-        )),(
-            'test2', TagValueNode(
-                value = 'test2_old',
-                node_attrib = {
-                    'name':'test2', 
-                    'value':'test2_old'
-                }
-        )),(
-            'first_level', TagNameNode(
-                sub_node_dict = OrderedDict([(
-                    'test1' , TagValueNode(
-                        value = 'test1_old',
-                        node_attrib = {
-                            'name':'test1', 
-                            'value':'test1_old'
-                        },
-                )), (
-                    'test2' , TagValueNode(
-                        value = 'test2_old',
-                        node_attrib = {
-                            'name':'test2', 
-                            'value':'test2_old',
-                        }
-                )), (
-                    'second_level' , TagNameNode(
-                        sub_node_dict =  OrderedDict([(
-                            'test1' , TagValueNode(
-                                value = 'test1_old',
-                                node_attrib = {
-                                    'name':'test1', 
-                                    'value':'test1_old'
-                                },
-                        )),(
-                            'test2' , TagValueNode(
-                                value = 'test2_old',
-                                node_attrib = {
-                                    'name':'test2', 
-                                    'value':'test2_old'
-                                },
-                        ))]),
-                        node_attrib = {
-                            'name':'second_level'
-                        }
-                ))]),
-                node_attrib = {
-                    'name':'first_level'
-                }
-            )
-        )])
+    """,
+        parser=XMLPARSER,
     )
-    
+
+    answer = TagNameNode(
+        sub_node_dict=OrderedDict(
+            [
+                (
+                    "test1",
+                    TagValueNode(
+                        value="test1_old", node_attrib={"name": "test1", "value": "test1_old"}
+                    ),
+                ),
+                (
+                    "test2",
+                    TagValueNode(
+                        value="test2_old", node_attrib={"name": "test2", "value": "test2_old"}
+                    ),
+                ),
+                (
+                    "first_level",
+                    TagNameNode(
+                        sub_node_dict=OrderedDict(
+                            [
+                                (
+                                    "test1",
+                                    TagValueNode(
+                                        value="test1_old",
+                                        node_attrib={"name": "test1", "value": "test1_old"},
+                                    ),
+                                ),
+                                (
+                                    "test2",
+                                    TagValueNode(
+                                        value="test2_old",
+                                        node_attrib={
+                                            "name": "test2",
+                                            "value": "test2_old",
+                                        },
+                                    ),
+                                ),
+                                (
+                                    "second_level",
+                                    TagNameNode(
+                                        sub_node_dict=OrderedDict(
+                                            [
+                                                (
+                                                    "test1",
+                                                    TagValueNode(
+                                                        value="test1_old",
+                                                        node_attrib={
+                                                            "name": "test1",
+                                                            "value": "test1_old",
+                                                        },
+                                                    ),
+                                                ),
+                                                (
+                                                    "test2",
+                                                    TagValueNode(
+                                                        value="test2_old",
+                                                        node_attrib={
+                                                            "name": "test2",
+                                                            "value": "test2_old",
+                                                        },
+                                                    ),
+                                                ),
+                                            ]
+                                        ),
+                                        node_attrib={"name": "second_level"},
+                                    ),
+                                ),
+                            ]
+                        ),
+                        node_attrib={"name": "first_level"},
+                    ),
+                ),
+            ]
+        )
+    )
+
     result = to_dict(xml)
     compare_dict(answer, result)
-    
-    
+
+
 def test_to_dict_2():
     """
-        To Dict Test 2
-        
-        Simple Test
-        
-        Value node with children
+    To Dict Test 2
+
+    Simple Test
+
+    Value node with children
     """
-    xml = etree.XML("""
+    xml = etree.XML(
+        """
         <preference>
             <tag name="test1" value="test1_old"/>
             <tag name="test2" value="test2_old"/>
@@ -783,98 +964,123 @@ def test_to_dict_2():
                 <tag name="test2" value="test2_old"/>
             </tag>
         </preference>
-    """, parser=XMLPARSER)
-    
-    answer = TagNameNode(
-        sub_node_dict = OrderedDict([(
-            'test1', TagValueNode(
-                value = 'test1_old',
-                node_attrib = {
-                    'name'  : 'test1',
-                    'value' : 'test1_old',
-                },
-            )
-        ), (
-            'test2', TagValueNode(
-                value = 'test2_old',
-                node_attrib = {
-                    'name'  : 'test2',
-                    'value' : 'test2_old',
-                },
-            )
-        ), (
-            'first_level', TagNameNode(
-                node_attrib = {
-                    'name'  : 'first_level',
-                },
-                sub_node_dict = OrderedDict([(
-                    'test1', TagValueNode(
-                        value = 'test1_old',
-                        node_attrib = {
-                            'name'  : 'test1',
-                            'value' : 'test1_old',
-                        },
-                    )
-                ),(
-                    'test2', TagValueNode(
-                        value = 'test2_old',
-                        node_attrib = {
-                            'name'  : 'test2',
-                            'value' : 'test2_old',
-                        },
-                    )
-                )])
-            )
-        )]),
+    """,
+        parser=XMLPARSER,
     )
-    
+
+    answer = TagNameNode(
+        sub_node_dict=OrderedDict(
+            [
+                (
+                    "test1",
+                    TagValueNode(
+                        value="test1_old",
+                        node_attrib={
+                            "name": "test1",
+                            "value": "test1_old",
+                        },
+                    ),
+                ),
+                (
+                    "test2",
+                    TagValueNode(
+                        value="test2_old",
+                        node_attrib={
+                            "name": "test2",
+                            "value": "test2_old",
+                        },
+                    ),
+                ),
+                (
+                    "first_level",
+                    TagNameNode(
+                        node_attrib={
+                            "name": "first_level",
+                        },
+                        sub_node_dict=OrderedDict(
+                            [
+                                (
+                                    "test1",
+                                    TagValueNode(
+                                        value="test1_old",
+                                        node_attrib={
+                                            "name": "test1",
+                                            "value": "test1_old",
+                                        },
+                                    ),
+                                ),
+                                (
+                                    "test2",
+                                    TagValueNode(
+                                        value="test2_old",
+                                        node_attrib={
+                                            "name": "test2",
+                                            "value": "test2_old",
+                                        },
+                                    ),
+                                ),
+                            ]
+                        ),
+                    ),
+                ),
+            ]
+        ),
+    )
+
     result = to_dict(xml)
     compare_dict(answer, result)
-    
-    
+
+
 def test_to_dict_3():
     """
-        To Dict Test 3
-        
-        Top level None Tag Nodes
+    To Dict Test 3
+
+    Top level None Tag Nodes
     """
-    xml = etree.XML("""
+    xml = etree.XML(
+        """
         <preference>
             <template>
                 <tag name="test1" value="templateTest"/>
             </template>
             <tag name="test1" value="test1_old"/>
         </preference>
-    """, parser=XMLPARSER)
-    
-    template = etree.Element('template')
-    etree.SubElement(template, 'tag', name='test1', value="templateTest")
-    
+    """,
+        parser=XMLPARSER,
+    )
+
+    template = etree.Element("template")
+    etree.SubElement(template, "tag", name="test1", value="templateTest")
+
     answer = TagNameNode(
-        sub_node_dict = OrderedDict([(
-            'test1', TagValueNode(
-                value = 'test1_old',
-                node_attrib = {
-                    'name'  : 'test1',
-                    'value' : 'test1_old',
-                },
-            )
-        )]),
-        sub_none_tag_node =[
-            template
-        ]
+        sub_node_dict=OrderedDict(
+            [
+                (
+                    "test1",
+                    TagValueNode(
+                        value="test1_old",
+                        node_attrib={
+                            "name": "test1",
+                            "value": "test1_old",
+                        },
+                    ),
+                )
+            ]
+        ),
+        sub_none_tag_node=[template],
     )
     result = to_dict(xml)
     compare_dict(answer, result)
-    
-    
+
+
 def test_to_dict_4():
     """
-        To Dict Test 4
-        
-        Parent nodes with values
+    To Dict Test 4
+
+    Parent nodes with values
     """
-    xml = etree.XML("""
+    xml = etree.XML(
+        """
         <preference>
             <tag name="test1" value="">
                 <tag name="test1" value="test1"/>
@@ -894,154 +1100,197 @@ def test_to_dict_4():
                 <tag name="test4" value=""/>
             </tag>
         </preference>
-    """, parser=XMLPARSER)
-    
-    template = etree.Element('template')
-    etree.SubElement(template, 'tag', name='test4', value="templateTest")
-    
+    """,
+        parser=XMLPARSER,
+    )
+
+    template = etree.Element("template")
+    etree.SubElement(template, "tag", name="test4", value="templateTest")
+
     answer = TagNameNode(
-        sub_node_dict = OrderedDict([(
-            'test1', TagNameNode(
-                sub_node_dict = OrderedDict([(
-                    'test1', TagValueNode(
-                        value='test1',
+        sub_node_dict=OrderedDict(
+            [
+                (
+                    "test1",
+                    TagNameNode(
+                        sub_node_dict=OrderedDict(
+                            [
+                                (
+                                    "test1",
+                                    TagValueNode(
+                                        value="test1",
+                                        node_attrib={"name": "test1", "value": "test1"},
+                                    ),
+                                )
+                            ]
+                        ),
                         node_attrib={
-                            'name':'test1',
-                            'value':'test1'
+                            "name": "test1",
                         },
-                    )
-                )]),
-                node_attrib = {
-                    'name':'test1',
-                }
-            )
-        ),(
-            'test2', TagNameNode(
-                sub_node_dict = OrderedDict([(
-                    'test2', TagValueNode(
-                        value='test2',
+                    ),
+                ),
+                (
+                    "test2",
+                    TagNameNode(
+                        sub_node_dict=OrderedDict(
+                            [
+                                (
+                                    "test2",
+                                    TagValueNode(
+                                        value="test2",
+                                        node_attrib={"name": "test2", "value": "test2"},
+                                    ),
+                                )
+                            ]
+                        ),
                         node_attrib={
-                            'name':'test2',
-                            'value':'test2'
+                            "name": "test2",
                         },
-                    )
-                )]),
-                node_attrib = {
-                    'name':'test2',
-                }
-            )
-        ),(
-            'test3', TagNameNode(
-                sub_node_dict = OrderedDict([(
-                    'test3', TagNameNode(
-                        sub_node_dict = OrderedDict([(
-                            'test3', TagValueNode(
-                                value='',
-                                node_attrib={
-                                    'name':'test3',
-                                    'value':''
-                                },
-                            )
-                        )]),
-                        node_attrib = {
-                            'name':'test3',
-                        }
-                    )
-                )]),
-                node_attrib = {
-                    'name':'test3',
-                }
-            )
-        ),(
-            'test4', TagNameNode(
-                sub_node_dict = OrderedDict([(
-                    'test4', TagValueNode(
-                        value='',
+                    ),
+                ),
+                (
+                    "test3",
+                    TagNameNode(
+                        sub_node_dict=OrderedDict(
+                            [
+                                (
+                                    "test3",
+                                    TagNameNode(
+                                        sub_node_dict=OrderedDict(
+                                            [
+                                                (
+                                                    "test3",
+                                                    TagValueNode(
+                                                        value="",
+                                                        node_attrib={"name": "test3", "value": ""},
+                                                    ),
+                                                )
+                                            ]
+                                        ),
+                                        node_attrib={
+                                            "name": "test3",
+                                        },
+                                    ),
+                                )
+                            ]
+                        ),
                         node_attrib={
-                            'name':'test4',
-                            'value':''
+                            "name": "test3",
                         },
-                    )
-                )]),
-                node_attrib={
-                    'name':'test4',
-                },
-                sub_none_tag_node =[
-                    template
-                ]
-            )
-        )]),
+                    ),
+                ),
+                (
+                    "test4",
+                    TagNameNode(
+                        sub_node_dict=OrderedDict(
+                            [
+                                (
+                                    "test4",
+                                    TagValueNode(
+                                        value="",
+                                        node_attrib={"name": "test4", "value": ""},
+                                    ),
+                                )
+                            ]
+                        ),
+                        node_attrib={
+                            "name": "test4",
+                        },
+                        sub_none_tag_node=[template],
+                    ),
+                ),
+            ]
+        ),
     )
     result = to_dict(xml)
     compare_dict(answer, result)
-    
+
+
 def test_to_etree_1():
     """
-        To Etree Test 1
-        
-        Simple Test
+    To Etree Test 1
+
+    Simple Test
     """
-    
+
     dict = TagNameNode(
-        sub_node_dict = OrderedDict([(
-            'test1', TagValueNode(
-                value = 'test1_old',
-                node_attrib = {
-                    'name':'test1', 
-                    'value':'test1_old'
-                }
-        )),(
-            'test2', TagValueNode(
-                value = 'test2_old',
-                node_attrib = {
-                    'name':'test2', 
-                    'value':'test2_old'
-                }
-        )),(
-            'first_level', TagNameNode(
-                sub_node_dict = OrderedDict([(
-                    'test1' , TagValueNode(
-                        value = 'test1_old',
-                        node_attrib = {
-                            'name':'test1', 
-                            'value':'test1_old'
-                        },
-                )), (
-                    'test2' , TagValueNode(
-                        value = 'test2_old',
-                        node_attrib = {
-                            'name':'test2', 
-                            'value':'test2_old',
-                        }
-                )), (
-                    'second_level' , TagNameNode(
-                        sub_node_dict =  OrderedDict([(
-                            'test1' , TagValueNode(
-                                value = 'test1_old',
-                                node_attrib = {
-                                    'name':'test1', 
-                                    'value':'test1_old'
-                                },
-                        )),(
-                            'test2' , TagValueNode(
-                                value = 'test2_old',
-                                node_attrib = {
-                                    'name':'test2', 
-                                    'value':'test2_old'
-                                },
-                        ))]),
-                        node_attrib = {
-                            'name':'second_level'
-                        }
-                ))]),
-                node_attrib = {
-                    'name':'first_level'
-                }
-            )
-        )])
+        sub_node_dict=OrderedDict(
+            [
+                (
+                    "test1",
+                    TagValueNode(
+                        value="test1_old", node_attrib={"name": "test1", "value": "test1_old"}
+                    ),
+                ),
+                (
+                    "test2",
+                    TagValueNode(
+                        value="test2_old", node_attrib={"name": "test2", "value": "test2_old"}
+                    ),
+                ),
+                (
+                    "first_level",
+                    TagNameNode(
+                        sub_node_dict=OrderedDict(
+                            [
+                                (
+                                    "test1",
+                                    TagValueNode(
+                                        value="test1_old",
+                                        node_attrib={"name": "test1", "value": "test1_old"},
+                                    ),
+                                ),
+                                (
+                                    "test2",
+                                    TagValueNode(
+                                        value="test2_old",
+                                        node_attrib={
+                                            "name": "test2",
+                                            "value": "test2_old",
+                                        },
+                                    ),
+                                ),
+                                (
+                                    "second_level",
+                                    TagNameNode(
+                                        sub_node_dict=OrderedDict(
+                                            [
+                                                (
+                                                    "test1",
+                                                    TagValueNode(
+                                                        value="test1_old",
+                                                        node_attrib={
+                                                            "name": "test1",
+                                                            "value": "test1_old",
+                                                        },
+                                                    ),
+                                                ),
+                                                (
+                                                    "test2",
+                                                    TagValueNode(
+                                                        value="test2_old",
+                                                        node_attrib={
+                                                            "name": "test2",
+                                                            "value": "test2_old",
+                                                        },
+                                                    ),
+                                                ),
+                                            ]
+                                        ),
+                                        node_attrib={"name": "second_level"},
+                                    ),
+                                ),
+                            ]
+                        ),
+                        node_attrib={"name": "first_level"},
+                    ),
+                ),
+            ]
+        )
     )
-    
-    answer = etree.XML("""
+
+    answer = etree.XML(
+        """
         <preference>
             <tag name="test1" value="test1_old"/>
             <tag name="test2" value="test2_old"/>
@@ -1055,49 +1304,62 @@ def test_to_etree_1():
                 </tag>
             </tag>
         </preference>
-    """, parser=XMLPARSER)
-    
+    """,
+        parser=XMLPARSER,
+    )
+
     result = to_etree(dict)
-    
+
     compare_etree(answer, result)
-    
+
+
 def test_to_etree_2():
     """
-        To Etree Test 2
+    To Etree Test 2
     """
     dict = TagNameNode(
-        sub_node_dict = OrderedDict([(
-            'test1', TagValueNode(
-                value = 'test1_old',
-                node_attrib = {
-                    'name'  : 'test1',
-                    'value' : 'test1_old',
-                },
-            )
-        ), (
-            'test2', TagValueNode(
-                value = 'test2_old',
-                node_attrib = {
-                    'name'  : 'test2',
-                    'value' : 'test2_old',
-                },
-            )
-        ), (
-            'first_level', TagValueNode(
-                value = 'test',
-                node_attrib = {
-                    'name'  : 'first_level',
-                    'value' : 'test',
-                },
-                sub_node = [
-                    etree.Element('tag', name='test1', value='test1_old'),
-                    etree.Element('tag', name='test2', value='test2_old'),
-                ],
-            )
-        )])
+        sub_node_dict=OrderedDict(
+            [
+                (
+                    "test1",
+                    TagValueNode(
+                        value="test1_old",
+                        node_attrib={
+                            "name": "test1",
+                            "value": "test1_old",
+                        },
+                    ),
+                ),
+                (
+                    "test2",
+                    TagValueNode(
+                        value="test2_old",
+                        node_attrib={
+                            "name": "test2",
+                            "value": "test2_old",
+                        },
+                    ),
+                ),
+                (
+                    "first_level",
+                    TagValueNode(
+                        value="test",
+                        node_attrib={
+                            "name": "first_level",
+                            "value": "test",
+                        },
+                        sub_node=[
+                            etree.Element("tag", name="test1", value="test1_old"),
+                            etree.Element("tag", name="test2", value="test2_old"),
+                        ],
+                    ),
+                ),
+            ]
+        )
     )
-    
-    answer = etree.XML("""
+
+    answer = etree.XML(
+        """
         <preference>
             <tag name="test1" value="test1_old"/>
             <tag name="test2" value="test2_old"/>
@@ -1106,8 +1368,9 @@ def test_to_etree_2():
                 <tag name="test2" value="test2_old"/>
             </tag>
         </preference>
-    """, parser=XMLPARSER)
-    
+    """,
+        parser=XMLPARSER,
+    )
 
     result = to_etree(dict)
     compare_etree(answer, result)
@@ -1115,41 +1378,40 @@ def test_to_etree_2():
 
 def test_to_etree_3():
     """
-        To Etree Test 3
+    To Etree Test 3
     """
-    template = etree.Element('template')
-    etree.SubElement(template, 'tag', name='test1', value="templateTest")
-    
+    template = etree.Element("template")
+    etree.SubElement(template, "tag", name="test1", value="templateTest")
+
     dict = TagNameNode(
-        sub_node_dict = OrderedDict([(
-            'test1', TagValueNode(
-                value = 'test1_old',
-                node_attrib = {
-                    'name'  : 'test1',
-                    'value' : 'test1_old',
-                },
-            )
-        )]),
-        sub_none_tag_node =[
-            template
-        ]
+        sub_node_dict=OrderedDict(
+            [
+                (
+                    "test1",
+                    TagValueNode(
+                        value="test1_old",
+                        node_attrib={
+                            "name": "test1",
+                            "value": "test1_old",
+                        },
+                    ),
+                )
+            ]
+        ),
+        sub_none_tag_node=[template],
     )
-    
-    answer = etree.XML("""
+
+    answer = etree.XML(
+        """
         <preference>
             <template>
                 <tag name="test1" value="templateTest"/>
             </template>
             <tag name="test1" value="test1_old"/>
         </preference>
-    """, parser=XMLPARSER)
-    
+    """,
+        parser=XMLPARSER,
+    )
+
     result = to_etree(dict)
     compare_etree(answer, result)
-
-
-
-    
-    
-    
-    

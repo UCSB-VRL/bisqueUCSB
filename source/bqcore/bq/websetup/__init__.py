@@ -5,12 +5,13 @@ import logging
 
 from bq.config.environment import load_environment
 
-__all__ = ['setup_app']
+__all__ = ["setup_app"]
 
 log = logging.getLogger(__name__)
 
-from .schema import setup_schema
 from . import bootstrap
+from .schema import setup_schema
+
 
 def setup_app(command, conf, vars):
     """Place any commands to setup bq here"""

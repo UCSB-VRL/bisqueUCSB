@@ -54,22 +54,16 @@ DESCRIPTION
 """
 
 from unittest import result
-from past.builtins import execfile
+
 from future import standard_library
+from past.builtins import execfile
 
 standard_library.install_aliases()
-from builtins import next
-from builtins import chr
-from builtins import input
-from builtins import str
-from builtins import range
-from past.builtins import str
-from builtins import object
-
 import datetime
 import fnmatch
 import getpass
 import hashlib
+import io
 import logging
 import os
 import platform
@@ -81,7 +75,6 @@ import shutil
 import socket
 import stat
 import string
-import io
 import subprocess
 import sys
 import tarfile
@@ -91,14 +84,15 @@ import traceback
 import urllib.parse
 import uuid
 import zipfile
+from builtins import chr, input, next, object, range, str
 from collections import OrderedDict
-
-from dateutil.parser import parse
-from dateutil import tz
-import requests
-import pkg_resources
-
 from subprocess import call
+
+import pkg_resources
+import requests
+from dateutil import tz
+from dateutil.parser import parse
+from past.builtins import str
 
 try:
     from pip import main as pipmain
@@ -157,13 +151,13 @@ use_defaults = False
 
 try:
     import sqlalchemy as sa
+
     from bq.util.configfile import ConfigFile
 
     # from bq.model import db_version
 except ImportError as e:
     log.exception(
-        "There was a problem with the bisque environment\n"
-        "Have you run %s setup.py yet?",
+        "There was a problem with the bisque environment\nHave you run %s setup.py yet?",
         sys.executable,
     )
 
@@ -213,7 +207,7 @@ RUNTIME_CFG = None
 PYTHON = sys.executable
 EXT_SERVER = (
     # "https://vat.ece.ucsb.edu/binaries/depot/"  # EXTERNAL host server DIRS['depot']
-    "https://files.wskoly.xyz/binaries/depot/" # !!! temporary added to build and debug faster
+    "https://files.wskoly.xyz/binaries/depot/"  # !!! temporary added to build and debug faster
 )
 
 
@@ -221,14 +215,9 @@ EXT_SERVER = (
 HOSTNAME = "0.0.0.0"
 
 
-if os.name == "nt":
-    EXEC_EXTS = [".com", ".exe", ".bat"]
-    SCRIPT_EXT = ".exe"
-    ARCHIVE_EXT = ".zip"
-else:
-    SCRIPT_EXT = ""
-    ARCHIVE_EXT = ".tar.gz"
-    EXEC_EXTS = [""]
+SCRIPT_EXT = ""
+ARCHIVE_EXT = ".tar.gz"
+EXEC_EXTS = [""]
 
 
 TRUE_RESPONSE = {"true": "Y", "y": "Y", "t": "Y", "yes": "Y", "1": "Y"}
@@ -318,8 +307,7 @@ def copy_link(*largs):
                 os.unlink(dest)
             os.link(f, dest)
         except Exception:
-            if os.name != "nt":
-                log.exception("Problem in link %s .. trying copy", f)
+            log.exception("Problem in link %s .. trying copy", f)
             shutil.copyfile(f, dest)
 
 
@@ -459,8 +447,6 @@ def unpack_zip(zfile, dest, strip_root=None):
             new_path = info.filename.replace(top_dir, "")
             filename = os.path.join(dest, new_path)
             names.append(filename)
-            if os.name == "nt":
-                filename = filename.replace("/", "\\")
             mypath = os.path.dirname(filename)
             if not os.path.exists(mypath):
                 os.makedirs(mypath)
@@ -567,11 +553,8 @@ initial_vars = {
     "mail.transport": "smtp",
     "mail.smtp.server": "localhost",
     "runtime.matlab_home": "",
-    "runtime.mode": "command",
+    "runtime.platforms": "command",
     "runtime.staging_base": "",
-    "condor.submit_template": "",
-    "condor.dag_template": "",
-    "condor.dag_config_template": "",
 }
 
 linked_vars = {
@@ -691,28 +674,16 @@ RUNTIME_QUESTIONS = [
     (
         "runtime.platforms",
         "Enter a list (comma,seperated) of module platforms",
-        "controls how  module are run locally or condor",
+        "controls which module runtimes are allowed",
     ),
     (
         "runtime.staging_base",
         "An temproary area that can be used to stage execution of modules",
         """
     Some modules are copied to a temporary directory with data so that they may run
-    cleanly.  Condor often requires a staging area that is seen by all nodes that
-    it can dispatch jobs to.  This area can be a local or condor shared filesystem
+    cleanly.
     """,
     ),
-]
-
-
-CONDOR_QUESTIONS = [
-    (
-        "condor.submit_template",
-        "Path to condor submit script",
-        """A script used to submit jobs to Condor""",
-    ),
-    ("condor.dag_template", "A DAGMAN script", None),
-    ("condor.dag_config_template", "A DAGMan Config", None),
 ]
 
 
@@ -842,9 +813,7 @@ def visible(k, v):
     return not k.startswith("__")
 
 
-def update_site_cfg(
-    bisque_vars, section=BQ_SECTION, append=True, cfg=None, filterby=visible
-):
+def update_site_cfg(bisque_vars, section=BQ_SECTION, append=True, cfg=None, filterby=visible):
     """Read the config file and update the variables in a section
     @param bisque_vars: dict of variables
     @param section: name of section to modify
@@ -860,9 +829,7 @@ def update_site_cfg(
 
     for k, v in list(bisque_vars.items()):
         if filterby is None or filterby(k, v):
-            c.edit_config(
-                section, k, "%s = %s" % (k, quoted(ensure_str(v))), {}, append
-            )
+            c.edit_config(section, k, "%s = %s" % (k, quoted(ensure_str(v))), {}, append)
         # print "edit %s %s" % (k,v)
     c.write(open(cfg, "w"))
     return bisque_vars
@@ -1029,9 +996,7 @@ def install_driver(DBURL):
     Returns True if driver is available (so it makes sense to continue),
     False otherwise (database configuration should be cancelled).
     """
-    py_drname, ei_drname, create = known_db_types.get(
-        DBURL.drivername, (None, None, None)
-    )
+    py_drname, ei_drname, create = known_db_types.get(DBURL.drivername, (None, None, None))
     if py_drname is None:
         return (
             getanswer(
@@ -1070,13 +1035,9 @@ def install_driver(DBURL):
                 return True
             except Exception:
                 print("ERROR: Could not easy install package")
-                print(
-                    "Usually this occurs if the development headers for a partcular driver"
-                )
+                print("Usually this occurs if the development headers for a partcular driver")
                 print("are not available. Please check the Bisque Wiki")
-                print(
-                    "http://biodev.ece.ucsb.edu/projects/bisquik/wiki/AdvancedInstalls"
-                )
+                print("http://biodev.ece.ucsb.edu/projects/bisquik/wiki/AdvancedInstalls")
 
                 log.exception("Failed to install package %s.", str(ei_drname))
                 return False
@@ -1256,8 +1217,19 @@ def setup_testing(params, runtime_params):
     else:
         test_params = read_site_cfg(cfg=TEST_CFG, section="test")
 
-    test_params = modify_site_cfg(
-        TEST_QUESTIONS, test_params, section="test", cfg=TEST_CFG
+    test_params = modify_site_cfg(TEST_QUESTIONS, test_params, section="test", cfg=TEST_CFG)
+    test_db_url = "sqlite:///%s" % os.path.join(DIRS["data"], "bisque.db")
+    update_site_cfg(
+        {"sqlalchemy.url": test_db_url},
+        section="app:main",
+        cfg=TEST_CFG,
+        append=True,
+    )
+    update_site_cfg(
+        {"sqlalchemy.url": test_db_url},
+        section="app:main_with_auth",
+        cfg=TEST_CFG,
+        append=True,
     )
 
     return params
@@ -1278,9 +1250,7 @@ def initialize_database(params, DBURL=None):
     }
     ALEMBIC_CFG = config_path("alembic.ini")
 
-    install_cfg(
-        ALEMBIC_CFG, section="alembic", default_cfg=defaults_path("alembic.ini.default")
-    )
+    install_cfg(ALEMBIC_CFG, section="alembic", default_cfg=defaults_path("alembic.ini.default"))
     update_site_cfg(alembic_params, section="alembic", cfg=ALEMBIC_CFG, append=False)
     if (
         not db_initialized
@@ -1321,10 +1291,7 @@ def migrate_database(DBURL=None):
 
     # if not params['new_database'] : #and test_db_alembic(DBURL):
     print("Upgrading database version (alembic)")
-    if (
-        call([bin_path("alembic"), "-c", config_path("alembic.ini"), "upgrade", "head"])
-        != 0
-    ):
+    if call([bin_path("alembic"), "-c", config_path("alembic.ini"), "upgrade", "head"]) != 0:
         raise SetupError("There was a problem initializing the Database")
 
 
@@ -1337,26 +1304,17 @@ def install_matlab(params, runtime_params, cfg=None):
     # print params
     matlab_home = which("matlab")
     if matlab_home:
-        runtime_params["runtime.matlab_home"] = os.path.abspath(
-            os.path.join(matlab_home, "../..")
-        )
+        runtime_params["runtime.matlab_home"] = os.path.abspath(os.path.join(matlab_home, "../.."))
 
     print(("CONFIG", cfg))
-    runtime_params = modify_site_cfg(
-        MATLAB_QUESTIONS, runtime_params, section=None, cfg=cfg
-    )
+    runtime_params = modify_site_cfg(MATLAB_QUESTIONS, runtime_params, section=None, cfg=cfg)
     if (
         runtime_params.get("runtime.matlab_launcher")
         == "config-defaults/templates/matlab_launcher_SYS.tmpl"
     ):
-        if os.name == "nt":
-            runtime_params["runtime.matlab_launcher"] = os.path.abspath(
-                defaults_path("templates/matlab_launcher_win.tmpl")
-            )
-        else:
-            runtime_params["runtime.matlab_launcher"] = os.path.abspath(
-                defaults_path("templates/matlab_launcher.tmpl")
-            )
+        runtime_params["runtime.matlab_launcher"] = os.path.abspath(
+            defaults_path("templates/matlab_launcher.tmpl")
+        )
     else:
         print(("using matlab_launcher ", runtime_params.get("runtime.matlab_launcher")))
 
@@ -1411,8 +1369,6 @@ def install_matlabwrap(params):
 
 def install_docker(params, runtime_params, cfg=None):
     """Setup docker runners for modules on system"""
-    if os.name == "nt":
-        return params, runtime_params
     if cfg is None:
         cfg = RUNTIME_CFG
 
@@ -1428,13 +1384,9 @@ def install_docker(params, runtime_params, cfg=None):
         return params, runtime_params
 
     docker_params = read_site_cfg(cfg, "docker")
-    docker_params = update_environment(
-        docker_params, prefix="RT__", section="docker", cfg=cfg
-    )
+    docker_params = update_environment(docker_params, prefix="RT__", section="docker", cfg=cfg)
     docker_params["docker.enabled"] = "true"
-    docker_params = modify_site_cfg(
-        DOCKER_QUESTIONS, docker_params, section="docker", cfg=cfg
-    )
+    docker_params = modify_site_cfg(DOCKER_QUESTIONS, docker_params, section="docker", cfg=cfg)
 
     return params, runtime_params
 
@@ -1454,12 +1406,10 @@ def install_docker_base_images(params, runtime_params, cfg=None):
     for val, _, help in DOCKER_IMAGE_QUESTIONS:
         image = docker_params.get(val)
         if image:
-            retcode = call(
-                "docker pull %s" % image, shell=True, stdout=devnull, stderr=devnull
-            )
+            retcode = call("docker pull %s" % image, shell=True, stdout=devnull, stderr=devnull)
             if retcode != 0:
                 print(("Could not pull ", image))
-                print(("Please check contrib/docker-base-images", image))
+                print(("Please check docker image configuration", image))
 
     return params, runtime_params
 
@@ -1638,12 +1588,7 @@ def check_fetchers():
         if found:
             REPO_FETCH[cmd] = fetch
         else:
-            print(
-                (
-                    "INFO '%s'not found: cannot fetch source repositories with %s "
-                    % (cmd, cmd)
-                )
-            )
+            print(("INFO '%s'not found: cannot fetch source repositories with %s " % (cmd, cmd)))
 
 
 def fetch_repos(params, repotype):
@@ -1684,21 +1629,14 @@ def fetch_repos(params, repotype):
     # Clone any remote repositories
     module_dirs = []
     for module_line, lineno in module_locations:
-        module_type, module_url, name, _ = unpack(
-            [x.strip() for x in module_line.split()], 3
-        )
+        module_type, module_url, name, _ = unpack([x.strip() for x in module_line.split()], 3)
         if module_type not in REPO_FETCH:
             print(("Illegal %s type %s at line %s" % (repotype, module_type, lineno)))
             continue
         if not name:
             name = os.path.splitext(os.path.basename(module_url))[0]
 
-        print(
-            (
-                "Installing %s %s(s) from %s to %s"
-                % (module_type, repotype, module_url, name)
-            )
-        )
+        print(("Installing %s %s(s) from %s to %s" % (module_type, repotype, module_url, name)))
         module_dir = os.path.join(DIRS[repotype], name)
         if module_dir in module_dirs:
             print(("Skipping duplicated", repotype, module_url))
@@ -1815,9 +1753,7 @@ class BisquePlugin(object):
 
     def check_enabled(self):
         # it's a plgin if ../plugin_name/plugin_name
-        return os.path.isdir(
-            os.path.join(self.plugin_dir, os.path.basename(self.plugin_dir))
-        )
+        return os.path.isdir(os.path.join(self.plugin_dir, os.path.basename(self.plugin_dir)))
 
     def setup(self, environ):
         "Find and setup a single bisque module:"
@@ -1836,9 +1772,7 @@ class BisquePlugin(object):
             # os.makedirs (plugin_js_dir)
 
             # Copydir is ../path/<plugname>/<plugname>
-            src_plugin = os.path.join(
-                self.plugin_dir, os.path.basename(self.plugin_dir)
-            )
+            src_plugin = os.path.join(self.plugin_dir, os.path.basename(self.plugin_dir))
             if not os.path.exists(src_plugin):
                 print(("bad plugin structure.. missing ", src_plugin))
                 return False
@@ -1931,9 +1865,7 @@ def install_server_defaults(params, runtime_params):
         shutil.copy(defaults_path("who.ini.default"), config_path("who.ini"))
 
     if not os.path.exists(config_path("registration.cfg")):
-        shutil.copyfile(
-            defaults_path("registration.cfg.default"), config_path("registration.cfg")
-        )
+        shutil.copyfile(defaults_path("registration.cfg.default"), config_path("registration.cfg"))
 
     if not os.path.exists(SITE_CFG):
         params = install_cfg(
@@ -1946,6 +1878,10 @@ def install_server_defaults(params, runtime_params):
             params["bisque.paths.%s" % k] = v
 
     params = update_environment(params, "BQ__")
+    runtime_path_params = {"bisque.paths.%s" % k: v for k, v in list(DIRS.items())}
+    runtime_path_params["sqlalchemy.url"] = "sqlite:///%s" % os.path.join(DIRS["data"], "bisque.db")
+    params.update(runtime_path_params)
+    update_site_cfg(runtime_path_params, section=BQ_SECTION)
 
     print("Top level site variables are:")
     for k in sorted(SITE_VARS.keys()):
@@ -1985,6 +1921,13 @@ def setup_server_cfg(params, runtime_params):
     "Edit the server section of the site.cfg"
 
     server_params = read_site_cfg(SITE_CFG, "servers")
+    server_params.setdefault("log_dir", "logs")
+    server_params.setdefault("pid_dir", "run")
+    update_site_cfg(
+        {"log_dir": server_params["log_dir"], "pid_dir": server_params["pid_dir"]},
+        section="servers",
+        append=True,
+    )
     pprint.pprint(server_params)
     previous_backend = server_params["backend"]
 
@@ -2087,11 +2030,7 @@ def install_proxy(params, runtime_params):
         )
         == "Y"
     ):
-        print(
-            "See site.cfg comments and contrib/apache/proxy-{http,ssl} "
-            "for details. Also see the website "
-            "http://biodev.ece.ucsb.edu/projects/bisquik/wiki/AdvancedInstalls"
-        )
+        print("See deploy/docker for the supported proxy configuration.")
     return params, runtime_params
 
 
@@ -2113,93 +2052,6 @@ def update_environment(params, prefix, section=BQ_SECTION, cfg=None):
     return params
 
 
-#######################################################
-#
-def check_condor(params, runtime_params, cfg=None):
-    if cfg is None:
-        cfg = RUNTIME_CFG
-    try:
-
-        if os.path.exists("/dev/null"):
-            devnull = open("/dev/null")
-        else:
-            import tempfile
-
-            devnull = tempfile.TemporaryFile(mode="w")
-
-        retcode = call(["condor_status"], stdout=devnull, stderr=devnull)
-    except OSError:
-        print("No condor was found. See bisque website for details on using condor")
-        return params, runtime_params
-    print("Condor job management software has been found on your system")
-    print("Bisque can use condor facilities for some module execution")
-
-    # Check BISQUE_CONDOR_ENABLED
-    dval = check_env(None, "condor.enabled") or "true"
-    dval = TRUE_RESPONSE.get(dval.lower(), "N")
-    if (
-        getanswer(
-            "Configure modules for condor",
-            dval,
-            "Configure condor shared directories for better performance",
-        )
-        == "Y"
-    ):
-        if "condor" not in runtime_params["runtime.platforms"]:
-            runtime_params["runtime.platforms"] = ",".join(
-                ["condor", runtime_params["runtime.platforms"]]
-            )
-
-        print(
-            """
-        NOTE: condor configuration is complex and must be tuned to
-        every instance.  Bisque will try to use the condor facilities
-        but please check that this is operating correctly for your
-        installation
-
-        Please check the wiki at biodev.ece.ucsb.edu/projects/bisquik/wiki/AdvancedInstalls#CondorConfiguration
-        """
-        )
-
-        runtime_params = read_site_cfg(
-            cfg=cfg,
-            section="condor",
-        )
-        runtime_params["condor.enabled"] = "true"
-        # print params
-        if (
-            getanswer(
-                "Advanced Bisque-Condor configuration",
-                "N",
-                "Change the condor templates used for submitting jobs",
-            )
-            != "Y"
-        ):
-            for f in [
-                "condor.dag_template",
-                "condor.submit_template",
-                "condor.dag_config_template",
-            ]:
-                if os.path.exists(runtime_params[f]):
-                    runtime_params[f] = os.path.abspath(runtime_params[f])
-
-            update_site_cfg(runtime_params, section="condor", cfg=cfg)
-            return params, runtime_params
-
-        runtime_params = modify_site_cfg(
-            CONDOR_QUESTIONS, runtime_params, section="condor", cfg=cfg
-        )
-        for v, d, h in CONDOR_QUESTIONS:
-            if runtime_params[v]:
-                runtime_params[v] = os.path.abspath(
-                    os.path.expanduser(runtime_params[v])
-                )
-                print(("CONDOR", v, runtime_params[v]))
-        update_site_cfg(runtime_params, section="condor", cfg=cfg)
-
-    return params, runtime_params
-
-
 def install_runtime(params, runtime_params, cfg=None):
     """Check and install runtime control files"""
 
@@ -2207,12 +2059,9 @@ def install_runtime(params, runtime_params, cfg=None):
         cfg = RUNTIME_CFG
 
     runtime_params["runtime.platforms"] = "command"
-    check_condor(params, runtime_params, cfg=cfg)
 
     runtime_params["runtime.staging_base"] = run_path("staging")
-    runtime_params = modify_site_cfg(
-        RUNTIME_QUESTIONS, runtime_params, section=None, cfg=cfg
-    )
+    runtime_params = modify_site_cfg(RUNTIME_QUESTIONS, runtime_params, section=None, cfg=cfg)
     staging = runtime_params["runtime.staging_base"] = os.path.abspath(
         os.path.expanduser(runtime_params["runtime.staging_base"])
     )
@@ -2296,18 +2145,14 @@ def install_mail(params, runtime_params):
     params["bisque.smtp.password"] = os.getenv(
         "BISQUE_SMTP_PASSWORD", params.get("bisque.smtp.password", "")
     )
-    params["bisque.smtp.tls"] = os.getenv(
-        "BISQUE_SMTP_TLS", params.get("bisque.smtp.tls", "true")
-    )
+    params["bisque.smtp.tls"] = os.getenv("BISQUE_SMTP_TLS", params.get("bisque.smtp.tls", "true"))
     params["bisque.mail.from_email"] = os.getenv(
         "BISQUE_MAIL_FROM", params.get("bisque.mail.from_email", "noreply@localhost")
     )
 
     # Legacy support for old mail.smtp.server setting
     if "mail.smtp.server" in params:
-        params["mail.smtp.server"] = os.getenv(
-            "MAIL_SERVER", params["mail.smtp.server"]
-        )
+        params["mail.smtp.server"] = os.getenv("MAIL_SERVER", params["mail.smtp.server"])
 
     if (
         getanswer(
@@ -2327,7 +2172,7 @@ def install_mail(params, runtime_params):
     if params.get("mail.transport.use") == "smtp":
         params = modify_site_cfg(SMTP_QS, params)
 
-    print("Please review/edit the mail.* settings in site.cfg for you site" "")
+    print("Please review/edit the mail.* settings in site.cfg for you site")
     return params, runtime_params
 
 
@@ -2391,9 +2236,7 @@ def install_public_static(params, runtime_params):
         ]
         r = subprocess.call(cmd, stderr=None)
         if r != 0:
-            print(
-                'Problem deploying static resources... run "bq-admin deploy public" manually'
-            )
+            print('Problem deploying static resources... run "bq-admin deploy public" manually')
 
     return params, runtime_params
 
@@ -2415,9 +2258,7 @@ def install_secrets(params, runtime_params):
     )
     who_cfg = config_path("who.ini")
 
-    update_site_cfg(
-        cfg=who_cfg, section="plugin:auth_tkt", bisque_vars={"secret": secrets}
-    )
+    update_site_cfg(cfg=who_cfg, section="plugin:auth_tkt", bisque_vars={"secret": secrets})
     # Update the beaker session secret also
     update_site_cfg(bisque_vars={"beaker.session.secret": secrets}, append=False)
     params["beaker.session.secret"] = secrets
@@ -2445,12 +2286,8 @@ def setup_uwsgi(params, server_params):
     servers = [x.strip() for x in server_params["servers"].split(",")]
     for server in servers:
         server_params.setdefault(server + ".bisque.static_files", "false")
-        questions = [
-            (server + "." + q[0], server + ": " + q[1], q[2]) for q in UWSGI_QUESTIONS
-        ]
-        server_params = modify_site_cfg(
-            questions, server_params, section="servers", append=False
-        )
+        questions = [(server + "." + q[0], server + ": " + q[1], q[2]) for q in UWSGI_QUESTIONS]
+        server_params = modify_site_cfg(questions, server_params, section="servers", append=False)
     servers = parse_nested(server_params, servers)
     log.debug("AFTER Q %s", servers)
     for server, sv in list(servers.items()):
@@ -2496,9 +2333,7 @@ def setup_uwsgi(params, server_params):
         uwsgi_vars["procname-prefix"] = "bisque_%s_" % server
         update_site_cfg(cfg=cfg, bisque_vars=svars)
         update_site_cfg(cfg=cfg, section="uwsgi", bisque_vars=uwsgi_vars)
-        update_site_cfg(
-            cfg=cfg, section="sa_auth", bisque_vars={"cookie_secret": uuid.uuid4()}
-        )
+        update_site_cfg(cfg=cfg, section="sa_auth", bisque_vars={"cookie_secret": uuid.uuid4()})
     return params, server_params
 
 
@@ -2522,17 +2357,12 @@ def setup_paster(params, server_params):
     servers = [x.strip() for x in server_params["servers"].split(",")]
     for server in servers:
         server_params.setdefault(server + ".bisque.static_files", "true")
-        questions = [
-            (server + "." + q[0], server + ": " + q[1], q[2]) for q in PASTER_QUESTIONS
-        ]
-        server_params = modify_site_cfg(
-            questions, server_params, section="servers", append=False
-        )
+        questions = [(server + "." + q[0], server + ": " + q[1], q[2]) for q in PASTER_QUESTIONS]
+        server_params = modify_site_cfg(questions, server_params, section="servers", append=False)
     servers = parse_nested(server_params, servers)
     # print "AFTER Q", servers
 
     for server, sv in list(servers.items()):
-
         cfg = config_path("%s_paster.cfg" % server)
         if os.path.exists(cfg) and os.path.exists(SITE_CFG):
             cfg_time = os.stat(cfg).st_mtime
@@ -2582,9 +2412,7 @@ def setup_paster(params, server_params):
 
         update_site_cfg(cfg=cfg, bisque_vars=svars)
         update_site_cfg(cfg=cfg, section="server:main", bisque_vars=paster_vars)
-        update_site_cfg(
-            cfg=cfg, section="sa_auth", bisque_vars={"cookie_secret": uuid.uuid4()}
-        )
+        update_site_cfg(cfg=cfg, section="sa_auth", bisque_vars={"cookie_secret": uuid.uuid4()})
 
     return params, server_params
 
@@ -2647,9 +2475,7 @@ def setup_stores(params, runtime_params):
                 for q in ensure_default(STORE_QUESTIONS)
             ]
             params = modify_site_cfg(questions, params, append=False)
-            scheme = urllib.parse.urlparse(
-                params.get("bisque.stores.%s.mounturl" % store)
-            ).scheme
+            scheme = urllib.parse.urlparse(params.get("bisque.stores.%s.mounturl" % store)).scheme
             if scheme not in DRIVER_QS:
                 print(("Invalide driver must be one of:", list(DRIVER_QS.keys())))
                 count += 1
@@ -2848,9 +2674,6 @@ def install_dependencies(params, runtime_params):
     #         shutil.rmtree(os.path.join(extjs, skip))
 
     install_imgcnv()
-    install_imarisconvert()
-    install_openslide()
-    install_bioformats()
 
     return params, runtime_params
 
@@ -2871,17 +2694,13 @@ def install_imgcnv():
         #     print( "Imgcnv is installed and no-precompiled version exists. Using installed version")
         #     return
         # !!! Modern alternative
-        result = subprocess.run(
-            [imgcnv, "-v"], stdout=subprocess.PIPE, stderr=subprocess.PIPE
-        )
+        result = subprocess.run([imgcnv, "-v"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         r = result.returncode
         version = result.stdout.decode().strip()
         if r == 0:
             print(("Found imgcnv version %s" % version))
         if not os.path.exists(filename_zip):
-            print(
-                "Imgcnv is installed and no pre-compiled version exists. Using installed version"
-            )
+            print("Imgcnv is installed and no pre-compiled version exists. Using installed version")
             return
 
     if not os.path.exists(filename_zip):
@@ -2901,328 +2720,8 @@ def install_imgcnv():
         )
         == "Y"
     ):
-
         filename_check = os.path.join(DIRS["bin"], "imgcnv%s" % SCRIPT_EXT)
         uncompress_dependencies(filename_zip, DIRS["bin"], filename_check)
-
-
-def install_openslide():
-    """Install dependencies that aren't handled by setup.py"""
-
-    archive = os.path.join(DIRS["depot"], "openslide-bisque%s" % ARCHIVE_EXT)
-    if not os.path.exists(archive):
-        print("No pre-compiled version of openslide exists for your system")
-        print(
-            "Please visit our mailing list https://groups.google.com/forum/#!forum/bisque-bioimage for help"
-        )
-        return
-    if (
-        getanswer(
-            "Install OpenSlide converter",
-            "Y",
-            "OpenSlide will allow image server to read full slide pixel data",
-        )
-        == "Y"
-    ):
-        uncompress_dependencies(archive, DIRS["bin"], "")
-
-
-def install_bioformats():
-
-    archive = os.path.join(DIRS["depot"], "bioformats-pack.zip")
-    filename_check = os.path.join(DIRS["bin"], "bioformats_package.jar")
-
-    if not newer_file(archive, filename_check):
-        print("Bioformats is up to date")
-        return
-
-    if (
-        getanswer(
-            "Install bioformats",
-            "Y",
-            "Bioformats can be used as a backup to read many image file types",
-        )
-        == "Y"
-    ):
-
-        old_bf_files = [
-            "bfconvert",
-            "bfconvert.bat",
-            "bfview",
-            "bfview.bat",
-            "bio-formats.jar",
-            "domainlist",
-            "domainlist.bat",
-            "editor",
-            "editor.bat",
-            "formatlist",
-            "formatlist.bat",
-            "ijview",
-            "ijview.bat",
-            "jai_imageio.jar",
-            "list.txt",
-            "loci_plugins.jar",
-            "loci_tools.jar",
-            "loci-common.jar",
-            "loci-testing-framework.jar",
-            "log4j.properties",
-            "lwf-stubs.jar",
-            "mdbtools-java.jar",
-            "metakit.jar",
-            "notes",
-            "notes.bat",
-            "ome_plugins.jar",
-            "ome_tools.jar",
-            "ome-editor.jar",
-            "ome-io.jar",
-            "omeul",
-            "omeul.bat",
-            "ome-xml.jar",
-            "poi-loci.jar",
-            "scifio.jar",
-            "showinf",
-            "showinf.bat",
-            "tiffcomment",
-            "tiffcomment.bat",
-            "xmlindent",
-            "xmlindent.bat",
-            "xmlvalid",
-            "xmlvalid.bat",
-        ]
-
-        # first remove old files
-        for f in old_bf_files:
-            p = os.path.join(DIRS["bin"], f)
-            if os.path.exists(p):
-                os.remove(p)
-
-        biozip = zipfile.ZipFile(archive)
-        mask = (
-            stat.S_IXUSR
-            | stat.S_IRUSR
-            | stat.S_IRGRP
-            | stat.S_IXGRP
-            | stat.S_IROTH
-            | stat.S_IXOTH
-        )
-        for fname in biozip.namelist():
-            if fname[-1] == "/":  # skip dirs
-                continue
-            dest = os.path.join(DIRS["bin"], os.path.basename(fname))
-
-            data = biozip.read(fname)
-            fd = open(dest, "wb")
-            fd.write(data)
-            if not fname.endswith("jar"):
-                os.chmod(dest, os.fstat(fd.fileno()).st_mode | mask)  # User exec
-            fd.close()
-
-        # python >2.6
-        # biozip.extractall(os.path.join(BQENV, "bin"))
-        biozip.close()
-
-
-def install_imarisconvert():
-    """Install dependencies that aren't handled by setup.py"""
-
-    archive = os.path.join(DIRS["depot"], "ImarisConvert%s" % ARCHIVE_EXT)
-    if not os.path.exists(archive):
-        print("No pre-compiled version of ImarisConvert exists for your system")
-        print(
-            "Please visit our mailing list https://groups.google.com/forum/#!forum/bisque-bioimage for help"
-        )
-        return
-    filename_check = which("ImarisConvert")
-    filename_check = filename_check or os.path.join(
-        DIRS["bin"], "ImarisConvert%s" % SCRIPT_EXT
-    )
-    if not newer_file(archive, filename_check):
-        print("ImarisConvert is up to date")
-        return
-    if (
-        getanswer(
-            "Install ImarisConvert",
-            "Y",
-            "ImarisConvert will allow image server to read many image formats",
-        )
-        == "Y"
-    ):
-        uncompress_dependencies(archive, DIRS["bin"], filename_check)
-        touch(filename_check)
-
-
-############################
-# Features server deps
-
-
-def install_features(params, runtime_params):
-    """Install dependencies that aren't handled by setup.py"""
-
-    if (
-        getanswer(
-            "Install feature extractors (Feature Server)",
-            "Y",
-            "Feature extractors will enable many descriptors in the Feature Server that require binary code",
-        )
-        == "Y"
-    ):
-
-        filename_zip = os.path.join(DIRS["depot"], "feature_extractors.zip")
-        filename_dest = to_sys_path(run_path("bqfeature", "bq"))
-        filename_check = ""
-        uncompress_dependencies(filename_zip, filename_dest, filename_check)
-
-        install_features_source()
-        install_libtiff()
-        install_opencv()
-
-    return params, runtime_params
-
-
-def install_features_source():
-    """Install dependencies that aren't handled by setup.py"""
-
-    if (
-        getanswer(
-            "Install source code for feature extractors",
-            "N",
-            "Feature descriptors source code will allow recompiling external feature extractors on unsupported platforms",
-        )
-        == "Y"
-    ):
-
-        filename_zip = os.path.join(DIRS["depot"], "feature_extractors_source.zip")
-        fileretrieve(
-            "https://bitbucket.org/CBIucsb/featureextractors/get/default.zip",
-            filename_zip,
-        )
-        filename_dest = to_sys_path("bqfeature/bq/src")
-        filename_check = ""
-        uncompress_dependencies(
-            filename_zip, filename_dest, filename_check, strip_root=True
-        )
-
-        print(
-            """Now you can recompile feature extractors. Follow instructions located in:
-          bqserver/bq/features/src/extractors/build/Readme.txt
-        """
-        )
-
-
-def install_libtiff():
-    """
-    Install dependencies that aren't handled by setup.py
-
-    Downloads and installs libtiff-4.0.3 in sitepackages in bqenv/Scripts
-
-    Only for Windows, for debian linux use apt-get
-    """
-    src = "https://bitbucket.org/CBIucsb/pylibtiff/downloads/LibTiff-4.0.3-Windows-64bit.zip"
-    filename_zip = os.path.join(DIRS["depot"], "LibTiff-4.0.3-Windows-64bit.zip")
-    # filename_dest = bisque_path(os.path.join('bqenv','Scripts'))
-    filename_check = ""
-
-    if sys.platform == "win32":
-        if (
-            getanswer(
-                "Install libtiff-4.0.3",
-                "Y",
-                "Enables reading OME-bigtiff for feature extraction",
-            )
-            == "Y"
-        ):
-            print(("Fetching from %s" % src))
-
-            fileretrieve(src, filename_zip)
-            uncompress_dependencies(
-                filename_zip, DIRS["bin"], filename_check, strip_root=True
-            )
-            print(("Installed libtiff-4.0.3 in %s" % DIRS["bin"]))
-    else:
-        print(
-            """To enable the feature service to read OME-bigtiff for feature extraction install
-        libtiff4
-        For Debian use the command apt-get install libtiff5-dev
-        """
-        )
-
-
-def install_opencv():
-    """
-    Install dependencies that aren't handled by setup.py
-
-    Downloads and installs opencv in sitepackages in bqenv
-    """
-
-    def extract_archive_dir(zip_file, zip_dir, destination, verbose=True):
-        """
-        unzips files in dir in the zipfile
-        warning: can not extract a dir in that dir
-        @zip_file - name of the zip file
-        @zip_dir - path to the dir in the zip file from the root file in the zip
-        @destination - dir were the extracted files will be placed
-        @verbose
-
-        @output - none
-        """
-
-        # with zipfile.ZipFile(zip_file, 'r') as z:  # KGK Not available in 2.6
-        z = zipfile.ZipFile(zip_file, "r")
-        for f in z.namelist():
-            if (
-                os.path.normpath(f).startswith(zip_dir)
-                and not os.path.normpath(f) == zip_dir
-            ):
-                with open(
-                    os.path.join(destination, os.path.relpath(f, zip_dir)), "wb"
-                ) as fout:
-                    fout.write(z.read(f))
-                    if verbose:
-                        print(
-                            (
-                                "Extracted %s -> %s"
-                                % (
-                                    f,
-                                    os.path.join(
-                                        destination, os.path.relpath(f, zip_dir)
-                                    ),
-                                )
-                            )
-                        )
-
-    if (
-        getanswer(
-            "Install OpenCV-2.4.6",
-            "Y",
-            "Enables descriptors in the Feature Server that use OpenCV-2.4.6",
-        )
-        == "Y"
-    ):
-
-        filename_check = ""
-        python_version = sys.version_info[:2]
-        if not (python_version == (2, 6) or python_version == (2, 7)):
-            print("Failed to install opencv. Requires python 2.6 or 2.7.")
-            return
-        filename_zip = os.path.join(DIRS["depot"], "opencv-2.4.6.zip")
-        if sys.platform.startswith("win"):  # windows
-            extract_archive_dir(
-                filename_zip,
-                os.path.join("opencv-2.4.6", "static_libs", ""),
-                DIRS["packages"],
-            )
-        elif sys.platform.startswith("linux"):
-            pass
-        else:
-            print("Failed to install opencv. System type is neither linux or windows")
-            return
-
-        # unpackes opencv cv2.so/.dll and cv.py in to bqenv site-packages
-        extract_archive_dir(
-            filename_zip,
-            os.path.join("opencv-2.4.6", "python%s.%s" % python_version, ""),
-            DIRS["packages"],
-        )
 
 
 #######################################################
@@ -3308,10 +2807,7 @@ def cleanup(params):
         if os.path.exists(rpath):
             shutil.rmtree(rpath)
 
-    if (
-        getanswer("Purge cache", "Y", "cleaning cache is recommended on upgrades")
-        == "Y"
-    ):
+    if getanswer("Purge cache", "Y", "cleaning cache is recommended on upgrades") == "Y":
         cleandata("server_cache")
 
     if (
@@ -3413,9 +2909,7 @@ def send_installation_report(params):
         print("----------------------------------------")
         print(text)
         print("----------------------------------------")
-        print(
-            "Please send your installation log to the bisque-help@biodev.ece.ucsb.edu"
-        )
+        print("Please send your installation log to the bisque-help@biodev.ece.ucsb.edu")
 
     print(
         """Please join the bisque mailing list at:
@@ -3455,7 +2949,6 @@ which will register any module with
 INSTALL_STEPS = OrderedDict(
     [
         ("binaries", [install_external_binaries, install_dependencies]),
-        ("features", [install_features]),
         ("plugins", [install_plugins]),
         ("statics", [install_public_static]),
     ]
@@ -3573,9 +3066,8 @@ SETUP_COMMANDS = set(
         "server_cfg",
         "engine_cfg",
         "binaries",
-        "features",
         "database",
-        "mail" "preferences",
+        "mailpreferences",
         "statics",
         "secrets",
         "upgrade",
@@ -3592,7 +3084,7 @@ SETUP_COMMANDS = set(
 RUNTIME_COMMANDS = set(
     [
         "engine_runtime_cfg",
-        "matlab" "runtime" "docker" "modules" "fetch-modules" "build-modules",
+        "matlabruntimedockermodulesfetch-modulesbuild-modules",
     ]
 )
 
@@ -3608,9 +3100,7 @@ def bisque_installer(options, args):
     #    sys.exit()
 
     if not os.path.exists(defaults_path()):
-        print(
-            "Cannot find config-defaults.. please run bq-admin setup from bisque root directory"
-        )
+        print("Cannot find config-defaults.. please run bq-admin setup from bisque root directory")
         sys.exit(1)
 
     print(
@@ -3777,19 +3267,19 @@ def update_globals(options, args):
 
     python_version = sys.version_info[:2]
 
-    DIRS["config"] = options.config
+    runtime_dir = os.getenv("BISQUE_RUNTIME_DIR")
+    if runtime_dir:
+        runtime_dir = os.path.abspath(runtime_dir)
+
+    DIRS["config"] = options.config or os.getenv("BISQUE_CONFIG_DIR")
+    if DIRS["config"]:
+        DIRS["config"] = os.path.abspath(DIRS["config"])
     DIRS["virtualenv"] = find_virtualenv()
-    DIRS["default"] = find_path(
-        "config-defaults", [".", "/etc/bisque", "/usr/share/bisque"]
+    DIRS["default"] = find_path("config-defaults", [".", "/etc/bisque", "/usr/share/bisque"])
+    DIRS["bin"] = os.path.join(DIRS["virtualenv"], "bin")  # Our local bin
+    DIRS["packages"] = os.path.join(
+        DIRS["virtualenv"], "lib", "python%s.%s" % python_version, "site-packages"
     )
-    if os.name == "nt":
-        DIRS["bin"] = os.path.join(DIRS["virtualenv"], "Scripts")  # windows local
-        DIRS["packages"] = os.path.join(DIRS["virtualenv"], "Lib", "site-packages")
-    else:
-        DIRS["bin"] = os.path.join(DIRS["virtualenv"], "bin")  # Our local bin
-        DIRS["packages"] = os.path.join(
-            DIRS["virtualenv"], "lib", "python%s.%s" % python_version, "site-packages"
-        )
 
     # Figure out installation type
     #
@@ -3811,15 +3301,25 @@ def update_globals(options, args):
     else:
         print("Developer installation")
         DIRS["share"] = "."  # Our top installation path
-        DIRS["run"] = DIRS["share"]  #'.'
-        DIRS["config"] = DIRS["config"] or os.path.join(DIRS["share"], "config")
+        DIRS["run"] = runtime_dir or DIRS["share"]  #'.'
+        DIRS["config"] = DIRS["config"] or os.path.join(DIRS["run"], "config")
         DIRS["jslocation"] = "bqcore"
 
-    DIRS["data"] = os.path.join(DIRS["run"], "data")
-    DIRS["depot"] = os.path.join(
-        DIRS["run"], "external"
+    DIRS["data"] = os.path.abspath(
+        os.getenv("BISQUE_DATA_DIR") or os.path.join(DIRS["run"], "data")
+    )
+    DIRS["depot"] = os.path.abspath(
+        os.getenv("BISQUE_EXTERNAL_DIR") or os.path.join(DIRS["run"], "external")
     )  # Local directory for externals
-    DIRS["public"] = os.path.join(DIRS["run"], "public")
+    DIRS["public"] = os.path.abspath(
+        os.getenv("BISQUE_PUBLIC_DIR") or os.path.join(DIRS["run"], "public")
+    )
+    DIRS["reports"] = os.path.abspath(
+        os.getenv("BISQUE_REPORTS_DIR") or os.path.join(DIRS["run"], "reports")
+    )
+    DIRS["staging"] = os.path.abspath(
+        os.getenv("BISQUE_STAGING_DIR") or os.path.join(DIRS["run"], "staging")
+    )
     DIRS["modules"] = os.path.join(DIRS["share"], "modules")
     DIRS["plugins"] = os.path.join(DIRS["share"], "plugins")
     print(("DIRS: ", DIRS))

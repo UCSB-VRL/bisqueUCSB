@@ -50,52 +50,63 @@ DESCRIPTION
 ===========
 
 """
+
+
 class BQException(Exception):
     "Base Bisquik Exception"
+
 
 class IllegalOperation(BQException):
     pass
 
-class ConfigurationError (BQException):
-    '''Problem was found with the configuration'''
+
+class ConfigurationError(BQException):
+    """Problem was found with the configuration"""
+
     pass
 
+
 class EngineError(BQException):
-    '''The Module Engine exception'''
-    def __init__(self, msg='', stdout=None, stderr=None, exc = None):
+    """The Module Engine exception"""
+
+    def __init__(self, msg="", stdout=None, stderr=None, exc=None):
         super(EngineError, self).__init__(msg)
 
         self.stdout = stdout
         self.stderr = stderr
-        self.exc    = exc
+        self.exc = exc
 
     def __str__(self):
-        msg = [super(EngineError, self).__str__ ()]
+        msg = [super(EngineError, self).__str__()]
         if self.stdout:
-            msg.append('stdout = %s' % self.stdout)
+            msg.append("stdout = %s" % self.stdout)
         if self.stderr:
-            msg.append('stderr = %s' % self.stderr)
+            msg.append("stderr = %s" % self.stderr)
         if self.exc:
-            msg.append('exception = %s' % self.exc)
-        return '\n'.join(msg)
+            msg.append("exception = %s" % self.exc)
+        return "\n".join(msg)
 
 
 class BadValue(BQException):
-    '''The Module Engine exception'''
+    """The Module Engine exception"""
+
     def __init__(self, msg, obj=None):
         super(BadValue, self).__init__(msg)
         self.obj = obj
-    def __str__ (self):
-        return "BadValue("+str(type(self.obj)) + ")"
+
+    def __str__(self):
+        return "BadValue(" + str(type(self.obj)) + ")"
 
 
 class DuplicateFile(BQException):
     "A duplicate file or resource detected"
 
+
 class RequestError(BQException):
-    '''Used for any request that cannot be satisfied
+    """Used for any request that cannot be satisfied
     For example: HTTP requests to services
-    '''
+    """
+
 
 class ServiceError(BQException):
-    '''Any error during in a service'''
+    """Any error during in a service"""

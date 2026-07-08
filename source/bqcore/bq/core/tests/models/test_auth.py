@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 """Test suite for the TG app's models"""
+
 # !!! modern approach
 import pytest
 
 from bq.core import model
+
 
 class ModelTest:
     klass = None
@@ -35,13 +37,12 @@ class ModelTest:
         for key, val in self.attrs.items():
             assert getattr(result, key) == val
 
+
 class TestGroup(ModelTest):
     """Unit test case for the ``Group`` model."""
+
     klass = model.Group
-    attrs = dict(
-        group_name = "test_group",
-        display_name = "Test Group"
-        )
+    attrs = dict(group_name="test_group", display_name="Test Group")
 
 
 class TestUser(ModelTest):
@@ -64,12 +65,11 @@ class TestUser(ModelTest):
         user = model.User.by_email_address("ignucius@example.org")
         assert user == self.obj
 
+
 class TestPermission(ModelTest):
     klass = model.Permission
-    attrs = {
-        "permission_name": "test_permission",
-        "description": "This is a test Description"
-    }
+    attrs = {"permission_name": "test_permission", "description": "This is a test Description"}
+
 
 # !!! old approach
 # from nose.tools import eq_

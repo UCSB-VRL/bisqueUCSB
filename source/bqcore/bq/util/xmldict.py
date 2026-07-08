@@ -1,8 +1,10 @@
 # Create python xml structures compatible with
 # http://search.cpan.org/~grantm/XML-Simple-2.18/lib/XML/Simple.pm
 
-from lxml import etree
 from itertools import groupby
+
+from lxml import etree
+
 
 def xml2d(e):
     """Convert an etree into a dict structure
@@ -11,15 +13,17 @@ def xml2d(e):
     @param e: the root of the tree
     @return: The dictionary representation of the XML tree
     """
+
     def _xml2d(e):
         kids = dict(e.attrib)
-        #if e.text and not e.text.isspace():
+        # if e.text and not e.text.isspace():
         #    kids['__text__'] = e.text
         for k, g in groupby(e, lambda x: x.tag):
-            g = [ _xml2d(x) for x in g ]
-            kids[k]=  g
+            g = [_xml2d(x) for x in g]
+            kids[k] = g
         return kids
-    return { e.tag : _xml2d(e) }
+
+    return {e.tag: _xml2d(e)}
 
 
 def d2xml(d):
@@ -49,35 +53,34 @@ def d2xml(d):
     @param d: A dictionary formatted as an XML document
     @return:  A etree Root element
     """
+
     def _d2xml(d, p):
-        for k,v in list(d.items()):
-            if isinstance(v,dict):
+        for k, v in list(d.items()):
+            if isinstance(v, dict):
                 node = etree.SubElement(p, k)
                 _d2xml(v, node)
-            elif isinstance(v,list):
+            elif isinstance(v, list):
                 for item in v:
                     node = etree.SubElement(p, k)
                     _d2xml(item, node)
             else:
-                #if k == '__text__':
+                # if k == '__text__':
                 #    p.text = v
-                #else:
+                # else:
                 #    p.set(k, v)
                 p.set(k, v)
 
-    k,v = list(d.items())[0]
+    k, v = list(d.items())[0]
     node = etree.Element(k)
     _d2xml(v, node)
     return node
 
 
-
-if __name__=="__main__":
-
+if __name__ == "__main__":
     X = """<T uri="boo"><a n="1"/><a n="2"/><b n="3"><c x="y"/></b></T>"""
     print(X)
     Y = xml2d(etree.XML(X))
     print(Y)
-    Z = etree.tostring (d2xml(Y) , encoding='unicode')
+    Z = etree.tostring(d2xml(Y), encoding="unicode")
     print(Z)
     assert X == Z

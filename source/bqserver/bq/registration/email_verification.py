@@ -66,15 +66,11 @@ class EmailVerificationService:
     def __init__(self):
         # Check if all required dependencies are available
         if not EMAIL_SERVICE_AVAILABLE:
-            raise ImportError(
-                "Unified email service not available - email verification disabled"
-            )
+            raise ImportError("Unified email service not available - email verification disabled")
         if not TG_AVAILABLE:
             raise ImportError("TurboGears not available - email verification disabled")
         if not BQ_MODELS_AVAILABLE:
-            raise ImportError(
-                "Bisque models not available - email verification disabled"
-            )
+            raise ImportError("Bisque models not available - email verification disabled")
 
         self.email_service = get_email_service()
         self.verification_enabled = self._is_verification_enabled()
@@ -85,23 +81,19 @@ class EmailVerificationService:
     def _is_verification_enabled(self):
         """Check if email verification is enabled in configuration"""
         # Check environment variable first (for Docker/container deployments)
-        env_enabled = os.environ.get(
-            "BISQUE_EMAIL_VERIFICATION_ENABLED", "false"
-        ).lower()
+        env_enabled = os.environ.get("BISQUE_EMAIL_VERIFICATION_ENABLED", "false").lower()
         if env_enabled in ["true", "1", "yes", "on"]:
             return True
 
         # Check main Bisque configuration
-        config_enabled = config.get(
-            "bisque.registration.email_verification.enabled", False
-        )
+        config_enabled = config.get("bisque.registration.email_verification.enabled", False)
         if _to_bool(config_enabled):
             return True
 
         # Check legacy configurations for backward compatibility
-        legacy_enabled = config.get(
-            "registration.email_verification.enabled", False
-        ) or config.get("email_verification.enabled", False)
+        legacy_enabled = config.get("registration.email_verification.enabled", False) or config.get(
+            "email_verification.enabled", False
+        )
         return _to_bool(legacy_enabled)
 
     def is_available(self):
@@ -109,13 +101,9 @@ class EmailVerificationService:
         available = self.email_service.is_available() and self.verification_enabled
         if not available:
             if not self.email_service.is_available():
-                log.debug(
-                    "Email verification unavailable: Email service not configured"
-                )
+                log.debug("Email verification unavailable: Email service not configured")
             if not self.verification_enabled:
-                log.debug(
-                    "Email verification unavailable: verification disabled in config"
-                )
+                log.debug("Email verification unavailable: verification disabled in config")
         return available
 
     def validate_configuration(self):
@@ -176,9 +164,7 @@ class EmailVerificationService:
     def verify_token(self, token, email, username, max_age_hours=24):
         """Verify a verification token"""
         try:
-            log.info(
-                f"Verifying token: {token} for email: {email}, username: {username}"
-            )
+            log.info(f"Verifying token: {token} for email: {email}, username: {username}")
 
             # Parse token - handle both old and new formats
             parts = token.split(".")
@@ -199,9 +185,7 @@ class EmailVerificationService:
                 max_age_seconds = max_age_hours * 3600
 
                 if age_seconds > max_age_seconds:
-                    log.error(
-                        f"Token expired - age: {age_seconds}s, max_age: {max_age_seconds}s"
-                    )
+                    log.error(f"Token expired - age: {age_seconds}s, max_age: {max_age_seconds}s")
                     return False
 
                 if age_seconds < 0:
@@ -226,34 +210,24 @@ class EmailVerificationService:
                 now = datetime.now(timezone.utc)
 
                 # Check tokens generated within the last max_age_hours, but limit to reasonable range
-                for hours_ago in range(
-                    min(max_age_hours, 168)
-                ):  # Max 7 days for old tokens
+                for hours_ago in range(min(max_age_hours, 168)):  # Max 7 days for old tokens
                     check_time = now - timedelta(hours=hours_ago)
                     # Check a few minute intervals to account for timestamp precision
                     for minute_offset in [0, 1, 2, 3, 4, 5]:
                         check_timestamp = (
                             check_time - timedelta(minutes=minute_offset)
                         ).isoformat()
-                        token_data = (
-                            f"{random_token}:{email}:{username}:{check_timestamp}"
-                        )
-                        expected_hash = hashlib.sha256(token_data.encode()).hexdigest()[
-                            :16
-                        ]
+                        token_data = f"{random_token}:{email}:{username}:{check_timestamp}"
+                        expected_hash = hashlib.sha256(token_data.encode()).hexdigest()[:16]
 
                         if expected_hash == token_hash:
-                            log.info(
-                                f"Legacy token verified with timestamp: {check_timestamp}"
-                            )
+                            log.info(f"Legacy token verified with timestamp: {check_timestamp}")
                             return True
 
                 log.error(f"Legacy token verification failed")
                 return False
             else:
-                log.error(
-                    f"Token format invalid - expected 2 or 3 parts, got {len(parts)}"
-                )
+                log.error(f"Token format invalid - expected 2 or 3 parts, got {len(parts)}")
                 return False
 
         except Exception as e:
@@ -263,9 +237,7 @@ class EmailVerificationService:
             log.error(traceback.format_exc())
             return False
 
-    def send_verification_email(
-        self, email, username, fullname, verification_token, base_url
-    ):
+    def send_verification_email(self, email, username, fullname, verification_token, base_url):
         """Send verification email using the unified email service"""
         if not self.is_available():
             return {
@@ -274,7 +246,9 @@ class EmailVerificationService:
             }
 
         # Build verification URL - use verify_email endpoint with query parameters
-        verification_url = f"{base_url}/registration/verify_email?token={verification_token}&email={email}"
+        verification_url = (
+            f"{base_url}/registration/verify_email?token={verification_token}&email={email}"
+        )
 
         log.info(f"Generated verification URL for {email}: {verification_url}")
 
@@ -294,9 +268,7 @@ class EmailVerificationService:
             log.info(f"Verification email sent successfully to {email}")
             return {"success": True}
         else:
-            log.error(
-                f"Failed to send verification email to {email}: {result['error']}"
-            )
+            log.error(f"Failed to send verification email to {email}: {result['error']}")
             return {
                 "success": False,
                 "error": f"Failed to send verification email: {result['error']}",
@@ -391,9 +363,7 @@ class EmailVerificationService:
         """Verify a password reset token"""
         try:
             if not token or not email or not username:
-                log.error(
-                    "Missing token, email, or username for password reset verification"
-                )
+                log.error("Missing token, email, or username for password reset verification")
                 return False
 
             # Split token into data and hash
@@ -422,21 +392,15 @@ class EmailVerificationService:
                 age_hours = (current_timestamp - token_timestamp) / 3600
 
                 if age_hours > max_age_hours:
-                    log.error(
-                        f"Password reset token expired - age: {age_hours:.1f} hours"
-                    )
+                    log.error(f"Password reset token expired - age: {age_hours:.1f} hours")
                     return False
 
                 if age_hours < 0:
-                    log.error(
-                        f"Password reset token from future - age: {age_hours:.1f} hours"
-                    )
+                    log.error(f"Password reset token from future - age: {age_hours:.1f} hours")
                     return False
 
             except (ValueError, TypeError) as e:
-                log.error(
-                    f"Invalid timestamp in password reset token: {timestamp_str}: {e}"
-                )
+                log.error(f"Invalid timestamp in password reset token: {timestamp_str}: {e}")
                 return False
 
             # Verify hash
@@ -449,18 +413,14 @@ class EmailVerificationService:
                 log.error("Password reset token hash verification failed")
                 return False
 
-            log.info(
-                f"Password reset token verified successfully for {username} ({email})"
-            )
+            log.info(f"Password reset token verified successfully for {username} ({email})")
             return True
 
         except Exception as e:
             log.error(f"Failed to verify password reset token: {e}")
             return False
 
-    def send_password_reset_email(
-        self, email, username, fullname, reset_token, base_url
-    ):
+    def send_password_reset_email(self, email, username, fullname, reset_token, base_url):
         """Send a password reset email"""
         try:
             if not self.is_available():
@@ -513,9 +473,7 @@ The Bisque Team
             if result["success"]:
                 log.info(f"Password reset email sent successfully to {email}")
             else:
-                log.error(
-                    f"Failed to send password reset email to {email}: {result['error']}"
-                )
+                log.error(f"Failed to send password reset email to {email}: {result['error']}")
 
             return result
 
@@ -567,17 +525,13 @@ The Bisque Team
 
             verified_time_tag = (
                 DBSession.query(Tag)
-                .filter(
-                    Tag.parent == bq_user, Tag.resource_name == "email_verified_time"
-                )
+                .filter(Tag.parent == bq_user, Tag.resource_name == "email_verified_time")
                 .first()
             )
 
             if verified_time_tag:
                 DBSession.delete(verified_time_tag)
-                log.info(
-                    f"Removed email_verified_time tag for user {bq_user.resource_name}"
-                )
+                log.info(f"Removed email_verified_time tag for user {bq_user.resource_name}")
 
             # Remove any existing verification token to force new verification
             token_tag = (
@@ -588,9 +542,7 @@ The Bisque Team
 
             if token_tag:
                 DBSession.delete(token_tag)
-                log.info(
-                    f"Removed old verification token for user {bq_user.resource_name}"
-                )
+                log.info(f"Removed old verification token for user {bq_user.resource_name}")
 
             DBSession.flush()
             log.info(f"User {bq_user.resource_name} marked as email unverified")
@@ -617,11 +569,7 @@ def get_email_verification_service():
         except ImportError as e:
             log.warning(f"Email verification service not available: {e}")
             _email_verification_service = False  # Mark as unavailable
-    return (
-        _email_verification_service
-        if _email_verification_service is not False
-        else None
-    )
+    return _email_verification_service if _email_verification_service is not False else None
 
 
 def is_email_verification_available():

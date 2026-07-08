@@ -51,30 +51,45 @@ DESCRIPTION
 ===========
 
 """
-import glob
-import logging
-import logging.handlers
-import os, sys, traceback
-import time
-from io import StringIO
+
+import base64
 import configparser
 import getopt
+import glob
+import http.client
+import logging
+import logging.handlers
+import os
+import sys
+import time
+import traceback
+import urllib.error
+import urllib.parse
+import urllib.request
+from io import StringIO
+
 import boto
 from boto.s3 import Connection
-import http.client, urllib.request, urllib.error, urllib.parse
-import base64
 
 LAST_POST = 0
 NEXT_POST = 1
 DEFAULT_POST_INTERVAL = 1
-LOG_FILENAME = 'auto_discovery_crawler.log'
+LOG_FILENAME = "auto_discovery_crawler.log"
 logger = None
 
+
 def usage():
-    print("Usage: auto_discovery_crawler -i <amazon_access_key_id> -k <amazon_secret_access_key> -u <bisque_username> -p <bisque_password> [ -b <s3_bucket> ] [-c <config_file] [-s <bisque_url>]")
-    print("\n\tIf no bucket is specified, the crawler will scan all buckets to which it has access.")
-    print("\tDefault config file location is ~/.bisque_crawler.  Command-line args override any config file settings.")
+    print(
+        "Usage: auto_discovery_crawler -i <amazon_access_key_id> -k <amazon_secret_access_key> -u <bisque_username> -p <bisque_password> [ -b <s3_bucket> ] [-c <config_file] [-s <bisque_url>]"
+    )
+    print(
+        "\n\tIf no bucket is specified, the crawler will scan all buckets to which it has access."
+    )
+    print(
+        "\tDefault config file location is ~/.bisque_crawler.  Command-line args override any config file settings."
+    )
     sys.exit()
+
 
 def read_config_file(config):
     parser = configparser.ConfigParser()
@@ -92,7 +107,7 @@ def read_config_file(config):
         config["bisque_user"] = parser.get("bisque_crawler", "bisque_user")
     if "bisque_pw" not in config:
         config["bisque_pw"] = parser.get("bisque_crawler", "bisque_pw")
-    try: 
+    try:
         if "bucket" not in config:
             config["bucket"] = parser.get("bisque_crawler", "bucket")
     except configparser.NoOptionError:
@@ -105,12 +120,16 @@ def read_config_file(config):
 
     return config
 
+
 def scan_S3(config, local_url_cache):
     key_list = ""
     new_key_count = 0
     total_key_count = 0
-    try: 
-        connection = Connection(aws_access_key_id=config["access_key_id"], aws_secret_access_key=config["secret_access_key"])
+    try:
+        connection = Connection(
+            aws_access_key_id=config["access_key_id"],
+            aws_secret_access_key=config["secret_access_key"],
+        )
         if "bucket" in config:
             buckets = connection.get_bucket(config["bucket"])
         else:
@@ -120,71 +139,80 @@ def scan_S3(config, local_url_cache):
             rs = b.list()
             for key in rs:
                 total_key_count += 1
-                if((total_key_count % 1000) == 0):
+                if (total_key_count % 1000) == 0:
                     logger.info("Scanned %d keys", total_key_count)
                 if key.size == 0:
                     continue
                 url = "https://%s.s3.amazonaws.com/%s %s" % (b.name, key.name, key.etag)
-                if url not in local_url_cache: 
+                if url not in local_url_cache:
                     key_list = key_list + url + "\n"
                     local_url_cache[url] = key.etag
                     new_key_count += 1
         logger.info("Finished S3 scan: %d keys", total_key_count)
     except Exception as e:
         logger.warning("Failed to scan S3: %s", e)
-        return "" 
+        return ""
     else:
-        logger.info ("Successful scan of S3 buckets; found %d new keys", new_key_count)
+        logger.info("Successful scan of S3 buckets; found %d new keys", new_key_count)
         return key_list
+
 
 def post_to_bisque(config, key_list):
     authstring = base64.b64encode(config["bisque_user"] + ":" + config["bisque_pw"])
     http.client.HTTPConnection.debuglevel = 1
     try:
-        req = urllib.request.Request(config['bisque_url'], urllib.parse.quote(key_list))
-        req.add_header('User-Agent', 'BisqueCrawler/0.1 http://http://www.bioimage.ucsb.edu/')
-        req.add_header('Authorization', "Basic " + authstring)
+        req = urllib.request.Request(config["bisque_url"], urllib.parse.quote(key_list))
+        req.add_header("User-Agent", "BisqueCrawler/0.1 http://http://www.bioimage.ucsb.edu/")
+        req.add_header("Authorization", "Basic " + authstring)
         opener = urllib.request.build_opener()
-        data = opener.open(req).read() 
+        data = opener.open(req).read()
     except Exception as e:
         r = False
-        logger.warning('Failed to post data: %s' % (e))
+        logger.warning("Failed to post data: %s" % (e))
     else:
         r = True
     http.client.HTTPConnection.debuglevel = 0
     return r
 
+
 def post_to_bisque_if_due(config, new_url_list):
     r = False
     global NEXT_POST
     global LAST_POST
-    if(len(new_url_list) <= 0):
+    if len(new_url_list) <= 0:
         return r
-    if(time.time() > NEXT_POST):
+    if time.time() > NEXT_POST:
         r = post_to_bisque(config, new_url_list)
         NEXT_POST = next_post_schedule(r)
         LAST_POST = time.time()
     if not r:
-        logger.warning("Failed to post %.2f KB to blob server; saving for later retry", len(new_url_list)/1024.0)
+        logger.warning(
+            "Failed to post %.2f KB to blob server; saving for later retry",
+            len(new_url_list) / 1024.0,
+        )
     else:
-        logger.info("Posted %.2f KB to blob server", len(new_url_list)/1024.0)
+        logger.info("Posted %.2f KB to blob server", len(new_url_list) / 1024.0)
     return r
+
 
 def next_post_schedule(last_post_succeeded):
     if last_post_succeeded:
         return DEFAULT_POST_INTERVAL + time.time()
     return abs(NEXT_POST - LAST_POST) * 2 + time.time()
 
+
 def config_logging(log_filename):
     global logger
     logger = logging.getLogger()
-    jandler = logging.handlers.RotatingFileHandler(log_filename, maxBytes=20*1024*1024, backupCount=5)
+    jandler = logging.handlers.RotatingFileHandler(
+        log_filename, maxBytes=20 * 1024 * 1024, backupCount=5
+    )
     logger.addHandler(jandler)
-    formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(process)s - %(message)s")
+    formatter = logging.Formatter(
+        "%(asctime)s - %(name)s - %(levelname)s - %(process)s - %(message)s"
+    )
     jandler.setFormatter(formatter)
     logger.setLevel(logging.INFO)
-
-
 
 
 def main():
@@ -194,13 +222,26 @@ def main():
 
     config_logging(LOG_FILENAME)
     logger.info("Auto_discovery_crawler started")
-    try:                                
-        opts, args = getopt.getopt(sys.argv[1:], "hi:k:b:u:p:c:s:", ["help", "access_key_id=", "secret_access_key=", "bucket=", "bisque_pw=", "bisque_user=", "config_file=", "bisque_url="]) 
-    except getopt.GetoptError:           
-        usage()                          
-        sys.exit(2)                     
+    try:
+        opts, args = getopt.getopt(
+            sys.argv[1:],
+            "hi:k:b:u:p:c:s:",
+            [
+                "help",
+                "access_key_id=",
+                "secret_access_key=",
+                "bucket=",
+                "bisque_pw=",
+                "bisque_user=",
+                "config_file=",
+                "bisque_url=",
+            ],
+        )
+    except getopt.GetoptError:
+        usage()
+        sys.exit(2)
     for o, a in opts:
-        if o in("-i", "--access_key_id"):
+        if o in ("-i", "--access_key_id"):
             config["access_key_id"] = a
         elif o in ("-k", "--secret_access_key"):
             config["secret_access_key"] = a
@@ -215,28 +256,33 @@ def main():
         elif o in ("-s", "--bisque_url"):
             config["bisque_url"] = a
         elif o in ("-h", "--help"):
-           usage()
+            usage()
         else:
             usage()
-    
+
     if "config_file" not in config:
-        if os.path.exists('./.bisque_crawler'):
+        if os.path.exists("./.bisque_crawler"):
             config["config_file"] = "./.bisque_crawler"
-        elif os.path.exists('~/.bisque_crawler'):
+        elif os.path.exists("~/.bisque_crawler"):
             config["config_file"] = "~/.bisque_crawler"
     config = read_config_file(config)
 
     if "bisque_url" not in config:
         config["bisque_url"] = "http://dough.ece.ucsb.edu"
-    
-    if "access_key_id" not in config or "secret_access_key" not in config or "bisque_user" not in config or "bisque_pw" not in config:
+
+    if (
+        "access_key_id" not in config
+        or "secret_access_key" not in config
+        or "bisque_user" not in config
+        or "bisque_pw" not in config
+    ):
         usage()
 
     print(config)
     while True:
         new_url_list += scan_S3(config, local_url_cache)
         r = post_to_bisque_if_due(config, new_url_list)
-        if(r):
+        if r:
             new_url_list = ""
         time.sleep(1)
 
@@ -244,7 +290,6 @@ def main():
 if __name__ == "__main__":
     main()
 sys.exit()
-
 
 
 # What to do with logging?

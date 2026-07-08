@@ -1,0 +1,86 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: bisque
+  namespace: bisque
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: bisque-argo-workflow
+  namespace: bisque
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: bisque-argo-submit
+  namespace: bisque
+rules:
+  - apiGroups:
+      - argoproj.io
+    resources:
+      - workflows
+    verbs:
+      - create
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - argoproj.io
+    resources:
+      - workflowtemplates
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+      - pods/log
+    verbs:
+      - get
+      - list
+      - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: bisque-argo-submit
+  namespace: bisque
+subjects:
+  - kind: ServiceAccount
+    name: bisque
+    namespace: bisque
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: bisque-argo-submit
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: bisque-argo-workflow
+  namespace: bisque
+rules:
+  - apiGroups:
+      - argoproj.io
+    resources:
+      - workflowtaskresults
+    verbs:
+      - create
+      - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: bisque-argo-workflow
+  namespace: bisque
+subjects:
+  - kind: ServiceAccount
+    name: bisque-argo-workflow
+    namespace: bisque
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: bisque-argo-workflow

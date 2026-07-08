@@ -8,9 +8,9 @@ Wait for a certain PID to terminate and check for PID existance (POSIX).
 # Author: Giampaolo Rodola' <g.rodola [AT] gmail [DOT] com>
 # License: MIT
 
+import errno
 import os
 import time
-import errno
 
 
 class TimeoutExpired(Exception):
@@ -28,6 +28,7 @@ def pid_exists(pid):
     else:
         return True
 
+
 def wait_pid(pid, timeout=None):
     """Wait for process with pid 'pid' to terminate and return its
     exit status code as an integer.
@@ -39,6 +40,7 @@ def wait_pid(pid, timeout=None):
 
     Raise TimeoutExpired on timeout expired (if specified).
     """
+
     def check_timeout(delay):
         if timeout is not None:
             if time.time() >= stop_at:

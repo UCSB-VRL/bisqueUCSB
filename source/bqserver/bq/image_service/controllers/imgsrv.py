@@ -5,60 +5,53 @@ __author__ = "Dmitry Fedorov and Kris Kvilekval"
 __version__ = "2.0.9"
 __copyright__ = "Center for BioImage Informatics, University California, Santa Barbara"
 
-import sys
-import logging
-import os.path
-import shutil
-import re
-import io
-from urllib.parse import quote
-from urllib.parse import unquote
-from urllib.parse import urlparse
-from lxml import etree
 import datetime
-import math
-import inspect
-import random
 import hashlib
+import inspect
+import io
+import logging
+import math
+import os.path
+import random
+import re
+import shutil
+import sys
+from urllib.parse import quote, unquote, urlparse
 
+from lxml import etree
 from tg import config
 
-# Project
-from bq import data_service
-from bq import blob_service
-from bq.blob_service.controllers.blob_drivers import Blobs
+import bq.util.responses as responses
 
+# Project
+from bq import blob_service, data_service
+from bq.blob_service.controllers.blob_drivers import Blobs
 from bq.core import identity
-from bq.util.mkdir import _mkdir
 
 # from collections import OrderedDict
 from bq.util.compat import OrderedDict
+from bq.util.io_misc import safeint, safetypeparse
+from bq.util.locks import FileLocked, Locks
+from bq.util.mkdir import _mkdir
 from bq.util.urlpaths import url2localpath
 
-from bq.util.locks import Locks, FileLocked
-from bq.util.io_misc import safetypeparse, safeint
-import bq.util.responses as responses
-
-converters_preferred_order = ["openslide", "imgcnv", "ImarisConvert", "bioformats"]
-
-from .exceptions import ImageServiceException, ImageServiceFuture
-from .process_token import ProcessToken
-from .operation_base import BaseOperation
-from .converter_dict import ConverterDict
-from .resource_cache import ResourceCache
-from .plugin_manager import PluginManager
-from .defaults import default_format, default_tile_size, block_reads
-
-from .converters.converter_imgcnv import ConverterImgcnv
-from .converters.converter_imaris import ConverterImaris
-from .converters.converter_bioformats import ConverterBioformats
-from .converters.converter_openslide import ConverterOpenSlide
-from .converters.converter_ffmpeg import ConverterFfmpeg
+converters_preferred_order = ["openslide", "imgcnv", "bioformats"]
 
 from bq.image_service.controllers.converters.converter_ffmpeg import (
     supported_formats as ffmpeg_formats,
 )
 
+from .converter_dict import ConverterDict
+from .converters.converter_bioformats import ConverterBioformats
+from .converters.converter_ffmpeg import ConverterFfmpeg
+from .converters.converter_imgcnv import ConverterImgcnv
+from .converters.converter_openslide import ConverterOpenSlide
+from .defaults import block_reads, default_format, default_tile_size
+from .exceptions import ImageServiceException, ImageServiceFuture
+from .operation_base import BaseOperation
+from .plugin_manager import PluginManager
+from .process_token import ProcessToken
+from .resource_cache import ResourceCache
 
 log = logging.getLogger("bq.image_service.server")
 
@@ -74,25 +67,37 @@ def url2operationsOld(url, base):
     subpath = None
 
     # process UUID and path
-    path = [
-        _f for _f in url.split("?", 1)[0].split("/") if _f
-    ]  # split and remove empty
+    path = [_f for _f in url.split("?", 1)[0].split("/") if _f]  # split and remove empty
     path = path[path.index(base) + 1 :]  # isolate query part
     if path[0].lower() in ["image", "images"]:
         path = path[1:]
     resource_id = path.pop(0)
-    
+
     # Check if the next path segment is an operation
     query = []
     if len(path) > 0:
         first_segment = unquote(path[0])
         # List of known operations that can be called as path segments
-        known_operations = ['cleancache', 'slice', 'tile', 'format', 'depth', 'fuse', 'histogram', 
-                           'levels', 'negative', 'rotate', 'resize', 'thumbnail', 'meta', 'dims']
-        
+        known_operations = [
+            "cleancache",
+            "slice",
+            "tile",
+            "format",
+            "depth",
+            "fuse",
+            "histogram",
+            "levels",
+            "negative",
+            "rotate",
+            "resize",
+            "thumbnail",
+            "meta",
+            "dims",
+        ]
+
         if first_segment in known_operations:
             # Treat as operation
-            query.append((first_segment, ''))
+            query.append((first_segment, ""))
             path.pop(0)  # Remove the operation from path
             if len(path) > 0:
                 # If there are more segments, treat as subpath
@@ -117,12 +122,12 @@ def url2operationsOld(url, base):
 
         name = unquote(nv[0].replace("+", " "))
         value = unquote(nv[1].replace("+", " "))
-        
+
         # Skip known non-operation parameters
-        non_operation_params = ['_dc', 'cache', 'timestamp', 'nocache']
+        non_operation_params = ["_dc", "cache", "timestamp", "nocache"]
         if name in non_operation_params:
             continue
-            
+
         query.append((name, value))
 
     return resource_id, subpath, query
@@ -173,13 +178,11 @@ def getOperations(url, base):
 
 
 class ImageServer(object):
-
     converters = ConverterDict(
         [
             (ConverterFfmpeg.name, ConverterFfmpeg()),
             (ConverterOpenSlide.name, ConverterOpenSlide()),
             (ConverterImgcnv.name, ConverterImgcnv()),
-            (ConverterImaris.name, ConverterImaris()),
             (ConverterBioformats.name, ConverterBioformats()),
         ]
     )
@@ -272,9 +275,7 @@ class ImageServer(object):
             raise ImageServiceFuture((30, 60))
 
         if blobs is None:
-            raise ImageServiceException(
-                responses.NOT_FOUND, "File not available from blob service"
-            )
+            raise ImageServiceException(responses.NOT_FOUND, "File not available from blob service")
         return blobs
 
     def getImageInfo(self, filename, series=0, infofile=None, meta=None):
@@ -288,34 +289,28 @@ class ImageServer(object):
             if not os.path.exists(filename):
                 return None
             with Locks(filename, infofile, failonexist=True) as l:
-                if (
-                    l.locked
-                ):  # the file is not being currently written by another process
+                if l.locked:  # the file is not being currently written by another process
                     # parse image info from original file
                     file_speed = infofile.replace(".info", ".speed")
                     for n, c in self.converters.items():
-                        info = c.info(
-                            ProcessToken(ifnm=filename, series=series), speed=file_speed
-                        )
+                        info = c.info(ProcessToken(ifnm=filename, series=series), speed=file_speed)
                         if info is not None and len(info) > 0:
                             # For images, require basic dimension info
                             # For videos/other formats, be more flexible
                             if "image_num_x" in info or "format" in info:
                                 info["converter"] = n
                                 break
-                        
+
                     if info is None or len(info) == 0:
                         return None
-                    
+
                     # For videos and other formats that don't have image dimensions
                     if "image_num_x" not in info and "format" not in info:
                         return None
 
                     info.setdefault("image_num_t", 1)
                     info.setdefault("image_num_z", 1)
-                    info.setdefault(
-                        "image_num_p", info["image_num_t"] * info["image_num_z"]
-                    )
+                    info.setdefault("image_num_p", info["image_num_t"] * info["image_num_z"])
                     info.setdefault("format", default_format)
                     if not "filesize" in info:
                         info.setdefault("filesize", os.path.getsize(filename))
@@ -389,9 +384,7 @@ class ImageServer(object):
     def imageconvert(self, token, ifnm, ofnm, fmt=None, extra=None, dims=None, **kw):
 
         if not token.isFile():
-            raise ImageServiceException(
-                responses.BAD_REQUEST, "Convert: input is not an image..."
-            )
+            raise ImageServiceException(responses.BAD_REQUEST, "Convert: input is not an image...")
         fmt = fmt or token.format or default_format
 
         command = []
@@ -446,8 +439,7 @@ class ImageServer(object):
             n = dims.get("converter")
             if (
                 n in self.converters
-                and callable(getattr(self.converters[n], "convertToOmeTiff", None))
-                is True
+                and callable(getattr(self.converters[n], "convertToOmeTiff", None)) is True
             ):
                 r = self.converters[n].convertToOmeTiff(token, ometiff, **kw)
 
@@ -462,9 +454,7 @@ class ImageServer(object):
 
             if r is None or os.path.getsize(ometiff) < 16:
                 log.error("Convert %s: failed for [%s]", token.resource_id, ifnm)
-                raise ImageServiceException(
-                    responses.UNSUPPORTED_MEDIA_TYPE, "Convert failed"
-                )
+                raise ImageServiceException(responses.UNSUPPORTED_MEDIA_TYPE, "Convert failed")
 
         return self.converters[ConverterImgcnv.name].convert(
             ProcessToken(ifnm=ometiff), ofnm, fmt=fmt, extra=command
@@ -488,9 +478,7 @@ class ImageServer(object):
                 hash_object = hashlib.sha1(series_bytes)
                 series = hash_object.hexdigest()
                 image_id = "%s-%s" % (image_id, series)
-        return os.path.realpath(
-            os.path.join(self.workdir, user_name or "", subdir, image_id)
-        )
+        return os.path.realpath(os.path.join(self.workdir, user_name or "", subdir, image_id))
 
     def ensureWorkPath(self, path, image_id, user_name, series=0):
         """path may be a workdir path OR an original image path to transformed into
@@ -594,9 +582,7 @@ class ImageServer(object):
                     log.debug("Dryrun test %s: [%s] [%s]", ident, localpath, str(token))
                     if token.isFile() and os.path.exists(localpath):
                         with Locks(token.data, failonread=(not block_reads)) as l:
-                            if (
-                                l.locked is False
-                            ):  # dima: never wait, respond immediately
+                            if l.locked is False:  # dima: never wait, respond immediately
                                 log.warning(
                                     "Dryrun test %s: [%s] is locked, returning token",
                                     ident,

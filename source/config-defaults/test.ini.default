@@ -37,7 +37,7 @@ host.user = admin
 host.password = admin
 
 [store]
-samples_url = https://s3-us-west-2.amazonaws.com/viqi-test-images/
+samples_url = SampleData
 input_dir = SampleData
 results_dir = Results
 files = flowers_24bit_nointr.png

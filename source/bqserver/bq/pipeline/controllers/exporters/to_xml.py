@@ -47,27 +47,28 @@ XML pipeline exporter
 """
 
 # default imports
-import os
 import logging
+import os
 
 from bq.pipeline.controllers.pipeline_exporter import PipelineExporter
 
-__all__ = [ 'ExporterXML' ]
+__all__ = ["ExporterXML"]
 
 log = logging.getLogger("bq.pipeline.export.xml")
 
-#---------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------
 # exporters: XML
-#---------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------
 
-class ExporterXML (PipelineExporter):
-    '''Formats pipelines as XML'''
 
-    name = 'xml'
-    version = '1.0'
-    ext = 'xml'
-    mime_type = 'text/xml'
+class ExporterXML(PipelineExporter):
+    """Formats pipelines as XML"""
+
+    name = "xml"
+    version = "1.0"
+    ext = "xml"
+    mime_type = "text/xml"
 
     def format(self, pipeline):
-        """ converts pipeline to XML """
-        return '<pipeline/>'   #!!! TODO
+        """converts pipeline to XML"""
+        return "<pipeline/>"  #!!! TODO

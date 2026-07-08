@@ -54,19 +54,20 @@ from tg import response
 
 log = logging.getLogger("bq.pipeline.exporter")
 
-__all__ = [ 'PipelineExporter' ]
+__all__ = ["PipelineExporter"]
 
-#---------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------
 # Exporters: Pipeline base
-#---------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------
+
 
 class PipelineExporter(object):
-    '''Formats pipelines into output format'''
+    """Formats pipelines into output format"""
 
-    name = ''
-    version = '1.0'
-    ext = ''
-    mime_type = 'text/plain'
+    name = ""
+    version = "1.0"
+    ext = ""
+    mime_type = "text/plain"
 
     def __init__(self):
         pass
@@ -83,5 +84,5 @@ class PipelineExporter(object):
         pass
 
     def export(self, pipeline):
-        response.headers['Content-Type'] = self.mime_type
+        response.headers["Content-Type"] = self.mime_type
         return self.format(pipeline)

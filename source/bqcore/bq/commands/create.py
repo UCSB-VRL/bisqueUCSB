@@ -1,11 +1,11 @@
-import os
-import sys
-import re
-import pkg_resources
 import optparse
+import os
+import re
 import shutil
+import sys
 
-from paste.script import templates, create_distro
+import pkg_resources
+from paste.script import create_distro, templates
 
 ######################################################
 # Create Command
@@ -13,6 +13,7 @@ from paste.script import templates, create_distro
 
 beginning_letter = re.compile(r"^[^a-z]*")
 valid_only = re.compile(r"[^a-z0-9_]")
+
 
 class create(object):
     desc = "Create a template for a bisquik subproject"
@@ -25,23 +26,23 @@ class create(object):
 
     def __init__(self, version):
         parser = optparse.OptionParser(
-                    usage="%prog create [options] [project name]",
-                    version="%prog " + version)
+            usage="%prog create [options] [project name]", version="%prog " + version
+        )
 
-        parser.add_option("-t", "--templates",
-                          help="user specific templates",
-                          dest="templates", default = self.templates)
-        parser.add_option("-p", "--package",
-                          help="Set service package name",
-                          dest="package")
-        parser.add_option('-m', '--mount',
-                          help="create a core system package",
-                          dest="mount")
+        parser.add_option(
+            "-t",
+            "--templates",
+            help="user specific templates",
+            dest="templates",
+            default=self.templates,
+        )
+        parser.add_option("-p", "--package", help="Set service package name", dest="package")
+        parser.add_option("-m", "--mount", help="create a core system package", dest="mount")
         options, args = parser.parse_args()
-#        if len(args) != 1:
-#            parser.error("incorrect number of arguments")
+        #        if len(args) != 1:
+        #            parser.error("incorrect number of arguments")
 
-        self.__dict__.update (options.__dict__)
+        self.__dict__.update(options.__dict__)
         if args:
             self.name = args[0]
 
@@ -69,8 +70,6 @@ class create(object):
             if not self.mount:
                 self.mount = mount
 
-
-
         command = create_distro.CreateDistroCommand("create")
         for template in self.templates.split(" "):
             self.cmd_args.append("--template=%s" % template)
@@ -81,18 +80,21 @@ class create(object):
 
         command.run(self.cmd_args)
 
+
 class createService(create):
     desc = "Create a bisque service"
     templates = "bisque_service"
     package = None
     name = None
 
+
 class createCoreService(create):
     desc = "Create a bisque core service.. it will be under  <name>/<package>/bq.<package>"
     templates = "bisque_core"
     name = None
+
     def run(self):
-        if not os.path.exists('bqcore'):
+        if not os.path.exists("bqcore"):
             print("Must be run in the top level Bisque directory")
             sys.exit(1)
         super(createCoreService, self).run()
@@ -103,7 +105,3 @@ class createModule(create):
     templates = "bisque_module"
     package = None
     name = None
-
-
-
-

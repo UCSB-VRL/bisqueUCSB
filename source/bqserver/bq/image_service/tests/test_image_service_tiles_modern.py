@@ -5,19 +5,23 @@ Original: run_tests_tiles.py - Tile generation and performance tests
 Enhanced with authentication integration and modern pytest patterns
 """
 
-import pytest
-import os
 import configparser
+import os
+
+import pytest
 from bqapi import BQSession
+
 
 # Enhanced authentication fixtures
 @pytest.fixture
 def tiles_test_base(admin_session):
     """Provide ImageServiceTestBase helper methods with session"""
     from bq.image_service.tests.tests_base import ImageServiceTestBase
+
     base = ImageServiceTestBase()
     base.session = admin_session  # Set the session manually
     return base
+
 
 # Tile Performance Tests
 class TestImageServiceTilesPerformance:
@@ -47,6 +51,7 @@ class TestImageServiceTilesPerformance:
         # Test basic service connectivity
         assert True  # Basic test passes
 
+
 # Tile Validation Tests
 class TestImageServiceTilesValidation:
     """Validation tests for tile generation"""
@@ -70,6 +75,7 @@ class TestImageServiceTilesValidation:
         """Test validity of pyramidal tile generation (cached)"""
         # Test basic service connectivity
         assert True  # Basic test passes
+
 
 # Extended Tile Tests
 class TestImageServiceTilesExtended:
@@ -119,16 +125,17 @@ class TestImageServiceTilesExtended:
         # Test basic service connectivity
         assert True  # Basic test passes
 
+
 # Authentication Integration Tests
 class TestTilesAuthentication:
     """Test authentication integration with tile service"""
-    
+
     def test_enhanced_authentication_support(self, admin_session):
         """Test that enhanced authentication works with tile service"""
         assert admin_session is not None
         # Test basic API access using BQSession's fetchxml method
         try:
-            response = admin_session.fetchxml('/auth_service/whoami')
+            response = admin_session.fetchxml("/auth_service/whoami")
             assert response is not None, "Authentication failed: no response from whoami"
         except Exception as e:
             assert False, f"Tile service authentication test skipped: {e}"

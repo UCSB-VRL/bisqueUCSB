@@ -47,30 +47,30 @@ JSON pipeline exporter
 """
 
 # default imports
-import os
-import logging
 import datetime as dt
-
 import json
+import logging
+import os
 
 from bq.pipeline.controllers.pipeline_exporter import PipelineExporter
 
-__all__ = [ 'ExporterJSON' ]
+__all__ = ["ExporterJSON"]
 
 log = logging.getLogger("bq.pipeline.export.json")
 
 
-
-#---------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------
 # Json serializer
-#---------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------
+
 
 class ExtEncoder(json.JSONEncoder):
-    def default(self, o): # pylint: disable=method-hidden
+    def default(self, o):  # pylint: disable=method-hidden
         if isinstance(o, (dt.datetime, dt.date, dt.time)):
             return o.isoformat()
         # !!! Handled numpy types
         import numpy as np
+
         if isinstance(o, np.integer):
             return int(o)
         elif isinstance(o, np.floating):
@@ -78,29 +78,31 @@ class ExtEncoder(json.JSONEncoder):
         elif isinstance(o, np.ndarray):
             return o.tolist()
         elif isinstance(o, (np.bytes_, bytes)):
-            return o.decode('utf-8', errors='ignore')
+            return o.decode("utf-8", errors="ignore")
         elif isinstance(o, np.str_):
             return str(o)
-        #try:
+        # try:
         #    return super(ExtEncoder, o).default(o)
-        #except TypeError:
+        # except TypeError:
         #    return str(o)
         return json.JSONEncoder.default(self, o)
 
-#---------------------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------------------
 # exporters: Json
-#---------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------
 
-class ExporterJSON (PipelineExporter):
-    '''Formats pipelines as Json'''
 
-    name = 'json'
-    version = '1.0'
-    ext = 'json'
-    mime_type = 'application/json'
+class ExporterJSON(PipelineExporter):
+    """Formats pipelines as Json"""
+
+    name = "json"
+    version = "1.0"
+    ext = "json"
+    mime_type = "application/json"
 
     def format(self, pipeline):
-        """ converts pipeline to JSON """
+        """converts pipeline to JSON"""
         # internal format is already JSON, so nothing to do
         v = pipeline.data
         return json.dumps(v, cls=ExtEncoder)

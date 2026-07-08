@@ -54,12 +54,9 @@ DESCRIPTION
 """
 
 import base64
-from urllib.parse import urlencode
-import mimetypes
 import logging
-
-
-
+import mimetypes
+from urllib.parse import urlencode
 
 log = logging.getLogger("bisquik.util.http")
 

@@ -1,9 +1,0 @@
-DEBUG:bq.engine_service.BaseRunner:BaseRunner: read_config
-INFO:bq.engine_service.BaseRunner:processing 1 mexes -> [{'files': 'pydist, PythonScriptWrapper.py', 'executable': ['python', 'PythonScriptWrapper.py'], 'module_enabled': 'True', 'named_args': {'mex_id': '', 'staging_path': '.'}, 'matlab_installed': 'False', 'rundir': '/source/modules/CellSegmentation2D', 'bisque_token': None, 'environments': 'Staged,Docker', 'runtime.staging_base': '/source/staging', 'mex_id': '', 'runtime.matlab_launcher': '/source/config-defaults/templates/matlab_launcher.tmpl', 'staging_path': '.', 'runtime.matlab_home': '', 'mex_url': None, 'docker.image': 'cell-segmentation-2d', 'runtime.platforms': 'command'}]
-INFO:bq.engine_service.BaseRunner:created environments [<bq.engine.controllers.staged_env.StagedEnvironment object at 0x7fd994ffaa50>, <bq.engine.controllers.docker_env.DockerEnvironment object at 0x7fd994ffaad0>]
-DEBUG:bq.engine_service.BaseRunner:setup_environments: {'build': True}
-INFO:bq.engine_service.BaseRunner:staged environment setup cwd=/source/modules/CellSegmentation2D rundir=/source/modules/CellSegmentation2D
-DEBUG:bq.engine_service.BaseRunner:mex_id = 
-DEBUG:bq.engine_service.BaseRunner:staging_path = .
-DEBUG:bq.engine_service.BaseRunner:copying /source/modules/CellSegmentation2D: ['/source/modules/CellSegmentation2D/pydist', '/source/modules/CellSegmentation2D/PythonScriptWrapper.py'] to .
-INFO:bq.engine_service.BaseRunner:docker environment setup

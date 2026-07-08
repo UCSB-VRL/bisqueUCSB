@@ -2,21 +2,22 @@
 
 """The base Controller API."""
 
-from tg import TGController, tmpl_context
+from pylons.i18n import N_, ungettext
+from pylons.i18n import ugettext as _
+from tg import TGController, request, tmpl_context
 from tg.controllers import RestController
 from tg.render import render
-from tg import request
-from pylons.i18n import ugettext as _, ungettext, N_
-#from  bq.core.model import  *
 
-#from bq.data_service.model import *
-#from bq.model_service.model import *
+# from  bq.core.model import  *
 
-
-__all__ = ['BaseController']
+# from bq.data_service.model import *
+# from bq.model_service.model import *
 
 
-#class BaseController(RestController):
+__all__ = ["BaseController"]
+
+
+# class BaseController(RestController):
 class BaseController(TGController):
     """
     Base class for the controllers in the application.
@@ -32,7 +33,7 @@ class BaseController(TGController):
         # the request is routed to. This routing information is
         # available in environ['pylons.routes_dict']
 
-        request.identity = request.environ.get('repoze.who.identity', {})
+        request.identity = request.environ.get("repoze.who.identity", {})
         tmpl_context.identity = request.identity
         return TGController.__call__(self, environ, start_response)
-        #return RestController.__call__(self, environ, start_response)
+        # return RestController.__call__(self, environ, start_response)

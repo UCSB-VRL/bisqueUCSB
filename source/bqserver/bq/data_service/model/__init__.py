@@ -1,15 +1,16 @@
 #
 #
 import bq
-from bq.core.model import DeclarativeBase, metadata, DBSession
+from bq.core.model import DBSession, DeclarativeBase, metadata
 
-
-from .tag_model import *
 from .domain_model import *
+from .tag_model import *
+
 log = None
-#from store import *
-#from xmlstore import *
-#from dbxmlstore import *
+# from store import *
+# from xmlstore import *
+# from dbxmlstore import *
+
 
 def init_model(engine):
     """Call me before using any of the tables or classes in the model."""
@@ -22,6 +23,5 @@ def init_model(engine):
     # you use the model.
 
 
-
 # Import your model modules here.
-#from bq.data_service.model.data_service_module import *
+# from bq.data_service.model.data_service_module import *

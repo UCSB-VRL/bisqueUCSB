@@ -5,11 +5,13 @@ class AttrDict(dict):
 
     def __init__(self, *args, **kwargs):
         dict.__init__(self, *args, **kwargs)
+
     def __getattr__(self, name):
         try:
             return self[name]
         except KeyError:
             raise AttributeError
+
     def __setattr__(self, name, value):
         self[name] = value
         return value

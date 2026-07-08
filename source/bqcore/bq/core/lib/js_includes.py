@@ -2,8 +2,9 @@
 
 """WebHelpers used in bqcore."""
 
-import tg
 import os
+
+import tg
 from minimatic import javascript_link, stylesheet_link
 
 import bq
@@ -78,7 +79,7 @@ def generate_css_files(root=None, public=None):
         # combined_path = root + '/bqcore/bq/core/public/css/all_css.css',
         # checkts = False,
         # version=bq.release.__VERSION_HASH__
-        **css_kw
+        **css_kw,
     )
 
 
@@ -294,5 +295,5 @@ def generate_js_files(root=None, public=None):
         "/core/plugins/pipeline/ResourcePipeline.js",
         "/core/plugins/system/ResourceSystem.js",
         # --
-        **link_kw
+        **link_kw,
     )

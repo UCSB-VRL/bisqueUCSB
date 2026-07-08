@@ -1,16 +1,18 @@
-from bq.export_service.controllers.archiver.tar_archiver import TarArchiver
+import gzip
+
 # from io import StringIO
 # from zlib import Z_FULL_FLUSH
 # !!!modern Python versions use BytesIO for binary data, not StringIO
 from io import BytesIO
-import gzip
+
+from bq.export_service.controllers.archiver.tar_archiver import TarArchiver
+
 
 class GZipArchiver(TarArchiver):
-    
     # def __init__(self):
     #     TarArchiver.__init__(self)
     #     self.gbuffer = StringIO()
-    #     self.gzipper = gzip.GzipFile(None, 'wb', 9, self.gbuffer) 
+    #     self.gzipper = gzip.GzipFile(None, 'wb', 9, self.gbuffer)
 
     # def readBlock(self, block_size):
     #     self.gzipper.write(TarArchiver.readBlock(self, block_size))
@@ -27,17 +29,17 @@ class GZipArchiver(TarArchiver):
     #     block = self.gbuffer.getvalue()
     #     self.gbuffer.close()
     #     return block
-    
+
     # !!! modern implementations of the above methods use BytesIO instead of StringIO
     def __init__(self):
         super().__init__()
         self.gbuffer = BytesIO()
-        self.gzipper = gzip.GzipFile(fileobj=self.gbuffer, mode='wb', compresslevel=9)
+        self.gzipper = gzip.GzipFile(fileobj=self.gbuffer, mode="wb", compresslevel=9)
 
     def readBlock(self, block_size):
         data = super().readBlock(block_size)
         if isinstance(data, str):
-            data = data.encode('utf-8')
+            data = data.encode("utf-8")
         self.gzipper.write(data)
         self.gzipper.flush()
         block = self.gbuffer.getvalue()
@@ -48,7 +50,7 @@ class GZipArchiver(TarArchiver):
     def readEnding(self):
         data = super().readEnding()
         if isinstance(data, str):
-            data = data.encode('utf-8')
+            data = data.encode("utf-8")
         self.gzipper.write(data)
         self.gzipper.close()
 
@@ -59,7 +61,7 @@ class GZipArchiver(TarArchiver):
     def getContentType(self):
         # return 'application/x-gzip'
         # !!! modern content type for gzip files
-        return 'application/gzip'
+        return "application/gzip"
 
     def getFileExtension(self):
-        return '.tar.gz'
+        return ".tar.gz"

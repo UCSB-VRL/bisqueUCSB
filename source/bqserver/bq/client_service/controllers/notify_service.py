@@ -57,23 +57,20 @@ import logging
 import smtplib
 import socket
 
-
-
-
 from lxml import etree
-from tg import request,  expose, require , config
+
 # from repoze.what import predicates # !!! deprecated following is the alternative
-from tg import predicates
+from tg import config, expose, predicates, request, require
 
-
-from bq.core.service import ServiceController
 from bq.core import identity
+from bq.core.service import ServiceController
 
-log = logging.getLogger('bq.notify')
+log = logging.getLogger("bq.notify")
 
 # Use unified email service instead of deprecated TurboMail
 try:
     from bq.core.mail import get_email_service
+
     EMAIL_SERVICE_AVAILABLE = True
 except ImportError:
     log.warning("Unified email service not available, email notifications will not work")
@@ -82,7 +79,7 @@ except ImportError:
 
 def send_mail(sender_email, recipients_email, subject, body):
     """Send an email using the unified email service."""
-    
+
     if not EMAIL_SERVICE_AVAILABLE:
         log.warning("Email service not available, cannot send email notifications")
         return False
@@ -97,21 +94,18 @@ def send_mail(sender_email, recipients_email, subject, body):
 
     try:
         log.debug("Sending mail to %s: %s", recipients_email, subject)
-        
+
         for recipient in recipients_email:
             result = email_service.send_email(
-                to=recipient,
-                subject=subject,
-                body=body,
-                from_email=sender_email
+                to=recipient, subject=subject, body=body, from_email=sender_email
             )
-            
-            if not result['success']:
-                log.warning("Failed to send email to %s: %s", recipient, result['error'])
+
+            if not result["success"]:
+                log.warning("Failed to send email to %s: %s", recipient, result["error"])
                 return False
-        
+
         return True
-        
+
     except Exception as exc:
         log.warning("Failed sending %s with '%s'", recipients_email, subject, exc_info=True)
         return False
@@ -128,19 +122,20 @@ def send_invite(sender_email, recipient_email, subject, body):
 class NotifyServerController(ServiceController):
     service_type = "notify"
 
-    @expose(content_type='text/xml')
+    @expose(content_type="text/xml")
     def index(self, **kw):
-        descr = etree.Element ('resource', uri = self.uri)
-        entry = etree.SubElement (descr, 'method', name='/notify/email', value="Send an email from user")
-        etree.SubElement (entry, 'arguments', value = 'recipient,subject')
-        etree.SubElement (entry, 'verb', value = 'POST')
-        etree.SubElement (entry, 'body', value = 'required')
-        return etree.tostring (descr, encoding='unicode')
+        descr = etree.Element("resource", uri=self.uri)
+        entry = etree.SubElement(
+            descr, "method", name="/notify/email", value="Send an email from user"
+        )
+        etree.SubElement(entry, "arguments", value="recipient,subject")
+        etree.SubElement(entry, "verb", value="POST")
+        etree.SubElement(entry, "body", value="required")
+        return etree.tostring(descr, encoding="unicode")
 
-
-    @expose(content_type='text/xml')
+    @expose(content_type="text/xml")
     @require(predicates.not_anonymous())
-    def email(self, recipients=None, subject=None, body=None): #pylint: disable=no-self-use
+    def email(self, recipients=None, subject=None, body=None):  # pylint: disable=no-self-use
         """Send an email for logged in users
 
 
@@ -154,17 +149,17 @@ class NotifyServerController(ServiceController):
            <body> .. </body>
         </message>
         """
-        #sender = identity.get_current_user().resource_value
-        sender = config.get ('bisque.admin_email')
-        if request.content_type == 'application/xml':
-            message = etree.XML (request.body)
-            node = message.find ('subject')
+        # sender = identity.get_current_user().resource_value
+        sender = config.get("bisque.admin_email")
+        if request.content_type == "application/xml":
+            message = etree.XML(request.body)
+            node = message.find("subject")
             if subject is None and node is not None:
                 subject = node.text
-            node = message.find ('recipient')
+            node = message.find("recipient")
             if recipients is None and node is not None:
                 recipients = node.text
-            node = message.find ('body')
+            node = message.find("body")
             if body is None and node is not None:
                 body = node.text
         else:  #   if request.content_type == 'application/text':
@@ -185,11 +180,12 @@ class NotifyServerController(ServiceController):
 
 
 def initialize(uri):
-    """ Initialize the top level server for this microapp"""
+    """Initialize the top level server for this microapp"""
     # Add you checks and database initialize
-    log.debug ("initialize " + uri)
-    service =  NotifyServerController(uri)
+    log.debug("initialize " + uri)
+    service = NotifyServerController(uri)
 
     return service
 
-__controller__= NotifyServerController
+
+__controller__ = NotifyServerController

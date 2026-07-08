@@ -1,0 +1,177 @@
+[project]
+name = "bisque"
+version = "0.1.0"
+description = "Bioinformatic Semantic Query User Environment Project"
+license = "AGPL-3.0-or-later OR LicenseRef-Bisque-Commercial"
+requires-python = ">=3.11,<3.12"
+dependencies = [
+  "alembic==1.15.2",
+  "Beaker==1.13.0",
+  "beautifulsoup4==4.13.4",
+  "bisque-api",
+  "blosc2==3.3.2",
+  "boto==2.49.0",
+  "bqcore",
+  "bqengine",
+  "bqserver",
+  "certifi==2025.4.26",
+  "charset-normalizer==3.4.2",
+  "crank==0.8.1",
+  "cssutils==2.11.1",
+  "decorator==5.2.1",
+  "defusedxml==0.7.1",
+  "firebase-admin==6.5.0",
+  "FormEncode==2.1.1",
+  "furl==2.1.4",
+  "future==1.0.0",
+  "gdata==2.0.18",
+  "Genshi==0.7.9",
+  "google-auth==2.25.2",
+  "google-auth-httplib2==0.2.0",
+  "google-auth-oauthlib==1.2.0",
+  "greenlet==3.2.2",
+  "h5py==3.15.1",
+  "httplib2==0.22.0",
+  "idna==3.10",
+  "irods==0.0.1",
+  "linesman==0.3.2",
+  "lxml==5.4.0",
+  "Mako==1.3.10",
+  "MarkupSafe==3.0.2",
+  "Minimatic",
+  "more-itertools==10.7.0",
+  "msgpack==1.1.0",
+  "mysqlclient==2.2.7",
+  "ndindex==1.9.2",
+  "networkx==1.7",
+  "nose==1.3.7",
+  "numexpr==2.10.2",
+  "numpy==2.2.5",
+  "openpyxl==3.1.4",
+  "openslide-python==1.4.1",
+  "ordereddict==1.1",
+  "orderedmultidict==1.0.1",
+  "packaging==25.0",
+  "pandas==2.2.3",
+  "Paste",
+  "PasteDeploy==3.1.0",
+  "PasteScript==3.7.0",
+  "Paver==1.2.4",
+  "pillow==11.2.1",
+  "pip",
+  "platformdirs==4.3.8",
+  "ply==3.11",
+  "portalocker==3.1.1",
+  "prettytable==3.16.0",
+  "psutil==7.0.0",
+  "psycopg2-binary==2.9.10",
+  "Pylons",
+  "py-cpuinfo==9.0.0",
+  "pydicom==3.0.1",
+  "pygraphviz==1.14",
+  "Pygments==2.19.1",
+  "PyJWT==2.8.0",
+  "pyparsing==3.2.3",
+  "pyproj==3.7.1",
+  "pytest-bisque",
+  "python-dateutil==2.9.0.post0",
+  "python-irodsclient==3.1.0",
+  "python-mimeparse==2.0.0",
+  "python-multipart==0.0.20",
+  "pytz==2025.2",
+  "repoze.lru==0.7",
+  "repoze.tm2==2.2.0",
+  "repoze.who==3.1.0",
+  "requests==2.32.3",
+  "requests-toolbelt==1.0.0",
+  "Routes==2.5.1",
+  "setuptools==80.9.0",
+  "shortuuid==1.0.13",
+  "simplejson==3.20.1",
+  "six==1.17.0",
+  "soupsieve==2.7",
+  "speaklater==1.3",
+  "SQLAlchemy==2.0.40",
+  "tables==3.10.1",
+  "Tempita==0.6.0",
+  "tifffile==2025.3.30",
+  "transaction==5.0",
+  "TurboGears2==2.5.0",
+  "tw2.core==2.3.0",
+  "tw2.forms==2.2.6",
+  "typing_extensions==4.13.2",
+  "tzdata==2025.2",
+  "urllib3==2.4.0",
+  "wcwidth==0.2.13",
+  "WebError",
+  "WebHelpers",
+  "WebOb==1.8.9",
+  "WebTest==3.0.4",
+  "Werkzeug==3.1.3",
+  "xlrd==2.0.1",
+  "zope.interface==7.2",
+  "zope.sqlalchemy==3.1",
+  "scipy==1.15.3",
+]
+
+[dependency-groups]
+dev = [
+  "hgtools",
+  "pre-commit>=4.6.0",
+  "pyinstaller",
+  "pylint",
+  "pytest>=8.0",
+  "ruff>=0.15.16",
+]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+testpaths = [
+  "source/bqapi",
+  "source/bqcore",
+  "source/bqengine",
+  "source/bqserver",
+]
+addopts = [
+  "--ignore=source/modules",
+  "--ignore=modules",
+  "--ignore=source/legacy_upgraded",
+  "--ignore=legacy_upgraded",
+]
+markers = [
+  "functional: mark a test as a functional webtest needing a running server",
+  "unit: simple unit tests",
+  "server: requires a running BisQue server",
+  "converter: requires image converter binaries such as imgcnv or Bio-Formats",
+  "performance: long-running performance or load tests",
+]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+extend-exclude = [
+  ".bisque",
+  ".cache",
+  ".flox",
+  ".local",
+  ".venv",
+  "source/legacy_upgraded",
+  "source/modules"
+]
+
+[tool.ruff.lint]
+select = ["I"]
+
+[tool.uv.sources]
+bisque-api = { path = "source/bqapi", editable = true }
+bqcore = { path = "source/bqcore", editable = true }
+bqengine = { path = "source/bqengine", editable = true }
+bqserver = { path = "source/bqserver", editable = true }
+Minimatic = { path = "source/legacy_upgraded/Minimatic-2.0", editable = true }
+Paste = { path = "source/legacy_upgraded/paste-103.10.1", editable = true }
+Pylons = { path = "source/legacy_upgraded/Pylons-2.0", editable = true }
+pytest-bisque = { path = "source/pytest-bisque", editable = true }
+WebError = { path = "source/legacy_upgraded/WebError-2.0", editable = true }
+WebHelpers = { path = "source/legacy_upgraded/WebHelpers-2.0", editable = true }

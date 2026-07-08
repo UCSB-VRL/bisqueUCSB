@@ -1,6 +1,0 @@
-edit m_example.m
-edit m_displayGroundTruth.m
-m_displayGroundTruth
-m_example
-m_thickness_error_validation
-m_example

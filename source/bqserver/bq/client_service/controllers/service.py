@@ -1,68 +1,72 @@
 # -*- mode: python -*-
-"""Main server for client_service}
-"""
-import os
+"""Main server for client_service}"""
+
 import logging
+import os
+
 import pkg_resources
-
-
-
 import tg
+from pylons.i18n import lazy_ugettext as l_
+from pylons.i18n import ugettext as _
 from tg import expose, flash
-from pylons.i18n import ugettext as _, lazy_ugettext as l_
-# from repoze.what import predicates # !!! deprecated and not used currently
 
-from bq.core.service import ServiceController, service_registry
 from bq.client_service import model
 
-from . import client_service 
+# from repoze.what import predicates # !!! deprecated and not used currently
+from bq.core.service import ServiceController, service_registry
+
+from . import client_service
 
 log = logging.getLogger("bq.client_service")
+
+
 class clientController(ServiceController):
     service_type = "client_service"
 
-    #Uncomment this line if your controller requires an authenticated user
-    #allow_only = predicates.not_anonymous()
+    # Uncomment this line if your controller requires an authenticated user
+    # allow_only = predicates.not_anonymous()
 
     def __init__(self, url):
         super(clientController, self).__init__(url)
-        self.defer = client_service.ClientServer (url)
-        
-    #@expose('bq.client_service.templates.index')
-    #def index(self, **kw):
+        self.defer = client_service.ClientServer(url)
+
+    # @expose('bq.client_service.templates.index')
+    # def index(self, **kw):
     #    """Add your first page here.. """
     #    return dict(msg=_('Hello from client_service'))
     @expose()
     def _lookup(self, *rest):
-        log.debug ('headers:'+ str(tg.request.headers))
+        log.debug("headers:" + str(tg.request.headers))
         return self.defer, rest
 
-    #@expose()
-    #def _default(self, *path, **kw):
+    # @expose()
+    # def _default(self, *path, **kw):
     #    log.debug ('headers:'+ str(tg.request.headers))
     #    return self.defer._default(*path, **kw)
 
+
 def initialize(uri):
-    """ Initialize the top level server for this microapp"""
+    """Initialize the top level server for this microapp"""
     # Add you checks and database initialize
-    log.debug ("initialize " + uri)
-    service =  clientController(uri)
-    #directory.register_service ('client_service', service)
+    log.debug("initialize " + uri)
+    service = clientController(uri)
+    # directory.register_service ('client_service', service)
 
     return service
 
+
 def get_static_dirs():
     """Return the static directories for this server"""
-    package = pkg_resources.Requirement.parse ("bqserver")
-    package_path = pkg_resources.resource_filename(package,'bq')
-    return [(package_path, os.path.join(package_path, 'client_service', 'public'))]
+    package_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+    return [(package_path, os.path.join(package_path, "client_service", "public"))]
+
 
 def get_model():
     from bq.client_service import model
+
     return model
 
 
-
 __controller__ = clientController
-#__staticdir__ = get_static_dirs()
-#__model__ = get_model()
+# __staticdir__ = get_static_dirs()
+# __model__ = get_model()

@@ -47,28 +47,29 @@ Plug-in class manager
 
 """
 
-__author__    = "Dmitry Fedorov <dima@dimin.net>"
-__version__   = "1.0"
+__author__ = "Dmitry Fedorov <dima@dimin.net>"
+__version__ = "1.0"
 __copyright__ = "Center for Bio-Image Informatics, University of California at Santa Barbara"
 
 # default imports
-import os
 import imp
 import inspect
 import logging
+import os
+
 import pkg_resources
 
 log = logging.getLogger("bq.table.plugins")
 
-__all__ = [ 'PluginManager' ]
+__all__ = ["PluginManager"]
 
-#---------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------
 # misc
-#---------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------
 
-def walk_deep(path, ext='py'):
-    """Splits sub path that follows # sign if present
-    """
+
+def walk_deep(path, ext="py"):
+    """Splits sub path that follows # sign if present"""
     files = []
     for root, _, filenames in os.walk(path):
         for f in filenames:
@@ -76,12 +77,13 @@ def walk_deep(path, ext='py'):
                 files.append(os.path.join(root, f))
     return files
 
-#---------------------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------------------
 # Table base
-#---------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------
+
 
 class PluginManager(object):
-
     def __init__(self, name, path_plugins, NeededClass):
         self.name = name
         self.plugins = {}
@@ -92,9 +94,9 @@ class PluginManager(object):
             module_name = os.path.splitext(os.path.basename(f))[0]
             try:
                 o = imp.load_source(module_name, f)
-                for n,item in inspect.getmembers(o):
-#                     if inspect.isclass(item) and issubclass(item, NeededClass):
-# -                        if item.name != '':
+                for n, item in inspect.getmembers(o):
+                    #                     if inspect.isclass(item) and issubclass(item, NeededClass):
+                    # -                        if item.name != '':
                     if inspect.isclass(item):
                         # Check inheritance using MRO to handle module loading issues
                         is_subclass = False
@@ -103,7 +105,7 @@ class PluginManager(object):
                             is_subclass = issubclass(item, NeededClass)
                         except TypeError:
                             pass
-                        
+
                         if not is_subclass:
                             # Check by class name in MRO if direct check fails
                             needed_class_name = NeededClass.__name__
@@ -111,12 +113,11 @@ class PluginManager(object):
                                 if base.__name__ == needed_class_name:
                                     is_subclass = True
                                     break
-                        
-                        if is_subclass and hasattr(item, 'name') and item.name != '':
-                            log.debug('Adding plugin: %s'%item.name)
+
+                        if is_subclass and hasattr(item, "name") and item.name != "":
+                            log.debug("Adding plugin: %s" % item.name)
                             self.plugins[item.name] = item
             except Exception:
-                log.exception('Could not load: %s'%module_name)
+                log.exception("Could not load: %s" % module_name)
 
-        log.info('Available %s plugins: %s', self.name, ','.join(list(self.plugins.keys())))
-
+        log.info("Available %s plugins: %s", self.name, ",".join(list(self.plugins.keys())))

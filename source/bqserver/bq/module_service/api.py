@@ -50,51 +50,59 @@ DESCRIPTION
 ===========
   module service
 """
-#import os
-#import pkg_resources
+
+# import os
+# import pkg_resources
 from bq.core.service import service_registry
 from bq.exceptions import RequestError
 
+
 def find_server(server):
-    return service_registry.find_service ('module_service')
+    return service_registry.find_service("module_service")
+
 
 def uri():
-    server = find_server('module_service')
+    server = find_server("module_service")
     return server.uri
 
-def register_engine(body, server = None ):
-    '''request registration of the engine to the module server
+
+def register_engine(body, server=None):
+    """request registration of the engine to the module server
     given the module URI and the ElementTree Module descriptor
-    '''
+    """
     if server is None:
-        server = service_registry.find_service ('module_service')
+        server = service_registry.find_service("module_service")
     if server:
-        return server.register_engine (body = body)
-    raise RequestError ("no server available")
+        return server.register_engine(body=body)
+    raise RequestError("no server available")
+
 
 def begin_internal_mex(**kw):
     """Begin an internal mex for tracking changes from users"""
-    server = service_registry.find_service ('module_service')
+    server = service_registry.find_service("module_service")
     return server.begin_internal_mex(**kw)
 
+
 def end_internal_mex(mexid):
-    server = service_registry.find_service ('module_service')
+    server = service_registry.find_service("module_service")
     return server.end_internal_mex(mexid)
 
-def begin_execute (mex_request, server = None):
-    server = server or service_registry.find_service ('module_service')
-    return server.begin_execute (mex_request)
 
-def end_execute (mex_request, server = None):
-    server = server or service_registry.find_service ('module_service')
-    return server.end_execute (mex_request)
+def begin_execute(mex_request, server=None):
+    server = server or service_registry.find_service("module_service")
+    return server.begin_execute(mex_request)
 
-def heartbeat(hbdoc, server = None):
-    server = server or service_registry.find_service ('module_service')
+
+def end_execute(mex_request, server=None):
+    server = server or service_registry.find_service("module_service")
+    return server.end_execute(mex_request)
+
+
+def heartbeat(hbdoc, server=None):
+    server = server or service_registry.find_service("module_service")
     return server.heartbeat(hbdoc)
 
-def engines(server = None):
-    server = server or service_registry.find_service ('module_service')
+
+def engines(server=None):
+    server = server or service_registry.find_service("module_service")
     return server.engine.dir()
-
-

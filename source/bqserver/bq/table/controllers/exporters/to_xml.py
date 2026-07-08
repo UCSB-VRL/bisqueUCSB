@@ -46,30 +46,31 @@
 CSV table exporter
 """
 
-__author__    = "Dmitry Fedorov <dima@dimin.net>"
-__version__   = "1.0"
+__author__ = "Dmitry Fedorov <dima@dimin.net>"
+__version__ = "1.0"
 __copyright__ = "Center for Bio-Image Informatics, University of California at Santa Barbara"
 
 # default imports
-import os
 import logging
+import os
 
-__all__ = [ 'ExporterXML' ]
+__all__ = ["ExporterXML"]
 
 log = logging.getLogger("bq.table.export.xml")
 
 import collections
 
 from lxml import etree
+
 try:
     import numpy as np
 except ImportError:
-    log.info('Numpy was not found but required for table service!')
+    log.info("Numpy was not found but required for table service!")
 
 try:
     import pandas as pd
 except ImportError:
-    log.info('Pandas was not found but required for table service!')
+    log.info("Pandas was not found but required for table service!")
 
 
 from bq.table.controllers.table_exporter import TableExporter
@@ -77,71 +78,83 @@ from bq.table.controllers.table_exporter import TableExporter
 
 def _nested_list_to_str(l):
     # flatten nested list in l via depth first traversal
-    if hasattr(l, '__iter__'):
+    if hasattr(l, "__iter__"):
         try:
-            return ','.join([_nested_list_to_str(cell) for cell in l])
+            return ",".join([_nested_list_to_str(cell) for cell in l])
         except TypeError:
-            pass   # not iterable => just return string
+            pass  # not iterable => just return string
     return str(l)
 
 
-#---------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------
 # exporters: XML
-#---------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------
 
-class ExporterXML (TableExporter):
-    '''Formats tables as XML'''
 
-    name = 'xml'
-    version = '1.0'
-    ext = 'xml'
-    mime_type = 'text/xml'
+class ExporterXML(TableExporter):
+    """Formats tables as XML"""
+
+    name = "xml"
+    version = "1.0"
+    ext = "xml"
+    mime_type = "text/xml"
 
     def info(self, table):
         # super(ExporterXML, self).info(table)
         super().info(table)
-        xml = etree.Element ('resource', uri=table.url)
+        xml = etree.Element("resource", uri=table.url)
         if table.headers:
             # has headers => this is a leaf object (table or matrix)
             if isinstance(table.data, pd.core.frame.DataFrame):
-                etree.SubElement (xml, 'tag', name='type', value='table')
+                etree.SubElement(xml, "tag", name="type", value="table")
             else:
-                etree.SubElement (xml, 'tag', name='type', value='matrix')
+                etree.SubElement(xml, "tag", name="type", value="matrix")
 
-            el = etree.SubElement (xml, 'tag', name='headers', value=','.join([str(i) for i in table.headers]))
-            el = etree.SubElement (xml, 'tag', name='types', value=','.join([str(t) for t in table.types]))
+            el = etree.SubElement(
+                xml, "tag", name="headers", value=",".join([str(i) for i in table.headers])
+            )
+            el = etree.SubElement(
+                xml, "tag", name="types", value=",".join([str(t) for t in table.types])
+            )
             if table.sizes is not None:
-                el = etree.SubElement (xml, 'tag', name='sizes', value=','.join([str(i) for i in table.sizes]))
+                el = etree.SubElement(
+                    xml, "tag", name="sizes", value=",".join([str(i) for i in table.sizes])
+                )
         else:
             # no headers => this is a group/subfolder
-            etree.SubElement (xml, 'tag', name='type', value='group')
-            el = etree.SubElement (xml, 'tag', name='group')
+            etree.SubElement(xml, "tag", name="type", value="group")
+            el = etree.SubElement(xml, "tag", name="group")
             for tab in table.tables:
-                etree.SubElement (el, 'tag', name=tab['path'], type=tab['type'])
+                etree.SubElement(el, "tag", name=tab["path"], type=tab["type"])
 
-        if table.meta is not None and len(table.meta)>0:
-            for n,v in table.meta.items():
-                etree.SubElement (xml, 'tag', name='%s'%n, value='%s'%v)
+        if table.meta is not None and len(table.meta) > 0:
+            for n, v in table.meta.items():
+                etree.SubElement(xml, "tag", name="%s" % n, value="%s" % v)
 
-        return etree.tostring(xml, encoding='unicode')
+        return etree.tostring(xml, encoding="unicode")
 
     def format(self, table):
-        """ converts table to XML """
+        """converts table to XML"""
         m = table.as_array()
         ndim = m.ndim
         if ndim > 0:
             v = []
             for i in range(m.shape[0]):
-                v.append( _nested_list_to_str(m[i]) )
+                v.append(_nested_list_to_str(m[i]))
         else:
             # 0-dimensional array => single value
             v = [str(m)]
-        xml = etree.Element ('resource', uri=table.url)
-        doc = etree.SubElement (xml, 'tag', name='table', value=';'.join(v))
-        el = etree.SubElement (doc, 'tag', name='offset', value=str(table.offset))
-        el = etree.SubElement (doc, 'tag', name='headers', value=','.join([str(i) for i in table.headers]))
-        el = etree.SubElement (doc, 'tag', name='types', value=','.join([str(t) for t in table.types]))
+        xml = etree.Element("resource", uri=table.url)
+        doc = etree.SubElement(xml, "tag", name="table", value=";".join(v))
+        el = etree.SubElement(doc, "tag", name="offset", value=str(table.offset))
+        el = etree.SubElement(
+            doc, "tag", name="headers", value=",".join([str(i) for i in table.headers])
+        )
+        el = etree.SubElement(
+            doc, "tag", name="types", value=",".join([str(t) for t in table.types])
+        )
         if table.sizes is not None:
-            el = etree.SubElement (doc, 'tag', name='sizes', value=','.join([str(i) for i in table.sizes]))
-        return etree.tostring(xml, encoding='unicode')
-
+            el = etree.SubElement(
+                doc, "tag", name="sizes", value=",".join([str(i) for i in table.sizes])
+            )
+        return etree.tostring(xml, encoding="unicode")

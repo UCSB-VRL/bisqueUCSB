@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bisque-config
+  namespace: bisque
+data:
+  BISQUE_RUNTIME_DIR: /app/.bisque
+  BISQUE_CONFIG_DIR: /app/.bisque/config
+  BISQUE_DATA_DIR: /app/.bisque/data
+  BISQUE_EXTERNAL_DIR: /app/.bisque/external
+  BISQUE_PUBLIC_DIR: /app/public
+  BISQUE_REPORTS_DIR: /app/.bisque/reports
+  BISQUE_STAGING_DIR: /app/.bisque/staging
+  BISQUE_LOG_DIR: /app/.bisque/logs
+  BISQUE_RUN_DIR: /app/.bisque/run
+  BISQUE_PUBLIC_URL: http://bisque.localhost
+  BISQUE_ORGANIZATION: Your Organization
+  BISQUE_TITLE: BisQue Image Repository
+  BISQUE_ADMIN_EMAIL: admin@example.com
+  BISQUE_ENABLE_ENGINE_SERVICE: "true"
+  BISQUE_SERVICES_ENABLED: ""
+  BISQUE_SERVICES_DISABLED: ""
+  BISQUE_DOCKER_BACKEND: argo
+  BISQUE_DOCKER_CALLBACK_URL: http://bisque:8080
+  BISQUE_DOCKER_HUB: ""
+  BISQUE_MODULE_DIRS: /app/source/modules
+  BISQUE_ARGO_WORKFLOW_TEMPLATE: bqflow-module-template
+  BISQUE_ARGO_GPU_WORKFLOW_TEMPLATE: bqflow-module-gpu-template
+  BISQUE_HTTP_HOST: 0.0.0.0
+  BISQUE_HTTP_PORT: "8080"
+  BISQUE_UPLOAD_TMP_DIR: /var/lib/bisque-upload-tmp
+  BISQUE_DEBUG: "false"
+  BISQUE_JS_ENVIRONMENT: production
+  BISQUE_SMTP_HOST: localhost
+  BISQUE_SMTP_PORT: "587"
+  BISQUE_SMTP_USER: ""
+  BISQUE_SMTP_TLS: "false"
+  BISQUE_SMTP_SSL: "false"
+  BISQUE_SMTP_TIMEOUT: "30"
+  BISQUE_MAIL_FROM: noreply@localhost
+  BISQUE_MAIL_FROM_NAME: Bisque System
+  BISQUE_EMAIL_VERIFICATION_ENABLED: "false"
+  ARGO_NAMESPACE: bisque

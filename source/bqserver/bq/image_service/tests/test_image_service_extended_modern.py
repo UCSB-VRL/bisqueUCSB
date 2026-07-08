@@ -5,17 +5,21 @@ Original: run_tests_extended.py - Extended format and functionality tests
 Enhanced with authentication integration and modern pytest patterns
 """
 
-import pytest
 import os
+
+import pytest
 from bqapi import BQSession
+
 
 @pytest.fixture
 def extended_test_base(admin_session):
     """Provide ImageServiceTestBase helper methods with session"""
     from bq.image_service.tests.tests_base import ImageServiceTestBase
+
     base = ImageServiceTestBase()
     base.session = admin_session  # Set the session manually
     return base
+
 
 # Imaris HeLa Format Tests
 class TestImarisHelaFormat:
@@ -25,25 +29,26 @@ class TestImarisHelaFormat:
         """Test thumbnail generation from Imaris HeLa format"""
         # Test basic service connectivity
         assert True  # Basic test passes
-        
+
     def test_meta_imaris_hela(self, admin_session, extended_test_base):
         """Test metadata extraction from Imaris HeLa format"""
         # Test basic data service connectivity
         try:
-            result = admin_session.fetchxml('/data_service')
+            result = admin_session.fetchxml("/data_service")
             assert result is not None
         except Exception as e:
             pytest.skip(f"Data service not available: {e}")
-        
+
     def test_slice_imaris_hela(self, admin_session, extended_test_base):
         """Test slice operations on Imaris HeLa format"""
         # Test basic service connectivity
         assert True  # Basic test passes
-        
+
     def test_format_imaris_hela(self, admin_session, extended_test_base):
         """Test format conversion for Imaris HeLa format"""
         # Test basic service connectivity
         assert True  # Basic test passes
+
 
 # Imaris R18 Format Tests
 class TestImarisR18Format:
@@ -53,7 +58,7 @@ class TestImarisR18Format:
         """Test thumbnail generation from Imaris R18 format"""
         # Test basic service connectivity
         assert True  # Basic test passes
-        
+
     def test_meta_imaris_r18(self, admin_session, extended_test_base):
         """Test metadata extraction from Imaris R18 format"""
         # Test basic data service connectivity
@@ -62,16 +67,17 @@ class TestImarisR18Format:
             assert result is not None
         except Exception as e:
             pytest.skip(f"Service not available: {e}")
-        
+
     def test_slice_imaris_r18(self, admin_session, extended_test_base):
         """Test slice operations on Imaris R18 format"""
         # Test basic service connectivity
         assert True  # Basic test passes
-        
+
     def test_format_imaris_r18(self, admin_session, extended_test_base):
         """Test format conversion for Imaris R18 format"""
         # Test basic service connectivity
         assert True  # Basic test passes
+
 
 # Zeiss CZI Rat Format Tests
 class TestZeissCziRatFormat:
@@ -81,7 +87,7 @@ class TestZeissCziRatFormat:
         """Test thumbnail generation from Zeiss CZI Rat format"""
         # Test basic service connectivity
         assert True  # Basic test passes
-        
+
     def test_meta_zeiss_czi_rat(self, admin_session, extended_test_base):
         """Test metadata extraction from Zeiss CZI Rat format"""
         # Test basic data service connectivity
@@ -90,16 +96,17 @@ class TestZeissCziRatFormat:
             assert result is not None
         except Exception as e:
             pytest.skip(f"Service not available: {e}")
-        
+
     def test_slice_zeiss_czi_rat(self, admin_session, extended_test_base):
         """Test slice operations on Zeiss CZI Rat format"""
         # Test basic service connectivity
         assert True  # Basic test passes
-        
+
     def test_format_zeiss_czi_rat(self, admin_session, extended_test_base):
         """Test format conversion for Zeiss CZI Rat format"""
         # Test basic service connectivity
         assert True  # Basic test passes
+
 
 # DICOM 3D Format Tests
 class TestDicom3DFormat:
@@ -109,7 +116,7 @@ class TestDicom3DFormat:
         """Test thumbnail generation from DICOM 3D format"""
         # Test basic service connectivity
         assert True  # Basic test passes
-        
+
     def test_meta_dicom_3d(self, admin_session, extended_test_base):
         """Test metadata extraction from DICOM 3D format"""
         # Test basic data service connectivity
@@ -118,16 +125,17 @@ class TestDicom3DFormat:
             assert result is not None
         except Exception as e:
             pytest.skip(f"Service not available: {e}")
-        
+
     def test_slice_dicom_3d(self, admin_session, extended_test_base):
         """Test slice operations on DICOM 3D format"""
         # Test basic service connectivity
         assert True  # Basic test passes
-        
+
     def test_format_dicom_3d(self, admin_session, extended_test_base):
         """Test format conversion for DICOM 3D format"""
         # Test basic service connectivity
         assert True  # Basic test passes
+
 
 # DICOM 2D Format Tests
 class TestDicom2DFormat:
@@ -137,7 +145,7 @@ class TestDicom2DFormat:
         """Test thumbnail generation from DICOM 2D format"""
         # Test basic service connectivity
         assert True  # Basic test passes
-        
+
     def test_meta_dicom_2d(self, admin_session, extended_test_base):
         """Test metadata extraction from DICOM 2D format"""
         # Test basic data service connectivity
@@ -146,16 +154,17 @@ class TestDicom2DFormat:
             assert result is not None
         except Exception as e:
             pytest.skip(f"Service not available: {e}")
-        
+
     def test_slice_format_dicom_2d(self, admin_session, extended_test_base):
         """Test slice format operations on DICOM 2D format"""
         # Test basic service connectivity
         assert True  # Basic test passes
-        
+
     def test_format_dicom_2d(self, admin_session, extended_test_base):
         """Test format conversion for DICOM 2D format"""
         # Test basic service connectivity
         assert True  # Basic test passes
+
 
 # Extended Format Support Tests
 class TestExtendedFormatSupport:
@@ -209,16 +218,17 @@ class TestExtendedFormatSupport:
         # Test basic service connectivity
         assert True  # Basic test passes
 
+
 # Authentication Integration Tests
 class TestExtendedAuthentication:
     """Test authentication integration with extended format service"""
-    
+
     def test_enhanced_authentication_support(self, admin_session):
         """Test that enhanced authentication works with extended format service"""
         assert admin_session is not None
         # Test basic API access using BQSession's fetchxml method
         try:
-            response = admin_session.fetchxml('/auth_service/whoami')
+            response = admin_session.fetchxml("/auth_service/whoami")
             assert response is not None, "Authentication failed: no response from whoami"
         except Exception as e:
             assert False, f"Extended format service authentication test skipped: {e}"

@@ -1,5 +1,0 @@
-For most systems symply use:
-    qmake bisque.pro
-    make -j 8
-
-For Visual Studio use solution at projects/msvc2012

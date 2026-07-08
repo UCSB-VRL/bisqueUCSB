@@ -1,0 +1,120 @@
+schema-version = "1.11.0"
+
+[install]
+python.pkg-path = "python311"
+uv.pkg-path = "uv"
+bash.pkg-path = "bash"
+coreutils.pkg-path = "coreutils"
+coreutils.priority = 4
+findutils.pkg-path = "findutils"
+gnugrep.pkg-path = "gnugrep"
+gnused.pkg-path = "gnused"
+gnutar.pkg-path = "gnutar"
+gzip.pkg-path = "gzip"
+binutils.pkg-path = "binutils"
+procps.pkg-path = "procps"
+iproute2.pkg-path = "iproute2"
+docker-client.pkg-path = "docker-client"
+argo-workflows.pkg-path = "argo-workflows"
+kubectl.pkg-path = "kubectl"
+just.pkg-path = "just"
+
+# Build tooling for Python packages with native extensions.
+gcc.pkg-path = "gcc"
+libgcc.pkg-path = "libgcc"
+libgcc.outputs = ["lib"]
+cmake.pkg-path = "cmake"
+pkg-config.pkg-path = "pkg-config"
+gnumake.pkg-path = "gnumake"
+patchelf.pkg-path = "patchelf"
+
+# Native libraries required by source/requirements.txt and BisQue services.
+graphviz.pkg-path = "graphviz"
+openslide.pkg-path = "openslide"
+hdf5-cpp.pkg-path = "hdf5-cpp"
+hdf5-cpp.version = "1.10.7"
+hdf5-cpp.pkg-group = "legacy-imgcnv-hdf5-cpp"
+hdf5-cpp.outputs = ["dev", "out"]
+postgresql.pkg-path = "postgresql"
+libmysqlclient.pkg-path = "libmysqlclient"
+libmysqlclient.outputs = ["dev", "out"]
+libxml2.pkg-path = "libxml2"
+libxml2.version = "2.9.14"
+libxml2.pkg-group = "legacy-imgcnv-libxml2"
+libxml2.outputs = ["bin", "dev", "out"]
+libxslt.pkg-path = "libxslt"
+zlib.pkg-path = "zlib"
+xz.pkg-path = "xz"
+xz.outputs = ["bin", "dev", "out"]
+expat.pkg-path = "expat"
+libjpeg.pkg-path = "libjpeg8"
+libjpeg.outputs = ["out", "dev"]
+jbigkit.pkg-path = "jbigkit"
+libdeflate.pkg-path = "libdeflate"
+lerc.pkg-path = "lerc"
+libpng.pkg-path = "libpng"
+libtiff.pkg-path = "libtiff"
+openjpeg.pkg-path = "openjpeg"
+libwebp.pkg-path = "libwebp"
+lcms2.pkg-path = "lcms2"
+lcms2.outputs = ["bin", "dev", "out"]
+glib.pkg-path = "glib"
+glib.outputs = ["bin", "dev", "out"]
+cairo.pkg-path = "cairo"
+gdk-pixbuf.pkg-path = "gdk-pixbuf"
+sqlite.pkg-path = "sqlite"
+sqlite.outputs = ["bin", "dev", "out"]
+libraw.pkg-path = "libraw"
+libraw.version = "0.20.2"
+libraw.pkg-group = "legacy-imgcnv-libraw"
+libraw.outputs = ["lib", "out"]
+gdcm.pkg-path = "gdcm"
+gdcm.version = "3.0.26"
+gdcm.pkg-group = "legacy-imgcnv-gdcm"
+fftw.pkg-path = "fftw"
+ffmpeg.pkg-path = "ffmpeg_4"
+ffmpeg.outputs = ["bin", "dev", "lib", "out"]
+
+# Bio-Formats runtime.
+jdk.pkg-path = "jdk8"
+maven.pkg-path = "maven"
+
+# Archive/network utilities used by setup scripts.
+curl.pkg-path = "curl"
+wget.pkg-path = "wget"
+unzip.pkg-path = "unzip"
+
+[vars]
+PYTHON_VERSION = "3.11"
+VENV = ".venv"
+
+[hook]
+on-activate = '''
+  mkdir -p "$FLOX_ENV_PROJECT/.cache/uv" "$FLOX_ENV_PROJECT/.local/bin" "$FLOX_ENV_PROJECT/.local/lib"
+  if [ ! -f "$FLOX_ENV_PROJECT/.env" ] && [ -f "$FLOX_ENV_PROJECT/.env.example" ]; then
+    cp "$FLOX_ENV_PROJECT/.env.example" "$FLOX_ENV_PROJECT/.env"
+    echo "Created .env from .env.example"
+  fi
+'''
+
+[profile]
+common = '''
+  export XDG_CACHE_HOME="$FLOX_ENV_PROJECT/.cache"
+  export UV_CACHE_DIR="$FLOX_ENV_PROJECT/.cache/uv"
+  export VENV="$FLOX_ENV_PROJECT/.venv"
+  export PATH="$FLOX_ENV_PROJECT/.local/bin:$FLOX_ENV_PROJECT/.venv/bin:$PATH"
+  export PYTHONNOUSERSITE=1
+
+  echo "BisQue environment active. Run: just setup"
+  if ! command -v direnv >/dev/null 2>&1; then
+    echo "Tip: install direnv for automatic environment loading: https://direnv.net/docs/installation.html"
+    echo "Without direnv, remember to run: flox deactivate"
+  fi
+'''
+
+[services]
+
+[options]
+systems = [
+  "x86_64-linux",
+]

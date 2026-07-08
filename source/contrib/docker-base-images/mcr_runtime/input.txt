@@ -1,3 +1,0 @@
-destinationFolder=/opt/mcr
-agreeToLicense=yes
-mode=silent

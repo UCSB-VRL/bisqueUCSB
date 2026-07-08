@@ -78,9 +78,7 @@ class EmailConfiguration:
             log.info("Email configuration loaded from legacy settings")
             return
 
-        log.warning(
-            "No email configuration found - email functionality will be disabled"
-        )
+        log.warning("No email configuration found - email functionality will be disabled")
 
     def _load_from_env(self) -> bool:
         """Load configuration from environment variables"""
@@ -109,12 +107,7 @@ class EmailConfiguration:
                 setattr(self, attr_name, value)
 
         # Require minimum configuration
-        if (
-            found_config
-            and self.smtp_host
-            and self.smtp_username
-            and self.smtp_password
-        ):
+        if found_config and self.smtp_host and self.smtp_username and self.smtp_password:
             return True
         return False
 
@@ -245,9 +238,9 @@ class EmailConfiguration:
                 self.smtp_port = getattr(self, "smtp_port", None) or (
                     587 if getattr(self, "smtp_use_tls", False) else 25
                 )
-                self.default_from_email = getattr(
-                    self, "default_from_email", None
-                ) or getattr(self, "admin_email", None)
+                self.default_from_email = getattr(self, "default_from_email", None) or getattr(
+                    self, "admin_email", None
+                )
                 log.info(f"Email configuration loaded from {config_path}")
                 return True
             else:
@@ -382,11 +375,7 @@ class EmailService:
             to_list = [to] if isinstance(to, str) else to
 
             # Create message
-            msg = (
-                MIMEMultipart("alternative")
-                if html_body
-                else MIMEText(body, "plain", "utf-8")
-            )
+            msg = MIMEMultipart("alternative") if html_body else MIMEText(body, "plain", "utf-8")
 
             if isinstance(msg, MIMEMultipart):
                 # Add both plain text and HTML parts

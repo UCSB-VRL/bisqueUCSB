@@ -2,28 +2,42 @@
 """The application's model objects"""
 
 # from zope.sqlalchemy import ZopeTransactionExtension #!!! Before upgrading to py3.10+
-from zope.sqlalchemy import register  # !!! In between upgrading to py3.10+ (Experimental)
-from sqlalchemy.orm import scoped_session, sessionmaker
 # , mapper as sa_mapper # !!! Before upgrading to py3.10+
-from sqlalchemy.orm import registry # !!! In between upgrading to py3.10+ (Experimental)
+from sqlalchemy.orm import (
+    registry,  # !!! In between upgrading to py3.10+ (Experimental)
+    scoped_session,
+    sessionmaker,
+)
+from zope.sqlalchemy import register  # !!! In between upgrading to py3.10+ (Experimental)
+
 mapper_registry = registry()
-#from sqlalchemy import MetaData
+# from sqlalchemy import MetaData
 from sqlalchemy.ext.declarative import declarative_base
 
 # Global session manager: DBSession() returns the Thread-local
 # session object appropriate for the current web request.
 # maker = sessionmaker(autoflush=True, autocommit=False,
 #                      extension=ZopeTransactionExtension()) # !!! Before upgrading to py3.10+
-maker = sessionmaker(autoflush=True, autocommit=False)  # !!! In between upgrading to py3.10+ (Experimental)
+maker = sessionmaker(
+    autoflush=True, autocommit=False
+)  # !!! In between upgrading to py3.10+ (Experimental)
 DBSession = scoped_session(maker)
-register(DBSession)  # !!! replaces ZopeTransactionExtension() In between upgrading to py3.10+ (Experimental)
+register(
+    DBSession
+)  # !!! replaces ZopeTransactionExtension() In between upgrading to py3.10+ (Experimental)
+
+
 ### Moving from SA 5.5  -> 5.6
-def session_mapper (scoped_session):
-    def mapper (cls, *arg, **kw):
-        cls.query = scoped_session.query_property ()
+def session_mapper(scoped_session):
+    def mapper(cls, *arg, **kw):
+        cls.query = scoped_session.query_property()
         # return sa_mapper (cls, *arg, **kw)
-        return mapper_registry.map_imperatively(cls, *arg, **kw) # !!! In between upgrading to py3.10+ (Experimental)
+        return mapper_registry.map_imperatively(
+            cls, *arg, **kw
+        )  # !!! In between upgrading to py3.10+ (Experimental)
+
     return mapper
+
 
 mapper = session_mapper(DBSession)
 
@@ -45,7 +59,7 @@ metadata = DeclarativeBase.metadata
 
 # If you have multiple databases with overlapping table names, you'll need a
 # metadata for each database. Feel free to rename 'metadata2'.
-#metadata2 = MetaData()
+# metadata2 = MetaData()
 
 #####
 # Generally you will not want to define your table's mappers, and data objects
@@ -53,6 +67,7 @@ metadata = DeclarativeBase.metadata
 # and import them at the bottom of this file.
 #
 ######
+
 
 def init_model(engine):
     """Call me before using any of the tables or classes in the model."""
@@ -66,13 +81,13 @@ def init_model(engine):
     #
     # See the following example:
 
-    #global t_reflected
+    # global t_reflected
 
-    #t_reflected = Table("Reflected", metadata,
+    # t_reflected = Table("Reflected", metadata,
     #    autoload=True, autoload_with=engine)
 
-    #mapper(Reflected, t_reflected)
+    # mapper(Reflected, t_reflected)
 
 
 # Import your model modules here.
-from bq.core.model.auth import User, Group, Permission
+from bq.core.model.auth import Group, Permission, User

@@ -53,7 +53,7 @@ DESCRIPTION
  1) QUERY: [etree -> vector of objects]
     Elements are extracted from the document into the vector using XPath expression
     at this stage the vector should only comntain:
-        a) tags (where values could be either numeric or string), 
+        a) tags (where values could be either numeric or string),
         b) primitive gobjects (only graphical elements like poits and polygones...)
         c) numerics as a result of operation in XPath
  2) MAP: [vector of objects -> uniform vector of numbers or strings]
@@ -66,7 +66,7 @@ DESCRIPTION
     A summarizer function is applied to the vector of objects to produce some summary
     the summary is returned as an XML document
     for example: summary "vector" could simply pass the input vector for output
-                 summary "histogram" could bin the values of the input vector and could work on both text and numbers 
+                 summary "histogram" could bin the values of the input vector and could work on both text and numbers
                  summary "max" would return max value of the input vector
 
 EXTENSIONS
@@ -77,87 +77,97 @@ appropriate base classes and writng the code in appropriate files, just that...
 
 """
 
-__module__    = "stats_server.py"
-__author__    = "Dmitry Fedorov and Kris Kvilekval"
-__version__   = "1.4"
-__revision__  = "$Rev$"
-__date__      = "$Date$"
+__module__ = "stats_server.py"
+__author__ = "Dmitry Fedorov and Kris Kvilekval"
+__version__ = "1.4"
+__revision__ = "$Rev$"
+__date__ = "$Date$"
 __copyright__ = "Center for BioImage Informatics, University California, Santa Barbara"
 
 
 # default imports
-import os
 import logging
+import os
+
 import pkg_resources
-from pylons.i18n import ugettext as _, lazy_ugettext as l_
+from pylons.i18n import lazy_ugettext as l_
+from pylons.i18n import ugettext as _
 from tg import expose, flash, response
+
 # from repoze.what import predicates  # !!! deprecated and currently not used
 from bq.core.service import ServiceController
-#from bq.stats import model
+
+# from bq.stats import model
 
 log = logging.getLogger("bq.stats")
 
-from pylons.controllers.util import abort
+import inspect
+import io
+import json
+import sys
+from itertools import *
+from urllib.parse import quote, unquote
 
 # imports for stats server
 from lxml import etree
-import sys
-import inspect
-import json
-    
-import io
-from urllib.parse import quote
-from urllib.parse import unquote
-
-from itertools import *
-from .bqapi import *
-
-# Import all required operations
-from . import stats_operators
-from . import stats_summarizers
+from pylons.controllers.util import abort
 
 from bq import data_service
+
+# Import all required operations
+from . import stats_operators, stats_summarizers
+from .bqapi import *
+
 
 ################################################################################
 # utils
 ################################################################################
 def dict2url(d, mykeys=None):
-    if len(d)<=0: return ''
+    if len(d) <= 0:
+        return ""
     if mykeys is None:
-        l = ['%s=%s'%(quote(i), quote(d[i])) for i in d]
+        l = ["%s=%s" % (quote(i), quote(d[i])) for i in d]
     else:
-        l = ['%s=%s'%(quote(i), quote(d[i])) for i in mykeys if i in d]    
-    return '%s'%'&'.join(l)
-      
+        l = ["%s=%s" % (quote(i), quote(d[i])) for i in mykeys if i in d]
+    return "%s" % "&".join(l)
+
+
 def getNumberedArgs(d, basename):
     if basename not in d:
         return []
     l = [d[basename]]
     i = 1
-    while '%s%s'%(basename, i) in d:
-        l.append(d['%s%s'%(basename, i)])
+    while "%s%s" % (basename, i) in d:
+        l.append(d["%s%s" % (basename, i)])
         i += 1
     return l
-    
+
+
 def guaranteeSize(l, n):
-    if len(l)<=0: return l
-    if len(l)>=n: return l
-    for i in range(n-len(l)):
-        l.append(l[len(l)-1])
-    return l  
-    
+    if len(l) <= 0:
+        return l
+    if len(l) >= n:
+        return l
+    for i in range(n - len(l)):
+        l.append(l[len(l) - 1])
+    return l
+
+
 def startWithEither(s, l):
     for i in l:
-        if s.startswith(i): return True
+        if s.startswith(i):
+            return True
     return False
+
 
 ################################################################################
 # statsController
 ################################################################################
 
+
 class statsController(ServiceController):
-    #Uncomment this line if your controller requires an authenticated user
-    #allow_only = predicates.not_anonymous()
+    # Uncomment this line if your controller requires an authenticated user
+    # allow_only = predicates.not_anonymous()
     service_type = "stats"
 
     def __init__(self, server_url):
@@ -167,139 +177,156 @@ class statsController(ServiceController):
         self.summarizers = {}
 
         # maps
-        for n,item in inspect.getmembers(stats_operators):
-             if inspect.isclass(item) and issubclass(item, stats_operators.StatOperator):
-                  if item.name != 'StatOperator':
-                      log.debug('Adding operator: %s'%item.name)   
-                      self.operators[item.name] = item()        
-        
-        # reduces        
-        for n,item in inspect.getmembers(stats_summarizers):
-             if inspect.isclass(item) and issubclass(item, stats_summarizers.StatSummarizer):
-                  if item.name != 'StatSummarizer':     
-                      log.debug('Adding summarizer: %s'%item.name)                            
-                      self.summarizers[item.name] = item()
-        # done  
+        for n, item in inspect.getmembers(stats_operators):
+            if inspect.isclass(item) and issubclass(item, stats_operators.StatOperator):
+                if item.name != "StatOperator":
+                    log.debug("Adding operator: %s" % item.name)
+                    self.operators[item.name] = item()
 
-    @expose(content_type='text/xml')
-    def maps (self, **kw):
-        stream = etree.Element ('resource')
-        stream.attrib['uri'] = '%s/maps'%(self.baseuri)
+        # reduces
+        for n, item in inspect.getmembers(stats_summarizers):
+            if inspect.isclass(item) and issubclass(item, stats_summarizers.StatSummarizer):
+                if item.name != "StatSummarizer":
+                    log.debug("Adding summarizer: %s" % item.name)
+                    self.summarizers[item.name] = item()
+        # done
+
+    @expose(content_type="text/xml")
+    def maps(self, **kw):
+        stream = etree.Element("resource")
+        stream.attrib["uri"] = "%s/maps" % (self.baseuri)
         for n in self.operators:
-            tag      = etree.SubElement (stream, 'tag')
-            tag.attrib['name']  = n           
-            tag.attrib['value'] = '%s [ver %s]'%(self.operators[n].__doc__, self.operators[n].version)
-        return etree.tostring(stream, encoding='unicode')   
+            tag = etree.SubElement(stream, "tag")
+            tag.attrib["name"] = n
+            tag.attrib["value"] = "%s [ver %s]" % (
+                self.operators[n].__doc__,
+                self.operators[n].version,
+            )
+        return etree.tostring(stream, encoding="unicode")
 
-
-    @expose(content_type='text/xml')
-    def reduces (self, **kw):
-        stream = etree.Element ('resource')
-        stream.attrib['uri'] = '%s/reduces'%(self.baseuri)
+    @expose(content_type="text/xml")
+    def reduces(self, **kw):
+        stream = etree.Element("resource")
+        stream.attrib["uri"] = "%s/reduces" % (self.baseuri)
         for n in self.summarizers:
-            tag      = etree.SubElement (stream, 'tag')
-            tag.attrib['name']  = n            
-            tag.attrib['value'] = '%s [ver %s]'%(self.summarizers[n].__doc__, self.summarizers[n].version)
-        return etree.tostring(stream, encoding='unicode')           
+            tag = etree.SubElement(stream, "tag")
+            tag.attrib["name"] = n
+            tag.attrib["value"] = "%s [ver %s]" % (
+                self.summarizers[n].__doc__,
+                self.summarizers[n].version,
+            )
+        return etree.tostring(stream, encoding="unicode")
 
-
-    @expose('bq.stats.templates.index')
+    @expose("bq.stats.templates.index")
     def index(self, **kw):
         maps = {}
         for n in self.operators:
-            maps[n] = '%s [ver %s]'%(self.operators[n].__doc__, self.operators[n].version)
+            maps[n] = "%s [ver %s]" % (self.operators[n].__doc__, self.operators[n].version)
         reduces = {}
         for n in self.summarizers:
-            reduces[n] = '%s [ver %s]'%(self.summarizers[n].__doc__, self.summarizers[n].version)
+            reduces[n] = "%s [ver %s]" % (self.summarizers[n].__doc__, self.summarizers[n].version)
         op_keys = sorted(maps.keys())
-        sum_keys = sorted(reduces.keys())      
-        
+        sum_keys = sorted(reduces.keys())
+
         args = {}
         for k in kw:
-            if not startWithEither(k, ['url', 'xpath', 'xmap', 'xreduce', 'run' ]):
+            if not startWithEither(k, ["url", "xpath", "xmap", "xreduce", "run"]):
                 args[k] = kw[k]
-          
-        return { 'operators': maps, 'op_keys': op_keys, 'summarizers': reduces, 'sum_keys': sum_keys, 'opts': kw, 'args': args }
 
+        return {
+            "operators": maps,
+            "op_keys": op_keys,
+            "summarizers": reduces,
+            "sum_keys": sum_keys,
+            "opts": kw,
+            "args": args,
+        }
 
     # 400 Bad Request
     # 401 Unauthorized
     # 500 Internal Server Error
     # 501 Not Implemented
-    @expose(content_type='text/xml')
-    def compute (self, **kw):
+    @expose(content_type="text/xml")
+    def compute(self, **kw):
         return self.xml(**kw)
 
-    #-------------------------------------------------------------
+    # -------------------------------------------------------------
     # Formatters - XML
-    # MIME types: 
+    # MIME types:
     #   text/xml
-    #-------------------------------------------------------------    
-    @expose(content_type='text/xml')
-    def xml (self, **kw):
+    # -------------------------------------------------------------
+    @expose(content_type="text/xml")
+    def xml(self, **kw):
 
         d = self.compute_stats(**kw)
-        
-        url = kw['url']
-        stream = etree.Element ('resource', type='statistic')        
-        stream.set('uri', '%s/compute?%s'%(self.baseuri, dict2url({'url':url})))
-        
+
+        url = kw["url"]
+        stream = etree.Element("resource", type="statistic")
+        stream.set("uri", "%s/compute?%s" % (self.baseuri, dict2url({"url": url})))
+
         for i in d:
-            xpath   = i.pop('xpath')
-            xmap    = i.pop('xmap')
-            xreduce = i.pop('xreduce')
-            title   = i.pop('title')
-            r = etree.SubElement (stream, 'resource', name=title, type=xreduce)            
-            r.set('uri', '/stats/compute?%s'%(dict2url({ 'url':url, 'xpath':xpath, 'xmap':xmap, 'xreduce':xreduce })))
-            for k in i:     
+            xpath = i.pop("xpath")
+            xmap = i.pop("xmap")
+            xreduce = i.pop("xreduce")
+            title = i.pop("title")
+            r = etree.SubElement(stream, "resource", name=title, type=xreduce)
+            r.set(
+                "uri",
+                "/stats/compute?%s"
+                % (dict2url({"url": url, "xpath": xpath, "xmap": xmap, "xreduce": xreduce})),
+            )
+            for k in i:
                 v = i[k]
-                if hasattr(v, '__iter__') and len(v)>0: 
-                    v = ','.join( [quote(str(x).encode ('utf8')) for x in v] )
+                if hasattr(v, "__iter__") and len(v) > 0:
+                    v = ",".join([quote(str(x).encode("utf8")) for x in v])
                 BQTag(name=k, value=str(v)).toEtree(r)
-        
-        filename = kw.get('filename', 'stats.xml')
+
+        filename = kw.get("filename", "stats.xml")
         try:
-            disposition = 'filename="%s"'% filename.encode('ascii')
+            disposition = 'filename="%s"' % filename.encode("ascii")
         except UnicodeEncodeError:
-            disposition = 'filename="%s"; filename*="%s"'%(filename.encode('utf8'), filename.encode('utf8'))        
-        response.headers['Content-Type'] = 'text/xml'
-        response.headers['Content-Disposition'] = disposition       
-        return etree.tostring(stream, encoding='unicode')
-    
-    #-------------------------------------------------------------
+            disposition = 'filename="%s"; filename*="%s"' % (
+                filename.encode("utf8"),
+                filename.encode("utf8"),
+            )
+        response.headers["Content-Type"] = "text/xml"
+        response.headers["Content-Disposition"] = disposition
+        return etree.tostring(stream, encoding="unicode")
+
+    # -------------------------------------------------------------
     # Formatters - JSON
-    # MIME types: 
+    # MIME types:
     #   application/json
     # Returns
     #   { fields: ['col1', 'col2', ... ],
-    #     data: [ {col1: val1, col2: val2, ...}, 
-    #             {col1: val1, col2: val2, ...}, 
-    #             ... 
+    #     data: [ {col1: val1, col2: val2, ...},
+    #             {col1: val1, col2: val2, ...},
+    #             ...
     #           ]
     #   }
-    #-------------------------------------------------------------    
-    @expose(content_type='application/json')
-    def json (self, **kw):
+    # -------------------------------------------------------------
+    @expose(content_type="application/json")
+    def json(self, **kw):
 
         d = self.compute_stats(**kw)
         mytitles = []
         myiters = []
         for i in d:
-            xpath   = i.pop('xpath')
-            xmap    = i.pop('xmap')
-            xreduce = i.pop('xreduce')
-            title   = i.pop('title')            
-            for k in i:     
-                if not hasattr(i[k], '__iter__'): 
+            xpath = i.pop("xpath")
+            xmap = i.pop("xmap")
+            xreduce = i.pop("xreduce")
+            title = i.pop("title")
+            for k in i:
+                if not hasattr(i[k], "__iter__"):
                     myiters.append([i[k]])
                 else:
                     myiters.append(i[k])
                 if k != xreduce:
-                    mytitles.append( ('%s (%s)'%( title, k )).replace(',', ';') )
+                    mytitles.append(("%s (%s)" % (title, k)).replace(",", ";"))
                 else:
-                    mytitles.append( title.replace(',', ';') )
-        
-        it = zip_longest(fillvalue='', *myiters)
+                    mytitles.append(title.replace(",", ";"))
+
+        it = zip_longest(fillvalue="", *myiters)
         ts = (t for t in it)
         rows = []
         for t in ts:
@@ -307,157 +334,160 @@ class statsController(ServiceController):
             for i in range(0, len(mytitles)):
                 row[mytitles[i]] = t[i]
             rows.append(row)
-            
-        res = { 'fields': mytitles, 'data': rows }
+
+        res = {"fields": mytitles, "data": rows}
         return json.dumps(res)
-    
-    #-------------------------------------------------------------
-    # Formatters - CSV 
-    # MIME types: 
-    #   text/csv 
+
+    # -------------------------------------------------------------
+    # Formatters - CSV
+    # MIME types:
+    #   text/csv
     #   text/comma-separated-values
-    #-------------------------------------------------------------           
-    @expose(content_type='text/csv') 
-    def csv (self, **kw):
-        import re 
+    # -------------------------------------------------------------
+    @expose(content_type="text/csv")
+    def csv(self, **kw):
+        import re
+
         d = self.compute_stats(**kw)
         mytitles = []
         myiters = []
         for i in d:
-            xpath   = i.pop('xpath')
-            xmap    = i.pop('xmap')
-            xreduce = i.pop('xreduce')
-            title   = i.pop('title')            
-            for k in i:     
-                if not hasattr(i[k], '__iter__'): 
+            xpath = i.pop("xpath")
+            xmap = i.pop("xmap")
+            xreduce = i.pop("xreduce")
+            title = i.pop("title")
+            for k in i:
+                if not hasattr(i[k], "__iter__"):
                     myiters.append([i[k]])
                 else:
                     myiters.append(i[k])
                 if k != xreduce:
-                    mytitles.append( ('%s (%s)'%( title, k )).replace(',', ';') )
+                    mytitles.append(("%s (%s)" % (title, k)).replace(",", ";"))
                 else:
-                    mytitles.append( title.replace(',', ';') )
-                            
-        it = zip_longest(fillvalue='', *myiters)
+                    mytitles.append(title.replace(",", ";"))
+
+        it = zip_longest(fillvalue="", *myiters)
         ts = (t for t in it)
-        stream = "\n".join([(', '.join([str(e) for e in t])) for t in ts])
-        
-        filename = kw.get('filename', 'stats.csv')
+        stream = "\n".join([(", ".join([str(e) for e in t])) for t in ts])
+
+        filename = kw.get("filename", "stats.csv")
         try:
             disposition = 'filename="%s"' % filename
         except UnicodeEncodeError:
-            disposition = 'attachment; filename="%s"; filename*=UTF-8\'\'%s' % (filename, filename)             
-        response.headers['Content-Type'] = 'text/csv'
-        response.headers['Content-Disposition'] = disposition
-        return '%s\n%s' % (', '.join(mytitles), stream)
+            disposition = "attachment; filename=\"%s\"; filename*=UTF-8''%s" % (filename, filename)
+        response.headers["Content-Type"] = "text/csv"
+        response.headers["Content-Disposition"] = disposition
+        return "%s\n%s" % (", ".join(mytitles), stream)
 
-    def get_request (self, url, setmode):
-        request = data_service.get_resource(url, view='deep')
+    def get_request(self, url, setmode):
+        request = data_service.get_resource(url, view="deep")
         # if the resource is a dataset, fetch contents of documents linked in it
-        if request.tag == 'dataset' and not setmode: 
-            members_uri = request.get('uri')
+        if request.tag == "dataset" and not setmode:
+            members_uri = request.get("uri")
             if members_uri is not None:
-                request = data_service.get_resource('%s/value'%members_uri, view='deep')
+                request = data_service.get_resource("%s/value" % members_uri, view="deep")
         return request
 
-    #-------------------------------------------------------------   
+    # -------------------------------------------------------------
     # this function will raise exceptions of operators or summarizers cannot take requested inputs
-    #-------------------------------------------------------------    
-    def compute_stats (self, **kw):
-        log.info('Statistics request: %s'%kw)
-      
-        if not 'url' in kw:
-            log.debug('Request stopped: document URL is not provided')          
-            abort(400, 'document URL is not provided')      
-        if not 'xpath' in kw:
-            log.debug('Request stopped: XPath expression not provided')              
-            abort(400, 'XPath expression not provided')                                 
-        if not 'xmap' in kw or not kw['xmap'] in self.operators:
-            log.debug('Request stopped: requested mapping operator was not found')              
-            abort(400, 'requested mapping operator was not found')
-        if not 'xreduce' in kw or not kw['xreduce'] in self.summarizers:
-            log.debug('Request stopped: requested reduction operator was not found')    
-            abort(400, 'requested reduction operator was not found')
+    # -------------------------------------------------------------
+    def compute_stats(self, **kw):
+        log.info("Statistics request: %s" % kw)
 
-        url     = getNumberedArgs(kw, 'url') #kw['url']
-        xpath   = getNumberedArgs(kw, 'xpath')
-        xmap    = getNumberedArgs(kw, 'xmap')
-        xreduce = getNumberedArgs(kw, 'xreduce')
-        titles  = getNumberedArgs(kw, 'title')
-        if len(titles)<=0: titles = [None]
-        maxsize = max([ len(url), len(xpath), len(xmap), len(xreduce) ])
-        xpath   = guaranteeSize(xpath, maxsize)        
-        xmap    = guaranteeSize(xmap, maxsize)
+        if not "url" in kw:
+            log.debug("Request stopped: document URL is not provided")
+            abort(400, "document URL is not provided")
+        if not "xpath" in kw:
+            log.debug("Request stopped: XPath expression not provided")
+            abort(400, "XPath expression not provided")
+        if not "xmap" in kw or not kw["xmap"] in self.operators:
+            log.debug("Request stopped: requested mapping operator was not found")
+            abort(400, "requested mapping operator was not found")
+        if not "xreduce" in kw or not kw["xreduce"] in self.summarizers:
+            log.debug("Request stopped: requested reduction operator was not found")
+            abort(400, "requested reduction operator was not found")
+
+        url = getNumberedArgs(kw, "url")  # kw['url']
+        xpath = getNumberedArgs(kw, "xpath")
+        xmap = getNumberedArgs(kw, "xmap")
+        xreduce = getNumberedArgs(kw, "xreduce")
+        titles = getNumberedArgs(kw, "title")
+        if len(titles) <= 0:
+            titles = [None]
+        maxsize = max([len(url), len(xpath), len(xmap), len(xreduce)])
+        xpath = guaranteeSize(xpath, maxsize)
+        xmap = guaranteeSize(xmap, maxsize)
         xreduce = guaranteeSize(xreduce, maxsize)
-        titles  = guaranteeSize(titles, maxsize)           
-        setmode = 'setmode' in kw
-
+        titles = guaranteeSize(titles, maxsize)
+        setmode = "setmode" in kw
 
         # -----------------------------------------------------
         # QUERY
         # -----------------------------------------------------
-        #etree = data_service.load(url+'?view=deep')
-        #data_service.get_resource(url, view='deep', tag_query="AAA")
+        # etree = data_service.load(url+'?view=deep')
+        # data_service.get_resource(url, view='deep', tag_query="AAA")
         # TODO: Vey inefficient now, need to request queries to the DB!!!!!!!!!!!!!!
-        #request = etree.parse('F:\dima\develop\python\dataset.xml')
-        if len(url)==1:
-            request = self.get_request (url[0], setmode)
-        
-        stream = []        
+        # request = etree.parse('F:\dima\develop\python\dataset.xml')
+        if len(url) == 1:
+            request = self.get_request(url[0], setmode)
+
+        stream = []
         for i in range(len(xpath)):
-            
-            if len(url)>1:
-                request = self.get_request (url[i], setmode)
-            
+            if len(url) > 1:
+                request = self.get_request(url[i], setmode)
+
             # -----------------------------------------------------
             # XPath
             # -----------------------------------------------------
             objects = request.xpath(xpath[i])
-            if len(objects)<1: 
-                log.warning('Request stopped: XPath expression %s did not return any results' % xpath[i])
-                abort(500, 'XPath expression did not return any results') 
-            
+            if len(objects) < 1:
+                log.warning(
+                    "Request stopped: XPath expression %s did not return any results" % xpath[i]
+                )
+                abort(500, "XPath expression did not return any results")
+
             # -----------------------------------------------------
             # MAP
             # -----------------------------------------------------
             vector_alpha_num = self.operators[xmap[i]](objects, **kw)
-            if len(vector_alpha_num)<1:
-                log.warning('Request stopped: Map operation did not return any results')
-                abort(500, 'Map operation did not return any results')             
-            
+            if len(vector_alpha_num) < 1:
+                log.warning("Request stopped: Map operation did not return any results")
+                abort(500, "Map operation did not return any results")
+
             # -----------------------------------------------------
             # REDUCE
             # -----------------------------------------------------
             d = self.summarizers[xreduce[i]](vector_alpha_num, **kw)
-            if len(d)<1:
-                log.warning('Request stopped: Summarizer operation did not return any results')                    
-                abort(500, 'Summarizer operation did not return any results')                  
-            d['xpath']   = xpath[i]
-            d['xmap']    = xmap[i]
-            d['xreduce'] = xreduce[i]
-            d['title']   = titles[i] or '%s of %s for %s'%( xreduce[i], xmap[i], xpath[i] )
-            stream.append(d)                  
-        
-        return stream        
+            if len(d) < 1:
+                log.warning("Request stopped: Summarizer operation did not return any results")
+                abort(500, "Summarizer operation did not return any results")
+            d["xpath"] = xpath[i]
+            d["xmap"] = xmap[i]
+            d["xreduce"] = xreduce[i]
+            d["title"] = titles[i] or "%s of %s for %s" % (xreduce[i], xmap[i], xpath[i])
+            stream.append(d)
+
+        return stream
 
 
 def initialize(uri):
-    """ Initialize the top level server for this microapp"""
+    """Initialize the top level server for this microapp"""
     # Add you checks and database initialize
-    log.debug ("initialize " + uri)
-    service =  statsController(uri)
-    #directory.register_service ('stats', service)
+    log.debug("initialize " + uri)
+    service = statsController(uri)
+    # directory.register_service ('stats', service)
 
     return service
 
+
 def get_static_dirs():
     """Return the static directories for this server"""
-    package = pkg_resources.Requirement.parse ("bqserver")
-    package_path = pkg_resources.resource_filename(package,'bq')
-    return [(package_path, os.path.join(package_path, 'stats', 'public'))]
+    package_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+    return [(package_path, os.path.join(package_path, "stats", "public"))]
 
-#def get_model():
+
+# def get_model():
 #    from bq.stats import model
 #    return model
 
-__controller__ =  statsController
+__controller__ = statsController

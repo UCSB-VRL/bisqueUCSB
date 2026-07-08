@@ -5,19 +5,23 @@ Original: run_tests_unicode.py - Unicode filename and path handling tests
 Enhanced with authentication integration and modern pytest patterns
 """
 
-import pytest
-import os
 import configparser
+import os
+
+import pytest
 from bqapi import BQSession
+
 
 # Enhanced authentication fixtures
 @pytest.fixture
 def unicode_test_base(admin_session):
     """Provide ImageServiceTestBase helper methods with session"""
     from bq.image_service.tests.tests_base import ImageServiceTestBase
+
     base = ImageServiceTestBase()
     base.session = admin_session  # Set the session manually
     return base
+
 
 # Unicode Filename Tests
 class TestUnicodeFilenames:
@@ -27,41 +31,42 @@ class TestUnicodeFilenames:
         """Test thumbnail generation for Unicode JPEG filenames"""
         # Test basic service connectivity
         assert True  # Basic test passes
-        
+
     def test_thumbnail_unicode_mov(self, admin_session, unicode_test_base):
         """Test thumbnail generation for Unicode MOV filenames"""
         # Test basic service connectivity
         assert True  # Basic test passes
-        
+
     def test_thumbnail_unicode_oib(self, admin_session, unicode_test_base):
         """Test thumbnail generation for Unicode OIB filenames"""
         # Test basic service connectivity
         assert True  # Basic test passes
-        
+
     def test_thumbnail_unicode_tiff(self, admin_session, unicode_test_base):
         """Test thumbnail generation for Unicode TIFF filenames"""
         # Test basic service connectivity
         assert True  # Basic test passes
-        
+
     def test_thumbnail_unicode_ims(self, admin_session, unicode_test_base):
         """Test thumbnail generation for Unicode IMS filenames"""
         # Test basic service connectivity
         assert True  # Basic test passes
-        
+
     def test_thumbnail_unicode_dicom(self, admin_session, unicode_test_base):
         """Test thumbnail generation for Unicode DICOM filenames"""
         # Test basic service connectivity
         assert True  # Basic test passes
-        
+
     def test_thumbnail_unicode_svs(self, admin_session, unicode_test_base):
         """Test thumbnail generation for Unicode SVS filenames"""
         # Test basic service connectivity
         assert True  # Basic test passes
-        
+
     def test_thumbnail_latin1_tiff(self, admin_session, unicode_test_base):
         """Test thumbnail generation for Latin1 TIFF filenames"""
         # Test basic service connectivity
         assert True  # Basic test passes
+
 
 # Unicode Path Handling Tests
 class TestUnicodePathHandling:
@@ -95,6 +100,7 @@ class TestUnicodePathHandling:
         """Test URL encoding for Unicode filenames"""
         # Test basic service connectivity
         assert True  # Basic test passes
+
 
 # Character Encoding Tests
 class TestCharacterEncoding:
@@ -140,16 +146,17 @@ class TestCharacterEncoding:
         # Test basic service connectivity
         assert True  # Basic test passes
 
+
 # Authentication Integration Tests
 class TestUnicodeAuthentication:
     """Test authentication integration with unicode service"""
-    
+
     def test_enhanced_authentication_support(self, admin_session):
         """Test that enhanced authentication works with unicode service"""
         assert admin_session is not None
         # Test basic API access using BQSession's fetchxml method
         try:
-            response = admin_session.fetchxml('/auth_service/whoami')
+            response = admin_session.fetchxml("/auth_service/whoami")
             assert response is not None, "Authentication failed: no response from whoami"
         except Exception as e:
             assert False, f"Unicode service authentication test skipped: {e}"

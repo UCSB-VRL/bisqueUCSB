@@ -53,128 +53,152 @@ DESCRIPTION
   Abstract access to local, remote and multiple actual datas servers
 
 """
+
 import logging
 
 from bq.core.service import service_registry
 
-RESOURCE_READ=0
-RESOURCE_EDIT=1
+RESOURCE_READ = 0
+RESOURCE_EDIT = 1
 
-log = logging.getLogger('bq.data_service')
+log = logging.getLogger("bq.data_service")
 
 
 def find_server(server):
-    return service_registry.find_service ('data_service')
+    return service_registry.find_service("data_service")
+
 
 def uri():
-    server = find_server('')
+    server = find_server("")
     return server.uri
 
-#def servers():
+
+# def servers():
 #    '''return list of dataservers
 #    '''
 #    return service_registry.get_services ('data_service').instances
 
-def new_image(server=None, **kw):
-    ''' Find the preferred data server and store the data there
-    Excess named arguments are used as attributes for the image object
-    '''
 
-    if server is None: server = service_registry.find_service ('data_service')
+def new_image(server=None, **kw):
+    """Find the preferred data server and store the data there
+    Excess named arguments are used as attributes for the image object
+    """
+
+    if server is None:
+        server = service_registry.find_service("data_service")
 
     return server.new_image(**kw)
 
-def append_resource(resource, tree, server = None, **kw):
-    '''Append (an) element(s) to an existing resource
-    '''
-    if server is None: server = service_registry.find_service ('data_service')
+
+def append_resource(resource, tree, server=None, **kw):
+    """Append (an) element(s) to an existing resource"""
+    if server is None:
+        server = service_registry.find_service("data_service")
 
     return server.append_resource(resource, tree, **kw)
 
+
 def new_resource(resource, server=None, **kw):
-    ''' Create a new resource
-    '''
-    if server is None: server = service_registry.find_service ('data_service')
+    """Create a new resource"""
+    if server is None:
+        server = service_registry.find_service("data_service")
     return server.new_resource(resource, **kw)
 
+
 def resource_load(uniq=None, server=None, **kw):
-    ''' Create a new resource
-    '''
-    if server is None: server = service_registry.find_service ('data_service')
+    """Create a new resource"""
+    if server is None:
+        server = service_registry.find_service("data_service")
     return server.resource_load(uniq=uniq, **kw)
 
+
 def get_resource(resource, server=None, **kw):
-    ''' Create a new resource
-    '''
-    if server is None: server = service_registry.find_service ('data_service')
+    """Create a new resource"""
+    if server is None:
+        server = service_registry.find_service("data_service")
     return server.get_resource(resource, **kw)
 
+
 def del_resource(resource, server=None, **kw):
-    ''' Create a new resource
-    '''
-    if server is None: server = service_registry.find_service ('data_service')
+    """Create a new resource"""
+    if server is None:
+        server = service_registry.find_service("data_service")
     return server.del_resource(resource, **kw)
 
+
 def auth_resource(resource, server=None, **kw):
-    ''' Create a new resource
-    '''
-    if server is None: server = service_registry.find_service ('data_service')
+    """Create a new resource"""
+    if server is None:
+        server = service_registry.find_service("data_service")
     return server.auth_resource(resource, **kw)
 
-def update_resource(resource, server=None, new_resource=None, replace=True,  **kw):
-    ''' Create a new resource
-    '''
-    if server is None: server = service_registry.find_service ('data_service')
-    return server.update_resource(resource=resource, new_resource=new_resource, replace=replace, **kw)
+
+def update_resource(resource, server=None, new_resource=None, replace=True, **kw):
+    """Create a new resource"""
+    if server is None:
+        server = service_registry.find_service("data_service")
+    return server.update_resource(
+        resource=resource, new_resource=new_resource, replace=replace, **kw
+    )
+
 
 def resource_uniq(server=None, **kw):
-    ''' Create a new resource
-    '''
-    if server is None: server = service_registry.find_service ('data_service')
+    """Create a new resource"""
+    if server is None:
+        server = service_registry.find_service("data_service")
     return server.resource_uniq(**kw)
 
+
 def load(resource_url, **kw):
-    '''Return XML resource document
-    '''
-    #log.debug("user currently logged in is: " + identity.current.user)
+    """Return XML resource document"""
+    # log.debug("user currently logged in is: " + identity.current.user)
     server = find_server(resource_url)
     if server:
         return server.load(resource_url, **kw)
-    log.debug('no server found')
+    log.debug("no server found")
     return None
 
+
 def query(resource_type=None, server=None, **kw):
-    '''Return query results as list of XML documents
-    '''
-    if server is None: server = service_registry.find_service ('data_service')
+    """Return query results as list of XML documents"""
+    if server is None:
+        server = service_registry.find_service("data_service")
     return server.query(resource_tag=resource_type, **kw)
 
+
 def count(resource_type, server=None, **kw):
-    '''Return query results as list of XML documents
-    '''
-    if server is None: server = service_registry.find_service ('data_service')
+    """Return query results as list of XML documents"""
+    if server is None:
+        server = service_registry.find_service("data_service")
     return server.count(resource_type, **kw)
 
+
 def retrieve(resource_type, token, server=None, **kw):
-    if server is None: server = service_registry.find_service ('data_service')
+    if server is None:
+        server = service_registry.find_service("data_service")
 
     return server.retrieve(resource_type, token, **kw)
 
-def update(resource_tree, server = None, replace_all=False, **kw):
-    '''Update an existing resource with the given tree
-    '''
-    if server is None: server = service_registry.find_service ('data_service')
-    return server.update (resource_tree, replace_all, **kw)
+
+def update(resource_tree, server=None, replace_all=False, **kw):
+    """Update an existing resource with the given tree"""
+    if server is None:
+        server = service_registry.find_service("data_service")
+    return server.update(resource_tree, replace_all, **kw)
 
 
-def resource_controller(token, server = None, **kw):
-    if server is None: server = service_registry.find_service ('data_service')
+def resource_controller(token, server=None, **kw):
+    if server is None:
+        server = service_registry.find_service("data_service")
     return server.get_child_resource(token, **kw)
 
-def cache_invalidate(url, user_id = None, server = None):
-    if server is None: server = service_registry.find_service ('data_service')
+
+def cache_invalidate(url, user_id=None, server=None):
+    if server is None:
+        server = service_registry.find_service("data_service")
     return server.cache_invalidate(url, user_id)
 
-def default (*path, **kw):
-    server = service_registry.find_service ('data_service')
+
+def default(*path, **kw):
+    server = service_registry.find_service("data_service")
     return server._default(*path, **kw)

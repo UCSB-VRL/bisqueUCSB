@@ -53,9 +53,9 @@ import logging
 log = logging.getLogger("bq.pipeline.base")
 
 
-__all__ = [ 'PipelineBase' ]
+__all__ = ["PipelineBase"]
 
-#---------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------
 # Pipeline base
 #
 # field "data" will store the pipeline as follows:
@@ -81,14 +81,14 @@ __all__ = [ 'PipelineBase' ]
 # }
 #
 # "<attr_value>" can be single value or dictionary (nested)
-#---------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------
+
 
 class PipelineBase(object):
-
-    name = ''
-    version = '1.0'
-    ext = ''
-    mime_type = 'text/plain'
+    name = ""
+    version = "1.0"
+    ext = ""
+    mime_type = "text/plain"
 
     def isloaded(self):
         return self.data is not None
@@ -99,5 +99,5 @@ class PipelineBase(object):
         self.path = path
         self.resource = resource
         self.uniq = uniq
-        self.url = kw['url'] if 'url' in kw else None
+        self.url = kw["url"] if "url" in kw else None
         self.data = None

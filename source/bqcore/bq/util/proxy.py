@@ -31,137 +31,147 @@ TODO:
 """
 
 import http.client
-import urllib.parse
-import urllib.request, urllib.parse, urllib.error
-import requests
 import logging
 import posixpath
+import urllib.error
+import urllib.parse
+import urllib.request
 
+import requests
 from paste import httpexceptions
 from paste.util.converters import aslist
 
-log = logging.getLogger('bq.util.proxy')
+log = logging.getLogger("bq.util.proxy")
 
 # Remove these headers from response (specify lower case header
 # names):
 filtered_headers = (
-    'transfer-encoding',
-    'connection',
-    'keep-alive',
-    'proxy-authenticate',
-    'proxy-authorization',
-    'te',
-    'trailers',
-    'upgrade',
+    "transfer-encoding",
+    "connection",
+    "keep-alive",
+    "proxy-authenticate",
+    "proxy-authorization",
+    "te",
+    "trailers",
+    "upgrade",
 )
 
-class Proxy(object):
 
-    def __init__(self, address, allowed_request_methods=(),
-                 suppress_http_headers=()):
+class Proxy(object):
+    def __init__(self, address, allowed_request_methods=(), suppress_http_headers=()):
         self.address = address
         self.parsed = urllib.parse.urlsplit(address)
         self.scheme = self.parsed[0].lower()
         self.host = self.parsed[1]
         self.path = self.parsed[2]
-        self.allowed_request_methods = [
-            x.lower() for x in allowed_request_methods if x]
+        self.allowed_request_methods = [x.lower() for x in allowed_request_methods if x]
 
-        self.suppress_http_headers = [
-            x.lower() for x in suppress_http_headers if x]
+        self.suppress_http_headers = [x.lower() for x in suppress_http_headers if x]
 
-        headers_ignore_in = ['cookie', 'host', 'referer', 'connection', 'origin']
+        headers_ignore_in = ["cookie", "host", "referer", "connection", "origin"]
         self.suppress_http_headers.extend(headers_ignore_in)
 
-        self.suppress_http_headers_out = ['content-encoding', 'transfer-encoding', 'vary', 'connection']
+        self.suppress_http_headers_out = [
+            "content-encoding",
+            "transfer-encoding",
+            "vary",
+            "connection",
+        ]
 
     def __call__(self, environ, start_response):
-        if (self.allowed_request_methods and
-            environ['REQUEST_METHOD'].lower() not in self.allowed_request_methods):
+        if (
+            self.allowed_request_methods
+            and environ["REQUEST_METHOD"].lower() not in self.allowed_request_methods
+        ):
             return httpexceptions.HTTPBadRequest("Disallowed")(environ, start_response)
 
-        #if self.scheme == 'http':
+        # if self.scheme == 'http':
         #    ConnClass = httplib.HTTPConnection
-        #elif self.scheme == 'https':
+        # elif self.scheme == 'https':
         #    ConnClass = httplib.HTTPSConnection
-        #else:
+        # else:
         #    raise ValueError(
         #        "Unknown scheme for %r: %r" % (self.address, self.scheme))
-        #conn = ConnClass(self.host)
+        # conn = ConnClass(self.host)
 
         headers = {}
         for key, value in list(environ.items()):
-            if key.startswith('HTTP_'):
-                key = key[5:].lower().replace('_', '-')
-                if key == 'host' or key in self.suppress_http_headers:
+            if key.startswith("HTTP_"):
+                key = key[5:].lower().replace("_", "-")
+                if key == "host" or key in self.suppress_http_headers:
                     continue
                 headers[key] = value
-        headers['host'] = self.host
-        if 'REMOTE_ADDR' in environ:
-            headers['x-forwarded-for'] = environ['REMOTE_ADDR']
-        if environ.get('CONTENT_TYPE'):
-            headers['content-type'] = environ['CONTENT_TYPE']
-        if environ.get('CONTENT_LENGTH'):
-            if environ['CONTENT_LENGTH'] == '-1':
+        headers["host"] = self.host
+        if "REMOTE_ADDR" in environ:
+            headers["x-forwarded-for"] = environ["REMOTE_ADDR"]
+        if environ.get("CONTENT_TYPE"):
+            headers["content-type"] = environ["CONTENT_TYPE"]
+        if environ.get("CONTENT_LENGTH"):
+            if environ["CONTENT_LENGTH"] == "-1":
                 # This is a special case, where the content length is basically undetermined
-                body = environ['wsgi.input'].read(-1)
-                headers['content-length'] = str(len(body))
+                body = environ["wsgi.input"].read(-1)
+                headers["content-length"] = str(len(body))
             else:
-                headers['content-length'] = environ['CONTENT_LENGTH']
-                length = int(environ['CONTENT_LENGTH'])
-                body = environ['wsgi.input'].read(length)
+                headers["content-length"] = environ["CONTENT_LENGTH"]
+                length = int(environ["CONTENT_LENGTH"])
+                body = environ["wsgi.input"].read(length)
         else:
-            body = ''
+            body = ""
 
         # x-forward-scheme was breaking in the proxy when https://bisque-site/ was fetch engine_service/_service over http
         # The address was always coming back as https://bisque-engine/_services
         # This code removes any mention of the forwards which seems to be the correct thing/
         for k in list(headers.keys()):
-            if k.startswith('x-forwarded'):
+            if k.startswith("x-forwarded"):
                 del headers[k]
 
-
-        #log.debug('environ: %s', str(environ))
-        path_info = urllib.parse.quote(environ['PATH_INFO'])
+        # log.debug('environ: %s', str(environ))
+        path_info = urllib.parse.quote(environ["PATH_INFO"])
         if self.path:
             request_path = path_info
-            if request_path and request_path[0] == '/':
+            if request_path and request_path[0] == "/":
                 request_path = request_path[1:]
 
             path = urllib.parse.urljoin(self.path, request_path)
         else:
             path = path_info
-        if environ.get('QUERY_STRING'):
-            path += '?' + environ['QUERY_STRING']
+        if environ.get("QUERY_STRING"):
+            path += "?" + environ["QUERY_STRING"]
 
         url = "%s://%s%s" % (self.scheme, self.host, path)
-        log.debug('method: %s, url: %s', environ['REQUEST_METHOD'], url)
-        log.debug('headers: %s', headers)
-        #log.debug('environ: %s', environ)
-        #log.debug('body: %s', body)
+        log.debug("method: %s, url: %s", environ["REQUEST_METHOD"], url)
+        log.debug("headers: %s", headers)
+        # log.debug('environ: %s', environ)
+        # log.debug('body: %s', body)
         try:
-            res = requests.request (method=environ['REQUEST_METHOD'],
-                                    url = url,
-                                    data = body,
-                                    headers = headers,
-                                    stream=False,
-                                    verify=False,
-                                    allow_redirects=True)
+            res = requests.request(
+                method=environ["REQUEST_METHOD"],
+                url=url,
+                data=body,
+                headers=headers,
+                stream=False,
+                verify=False,
+                allow_redirects=True,
+            )
 
-            log.debug ("Proxy response: %s with: %s", str(res), res.headers)
-            #log.debug ("Proxy response content: %s", res.content)
-            #log.debug ("Proxy response text: %s", res.text)
-            #log.debug ("Proxy response history: %s", res.history)
-            #log.debug ("Proxy response request headers: %s", res.request.headers)
+            log.debug("Proxy response: %s with: %s", str(res), res.headers)
+            # log.debug ("Proxy response content: %s", res.content)
+            # log.debug ("Proxy response text: %s", res.text)
+            # log.debug ("Proxy response history: %s", res.history)
+            # log.debug ("Proxy response request headers: %s", res.request.headers)
 
-            status = '%s %s' % (res.status_code, res.reason)
-            headers_out = dict ( (k, res.headers[k]) for k in res.headers if k.lower() not in self.suppress_http_headers_out)
+            status = "%s %s" % (res.status_code, res.reason)
+            headers_out = dict(
+                (k, res.headers[k])
+                for k in res.headers
+                if k.lower() not in self.suppress_http_headers_out
+            )
             start_response(status, list(headers_out.items()))
-            return [ res.content ]
+            return [res.content]
         except Exception:
-            log.exception('Failed')
+            log.exception("Failed")
             start_response("502", [])
-            return ['Bad Gateway']
+            return ["Bad Gateway"]
 
         # conn.request(environ['REQUEST_METHOD'],
         #              path,
@@ -179,8 +189,8 @@ class Proxy(object):
         # conn.close()
         # return [body]
 
-def make_proxy(global_conf, address, allowed_request_methods="",
-               suppress_http_headers=""):
+
+def make_proxy(global_conf, address, allowed_request_methods="", suppress_http_headers=""):
     """
     Make a WSGI application that proxies to another address:
 
@@ -200,11 +210,11 @@ def make_proxy(global_conf, address, allowed_request_methods="",
     return Proxy(
         address,
         allowed_request_methods=allowed_request_methods,
-        suppress_http_headers=suppress_http_headers)
+        suppress_http_headers=suppress_http_headers,
+    )
 
 
 class TransparentProxy(object):
-
     """
     A proxy that sends the request just as it was given, including
     respecting HTTP_HOST, wsgi.url_scheme, etc.
@@ -219,34 +229,33 @@ class TransparentProxy(object):
     header in the request will remain intact.
     """
 
-    def __init__(self, force_host=None,
-                 force_scheme='http'):
+    def __init__(self, force_host=None, force_scheme="http"):
         self.force_host = force_host
         self.force_scheme = force_scheme
 
     def __repr__(self):
-        return '<%s %s force_host=%r force_scheme=%r>' % (
+        return "<%s %s force_host=%r force_scheme=%r>" % (
             self.__class__.__name__,
             hex(id(self)),
-            self.force_host, self.force_scheme)
+            self.force_host,
+            self.force_scheme,
+        )
 
     def __call__(self, environ, start_response):
-        scheme = environ['wsgi.url_scheme']
+        scheme = environ["wsgi.url_scheme"]
         if self.force_host is None:
             conn_scheme = scheme
         else:
             conn_scheme = self.force_scheme
-        if conn_scheme == 'http':
+        if conn_scheme == "http":
             ConnClass = http.client.HTTPConnection
-        elif conn_scheme == 'https':
+        elif conn_scheme == "https":
             ConnClass = http.client.HTTPSConnection
         else:
-            raise ValueError(
-                "Unknown scheme %r" % scheme)
-        if 'HTTP_HOST' not in environ:
-            raise ValueError(
-                "WSGI environ must contain an HTTP_HOST key")
-        host = environ['HTTP_HOST']
+            raise ValueError("Unknown scheme %r" % scheme)
+        if "HTTP_HOST" not in environ:
+            raise ValueError("WSGI environ must contain an HTTP_HOST key")
+        host = environ["HTTP_HOST"]
         if self.force_host is None:
             conn_host = host
         else:
@@ -254,46 +263,45 @@ class TransparentProxy(object):
         conn = ConnClass(conn_host)
         headers = {}
         for key, value in list(environ.items()):
-            if key.startswith('HTTP_'):
-                key = key[5:].lower().replace('_', '-')
+            if key.startswith("HTTP_"):
+                key = key[5:].lower().replace("_", "-")
                 headers[key] = value
-        headers['host'] = host
-        if 'REMOTE_ADDR' in environ and 'HTTP_X_FORWARDED_FOR' not in environ:
-            headers['x-forwarded-for'] = environ['REMOTE_ADDR']
-        if environ.get('CONTENT_TYPE'):
-            headers['content-type'] = environ['CONTENT_TYPE']
-        if environ.get('CONTENT_LENGTH'):
-            length = int(environ['CONTENT_LENGTH'])
-            body = environ['wsgi.input'].read(length)
+        headers["host"] = host
+        if "REMOTE_ADDR" in environ and "HTTP_X_FORWARDED_FOR" not in environ:
+            headers["x-forwarded-for"] = environ["REMOTE_ADDR"]
+        if environ.get("CONTENT_TYPE"):
+            headers["content-type"] = environ["CONTENT_TYPE"]
+        if environ.get("CONTENT_LENGTH"):
+            length = int(environ["CONTENT_LENGTH"])
+            body = environ["wsgi.input"].read(length)
             if length == -1:
-                environ['CONTENT_LENGTH'] = str(len(body))
-        elif 'CONTENT_LENGTH' not in environ:
-            body = ''
+                environ["CONTENT_LENGTH"] = str(len(body))
+        elif "CONTENT_LENGTH" not in environ:
+            body = ""
             length = 0
         else:
-            body = ''
+            body = ""
             length = 0
 
-        path = (environ.get('SCRIPT_NAME', '')
-                + environ.get('PATH_INFO', ''))
+        path = environ.get("SCRIPT_NAME", "") + environ.get("PATH_INFO", "")
         path = urllib.parse.quote(path)
-        if 'QUERY_STRING' in environ:
-            path += '?' + environ['QUERY_STRING']
-        conn.request(environ['REQUEST_METHOD'],
-                     path, body, headers)
+        if "QUERY_STRING" in environ:
+            path += "?" + environ["QUERY_STRING"]
+        conn.request(environ["REQUEST_METHOD"], path, body, headers)
         res = conn.getresponse()
         headers_out = parse_headers(res.msg)
 
-        status = '%s %s' % (res.status, res.reason)
+        status = "%s %s" % (res.status, res.reason)
         start_response(status, headers_out)
         # @@: Default?
-        length = res.getheader('content-length')
+        length = res.getheader("content-length")
         if length is not None:
             body = res.read(int(length))
         else:
             body = res.read()
         conn.close()
         return [body]
+
 
 def parse_headers(message):
     """
@@ -307,14 +315,13 @@ def parse_headers(message):
         if full_header[0].isspace():
             # Continuation line, add to the last header
             if not headers_out:
-                raise ValueError(
-                    "First header starts with a space (%r)" % full_header)
+                raise ValueError("First header starts with a space (%r)" % full_header)
             last_header, last_value = headers_out.pop()
-            value = last_value + ' ' + full_header.strip()
+            value = last_value + " " + full_header.strip()
             headers_out.append((last_header, value))
             continue
         try:
-            header, value = full_header.split(':', 1)
+            header, value = full_header.split(":", 1)
         except:
             raise ValueError("Invalid header: %r" % full_header)
         value = value.strip()
@@ -322,11 +329,10 @@ def parse_headers(message):
             headers_out.append((header, value))
     return headers_out
 
-def make_transparent_proxy(
-    global_conf, force_host=None, force_scheme='http'):
+
+def make_transparent_proxy(global_conf, force_host=None, force_scheme="http"):
     """
     Create a proxy that connects to a specific host, but does
     absolutely no other filtering, including the Host header.
     """
-    return TransparentProxy(force_host=force_host,
-                            force_scheme=force_scheme)
+    return TransparentProxy(force_host=force_host, force_scheme=force_scheme)

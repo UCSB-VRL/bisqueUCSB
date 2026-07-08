@@ -1,2 +1,0 @@
-recursive-include bq/features/templates *
-recursive-include bq/features/public *

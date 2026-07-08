@@ -1,9 +1,9 @@
 """
-    A patch to format_header_param in urllib3
+A patch to format_header_param in urllib3
 
-    If a value has unicode the header will be returned
-    as 'name="value"; name*=utf-8''value' else
-    'name="value"'
+If a value has unicode the header will be returned
+as 'name="value"; name*=utf-8''value' else
+'name="value"'
 """
 
 # !!! commented out because according to the previous comment it is not needed (Need checking though)
@@ -15,7 +15,6 @@
 # import requests.packages.urllib3 as urllib3
 # from requests.packages.urllib3.packages import six
 # from .monkeypatch import monkeypatch_method
-
 
 
 # REQUESTS_V = [int(s) for s in requests.__version__.split('.')]

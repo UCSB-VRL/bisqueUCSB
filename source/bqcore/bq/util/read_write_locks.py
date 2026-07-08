@@ -8,7 +8,7 @@ Copyright (C) 2008, Center for Bio Image Informatcs
 # read/write locking
 ##########################################################################
 #
-#import threading
+# import threading
 #
 # class ReadWriteLock:
 #    """ A lock object that allows many simultaneous "read locks", but
@@ -187,9 +187,7 @@ class ReadWriteLock(object):
                     # else also wants to upgrade, there is no way we can do
                     # this except if one of us releases all his read locks.
                     # Signal this to user.
-                    raise ValueError(
-                        "Inevitable dead lock, denying write lock"
-                    )
+                    raise ValueError("Inevitable dead lock, denying write lock")
                 upgradewriter = True
                 self.__upgradewritercount = self.__readers.pop(me)
             else:
@@ -274,6 +272,7 @@ class ReadWriteLock(object):
                 raise ValueError("Trying to release unheld lock")
         finally:
             self.__condition.release()
+
     release_read = release
     release_write = release
 
@@ -286,7 +285,7 @@ import _thread
 
 
 class ReadWriteLockItem:
-    """ an item for name-based r/w lock hash """
+    """an item for name-based r/w lock hash"""
 
     def __init__(self):
         self.readers = 0
@@ -308,13 +307,14 @@ class ReadWriteLockItem:
     def release_write(self):
         self.lock.release_write()
 
+
 ##########################################################################
 # name-based read/write lock
 ##########################################################################
 
 
 class HashedReadWriteLock:
-    """ A name-based lock object that allows many simultaneous "read locks", but
+    """A name-based lock object that allows many simultaneous "read locks", but
     only one "write lock." """
 
     def __init__(self):
@@ -322,8 +322,8 @@ class HashedReadWriteLock:
         self._hash_lock = _thread.allocate_lock()
 
     def acquire_read(self, name, timeout=None):
-        """ Acquire a read lock. Blocks only if a thread has
-        acquired the write lock. """
+        """Acquire a read lock. Blocks only if a thread has
+        acquired the write lock."""
         self._hash_lock.acquire()
         if name not in self._names:
             self._names[name] = ReadWriteLockItem()
@@ -332,7 +332,7 @@ class HashedReadWriteLock:
         self._names[name].acquire_read(timeout=timeout)
 
     def release_read(self, name):
-        """ Release a read lock. """
+        """Release a read lock."""
         self._hash_lock.acquire()
         if name in self._names:
             self._names[name].release_read()
@@ -342,8 +342,8 @@ class HashedReadWriteLock:
         self._hash_lock.release()
 
     def acquire_write(self, name, timeout=None):
-        """ Acquire a write lock. Blocks until there are no
-        acquired read or write locks. """
+        """Acquire a write lock. Blocks until there are no
+        acquired read or write locks."""
         self._hash_lock.acquire()
         if name not in self._names:
             self._names[name] = ReadWriteLockItem()
@@ -352,7 +352,7 @@ class HashedReadWriteLock:
         self._names[name].acquire_write(timeout=timeout)
 
     def release_write(self, name):
-        """ Release a write lock. """
+        """Release a write lock."""
         self._hash_lock.acquire()
         if name in self._names:
             self._names[name].release_write()

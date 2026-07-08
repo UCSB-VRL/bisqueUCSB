@@ -47,28 +47,29 @@ Plug-in class manager
 
 """
 
-__author__    = "Dmitry Fedorov <dima@dimin.net>"
-__version__   = "1.0"
+__author__ = "Dmitry Fedorov <dima@dimin.net>"
+__version__ = "1.0"
 __copyright__ = "Center for Bio-Image Informatics, University of California at Santa Barbara"
 
 # default imports
-import os
 import imp
 import inspect
 import logging
+import os
+
 import pkg_resources
 
 log = logging.getLogger("bq.image_service.plugins")
 
-__all__ = [ 'PluginManager' ]
+__all__ = ["PluginManager"]
 
-#---------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------
 # misc
-#---------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------
 
-def walk_deep(path, ext='py'):
-    """Splits sub path that follows # sign if present
-    """
+
+def walk_deep(path, ext="py"):
+    """Splits sub path that follows # sign if present"""
     files = []
     for root, _, filenames in os.walk(path):
         for f in filenames:
@@ -76,12 +77,13 @@ def walk_deep(path, ext='py'):
                 files.append(os.path.join(root, f))
     return files
 
-#---------------------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------------------
 # Table base
-#---------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------
+
 
 class PluginManager(object):
-
     def __init__(self, name, path_plugins, NeededClass, **kw):
         self.name = name
         self.plugins = {}
@@ -89,17 +91,16 @@ class PluginManager(object):
 
         files = walk_deep(self.path_plugins)
         for f in files:
-            #log.debug('Inspecting file: %s'%f)
+            # log.debug('Inspecting file: %s'%f)
             module_name = os.path.splitext(os.path.basename(f))[0]
             try:
                 o = imp.load_source(module_name, f)
-                for n,item in inspect.getmembers(o):
+                for n, item in inspect.getmembers(o):
                     if inspect.isclass(item) and issubclass(item, NeededClass):
-                        if item.name != '':
-                            log.debug('Adding plugin: %s'%item.name)
-                            self.plugins[item.name] = item(**kw) # pass init args
+                        if item.name != "":
+                            log.debug("Adding plugin: %s" % item.name)
+                            self.plugins[item.name] = item(**kw)  # pass init args
             except Exception:
-                log.exception('Could not load: %s'%module_name)
+                log.exception("Could not load: %s" % module_name)
 
-        log.info('Available %s plugins: %s', self.name, ','.join(list(self.plugins.keys())))
-
+        log.info("Available %s plugins: %s", self.name, ",".join(list(self.plugins.keys())))

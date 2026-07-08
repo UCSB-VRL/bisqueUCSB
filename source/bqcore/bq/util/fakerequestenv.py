@@ -47,12 +47,13 @@ DESCRIPTION
 
 """
 
-from tg import config, session, request
+from beaker.session import SessionObject
 from paste.registry import Registry
-from beaker.session import  SessionObject
 from pylons.controllers.util import Request
-from pylons.util import ContextObj 
+from pylons.util import ContextObj
+from tg import config, request, session
 from tg.request_local import context
+
 
 def create_fake_env():
     # registry = Registry()
@@ -65,7 +66,7 @@ def create_fake_env():
     registry = Registry()
     registry.prepare()
 
-    fake_request = Request.blank('/bootstrap')
+    fake_request = Request.blank("/bootstrap")
     fake_session = SessionObject({})
 
     # Register them into the registry
@@ -79,6 +80,6 @@ def create_fake_env():
     registry.register(context, ctx)
     # registry.register(request, fake_request)
     # registry.register(session, fake_session)
-    request.identity = {'repoze.who.userid': 'admin'}
+    request.identity = {"repoze.who.userid": "admin"}
 
     return fake_session, fake_request
