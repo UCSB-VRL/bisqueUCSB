@@ -102,6 +102,7 @@ To further develop modules with BisQue or for queries, reach out to us on [Disco
 
 ## License
 
-BisQue is dual licensed: AGPL-3.0-or-later by default, or under a separate
-commercial license from The Regents of the University of California through
-University of California, Santa Barbara. See [LICENSE](LICENSE).
+BisQue is dual licensed. Use, modification, distribution, and hosted deployment
+of BisQue are governed by the AGPL-3.0-or-later unless you have obtained a
+separate commercial license from The Regents of the University of California
+through University of California, Santa Barbara. See [LICENSE](LICENSE).

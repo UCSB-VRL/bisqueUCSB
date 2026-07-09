@@ -72,20 +72,3 @@ or directory states a different license.
 - Notes: Bio-Formats should be treated as an optional converter unless a
   distribution has reviewed and accepted the licensing implications. Public
   container images should not bundle Bio-Formats by default without legal review.
-
-## Other Bundled Browser Libraries
-
-The repository also contains other browser libraries and assets under their own
-licenses, including but not limited to Three.js, Raphael, Proj4js, Async.js,
-KineticJS, Dagre/D3-related code, and SVG/image assets. Preserve upstream
-copyright and license notices when redistributing.
-
-## Distribution Guidance
-
-- Do not assume the BisQue project license applies to third-party code.
-- Preserve license files and copyright notices for bundled components.
-- Prefer optional installation for GPL components that are not required for the
-  default developer or production image.
-- For Docker or Kubernetes distributions, document whether Bio-Formats and other
-  optional converters are included in the image, installed at runtime, or
-  provided as separate services.

@@ -11,9 +11,10 @@ BisQue is offered under a dual-license model:
 1. GNU Affero General Public License
 
    Unless you have entered into a separate commercial license agreement with
-   The Regents of the University of California, BisQue is licensed under the
-   GNU Affero General Public License, version 3 or any later version, as
-   published by the Free Software Foundation.
+   The Regents of the University of California, any use, modification,
+   distribution, or hosted deployment of BisQue is licensed under the GNU
+   Affero General Public License, version 3 or any later version, as published
+   by the Free Software Foundation.
 
    You may redistribute and/or modify BisQue under the terms of the AGPL. The
    AGPL includes source-code availability obligations, including for modified
@@ -27,6 +28,8 @@ BisQue is offered under a dual-license model:
    proprietary distribution or hosted use without AGPL source-code obligations,
    you must obtain a separate commercial license from The Regents of the
    University of California through the University of California, Santa Barbara.
+   Commercial license terms are granted only by a written agreement with The
+   Regents of the University of California.
 
 Third-Party Components
 

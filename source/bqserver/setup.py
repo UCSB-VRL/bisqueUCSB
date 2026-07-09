@@ -35,7 +35,9 @@ setup(
     long_description="""\
 The bisque server
 """,
-    classifiers=[],  # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
+    classifiers=[
+        "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
+    ],
     keywords="bioinformatics, image, database",
     author="Center for Bioinformatics",
     author_email="cbi@biodev.ece.ucsb.edu",
