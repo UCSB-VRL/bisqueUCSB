@@ -7,7 +7,6 @@
 ||  |
 |----------------------------   |----------------------------------------------------------------------------|
 |**Code**                       | ![](https://img.shields.io/badge/BisQue%20Stable%20Release-v1.0.0-brightgreen) |
-| **Continuous Integration**    | [CI](.github/workflows/ci.yml) and [container image](.github/workflows/docker-image.yml) workflows |
 | **Documentation**             | [![Docs](https://img.shields.io/badge/docs-website-blue?style=flat)](https://bisque.gitbook.io/docs/) |
 | **Community**              | [![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-yellow.svg?style=flat)](https://bisqueUCSB.github.io/contributing.html) [![Discourse](https://img.shields.io/badge/Discourse-v2.9.0-blue)](https://community.bisque2.ece.ucsb.edu/) |
 
