@@ -52,5 +52,8 @@ jobs:
       - name: Run unit tests
         run: flox activate -- scripts/test-unit.sh
 
+      - name: Prepare BisQue runtime
+        run: flox activate -- scripts/setup-bisque-runtime.sh
+
       - name: Run stable service tests
         run: flox activate -- scripts/test-services.sh --no-sync data blob table
