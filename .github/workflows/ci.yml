@@ -22,6 +22,19 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      - name: Free Disk Space (Ubuntu)
+        shell: bash
+        run: |
+          set -euo pipefail
+          df -h
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+          docker system prune --all --force --volumes
+          df -h
+
       - name: Install Flox
         uses: flox/install-flox-action@v2
 
