@@ -8,6 +8,50 @@
   xmlns:xi="http://www.w3.org/2001/XInclude">
 
 <head>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" />
+<style type="text/css">
+/* Typography aligned with bigdatahealth.ucsb.edu */
+.content.page {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+    color: #3a4453;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 24px 16px 40px;
+    -webkit-font-smoothing: antialiased;
+}
+.content.page p { margin: 0 0 16px; }
+.content.page h1, .content.page h2 {
+    font-family: 'Inter', sans-serif;
+    color: #1f3d5c;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+}
+.content.page h2 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin: 40px 0 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e6eaf0;
+}
+.content.page ul { margin: 0 0 18px; padding-left: 22px; }
+.content.page li { margin-bottom: 7px; font-size: 0.98rem; line-height: 1.5; }
+.content.page a { color: #2f6fb0; text-decoration: none; }
+.content.page a:hover { color: #1a4a8f; text-decoration: underline; }
+.content.page strong { font-weight: 600; color: #1f3d5c; }
+.content.page em {
+    display: block;
+    margin-top: 18px;
+    font-size: 0.9rem;
+    font-style: normal;
+    color: #66707e;
+}
+@media (max-width: 640px) {
+    .content.page { font-size: 15px; }
+    .content.page h2 { font-size: 1.25rem; }
+}
+</style>
 </head>
 <body>
 <div class="content page">
@@ -15,8 +59,31 @@
    <img src="/core/images/bisque_logo_gray.svg" style="float: right; padding: 4px; width: 300px;" />
    <!--<h1>BisQue</h1>-->
     <p><strong>B</strong>io-<strong>I</strong>mage <strong>S</strong>emantic <strong>Q</strong>uery <strong>U</strong>ser <strong>E</strong>nvironment</p>
-    <p><strong> <a href="https://github.com/UCSB-VRL/bisqueUCSB"> 0.6.0 </a> </strong></p>
-    <p>Bisque is developed by the <a href="http://bigdatahealth.ucsb.edu/">Centre for Multimodal Big Data Science and Healthcare</a> and is supported by the following awards:</p>
+    <p><strong><a href="https://github.com/UCSB-VRL/bisqueUCSB">BisQue on GitHub</a></strong></p>
+
+    <p>BisQue is an open-source platform for managing, exploring, and analyzing large-scale
+    scientific multimodal data. BisQue combines images with structured metadata, annotations,
+    sensor and experimental measurements, derived data products, models, workflows, and
+    provenance. Its scalable web-services architecture supports data organization and search,
+    interactive visualization, distributed storage, high-throughput analysis, and reproducible
+    execution across diverse scientific domains.</p>
+
+    <p>BisQue now extends into
+    <a href="https://bigdatahealth.ucsb.edu/bisque-ultra"><strong>BisQue Ultra</strong></a>,
+    integrating large language model reasoning directly on top of the BisQue platform for more
+    advanced, context-aware scientific analysis.</p>
+
+    <p>BisQue is developed by the
+    <a href="https://bigdatahealth.ucsb.edu/">Center for Multimodal Big Data Science and Healthcare</a>
+    at UC Santa Barbara &#8212; accelerating scientific discovery with multimodal AI. The project is a
+    multi-institutional collaboration spanning UC Santa Barbara, UC Riverside, and the Smithsonian
+    Institution, and the research built on top of BisQue spans four main areas: ecology, materials
+    science, healthcare, and marine science.</p>
+
+    <p>This material is based upon work supported by the U.S. National Science Foundation under
+    Grant No. <strong>2411453</strong>.</p>
+
+    <p>This work has also been supported by the following awards:</p>
     <ul>
      <li>NSF ABI Development: BISQUE - Scalable Image Informatics for Quantitative Biology  <strong>1356750</strong></li>
      <li>NSF EAGER: Collaborative 3D Materials Science Research in the Cloud  <strong>1650972</strong></li>
@@ -24,14 +91,17 @@
      <li>NSF LIMPID: Large-Scale IMage Processing Infrastructure Development <strong>1664172</strong></li>
      <li><a href="http://cyverse.org/">CY<strong>VERSE</strong></a>,  Cyberinfrastructure for BisQue</li>
     </ul>
-    <p><em>Any opinions, findings and conclusions or recomendations expressed in this material are those of the author(s)
-    and do not necessarily reflect the views of the National Science Foundation (NSF).</em></p>
+
+    <p><em>Any opinions, findings, and conclusions or recommendations expressed in this material are
+    those of the author(s) and do not necessarily reflect the views of the National Science
+    Foundation.</em></p>
 
    <h2>Development Team</h2>
 
     <ul>
-     <li><a href="https://linkedin.com/in/amilkhan/">Amil Khan</a> (Core Developer)</li>
-     <li><a href="https://linkedin.com/in/satish-kumar-81912540/">Satish Kumar</a> (Core Developer)</li>
+     <li><a href="https://www.linkedin.com/in/connor11son/">Connor Levenson</a> &#8212; Research Staff Member, Vision Research Lab, UC Santa Barbara</li>
+     <li><a href="https://linkedin.com/in/amilkhan/">Amil Khan</a> &#8212; PhD Student, UCSB ECE Vision Research Lab</li>
+     <li><a href="https://www.chandrakanthgudavalli.com/">Chandrakanth Gudavalli</a> &#8212; Research Staff Member, UC Santa Barbara</li>
      <li><a href="https://vision.ece.ucsb.edu/people/bs-manjunath">B.S. Manjunath</a> (PI)</li>
     </ul>
 
@@ -61,6 +131,18 @@
      <li><a href="http://turbogears.org/">TurboGears</a> (backend)</li>
      <li><a href="http://www.sqlalchemy.org/">SQLAlchemy</a> (backend)</li>
     </ul>
+
+   <h2>What's next: BisQue Ultra</h2>
+
+    <p>Our next generation of BisQue is
+    <a href="https://bigdatahealth.ucsb.edu/bisque-ultra">BisQue Ultra</a> &#8212; a scientific
+    agentic AI workbench for data, models, and evidence. It brings rich agentic workflows to the
+    platform: language is routed into tools, code, and models; long-running analyses are durable
+    and recoverable; and every result &#8212; figures, tables, metrics, reports, and run events
+    &#8212; stays attached to the same inspectable analysis record. Model operations are
+    evidence-gated, so newer weights are promoted only when the declared evidence supports it.</p>
+
+    <p><a href="https://bigdatahealth.ucsb.edu/bisque-ultra">Learn more about BisQue Ultra &#8594;</a></p>
 
 </div>
 </body>
