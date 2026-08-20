@@ -96,6 +96,7 @@ To further develop modules with BisQue or for queries, reach out to us on [Disco
 * Kvilekval K, Fedorov D, Obara B, Singh A, Manjunath BS. __Bisque: a platform for bioimage analysis and management__. Bioinformatics. 2010 Feb 15;26(4):544-52. doi: 10.1093/bioinformatics/btp699. Epub 2009 Dec 22. PMID: 20031971.
 
 ## 🌟 Acknowledgments
+- Supported by the U.S. National Science Foundation under [Grant No. 2411453](https://www.nsf.gov/awardsearch/show-award/?AWD_ID=2411453). Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation.
 - Supported by NSF SI2-SSI Award No. 1664172, which funds the core BisQue software development infrastructure for sharing data and analysis modules.
 - Supported by NSF MCB Grant No. 1715544.
 
