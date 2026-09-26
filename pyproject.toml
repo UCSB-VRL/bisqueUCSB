@@ -1,6 +1,6 @@
 [project]
 name = "bisque"
-version = "0.1.0"
+version = "1.1.0"
 description = "Bioinformatic Semantic Query User Environment Project"
 license = "AGPL-3.0-or-later OR LicenseRef-Bisque-Commercial"
 requires-python = ">=3.11,<3.12"

@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "BisQue: Bio-Image Semantic Query User Environment"
+type: software
+version: 1.1.0
+authors:
+  - family-names: Manjunath
+    given-names: B.S.
+    affiliation: "University of California, Santa Barbara"
+  - family-names: Gudavalli
+    given-names: Chandrakanth
+    affiliation: "University of California, Santa Barbara"
+repository-code: "https://github.com/UCSB-VRL/bisqueUCSB"
+url: "https://bigdatahealth.ucsb.edu"
+keywords:
+  - bioimage analysis
+  - deep learning
+  - cyberinfrastructure

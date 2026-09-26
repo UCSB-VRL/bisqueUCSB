@@ -100,6 +100,15 @@ To further develop modules with BisQue or for queries, reach out to us on [Disco
 - Supported by NSF SI2-SSI Award No. 1664172, which funds the core BisQue software development infrastructure for sharing data and analysis modules.
 - Supported by NSF MCB Grant No. 1715544.
 
+## Citing BisQue
+
+If you use BisQue in your research, please cite it using the metadata in
+[`CITATION.cff`](CITATION.cff), or use the "Cite this repository" button on
+the GitHub sidebar.
+
+This work is supported by the National Science Foundation under
+Award #2411453.
+
 ## License
 
 BisQue is dual licensed. Use, modification, distribution, and hosted deployment
